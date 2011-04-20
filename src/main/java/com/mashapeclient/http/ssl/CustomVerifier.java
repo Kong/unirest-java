@@ -6,9 +6,9 @@ import org.apache.http.conn.ssl.AbstractVerifier;
 
 public class CustomVerifier extends AbstractVerifier {
 
-	@Override
-	public void verify(String host, String[] cns, String[] subjectAlts)
+	public void verify(String arg0, String[] arg1, String[] arg2)
 			throws SSLException {
 		// Accepts any SSL certificate
 	}
+	
 }

@@ -1,10 +1,10 @@
 package com.mashapeclient.test.http;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import com.mashapeclient.exceptions.MashapeApiKeyException;
+import com.mashapeclient.exceptions.MashapeDeveloperKeyException;
 import com.mashapeclient.exceptions.MashapeEmptyResponseException;
 import com.mashapeclient.exceptions.MashapeInvalidResponseException;
 import com.mashapeclient.http.TokenUtil;
@@ -16,7 +16,7 @@ public class TokenUtilTest {
 		try {
 			TokenUtil.getToken("");
 			fail();
-		} catch (MashapeApiKeyException e) {
+		} catch (MashapeDeveloperKeyException e) {
 			// Ok
 		} catch (MashapeEmptyResponseException e) {
 			fail();

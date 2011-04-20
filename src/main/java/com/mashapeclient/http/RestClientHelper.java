@@ -59,7 +59,7 @@ public class RestClientHelper {
 		try {
 			return new JSONObject(response);
 		} catch (JSONException e) {
-			throw new MashapeInvalidResponseException();
+			throw new MashapeInvalidResponseException(response);
 		}
 	}
 
