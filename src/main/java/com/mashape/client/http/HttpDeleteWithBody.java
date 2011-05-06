@@ -1,4 +1,4 @@
-package com.mashapeclient.http;
+package com.mashape.client.http;
 
 import java.net.URI;
 

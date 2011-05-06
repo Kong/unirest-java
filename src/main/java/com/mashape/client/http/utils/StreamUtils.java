@@ -1,4 +1,4 @@
-package com.mashapeclient.utils;
+package com.mashape.client.http.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
