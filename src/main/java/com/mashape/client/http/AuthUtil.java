@@ -24,8 +24,6 @@
 
 package com.mashape.client.http;
 
-import java.util.UUID;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
@@ -36,9 +34,8 @@ import com.mashape.client.http.utils.CryptUtils;
 public class AuthUtil {
 
 	public static Header generateAuthenticationHeader(String publicKey, String privateKey) {
-		String uuid = UUID.randomUUID().toString();
-		String hash = CryptUtils.getHMAC_SHA1(uuid, privateKey);
-		String headerValue = publicKey + ":" + hash + uuid;
-		return new BasicHeader("X-Mashape-Authorization", Base64.encodeBase64String(headerValue.getBytes()).replace("\r\n", ""));
+		String hash = CryptUtils.getHMAC_SHA1(publicKey, privateKey);
+		String headerValue = publicKey + ":" + hash;
+		return new BasicHeader("Proxy-Authorization", Base64.encodeBase64String(headerValue.getBytes()).replace("\r\n", ""));
 	}
 }
