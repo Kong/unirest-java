@@ -34,7 +34,6 @@ import java.util.Map;
 import org.apache.http.Header;
 import org.junit.Test;
 
-import com.mashape.client.http.HttpClient;
 import com.mashape.client.http.utils.RequestPrepareResult;
 import com.mashape.client.http.utils.UrlUtils;
 
@@ -160,10 +159,9 @@ public class UrlUtilsTest {
 	
 	@Test
 	public void testAddClientParameters() throws UnsupportedEncodingException {
-		List<Header> headers = UrlUtils.generateClientHeaders(HttpClient.CLIENTLIB_LANGUAGE, HttpClient.CLIENTLIB_VERSION);
-		assertEquals(2, headers.size());
+		List<Header> headers = UrlUtils.generateClientHeaders();
+		assertEquals(1, headers.size());
 		
-		assertEquals("JAVA", headers.get(0).getValue());
-		assertEquals("V04", headers.get(1).getValue());
+		assertEquals("mashape-java/1.0", headers.get(0).getValue());
 	}
 }
