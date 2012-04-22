@@ -64,9 +64,6 @@ import com.mashape.client.http.utils.UrlUtils;
 
 public class HttpClient {
 	
-	public static final String CLIENTLIB_VERSION = "V04";
-	public static final String CLIENTLIB_LANGUAGE = "JAVA";
-	
 	public static Thread doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, boolean mashapeAuthentication, String publicKey, String privateKey, boolean encodeJson, MashapeCallback callback) {
 		Thread t = new HttpRequestThread(httpMethod, url, parameters, mashapeAuthentication, publicKey, privateKey, encodeJson, callback);
 		t.start();
@@ -113,9 +110,9 @@ public class HttpClient {
 		List<Header> clientHeaders = new LinkedList<Header>();
 		// Add headers
 		if (isConsole) { 
-			clientHeaders = UrlUtils.generateClientHeaders(clientName, clientVersion);	
+			clientHeaders = UrlUtils.generateClientHeaders();	
 		} else {
-			clientHeaders = UrlUtils.generateClientHeaders(CLIENTLIB_LANGUAGE, CLIENTLIB_VERSION);
+			clientHeaders = UrlUtils.generateClientHeaders();
 		}
 		
 		for (Header header : clientHeaders) {

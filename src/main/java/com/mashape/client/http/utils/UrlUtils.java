@@ -100,10 +100,9 @@ public class UrlUtils {
 
 	}
 
-	public static List<Header> generateClientHeaders(String clientLibLanguage, String clientLibVersion) {
+	public static List<Header> generateClientHeaders() {
 		List<Header> headers = new ArrayList<Header>();
-		headers.add(new BasicHeader("X-Mashape-Language", clientLibLanguage));
-		headers.add(new BasicHeader("X-Mashape-Version", clientLibVersion));
+		headers.add(new BasicHeader("User-Agent", "mashape-java/1.0"));
 		return  headers;
 	}
 
