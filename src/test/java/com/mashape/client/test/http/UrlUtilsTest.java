@@ -28,10 +28,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.http.Header;
 import org.junit.Test;
 
+import com.mashape.client.http.HttpClient;
 import com.mashape.client.http.utils.RequestPrepareResult;
 import com.mashape.client.http.utils.UrlUtils;
 
@@ -157,34 +160,10 @@ public class UrlUtilsTest {
 	
 	@Test
 	public void testAddClientParameters() throws UnsupportedEncodingException {
+		List<Header> headers = UrlUtils.generateClientHeaders(HttpClient.CLIENTLIB_LANGUAGE, HttpClient.CLIENTLIB_VERSION);
+		assertEquals(2, headers.size());
 		
-		RequestPrepareResult prepareRequest = UrlUtils.addClientParameters("http://www.ciao.com", null, null);
-		assertEquals("http://www.ciao.com?_token={_token}&_language={_language}&_version={_version}", prepareRequest.getUrl());
-		assertEquals(3, prepareRequest.getParameters().size());
-		
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put("name", "Marco");
-		prepareRequest = UrlUtils.addClientParameters("http://www.ciao.com?name={name}", parameters, null);
-		assertEquals("http://www.ciao.com?name={name}&_token={_token}&_language={_language}&_version={_version}", prepareRequest.getUrl());
-		assertEquals(4, prepareRequest.getParameters().size());
-		assertEquals("JAVA", prepareRequest.getParameters().get("_language"));
-		assertEquals("V03", prepareRequest.getParameters().get("_version"));
-		assertEquals(null, prepareRequest.getParameters().get("_token"));
-		
-		parameters = new HashMap<String, String>();
-		parameters.put("name", "Marco");
-		prepareRequest = UrlUtils.addClientParameters("http://www.ciao.com?name={name}", parameters, "a-random-token");
-		assertEquals("http://www.ciao.com?name={name}&_token={_token}&_language={_language}&_version={_version}", prepareRequest.getUrl());
-		assertEquals(4, prepareRequest.getParameters().size());
-		assertEquals("JAVA", prepareRequest.getParameters().get("_language"));
-		assertEquals("V03", prepareRequest.getParameters().get("_version"));
-		assertEquals("a-random-token", prepareRequest.getParameters().get("_token"));
-		
-		parameters = new HashMap<String, String>();
-		parameters.put("name", "Marco");
-		prepareRequest = UrlUtils.addClientParameters("http://www.ciao.com?name={name}", parameters, "a-random-token");
-		prepareRequest = UrlUtils.prepareRequest(prepareRequest.getUrl(), prepareRequest.getParameters(), false);
-		assertEquals("http://www.ciao.com?name=Marco&_token=a-random-token&_language=JAVA&_version=V03", prepareRequest.getUrl());
-		assertEquals(4, prepareRequest.getParameters().size());
+		assertEquals("JAVA", headers.get(0).getValue());
+		assertEquals("V04", headers.get(1).getValue());
 	}
 }

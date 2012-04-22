@@ -34,14 +34,20 @@ class HttpRequestThread extends Thread {
 	private HttpMethod httpMethod;
 	private String url;
 	private Map<String, String> parameters;
-	private String token;
+	private boolean mashapeAuthentication;
+	private String publicKey;
+	private String privateKey;
+	private boolean encodeJson;
 	private MashapeCallback callback;
 
-	public HttpRequestThread(HttpMethod httpMethod, String url, Map<String, String> parameters, String token, MashapeCallback callback) {
+	public HttpRequestThread(HttpMethod httpMethod, String url, Map<String, String> parameters, boolean mashapeAuthentication, String publicKey, String privateKey, boolean encodeJson, MashapeCallback callback) {
 		this.httpMethod = httpMethod;
 		this.url = url;
 		this.parameters = parameters;
-		this.token = token;
+		this.mashapeAuthentication = mashapeAuthentication;
+		this.publicKey = publicKey;
+		this.privateKey = privateKey;
+		this.encodeJson = encodeJson;
 		this.callback = callback;
 	}
 	
@@ -49,7 +55,7 @@ class HttpRequestThread extends Thread {
 	public void run() {
 		Object response;
 		try {
-			response = HttpClient.execRequest(httpMethod, url, parameters, token);
+			response = HttpClient.execRequest(httpMethod, url, parameters, mashapeAuthentication, publicKey, privateKey, encodeJson, false, null, null);
 			if (callback != null) {
 				callback.requestCompleted(response);
 			}
