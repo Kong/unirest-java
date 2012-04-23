@@ -27,21 +27,20 @@ package com.mashape.client.http.utils;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.Header;
+import org.apache.http.message.BasicHeader;
+
+
 public class UrlUtils {
-
-	private static final String CLIENTLIB_VERSION = "V03";
-	private static final String CLIENTLIB_LANGUAGE = "JAVA";
-
-	private static final String VERSION_PARAM = "_version";
-	private static final String LANGUAGE_PARAM = "_language";
-	private static final String TOKEN_PARAM = "_token";
 
 	public static RequestPrepareResult prepareRequest(String url,
 			Map<String, String> parameters, boolean addRegularQueryStringParameters) throws UnsupportedEncodingException {
@@ -101,32 +100,10 @@ public class UrlUtils {
 
 	}
 
-	public static RequestPrepareResult addClientParameters(String url,
-			Map<String, String> parameters, String token) {
-		if (parameters == null) {
-			parameters = new HashMap<String, String>();
-		}
-
-		StringBuilder result = new StringBuilder(url);
-
-		if (url.contains("?")) {
-			result.append("&");
-		} else {
-			result.append("?");
-		}
-
-		result.append(addClientParameter(TOKEN_PARAM));
-		parameters.put(TOKEN_PARAM, token);
-		result.append("&" + addClientParameter(LANGUAGE_PARAM));
-		parameters.put(LANGUAGE_PARAM, CLIENTLIB_LANGUAGE);
-		result.append("&" + addClientParameter(VERSION_PARAM));
-		parameters.put(VERSION_PARAM, CLIENTLIB_VERSION);
-
-		return new RequestPrepareResult(result.toString(), parameters);
-	}
-
-	private static String addClientParameter(String parameter) {
-		return parameter + "={" + parameter + "}";
+	public static List<Header> generateClientHeaders() {
+		List<Header> headers = new ArrayList<Header>();
+		headers.add(new BasicHeader("User-Agent", "mashape-java/1.0"));
+		return  headers;
 	}
 
 }

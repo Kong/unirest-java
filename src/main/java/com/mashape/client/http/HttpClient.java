@@ -29,11 +29,14 @@ import java.io.UnsupportedEncodingException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -61,21 +64,25 @@ import com.mashape.client.http.utils.UrlUtils;
 
 public class HttpClient {
 	
-	public static Thread doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, String token, MashapeCallback callback) {
-		Thread t = new HttpRequestThread(httpMethod, url, parameters, token, callback);
+	public static Thread doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, boolean mashapeAuthentication, String publicKey, String privateKey, boolean encodeJson, MashapeCallback callback) {
+		Thread t = new HttpRequestThread(httpMethod, url, parameters, mashapeAuthentication, publicKey, privateKey, encodeJson, callback);
 		t.start();
 		return t;
 	}
 	
-	public static Object doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, String token) throws MashapeClientException {
-		return execRequest(httpMethod, url, parameters, token);
+	public static Object doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, boolean mashapeAuthentication, String publicKey, String privateKey, boolean encodeJson) throws MashapeClientException {
+		return execRequest(httpMethod, url, parameters, mashapeAuthentication, publicKey, privateKey, encodeJson, false, null, null);
 	}
 
-	static Object execRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, String token) throws MashapeClientException {
+	public static Object doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, boolean mashapeAuthentication, String publicKey, String privateKey, String clientName, String clientVersion) throws MashapeClientException {
+		return execRequest(httpMethod, url, parameters, mashapeAuthentication, publicKey, privateKey, false, true, clientName, clientVersion);
+	}
+	
+	static Object execRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, boolean mashapeAuthentication, String publicKey, String privateKey, boolean encodeJson, boolean isConsole, String clientName, String clientVersion) throws MashapeClientException {
 		
-		RequestPrepareResult prepareRequest = UrlUtils.addClientParameters(url, parameters, token);
+		RequestPrepareResult prepareRequest = null;
 		try {
-			prepareRequest = UrlUtils.prepareRequest(prepareRequest.getUrl(), prepareRequest.getParameters(), (httpMethod == HttpMethod.GET) ? false : true);
+			prepareRequest = UrlUtils.prepareRequest(url, parameters, (httpMethod == HttpMethod.GET) ? false : true);
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
@@ -94,8 +101,25 @@ public class HttpClient {
 			break;
 		case DELETE:
 			request = new HttpDeleteWithBody(prepareRequest.getUrl());
-			default:
-				throw new MashapeClientException(ExceptionConstants.EXCEPTION_NOTSUPPORTED_HTTPMETHOD, ExceptionConstants.EXCEPTION_NOTSUPPORTED_HTTPMETHOD_CODE);
+			break;
+		default:
+			throw new MashapeClientException(ExceptionConstants.EXCEPTION_NOTSUPPORTED_HTTPMETHOD, ExceptionConstants.EXCEPTION_NOTSUPPORTED_HTTPMETHOD_CODE);
+		}
+		
+		
+		List<Header> clientHeaders = new LinkedList<Header>();
+		// Add headers
+		if (isConsole) { 
+			clientHeaders = UrlUtils.generateClientHeaders();	
+		} else {
+			clientHeaders = UrlUtils.generateClientHeaders();
+		}
+		
+		for (Header header : clientHeaders) {
+			request.addHeader(header);
+		}
+		if (mashapeAuthentication) {
+			request.addHeader(AuthUtil.generateAuthenticationHeader(publicKey, privateKey));
 		}
 		
 		if (httpMethod != HttpMethod.GET) {
@@ -123,6 +147,9 @@ public class HttpClient {
 				instream = entity.getContent();
 			} catch (Exception e1) {
 				throw new RuntimeException(e1);
+			}
+			if (!encodeJson) {
+				return instream;
 			}
 			String response = StreamUtils.convertStreamToString(instream);
 			try {
