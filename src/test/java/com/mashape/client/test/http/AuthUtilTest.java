@@ -34,7 +34,7 @@ public class AuthUtilTest {
 
 	@Test
 	public void testRequestToken() {
-		assertEquals(108, AuthUtil.generateAuthenticationHeader("ciao", "marco").getValue().length());
-		assertEquals(108, AuthUtil.generateAuthenticationHeader("ciao", "piipopopopopopopo").getValue().length());
+		assertEquals(60, AuthUtil.generateAuthenticationHeader("ciao", "marco").getValue().length());
+		assertEquals(60, AuthUtil.generateAuthenticationHeader("ciao", "piipopopopopopopo").getValue().length());
 	}
 }
