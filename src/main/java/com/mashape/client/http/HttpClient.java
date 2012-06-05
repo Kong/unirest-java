@@ -64,21 +64,21 @@ import com.mashape.client.http.utils.UrlUtils;
 
 public class HttpClient {
 	
-	public static Thread doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, boolean mashapeAuthentication, String publicKey, String privateKey, boolean encodeJson, MashapeCallback callback) {
-		Thread t = new HttpRequestThread(httpMethod, url, parameters, mashapeAuthentication, publicKey, privateKey, encodeJson, callback);
+	public static Thread doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, boolean encodeJson, MashapeCallback callback) {
+		Thread t = new HttpRequestThread(httpMethod, url, parameters, publicKey, privateKey, encodeJson, callback);
 		t.start();
 		return t;
 	}
 	
-	public static Object doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, boolean mashapeAuthentication, String publicKey, String privateKey, boolean encodeJson) throws MashapeClientException {
-		return execRequest(httpMethod, url, parameters, mashapeAuthentication, publicKey, privateKey, encodeJson, false, null, null);
+	public static Object doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, boolean encodeJson) throws MashapeClientException {
+		return execRequest(httpMethod, url, parameters, publicKey, privateKey, encodeJson, false, null, null);
 	}
 
-	public static Object doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, boolean mashapeAuthentication, String publicKey, String privateKey, String clientName, String clientVersion) throws MashapeClientException {
-		return execRequest(httpMethod, url, parameters, mashapeAuthentication, publicKey, privateKey, false, true, clientName, clientVersion);
+	public static Object doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, String clientName, String clientVersion) throws MashapeClientException {
+		return execRequest(httpMethod, url, parameters, publicKey, privateKey, false, true, clientName, clientVersion);
 	}
 	
-	static Object execRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, boolean mashapeAuthentication, String publicKey, String privateKey, boolean encodeJson, boolean isConsole, String clientName, String clientVersion) throws MashapeClientException {
+	static Object execRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, boolean encodeJson, boolean isConsole, String clientName, String clientVersion) throws MashapeClientException {
 		
 		RequestPrepareResult prepareRequest = null;
 		try {
@@ -118,9 +118,8 @@ public class HttpClient {
 		for (Header header : clientHeaders) {
 			request.addHeader(header);
 		}
-		if (mashapeAuthentication) {
-			request.addHeader(AuthUtil.generateAuthenticationHeader(publicKey, privateKey));
-		}
+		
+		request.addHeader(AuthUtil.generateAuthenticationHeader(publicKey, privateKey));
 		
 		if (httpMethod != HttpMethod.GET) {
 			try {

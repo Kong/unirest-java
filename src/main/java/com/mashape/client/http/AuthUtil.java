@@ -33,8 +33,11 @@ import com.mashape.client.http.utils.CryptUtils;
 public class AuthUtil {
 
 	public static Header generateAuthenticationHeader(String publicKey, String privateKey) {
-		String hash = CryptUtils.getHMAC_SHA1(publicKey, privateKey);
-		String headerValue = publicKey + ":" + hash;
-		return new BasicHeader("Proxy-Authorization", Base64.encodeBase64String(headerValue.getBytes()).replace("\r\n", ""));
+		if (!(publicKey == null || privateKey == null)) {
+			String hash = CryptUtils.getHMAC_SHA1(publicKey, privateKey);
+			String headerValue = publicKey + ":" + hash;
+			return new BasicHeader("Proxy-Authorization", Base64.encodeBase64String(headerValue.getBytes()).replace("\r\n", ""));
+		}
+		return null;
 	}
 }
