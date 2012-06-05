@@ -36,7 +36,7 @@ public class AuthUtil {
 		if (!(publicKey == null || privateKey == null)) {
 			String hash = CryptUtils.getHMAC_SHA1(publicKey, privateKey);
 			String headerValue = publicKey + ":" + hash;
-			return new BasicHeader("Proxy-Authorization", Base64.encodeBase64String(headerValue.getBytes()).replace("\r\n", ""));
+			return new BasicHeader("X-Mashape-Authorization", Base64.encodeBase64String(headerValue.getBytes()).replace("\r\n", ""));
 		}
 		return null;
 	}
