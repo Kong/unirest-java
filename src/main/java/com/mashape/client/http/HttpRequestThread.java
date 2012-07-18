@@ -37,18 +37,14 @@ class HttpRequestThread extends Thread {
 	private HttpMethod httpMethod;
 	private String url;
 	private Map<String, String> parameters;
-	private String publicKey;
-	private String privateKey;
 	private boolean encodeJson;
 	private MashapeCallback callback;
 	private List<Auth> authHandlers;
 
-	public HttpRequestThread(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, boolean encodeJson, List<Auth> authHandlers, MashapeCallback callback) {
+	public HttpRequestThread(HttpMethod httpMethod, String url, Map<String, String> parameters, boolean encodeJson, List<Auth> authHandlers, MashapeCallback callback) {
 		this.httpMethod = httpMethod;
 		this.url = url;
 		this.parameters = parameters;
-		this.publicKey = publicKey;
-		this.privateKey = privateKey;
 		this.encodeJson = encodeJson;
 		this.callback = callback;
 		this.authHandlers = authHandlers;
@@ -59,15 +55,15 @@ class HttpRequestThread extends Thread {
 	 * TODO remove
 	 */
 	
-	public HttpRequestThread(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, boolean encodeJson, MashapeCallback callback) {
-		this(httpMethod, url, parameters, publicKey, privateKey, encodeJson, new ArrayList<Auth>(), callback);
+	public HttpRequestThread(HttpMethod httpMethod, String url, Map<String, String> parameters, boolean encodeJson, MashapeCallback callback) {
+		this(httpMethod, url, parameters, encodeJson, new ArrayList<Auth>(), callback);
 	}
 	
 	@Override
 	public void run() {
 		Object response;
 		try {
-			response = HttpClient.execRequest(httpMethod, url, parameters, publicKey, privateKey, authHandlers, encodeJson, false, null, null);
+			response = HttpClient.execRequest(httpMethod, url, parameters, authHandlers, encodeJson, false, null, null);
 			if (callback != null) {
 				callback.requestCompleted(response);
 			}
