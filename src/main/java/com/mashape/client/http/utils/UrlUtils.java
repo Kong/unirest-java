@@ -76,6 +76,11 @@ public class UrlUtils {
 		
 		if (addRegularQueryStringParameters) {
 			addRegularQueryStringParameters(finalUrl, parameters);
+		} else {
+			for (String key : parameters.keySet()) {
+				String delimiter = (finalUrl.indexOf("?") > 0) ? "&" : "?";
+				finalUrl += delimiter + key + "=" + parameters.get(key);
+			}
 		}
 
 		return new RequestPrepareResult(finalUrl, parameters);
