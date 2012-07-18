@@ -24,9 +24,12 @@
 
 package com.mashape.client.http;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.mashape.client.exceptions.MashapeClientException;
+import com.mashape.client.http.auth.Auth;
 import com.mashape.client.http.callback.MashapeCallback;
 
 class HttpRequestThread extends Thread {
@@ -38,8 +41,9 @@ class HttpRequestThread extends Thread {
 	private String privateKey;
 	private boolean encodeJson;
 	private MashapeCallback callback;
+	private List<Auth> authHandlers;
 
-	public HttpRequestThread(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, boolean encodeJson, MashapeCallback callback) {
+	public HttpRequestThread(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, boolean encodeJson, List<Auth> authHandlers, MashapeCallback callback) {
 		this.httpMethod = httpMethod;
 		this.url = url;
 		this.parameters = parameters;
@@ -47,13 +51,23 @@ class HttpRequestThread extends Thread {
 		this.privateKey = privateKey;
 		this.encodeJson = encodeJson;
 		this.callback = callback;
+		this.authHandlers = authHandlers;
+	}
+	
+	/**
+	 * Old - without auth
+	 * TODO remove
+	 */
+	
+	public HttpRequestThread(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, boolean encodeJson, MashapeCallback callback) {
+		this(httpMethod, url, parameters, publicKey, privateKey, encodeJson, new ArrayList<Auth>(), callback);
 	}
 	
 	@Override
 	public void run() {
 		Object response;
 		try {
-			response = HttpClient.execRequest(httpMethod, url, parameters, publicKey, privateKey, encodeJson, false, null, null);
+			response = HttpClient.execRequest(httpMethod, url, parameters, publicKey, privateKey, authHandlers, encodeJson, false, null, null);
 			if (callback != null) {
 				callback.requestCompleted(response);
 			}

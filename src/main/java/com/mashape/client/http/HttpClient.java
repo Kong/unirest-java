@@ -29,6 +29,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -55,6 +57,9 @@ import org.json.JSONObject;
 
 import com.mashape.client.exceptions.ExceptionConstants;
 import com.mashape.client.exceptions.MashapeClientException;
+import com.mashape.client.http.auth.Auth;
+import com.mashape.client.http.auth.HeaderAuth;
+import com.mashape.client.http.auth.QueryAuth;
 import com.mashape.client.http.callback.MashapeCallback;
 import com.mashape.client.http.ssl.SSLVerifierFactory;
 import com.mashape.client.http.utils.MapUtil;
@@ -64,21 +69,77 @@ import com.mashape.client.http.utils.UrlUtils;
 
 public class HttpClient {
 	
+	/**
+	 * Old - without auth
+	 * TODO remove
+	 */
 	public static Thread doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, boolean encodeJson, MashapeCallback callback) {
 		Thread t = new HttpRequestThread(httpMethod, url, parameters, publicKey, privateKey, encodeJson, callback);
 		t.start();
 		return t;
 	}
 	
-	public static Object doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, boolean encodeJson) throws MashapeClientException {
-		return execRequest(httpMethod, url, parameters, publicKey, privateKey, encodeJson, false, null, null);
-	}
-
-	public static Object doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, String clientName, String clientVersion) throws MashapeClientException {
-		return execRequest(httpMethod, url, parameters, publicKey, privateKey, false, true, clientName, clientVersion);
+	/**
+	 * New - with auth
+	 */
+	public static Thread doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, boolean encodeJson, List<Auth> authHandlers, MashapeCallback callback) {
+		Thread t = new HttpRequestThread(httpMethod, url, parameters, publicKey, privateKey, encodeJson, authHandlers, callback);
+		t.start();
+		return t;
 	}
 	
-	static Object execRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, boolean encodeJson, boolean isConsole, String clientName, String clientVersion) throws MashapeClientException {
+	/**
+	 * Old - without auth
+	 * TODO remove
+	 */
+	public static Object doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, boolean encodeJson) throws MashapeClientException {
+		return execRequest(httpMethod, url, parameters, publicKey, privateKey, null, encodeJson, false, null, null);
+	}
+	
+	/**
+	 * New - with auth
+	 */
+	public static Object doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, boolean encodeJson, List<Auth> authHandlers) throws MashapeClientException {
+		return execRequest(httpMethod, url, parameters, publicKey, privateKey, authHandlers, encodeJson, false, null, null);
+	}
+
+	/**
+	 * Old - without auth
+	 * TODO remove
+	 */
+	public static Object doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, String clientName, String clientVersion) throws MashapeClientException {
+		return execRequest(httpMethod, url, parameters, publicKey, privateKey, null, false, true, clientName, clientVersion);
+	}
+	
+	/**
+	 * New - with auth
+	 */
+	public static Object doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, String clientName, String clientVersion, List<Auth> authHandlers) throws MashapeClientException {
+		return execRequest(httpMethod, url, parameters, publicKey, privateKey, authHandlers, false, true, clientName, clientVersion);
+	}
+	
+	static Object execRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, String publicKey, String privateKey, List<Auth> authHandlers, boolean encodeJson, boolean isConsole, String clientName, String clientVersion) throws MashapeClientException {
+		if (authHandlers == null) {
+			authHandlers = new ArrayList<Auth>();
+		}
+		List<Header> clientHeaders = new LinkedList<Header>();
+		// Add headers
+		if (isConsole) { 
+			clientHeaders = UrlUtils.generateClientHeaders();	
+		} else {
+			clientHeaders = UrlUtils.generateClientHeaders();
+		}
+		
+		// Handle Mashape auth
+		clientHeaders.add(AuthUtil.generateAuthenticationHeader(publicKey, privateKey));
+		// Handle all other auths
+		for (Auth authHandler : authHandlers) {
+			if (authHandler instanceof HeaderAuth) {
+				clientHeaders.add(authHandler.handleHeader());
+			} else if (authHandler instanceof QueryAuth) {
+				parameters.putAll(authHandler.handleParams());
+			}
+		}
 		
 		RequestPrepareResult prepareRequest = null;
 		try {
@@ -106,20 +167,9 @@ public class HttpClient {
 			throw new MashapeClientException(ExceptionConstants.EXCEPTION_NOTSUPPORTED_HTTPMETHOD, ExceptionConstants.EXCEPTION_NOTSUPPORTED_HTTPMETHOD_CODE);
 		}
 		
-		
-		List<Header> clientHeaders = new LinkedList<Header>();
-		// Add headers
-		if (isConsole) { 
-			clientHeaders = UrlUtils.generateClientHeaders();	
-		} else {
-			clientHeaders = UrlUtils.generateClientHeaders();
-		}
-		
 		for (Header header : clientHeaders) {
 			request.addHeader(header);
 		}
-		
-		request.addHeader(AuthUtil.generateAuthenticationHeader(publicKey, privateKey));
 		
 		if (httpMethod != HttpMethod.GET) {
 			try {
