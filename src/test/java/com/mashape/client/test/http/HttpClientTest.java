@@ -38,14 +38,14 @@ public class HttpClientTest {
 	@Test
 	public void testDoRequest() throws MashapeClientException, JSONException, InterruptedException {
 		try {
-			HttpClient.doRequest(HttpMethod.DELETE, "http://www.ciao.com", null, null, null, true);
+			HttpClient.doRequest(HttpMethod.DELETE, "http://www.ciao.com", null, true, null);
 			fail();
 		} catch (MashapeClientException e) {
 			// OK
 		}
 		
 		try {
-			HttpClient.doRequest(HttpMethod.GET, "http://www.google.com", null, null, null, true);
+			HttpClient.doRequest(HttpMethod.GET, "http://www.google.com", null, true, null);
 			fail();
 		} catch (MashapeClientException e) {
 			// OK
