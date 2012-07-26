@@ -80,9 +80,11 @@ public class UrlUtils {
 		} else {
 			for (String key : parameters.keySet()) {
 				String delimiter = (finalUrl.indexOf("?") > 0) ? "&" : "?";
-				finalUrl += delimiter + key + "=" + parameters.get(key);
+				finalUrl += delimiter + key + "=" + URLEncoder.encode(parameters.get(key), "UTF-8");
 			}
 		}
+		
+		System.out.println(finalUrl);
 
 		return new RequestPrepareResult(finalUrl, parameters);
 	}
