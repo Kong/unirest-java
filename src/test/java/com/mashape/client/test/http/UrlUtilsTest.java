@@ -135,7 +135,7 @@ public class UrlUtilsTest {
 		parameters.put("pippo", null);
 		prepareRequest = UrlUtils.prepareRequest("http://www.ciao.com/{id}?name={name}&opt={opt}&nick={nick}", parameters, false);
 		assertEquals("http://www.ciao.com/12", prepareRequest.getUrl());
-		assertEquals(1, parameters.size());
+		assertEquals(0, parameters.size());
 		assertEquals(parameters, prepareRequest.getParameters());
 		
 		parameters = new HashMap<String, String>();
@@ -144,7 +144,7 @@ public class UrlUtilsTest {
 		parameters.put("opt", "2");
 		prepareRequest = UrlUtils.prepareRequest("http://www.ciao.com/{id}?name={name}&opt={opt}&nick=some+nick", parameters, false);
 		assertEquals("http://www.ciao.com/ciao%20marco?name=ciao+pippo&opt=2&nick=some+nick", prepareRequest.getUrl());
-		assertEquals(3, parameters.size());
+		assertEquals(0, parameters.size());
 		assertEquals(parameters, prepareRequest.getParameters());
 		
 		parameters = new HashMap<String, String>();
@@ -153,7 +153,7 @@ public class UrlUtilsTest {
 		parameters.put("opt", "{this is opt}");
 		prepareRequest = UrlUtils.prepareRequest("http://www.ciao.com/{id}?name={name}&opt={opt}&nick=some+nick", parameters, false);
 		assertEquals("http://www.ciao.com/ciao%20marco?name=ciao+pippo&opt=%7Bthis+is+opt%7D&nick=some+nick", prepareRequest.getUrl());
-		assertEquals(3, parameters.size());
+		assertEquals(0, parameters.size());
 		assertEquals(parameters, prepareRequest.getParameters());
 	}	
 	

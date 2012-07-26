@@ -66,6 +66,7 @@ public class UrlUtils {
 						"$1" + URLEncoder.encode(parameterValue, "UTF-8"));
 				finalUrl = finalUrl.replaceAll("\\{" + key + "\\}",
 						UriUtils.encodeUri(parameterValue, "UTF-8"));
+				parameters.remove(key);
 			} else {
 				finalUrl = finalUrl.replaceAll("&?[\\w]*=?\\{" + key + "\\}", "");
 			}
