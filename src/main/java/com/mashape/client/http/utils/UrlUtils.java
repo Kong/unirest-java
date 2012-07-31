@@ -83,8 +83,6 @@ public class UrlUtils {
 				finalUrl += delimiter + key + "=" + URLEncoder.encode(parameters.get(key), "UTF-8");
 			}
 		}
-		
-		System.out.println(finalUrl);
 
 		return new RequestPrepareResult(finalUrl, parameters);
 	}
