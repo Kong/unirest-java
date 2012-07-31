@@ -30,6 +30,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +86,9 @@ public class HttpClient {
 	static Object execRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, List<Auth> authHandlers, boolean encodeJson, boolean isConsole, String clientName, String clientVersion) throws MashapeClientException {
 		if (authHandlers == null) {
 			authHandlers = new ArrayList<Auth>();
+		}
+		if (parameters == null) {
+			parameters = new HashMap<String, String>();
 		}
 		List<Header> clientHeaders = new LinkedList<Header>();
 		// Add headers
