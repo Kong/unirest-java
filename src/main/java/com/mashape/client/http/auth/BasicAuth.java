@@ -10,12 +10,12 @@ import org.apache.http.message.BasicHeader;
 public class BasicAuth extends HeaderAuth {
 
 	private Header header;
-	
+
 	public BasicAuth(String username, String password) {
 		String headerValue = username + ":" + password;
-		header = new BasicHeader("Authorization", Base64.encodeBase64String(headerValue.getBytes()).replace("\r\n", ""));
+		header = new BasicHeader("Authorization", "Basic " + Base64.encodeBase64String(headerValue.getBytes()).replace("\r\n", ""));
 	}
-	
+
 	public Header handleHeader() {
 		return header;
 	}
