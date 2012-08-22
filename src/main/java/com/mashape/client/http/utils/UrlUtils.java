@@ -1,5 +1,5 @@
 /*
- * 
+ *
  * Mashape Java Client library.
  * Copyright (C) 2011 Mashape, Inc.
  *
@@ -7,19 +7,19 @@
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
- * 
+ *
+ *
  * The author of this software is Mashape, Inc.
  * For any question or feedback please contact us at: support@mashape.com
- * 
+ *
  */
 
 package com.mashape.client.http.utils;
@@ -39,13 +39,15 @@ import java.util.regex.Pattern;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 
+import com.mashape.client.http.ContentType;
+
 
 public class UrlUtils {
 
 	public static RequestPrepareResult prepareRequest(String url,
-			Map<String, String> parameters, boolean addRegularQueryStringParameters) throws UnsupportedEncodingException {
+			Map<String, Object> parameters, boolean addRegularQueryStringParameters) throws UnsupportedEncodingException {
 		if (parameters == null) {
-			parameters = new HashMap<String, String>();
+			parameters = new HashMap<String, Object>();
 		}
 		Set<String> keySet = new HashSet<String>(parameters.keySet());
 		for (String key : keySet) {
@@ -61,7 +63,7 @@ public class UrlUtils {
 		while (matcher.find()) {
 			String key = matcher.group(1);
 			if (parameters.containsKey(key)) {
-				String parameterValue = parameters.get(key);
+				String parameterValue = parameters.get(key).toString();
 				finalUrl = finalUrl.replaceAll("(\\?.+)\\{" + key + "\\}",
 						"$1" + URLEncoder.encode(parameterValue, "UTF-8"));
 				finalUrl = finalUrl.replaceAll("\\{" + key + "\\}",
@@ -74,13 +76,13 @@ public class UrlUtils {
 
 		finalUrl = finalUrl.replaceAll("\\?&", "?");
 		finalUrl = finalUrl.replaceAll("\\?$", "");
-		
+
 		if (addRegularQueryStringParameters) {
 			addRegularQueryStringParameters(finalUrl, parameters);
 		} else {
 			for (String key : parameters.keySet()) {
 				String delimiter = (finalUrl.indexOf("?") > 0) ? "&" : "?";
-				finalUrl += delimiter + key + "=" + URLEncoder.encode(parameters.get(key), "UTF-8");
+				finalUrl += delimiter + key + "=" + URLEncoder.encode(parameters.get(key).toString(), "UTF-8");
 			}
 		}
 
@@ -88,7 +90,7 @@ public class UrlUtils {
 	}
 
 	private static void addRegularQueryStringParameters(
-			String url, Map<String, String> parameters) throws UnsupportedEncodingException {
+			String url, Map<String, Object> parameters) throws UnsupportedEncodingException {
 		String[] urlParts = url.split("\\?");
 		if (urlParts.length > 1) {
 			String queryString = urlParts[1];
@@ -106,9 +108,14 @@ public class UrlUtils {
 
 	}
 
-	public static List<Header> generateClientHeaders() {
+	public static List<Header> generateClientHeaders(ContentType contentType, String boundary) {
 		List<Header> headers = new ArrayList<Header>();
 		headers.add(new BasicHeader("User-Agent", "mashape-java/1.0"));
+		if (boundary != null) {
+			headers.add(new BasicHeader("Content-Type", contentType.getValue() + "; boundary=" + boundary));
+		} else {
+			headers.add(new BasicHeader("Content-Type", contentType.getValue()));
+		}
 		return  headers;
 	}
 

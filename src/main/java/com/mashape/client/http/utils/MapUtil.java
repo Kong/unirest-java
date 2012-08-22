@@ -1,5 +1,5 @@
 /*
- * 
+ *
  * Mashape Java Client library.
  * Copyright (C) 2011 Mashape, Inc.
  *
@@ -7,19 +7,19 @@
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
- * 
+ *
+ *
  * The author of this software is Mashape, Inc.
  * For any question or feedback please contact us at: support@mashape.com
- * 
+ *
  */
 
 package com.mashape.client.http.utils;
@@ -34,17 +34,17 @@ import org.apache.http.message.BasicNameValuePair;
 
 public class MapUtil {
 
-	public static List<NameValuePair> getList(Map<String, String> parameters) {
+	public static List<NameValuePair> getList(Map<String, Object> parameters) {
 		List<NameValuePair> result = new ArrayList<NameValuePair>();
 		if (parameters != null) {
 
 			Set<String> keySet = parameters.keySet();
 			for (String key : keySet) {
-				result.add(new BasicNameValuePair(key, parameters.get(key)));
+				result.add(new BasicNameValuePair(key, parameters.get(key).toString()));
 			}
-			
+
 		}
 		return result;
 	}
-	
+
 }

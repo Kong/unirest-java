@@ -1,5 +1,5 @@
 /*
- * 
+ *
  * Mashape Java Client library.
  * Copyright (C) 2011 Mashape, Inc.
  *
@@ -7,25 +7,27 @@
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
- * 
+ *
+ *
  * The author of this software is Mashape, Inc.
  * For any question or feedback please contact us at: support@mashape.com
- * 
+ *
  */
 
 package com.mashape.client.http;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -34,6 +36,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -49,6 +52,10 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
@@ -61,6 +68,7 @@ import com.mashape.client.http.auth.Auth;
 import com.mashape.client.http.auth.HeaderAuth;
 import com.mashape.client.http.auth.QueryAuth;
 import com.mashape.client.http.callback.MashapeCallback;
+import com.mashape.client.http.response.MashapeResponse;
 import com.mashape.client.http.ssl.SSLVerifierFactory;
 import com.mashape.client.http.utils.MapUtil;
 import com.mashape.client.http.utils.RequestPrepareResult;
@@ -68,36 +76,38 @@ import com.mashape.client.http.utils.StreamUtils;
 import com.mashape.client.http.utils.UrlUtils;
 
 public class HttpClient {
-	
-	public static Thread doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, boolean encodeJson, List<Auth> authHandlers, MashapeCallback callback) {
-		Thread t = new HttpRequestThread(httpMethod, url, parameters, encodeJson, authHandlers, callback);
+
+	public static Thread doRequest(HttpMethod httpMethod, String url, Map<String, Object> parameters, ContentType contentType, boolean encodeJson, List<Auth> authHandlers, MashapeCallback callback) {
+		Thread t = new HttpRequestThread(httpMethod, url, parameters, contentType, encodeJson, authHandlers, callback);
 		t.start();
 		return t;
 	}
-	
-	public static Object doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, boolean encodeJson, List<Auth> authHandlers) throws MashapeClientException {
-		return execRequest(httpMethod, url, parameters, authHandlers, encodeJson, false, null, null);
+
+	@SuppressWarnings("rawtypes")
+	public static MashapeResponse doRequest(HttpMethod httpMethod, String url, Map<String, Object> parameters, ContentType contentType, boolean encodeJson, List<Auth> authHandlers) throws MashapeClientException {
+		return execRequest(httpMethod, url, parameters, authHandlers, contentType, encodeJson, false, null, null);
 	}
 
-	public static Object doRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, String clientName, String clientVersion, List<Auth> authHandlers) throws MashapeClientException {
-		return execRequest(httpMethod, url, parameters, authHandlers, false, true, clientName, clientVersion);
+	@SuppressWarnings("rawtypes")
+	public static MashapeResponse doRequest(HttpMethod httpMethod, String url, Map<String, Object> parameters, ContentType contentType, String clientName, String clientVersion, List<Auth> authHandlers) throws MashapeClientException {
+		return execRequest(httpMethod, url, parameters, authHandlers, contentType, false, true, clientName, clientVersion);
 	}
-	
-	static Object execRequest(HttpMethod httpMethod, String url, Map<String, String> parameters, List<Auth> authHandlers, boolean encodeJson, boolean isConsole, String clientName, String clientVersion) throws MashapeClientException {
+
+	@SuppressWarnings("rawtypes")
+	static MashapeResponse execRequest(HttpMethod httpMethod, String url, Map<String, Object> parameters, List<Auth> authHandlers, ContentType contentType, boolean encodeJson, boolean isConsole, String clientName, String clientVersion) throws MashapeClientException {
 		if (authHandlers == null) {
 			authHandlers = new ArrayList<Auth>();
 		}
 		if (parameters == null) {
-			parameters = new HashMap<String, String>();
+			parameters = new HashMap<String, Object>();
 		}
 		List<Header> clientHeaders = new LinkedList<Header>();
-		// Add headers
-		if (isConsole) { 
-			clientHeaders = UrlUtils.generateClientHeaders();	
-		} else {
-			clientHeaders = UrlUtils.generateClientHeaders();
+		String boundary = null;
+		if (contentType.equals(ContentType.MULTIPART)) {
+			boundary = "mashape-" + UUID.randomUUID().toString();
 		}
-		
+		clientHeaders = UrlUtils.generateClientHeaders(contentType, boundary);
+
 		// Handle all other auths
 		for (Auth authHandler : authHandlers) {
 			if (authHandler instanceof HeaderAuth) {
@@ -106,16 +116,16 @@ public class HttpClient {
 				parameters.putAll(authHandler.handleParams());
 			}
 		}
-		
+
 		RequestPrepareResult prepareRequest = null;
 		try {
 			prepareRequest = UrlUtils.prepareRequest(url, parameters, (httpMethod == HttpMethod.GET) ? false : true);
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		HttpUriRequest request;
-		
+
 		switch (httpMethod) {
 		case GET:
 			request = new HttpGet(prepareRequest.getUrl());
@@ -132,22 +142,35 @@ public class HttpClient {
 		default:
 			throw new MashapeClientException(ExceptionConstants.EXCEPTION_NOTSUPPORTED_HTTPMETHOD, ExceptionConstants.EXCEPTION_NOTSUPPORTED_HTTPMETHOD_CODE);
 		}
-		
+
 		for (Header header : clientHeaders) {
 			request.addHeader(header);
 		}
-		
+
 		if (httpMethod != HttpMethod.GET) {
 			try {
-				((HttpEntityEnclosingRequestBase) request).setEntity(new UrlEncodedFormEntity(MapUtil.getList(parameters), HTTP.UTF_8));
+				if (contentType.equals(ContentType.MULTIPART)) {
+					MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE, boundary, Charset.forName("UTF-8"));
+					for (String key : parameters.keySet()) {
+						Object value = parameters.get(key);
+						if (value instanceof String) {
+							entity.addPart(key, new StringBody(value.toString()));
+						} else if (value instanceof File) {
+							entity.addPart(key, new FileBody((File) value));
+						}
+					}
+					((HttpEntityEnclosingRequestBase) request).setEntity(entity);
+				} else {
+					((HttpEntityEnclosingRequestBase) request).setEntity(new UrlEncodedFormEntity(MapUtil.getList(parameters), HTTP.UTF_8));
+				}
 			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException(e);
 			}
 		}
-		
+
 		org.apache.http.client.HttpClient client = new DefaultHttpClient();
 		configureSSLHttpClient(client);
-		
+
 		HttpResponse httpResponse;
 		try {
 			httpResponse = client.execute(request);
@@ -163,19 +186,19 @@ public class HttpClient {
 			} catch (Exception e1) {
 				throw new RuntimeException(e1);
 			}
+			String rawResponse = StreamUtils.convertStreamToString(instream);
 			if (!encodeJson) {
-				return instream;
+				return new MashapeResponse<InputStream>(httpResponse, rawResponse, instream);
 			}
-			String response = StreamUtils.convertStreamToString(instream);
 			try {
 				// It may be an object
-				return new JSONObject(response);
+				return new MashapeResponse<JSONObject>(httpResponse, rawResponse, new JSONObject(rawResponse));
 			} catch (JSONException e) {
 				try {
 					// or an array
-					return new JSONArray(response);
+					return new MashapeResponse<JSONArray>(httpResponse, rawResponse, new JSONArray(rawResponse));
 				} catch (JSONException e1) {
-					throw new MashapeClientException(String.format(ExceptionConstants.EXCEPTION_INVALID_REQUEST,response),ExceptionConstants.EXCEPTION_SYSTEM_ERROR_CODE);
+					throw new MashapeClientException(String.format(ExceptionConstants.EXCEPTION_INVALID_REQUEST, rawResponse),ExceptionConstants.EXCEPTION_SYSTEM_ERROR_CODE);
 				}
 			}
 
@@ -191,7 +214,7 @@ public class HttpClient {
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		try {
 			sslContext.init(null, new TrustManager[] { SSLVerifierFactory.getCustomSSLVerifier() }, new SecureRandom());
 		} catch (KeyManagementException e) {
@@ -201,7 +224,7 @@ public class HttpClient {
 		Scheme https = new Scheme("https", 443, socketFactory);
 		client.getConnectionManager().getSchemeRegistry().register(https);
 	}
-	
-	
-	
+
+
+
 }
