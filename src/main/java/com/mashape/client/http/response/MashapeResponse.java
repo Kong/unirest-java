@@ -6,19 +6,19 @@ import org.apache.http.HttpResponse;
 
 
 public class MashapeResponse<T> {
-	private String code;
+	private int code;
 	private String headers;
 	private String rawBody;
 	private T body;
 
 	public MashapeResponse(HttpResponse response, String rawBody, T body) {
 		this.headers = Arrays.toString(response.getAllHeaders());
-		this.code = String.valueOf(response.getStatusLine().getStatusCode());
+		this.code = response.getStatusLine().getStatusCode();
 		this.rawBody = rawBody;
 		this.body = body;
 	}
 
-	public String getCode() {
+	public int getCode() {
 		return code;
 	}
 	public String getHeaders() {
