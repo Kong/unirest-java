@@ -25,6 +25,7 @@
 package com.mashape.client.http;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -41,6 +42,7 @@ import java.util.UUID;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -72,7 +74,6 @@ import com.mashape.client.http.response.MashapeResponse;
 import com.mashape.client.http.ssl.SSLVerifierFactory;
 import com.mashape.client.http.utils.MapUtil;
 import com.mashape.client.http.utils.RequestPrepareResult;
-import com.mashape.client.http.utils.StreamUtils;
 import com.mashape.client.http.utils.UrlUtils;
 
 public class HttpClient {
@@ -186,22 +187,28 @@ public class HttpClient {
 			} catch (Exception e1) {
 				throw new RuntimeException(e1);
 			}
-			if (!encodeJson) {
-				return new MashapeResponse<InputStream>(httpResponse, instream, instream);
-			}
-			String rawResponse = StreamUtils.convertStreamToString(instream);
+			byte[] rawBody;
 			try {
-				// It may be an object
-				return new MashapeResponse<JSONObject>(httpResponse, instream, new JSONObject(rawResponse));
-			} catch (JSONException e) {
+				rawBody = IOUtils.toByteArray(instream);
+			} catch (IOException e2) {
+				throw new RuntimeException(e2);
+			}
+			if (!encodeJson) {
+				return new MashapeResponse<byte[]>(httpResponse, rawBody, rawBody);
+			} else {
+				String rawResponse = new String(rawBody);
 				try {
-					// or an array
-					return new MashapeResponse<JSONArray>(httpResponse, instream, new JSONArray(rawResponse));
-				} catch (JSONException e1) {
-					throw new MashapeClientException(String.format(ExceptionConstants.EXCEPTION_INVALID_REQUEST, rawResponse),ExceptionConstants.EXCEPTION_SYSTEM_ERROR_CODE);
+					// It may be an object
+					return new MashapeResponse<JSONObject>(httpResponse, rawBody, new JSONObject(rawResponse));
+				} catch (JSONException e) {
+					try {
+						// or an array
+						return new MashapeResponse<JSONArray>(httpResponse, rawBody, new JSONArray(rawResponse));
+					} catch (JSONException e1) {
+						throw new MashapeClientException(String.format(ExceptionConstants.EXCEPTION_INVALID_REQUEST, rawResponse),ExceptionConstants.EXCEPTION_SYSTEM_ERROR_CODE);
+					}
 				}
 			}
-
 		}
 		return null;
 	}

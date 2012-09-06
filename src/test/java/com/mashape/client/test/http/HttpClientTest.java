@@ -51,7 +51,6 @@ public class HttpClientTest {
 		} catch (MashapeClientException e) {
 			// OK
 		}
-
 	}
 
 }
