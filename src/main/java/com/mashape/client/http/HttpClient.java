@@ -186,17 +186,17 @@ public class HttpClient {
 			} catch (Exception e1) {
 				throw new RuntimeException(e1);
 			}
-			String rawResponse = StreamUtils.convertStreamToString(instream);
 			if (!encodeJson) {
-				return new MashapeResponse<InputStream>(httpResponse, rawResponse, instream);
+				return new MashapeResponse<InputStream>(httpResponse, instream, instream);
 			}
+			String rawResponse = StreamUtils.convertStreamToString(instream);
 			try {
 				// It may be an object
-				return new MashapeResponse<JSONObject>(httpResponse, rawResponse, new JSONObject(rawResponse));
+				return new MashapeResponse<JSONObject>(httpResponse, instream, new JSONObject(rawResponse));
 			} catch (JSONException e) {
 				try {
 					// or an array
-					return new MashapeResponse<JSONArray>(httpResponse, rawResponse, new JSONArray(rawResponse));
+					return new MashapeResponse<JSONArray>(httpResponse, instream, new JSONArray(rawResponse));
 				} catch (JSONException e1) {
 					throw new MashapeClientException(String.format(ExceptionConstants.EXCEPTION_INVALID_REQUEST, rawResponse),ExceptionConstants.EXCEPTION_SYSTEM_ERROR_CODE);
 				}
