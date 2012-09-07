@@ -24,6 +24,7 @@
 
 package com.mashape.client.http;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -187,23 +188,24 @@ public class HttpClient {
 			} catch (Exception e1) {
 				throw new RuntimeException(e1);
 			}
-			byte[] rawBody;
-			try {
-				rawBody = IOUtils.toByteArray(instream);
-			} catch (IOException e2) {
-				throw new RuntimeException(e2);
-			}
 			if (!encodeJson) {
-				return new MashapeResponse<byte[]>(httpResponse, rawBody, rawBody);
+				return new MashapeResponse<InputStream>(httpResponse, instream, instream);
 			} else {
+				byte[] rawBody;
+				try {
+					rawBody = IOUtils.toByteArray(instream);
+				} catch (IOException e2) {
+					throw new RuntimeException(e2);
+				}
+				InputStream is = new ByteArrayInputStream(rawBody);
 				String rawResponse = new String(rawBody);
 				try {
 					// It may be an object
-					return new MashapeResponse<JSONObject>(httpResponse, rawBody, new JSONObject(rawResponse));
+					return new MashapeResponse<JSONObject>(httpResponse, is, new JSONObject(rawResponse));
 				} catch (JSONException e) {
 					try {
 						// or an array
-						return new MashapeResponse<JSONArray>(httpResponse, rawBody, new JSONArray(rawResponse));
+						return new MashapeResponse<JSONArray>(httpResponse, is, new JSONArray(rawResponse));
 					} catch (JSONException e1) {
 						throw new MashapeClientException(String.format(ExceptionConstants.EXCEPTION_INVALID_REQUEST, rawResponse),ExceptionConstants.EXCEPTION_SYSTEM_ERROR_CODE);
 					}
