@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.mashape.client.http.AuthUtil;
+import com.mashape.client.authentication.utils.AuthUtil;
 
 public class AuthUtilTest {
 

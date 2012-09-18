@@ -8,6 +8,9 @@ import org.apache.commons.codec.binary.Hex;
 public class CryptUtils {
 
 	public static String getHMAC_SHA1(String value, String key) {
+		if (value == null || key == null || value.trim() == "" || key.trim() == "") {
+			throw new RuntimeException("Please enter your Mashape keys in the constructor.");
+		}
 		try {
 			// Get an hmac_sha1 key from the raw key bytes
 			byte[] keyBytes = key.getBytes();			

@@ -27,46 +27,50 @@ package com.mashape.client.http;
 import java.util.List;
 import java.util.Map;
 
-import com.mashape.client.exceptions.MashapeClientException;
-import com.mashape.client.http.auth.Auth;
-import com.mashape.client.http.callback.MashapeCallback;
+import com.mashape.client.authentication.Authentication;
 
-class HttpRequestThread extends Thread {
+class HttpRequestThread<T> extends Thread {
 
 	private HttpMethod httpMethod;
+	private Class<T> clazz;
 	private String url;
 	private Map<String, Object> parameters;
-	private boolean encodeJson;
-	private MashapeCallback callback;
-	private List<Auth> authHandlers;
 	private ContentType contentType;
+	private ResponseType responseType;
+	private List<Authentication> authenticationHandlers;
+	private MashapeCallback<T> callback;
 
-	public HttpRequestThread(HttpMethod httpMethod, String url, Map<String, Object> parameters, ContentType contentType, boolean encodeJson, List<Auth> authHandlers, MashapeCallback callback) {
+	public HttpRequestThread(Class<T> clazz, HttpMethod httpMethod, String url,
+			Map<String, Object> parameters, ContentType contentType,
+			ResponseType responseType,
+			List<Authentication> authenticationHandlers,
+			MashapeCallback<T> callback) {
 		this.httpMethod = httpMethod;
+		this.clazz = clazz;
 		this.url = url;
 		this.parameters = parameters;
-		this.encodeJson = encodeJson;
-		this.callback = callback;
-		this.authHandlers = authHandlers;
 		this.contentType = contentType;
+		this.responseType = responseType;
+		this.authenticationHandlers = authenticationHandlers;
+		this.callback = callback;
 	}
 
 	@Override
 	public void run() {
-		Object response;
 		try {
-			response = HttpClient.execRequest(httpMethod, url, parameters, authHandlers, contentType, encodeJson, false, null, null);
+			MashapeResponse<T> response = HttpClient.doRequest(clazz, httpMethod, url,
+					parameters, contentType, responseType,
+					authenticationHandlers);
 			if (callback != null) {
 				callback.requestCompleted(response);
 			}
-		} catch (MashapeClientException e) {
+		} catch (Exception e) {
 			if (callback != null) {
 				callback.errorOccurred(e);
 			} else {
 				throw new RuntimeException(e);
 			}
 		}
-
 	}
 
 }

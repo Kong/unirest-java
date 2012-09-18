@@ -22,17 +22,22 @@
  * 
  */
 
-package com.mashape.client.http.ssl;
+package com.mashape.client.authentication.utils;
 
-public class SSLVerifierFactory {
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.Header;
+import org.apache.http.message.BasicHeader;
 
-	private static CustomSSLVerifier customSSLVerifier;
-	
-	public static CustomSSLVerifier getCustomSSLVerifier() {
-		if (customSSLVerifier == null) {
-			customSSLVerifier = new CustomSSLVerifier();
+import com.mashape.client.http.utils.CryptUtils;
+
+public class AuthUtil {
+
+	public static Header generateAuthenticationHeader(String publicKey, String privateKey) {
+		if (!(publicKey == null || privateKey == null)) {
+			String hash = CryptUtils.getHMAC_SHA1(publicKey, privateKey);
+			String headerValue = publicKey + ":" + hash;
+			return new BasicHeader("X-Mashape-Authorization", Base64.encodeBase64String(headerValue.getBytes()).replace("\r\n", ""));
 		}
-		return customSSLVerifier;
+		return null;
 	}
-	
 }

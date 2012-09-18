@@ -24,20 +24,11 @@
 
 package com.mashape.client.http;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
 
-import com.mashape.client.http.utils.CryptUtils;
+public interface MashapeCallback<T> {
 
-public class AuthUtil {
-
-	public static Header generateAuthenticationHeader(String publicKey, String privateKey) {
-		if (!(publicKey == null || privateKey == null)) {
-			String hash = CryptUtils.getHMAC_SHA1(publicKey, privateKey);
-			String headerValue = publicKey + ":" + hash;
-			return new BasicHeader("X-Mashape-Authorization", Base64.encodeBase64String(headerValue.getBytes()).replace("\r\n", ""));
-		}
-		return null;
-	}
+	void requestCompleted(MashapeResponse<T> response);
+	
+	void errorOccurred(Exception e);
+	
 }

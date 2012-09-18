@@ -1,4 +1,4 @@
-package com.mashape.client.http.response;
+package com.mashape.client.http;
 
 import java.io.InputStream;
 import java.util.HashMap;

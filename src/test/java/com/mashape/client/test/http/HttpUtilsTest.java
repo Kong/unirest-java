@@ -1,5 +1,5 @@
 /*
- * 
+ *
  * Mashape Java Client library.
  * Copyright (C) 2011 Mashape, Inc.
  *
@@ -7,28 +7,42 @@
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
- * 
+ *
+ *
  * The author of this software is Mashape, Inc.
  * For any question or feedback please contact us at: support@mashape.com
- * 
+ *
  */
 
-package com.mashape.client.http.callback;
+package com.mashape.client.test.http;
 
-import com.mashape.client.exceptions.MashapeClientException;
+import static org.junit.Assert.assertEquals;
 
-public interface MashapeCallback {
+import org.junit.Test;
 
-	void requestCompleted(Object response);
-	void errorOccurred(MashapeClientException exception);
+import com.mashape.client.http.utils.HttpUtils;
+
+
+public class HttpUtilsTest {
+
+	@Test
+	public void testEncodeUrl() {
+		assertEquals("pippo", HttpUtils.encodeUrl("pippo"));
+		assertEquals("pippo%20ciao", HttpUtils.encodeUrl("pippo ciao"));
+	}
+	
+	@Test
+	public void testEncodeParam() {
+		assertEquals("pippo", HttpUtils.encodeParameter("pippo"));
+		assertEquals("pippo+ciao", HttpUtils.encodeParameter("pippo ciao"));
+	}
 	
 }
