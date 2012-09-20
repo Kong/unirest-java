@@ -1,13 +1,10 @@
 package com.mashape.client.authentication;
 
-import java.util.AbstractMap;
-
-
 public class QueryAuthentication extends Authentication {
 
-	public QueryAuthentication(AbstractMap.SimpleEntry<String, String> ... headers) {
-		for (AbstractMap.SimpleEntry<String, String> header : headers) {
-			queryParameters.put(header.getKey(), header.getValue());
+	public QueryAuthentication(AuthenticationParameter ... parameters) {
+		for (AuthenticationParameter parameter : parameters) {
+			queryParameters.put(parameter.getName(), parameter.getValue());
 		}
 	}
 	
