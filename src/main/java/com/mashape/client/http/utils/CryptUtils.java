@@ -1,9 +1,9 @@
 package com.mashape.client.http.utils;
 
+import java.math.BigInteger;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-
-import org.apache.commons.codec.binary.Hex;
 
 public class CryptUtils {
 
@@ -23,11 +23,13 @@ public class CryptUtils {
 			// Compute the hmac on input data bytes
 			byte[] rawHmac = mac.doFinal(value.getBytes());
 			
-			// Convert raw bytes to Hex
-			byte[] hexBytes = new Hex().encode(rawHmac);
-			
-			//  Covert array of Hex bytes to a String
-			return new String(hexBytes, "UTF-8");
+			String hmac = "";
+			BigInteger hash = new BigInteger(1, rawHmac);
+		    hmac = hash.toString(16);
+		    if (hmac.length() % 2 != 0) {
+		        hmac = "0" + hmac;
+		    }
+		    return hmac;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
