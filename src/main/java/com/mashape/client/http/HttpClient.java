@@ -58,6 +58,9 @@ import org.apache.http.protocol.HTTP;
 
 import com.mashape.client.authentication.Authentication;
 import com.mashape.client.authentication.HeaderAuthentication;
+import com.mashape.client.authentication.OAuth10aAuthentication;
+import com.mashape.client.authentication.OAuth2Authentication;
+import com.mashape.client.authentication.OAuthAuthentication;
 import com.mashape.client.authentication.QueryAuthentication;
 import com.mashape.client.http.utils.HttpUtils;
 import com.mashape.client.http.utils.MapUtil;
@@ -115,8 +118,28 @@ public class HttpClient {
 		for (Authentication authentication : authenticationHandlers) {
 			if (authentication instanceof HeaderAuthentication) {
 				headers.addAll(authentication.getHeaders());
-			} else if (authentication instanceof QueryAuthentication) {
-				parameters.putAll(authentication.getQueryParameters());
+			} else {
+				Map<String, String> queryParameters = authentication.getQueryParameters();
+				if (authentication instanceof QueryAuthentication) {
+					parameters.putAll(queryParameters);
+				} else if (authentication instanceof OAuth10aAuthentication) {
+					if (url.endsWith("/oauth_url") == false && (queryParameters == null || 
+							queryParameters.get(OAuthAuthentication.ACCESS_SECRET) == null || 
+							queryParameters.get(OAuthAuthentication.ACCESS_TOKEN) == null)) {
+						throw new RuntimeException("Before consuming OAuth endpoint, invoke authorize('access_token','access_secret') with not null values");
+					}
+					headers.add(new BasicHeader("x-mashape-oauth-consumerkey", queryParameters.get(OAuthAuthentication.CONSUMER_KEY)));
+					headers.add(new BasicHeader("x-mashape-oauth-consumersecret", queryParameters.get(OAuthAuthentication.CONSUMER_SECRET)));
+					headers.add(new BasicHeader("x-mashape-oauth-accesstoken", queryParameters.get(OAuthAuthentication.ACCESS_TOKEN)));
+					headers.add(new BasicHeader("x-mashape-oauth-accesssecret", queryParameters.get(OAuthAuthentication.ACCESS_SECRET)));
+					
+				} else if (authentication instanceof OAuth2Authentication) {
+					if (url.endsWith("/oauth_url") == false && (queryParameters == null || 
+							queryParameters.get(OAuthAuthentication.ACCESS_TOKEN) == null)) {
+						throw new RuntimeException("Before consuming OAuth endpoint, invoke authorize('access_token') with a not null value");
+					}
+					parameters.put("access_token", queryParameters.get(OAuthAuthentication.ACCESS_TOKEN));
+				}
 			}
 		}
 		
