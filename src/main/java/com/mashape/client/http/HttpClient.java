@@ -104,14 +104,6 @@ public class HttpClient {
 		if (authenticationHandlers == null) authenticationHandlers = new ArrayList<Authentication>();
 		if (parameters == null) parameters = new HashMap<String, Object>();
 		
-		// Sanitize null parameters
-		Set<String> keySet = new HashSet<String>(parameters.keySet());
-		for (String key : keySet) {
-			if (parameters.get(key) == null) {
-				parameters.remove(key);
-			}
-		}
-		
 		List<Header> headers = new LinkedList<Header>();
 		
 		// Handle authentications
@@ -140,6 +132,14 @@ public class HttpClient {
 					}
 					parameters.put("access_token", queryParameters.get(OAuthAuthentication.ACCESS_TOKEN));
 				}
+			}
+		}
+		
+		// Sanitize null parameters
+		Set<String> keySet = new HashSet<String>(parameters.keySet());
+		for (String key : keySet) {
+			if (parameters.get(key) == null) {
+				parameters.remove(key);
 			}
 		}
 		
