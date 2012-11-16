@@ -28,18 +28,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.json.JSONObject;
 import org.junit.Test;
 
-import com.mashape.client.authentication.Authentication;
-import com.mashape.client.authentication.MashapeAuthentication;
 import com.mashape.client.http.ContentType;
 import com.mashape.client.http.HttpClient;
 import com.mashape.client.http.HttpMethod;
@@ -65,22 +60,6 @@ public class HttpClientTest {
 				"https://mashaper-test.p.mashape.com/api.php", parameters, ContentType.FORM,
 				ResponseType.JSON, null);
 		assertEquals(403, res.getCode());
-		
-		
-		
-		List<Authentication> authenticationHandlers = new ArrayList<Authentication>();
-		authenticationHandlers.add(new MashapeAuthentication("PUBVV-sMYgCVmTBI31iwEw9Qz8_XvyQk", "PRIpOYUeeFF3sV%KGsSSxCINDLBpmXoH"));
-		
-		parameters = new HashMap<String, Object>();
-		parameters.put("echo", "this is echo");
-		parameters.put("file", new File("/Users/marco/rsa.rb"));
-		
-		res = HttpClient.doRequest(JSONObject.class, HttpMethod.POST,
-				"https://mashaper-testbinarysupport.p.mashape.com/index.php", parameters, ContentType.BINARY,
-				ResponseType.JSON, authenticationHandlers);
-		
-		System.out.println(res.getBody());
-		
 	}
-
+	
 }

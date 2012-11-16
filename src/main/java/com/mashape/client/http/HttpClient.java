@@ -49,6 +49,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
@@ -56,6 +57,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 
+import com.google.gson.Gson;
 import com.mashape.client.authentication.Authentication;
 import com.mashape.client.authentication.HeaderAuthentication;
 import com.mashape.client.authentication.OAuth10aAuthentication;
@@ -68,8 +70,12 @@ import com.mashape.client.http.utils.MapUtil;
 public class HttpClient {
 	
 	private static final String USER_AGENT = "mashape-java/2.0";
-
+	public static final String JSON_PARAM_BODY = "88416847677069008618"; // Just a random value
+	
+	private static Gson gson;
+	
 	static {
+		gson = new Gson();
 		// Create a trust manager that does not validate certificate chains
 		TrustManager[] trustAllCerts = new TrustManager[]{
 		    new X509TrustManager() {
@@ -160,6 +166,9 @@ public class HttpClient {
 		case DELETE:
 			request = new HttpDeleteWithBody(url);
 			break;
+		case PATCH:
+			request = new HttpPatchWithBody(url);
+			break;
 		}
 		
 		for(Header header : headers) {
@@ -191,7 +200,12 @@ public class HttpClient {
 				}
 				break;
 			case JSON:
-				throw new RuntimeException("Not supported content type: JSON");
+				String jsonBody = gson.toJson(parameters.get(JSON_PARAM_BODY));
+				try {
+					((HttpEntityEnclosingRequestBase) request).setEntity(new StringEntity(jsonBody, "application/json", "UTF-8"));
+				} catch (UnsupportedEncodingException e) {
+					throw new RuntimeException(e);
+				}
 			}
 		}
 		
