@@ -15,6 +15,7 @@ import org.apache.http.HttpResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.mashape.client.exception.InvalidJsonResponseException;
 import com.mashape.client.http.MashapeResponse;
 import com.mashape.client.http.ResponseType;
 
@@ -137,8 +138,7 @@ public class HttpUtils {
 									response, inputStream, new JSONObject(
 											jsonString));
 						} catch (Exception e) {
-							throw new RuntimeException("Invalid JSON object: "
-									+ jsonString);
+							throw new InvalidJsonResponseException(jsonString);
 						}
 					}
 					break;
