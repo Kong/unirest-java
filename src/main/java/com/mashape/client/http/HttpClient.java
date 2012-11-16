@@ -25,7 +25,6 @@
 package com.mashape.client.http;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -44,7 +43,6 @@ import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
@@ -66,7 +64,6 @@ import com.mashape.client.authentication.OAuth10aAuthentication;
 import com.mashape.client.authentication.OAuth2Authentication;
 import com.mashape.client.authentication.OAuthAuthentication;
 import com.mashape.client.authentication.QueryAuthentication;
-import com.mashape.client.exception.InvalidJsonResponseException;
 import com.mashape.client.http.utils.HttpUtils;
 import com.mashape.client.http.utils.MapUtil;
 

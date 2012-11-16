@@ -15,7 +15,8 @@ import org.apache.http.HttpResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.mashape.client.exception.InvalidJsonResponseException;
+import com.mashape.client.exception.InvalidJsonArrayException;
+import com.mashape.client.exception.InvalidJsonObjectException;
 import com.mashape.client.http.MashapeResponse;
 import com.mashape.client.http.ResponseType;
 
@@ -129,8 +130,7 @@ public class HttpUtils {
 									response, inputStream, new JSONArray(
 											jsonString));
 						} catch (Exception e) {
-							throw new RuntimeException("Invalid JSON array: "
-									+ jsonString);
+							throw new InvalidJsonArrayException(jsonString);
 						}
 					} else {
 						try {
@@ -138,7 +138,7 @@ public class HttpUtils {
 									response, inputStream, new JSONObject(
 											jsonString));
 						} catch (Exception e) {
-							throw new InvalidJsonResponseException(jsonString);
+							throw new InvalidJsonObjectException(jsonString);
 						}
 					}
 					break;

@@ -30,16 +30,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.json.JSONObject;
 import org.junit.Test;
 
-import com.mashape.client.authentication.Authentication;
-import com.mashape.client.authentication.MashapeAuthentication;
-import com.mashape.client.exception.InvalidJsonResponseException;
 import com.mashape.client.http.ContentType;
 import com.mashape.client.http.HttpClient;
 import com.mashape.client.http.HttpMethod;
@@ -65,19 +60,6 @@ public class HttpClientTest {
 				"https://mashaper-test.p.mashape.com/api.php", parameters, ContentType.FORM,
 				ResponseType.JSON, null);
 		assertEquals(403, res.getCode());
-	}
-	
-	@Test
-	public void t() {
-		List<Authentication> auth = new LinkedList<Authentication>();
-		auth.add(new MashapeAuthentication("a7ftjw7pdsucwx9g6sgugrgijm1ff6", "lcwkchlni7emicgobgbdkwassyyeu2"));
-		try {
-			HttpClient.doRequest(String.class, HttpMethod.DELETE, "http://pippo-test.p.mashape.com/test", null, ContentType.FORM, ResponseType.JSON, auth);
-		} catch (Exception e) {
-			if (e.getCause() instanceof InvalidJsonResponseException) {
-				System.out.println("WOT");
-			}
-		}
 	}
 	
 }
