@@ -202,7 +202,7 @@ public class HttpClient {
 			case JSON:
 				String jsonBody = null;
 				
-				if((parameters.get(JSON_PARAM_BODY) == null)) {
+				if((parameters.get(JSON_PARAM_BODY) != null)) {
 					String jsonParamBody =  parameters.get(JSON_PARAM_BODY).toString();
 					jsonBody = (HttpUtils.isJson(jsonParamBody)) ? jsonParamBody : gson.toJson(jsonParamBody);
 				}
