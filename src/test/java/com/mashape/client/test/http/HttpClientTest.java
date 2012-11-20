@@ -30,15 +30,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.json.JSONObject;
 import org.junit.Test;
 
-import com.mashape.client.authentication.Authentication;
-import com.mashape.client.authentication.MashapeAuthentication;
 import com.mashape.client.http.ContentType;
 import com.mashape.client.http.HttpClient;
 import com.mashape.client.http.HttpMethod;
