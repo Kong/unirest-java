@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.mashape.client.exception.InvalidJsonArrayException;
@@ -42,6 +43,20 @@ public class HttpUtils {
 			return result.toString();
 		}
 		return "";
+	}
+	
+	public static boolean isJson(String json) {
+		if (json == null) return false;
+		try {
+			new JSONObject(json);
+		} catch (JSONException e) {
+			try {
+				new JSONArray(json);
+			} catch (JSONException e1) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public static String encodeUrl(String url) {

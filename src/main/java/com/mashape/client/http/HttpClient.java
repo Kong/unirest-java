@@ -200,7 +200,13 @@ public class HttpClient {
 				}
 				break;
 			case JSON:
-				String jsonBody = gson.toJson(parameters.get(JSON_PARAM_BODY));
+				String jsonBody = null;
+				
+				if((parameters.get(JSON_PARAM_BODY) == null)) {
+					String jsonParamBody =  parameters.get(JSON_PARAM_BODY).toString();
+					jsonBody = (HttpUtils.isJson(jsonParamBody)) ? jsonParamBody : gson.toJson(jsonParamBody);
+				}
+
 				try {
 					((HttpEntityEnclosingRequestBase) request).setEntity(new StringEntity(jsonBody, "UTF-8"));
 					((HttpEntityEnclosingRequestBase) request).setHeader(new BasicHeader("Content-Type", "application/json"));
