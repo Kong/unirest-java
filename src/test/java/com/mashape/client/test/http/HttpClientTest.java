@@ -30,11 +30,15 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONObject;
 import org.junit.Test;
 
+import com.mashape.client.authentication.Authentication;
+import com.mashape.client.authentication.MashapeAuthentication;
 import com.mashape.client.http.ContentType;
 import com.mashape.client.http.HttpClient;
 import com.mashape.client.http.HttpMethod;
@@ -62,4 +66,15 @@ public class HttpClientTest {
 		assertEquals(403, res.getCode());
 	}
 	
+	@Test
+	public void t() {
+		List<Authentication> authenticationHandlers = new LinkedList<Authentication>();
+		authenticationHandlers.add(new MashapeAuthentication("PUBVV-sMYgCVmTBI31iwEw9Qz8_XvyQk", "PRIpOYUeeFF3sV%KGsSSxCINDLBpmXoH"));
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		Map<String, String> body = new HashMap<String, String>();
+		body.put("name", "pippo");
+		parameters.put(HttpClient.JSON_PARAM_BODY, body);
+		MashapeResponse<String> doRequest = HttpClient.doRequest(String.class, HttpMethod.POST, "https://mashaper-header.p.mashape.com/header.php", parameters , ContentType.JSON, ResponseType.STRING, authenticationHandlers);
+		System.out.println(doRequest.getBody());
+	}
 }

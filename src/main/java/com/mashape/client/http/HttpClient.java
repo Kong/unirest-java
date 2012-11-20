@@ -202,7 +202,8 @@ public class HttpClient {
 			case JSON:
 				String jsonBody = gson.toJson(parameters.get(JSON_PARAM_BODY));
 				try {
-					((HttpEntityEnclosingRequestBase) request).setEntity(new StringEntity(jsonBody, "application/json", "UTF-8"));
+					((HttpEntityEnclosingRequestBase) request).setEntity(new StringEntity(jsonBody, "UTF-8"));
+					((HttpEntityEnclosingRequestBase) request).setHeader(new BasicHeader("Content-Type", "application/json"));
 				} catch (UnsupportedEncodingException e) {
 					throw new RuntimeException(e);
 				}
