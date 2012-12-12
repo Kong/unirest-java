@@ -216,6 +216,10 @@ public class HttpClient {
 			}
 		}
 		
+		if (responseType == ResponseType.JSON) {
+			request.setHeader(new BasicHeader("Accept", "application/json"));
+		}
+		
 		org.apache.http.client.HttpClient client = new DefaultHttpClient();
 		
 		HttpResponse response;
