@@ -49,12 +49,15 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.params.ConnManagerPNames;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 
 import com.google.gson.Gson;
@@ -72,6 +75,9 @@ public class HttpClient {
 	private static final String USER_AGENT = "mashape-java/2.0";
 	public static final String JSON_PARAM_BODY = "88416847677069008618"; // Just a random value
 	
+	private static final int CONNECTION_TIMEOUT = 600000; 
+	private static final int SOCKET_TIMEOUT = 600000; 
+
 	private static Gson gson;
 	
 	static {
@@ -216,12 +222,16 @@ public class HttpClient {
 			}
 		}
 		
+		
+		setTimeouts(request.getParams());
+		
+
+
 		if (responseType == ResponseType.JSON) {
 			request.setHeader(new BasicHeader("Accept", "application/json"));
 		}
 		
 		org.apache.http.client.HttpClient client = new DefaultHttpClient();
-		
 		HttpResponse response;
 		try {
 			response = client.execute(request);
@@ -230,6 +240,12 @@ public class HttpClient {
 		}
 		MashapeResponse<T> mashapeResponse = HttpUtils.getResponse(responseType, response);
 		return mashapeResponse;
+	}
+
+	private static void setTimeouts(HttpParams params) {
+	    params.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 
+	        CONNECTION_TIMEOUT);
+	    params.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, SOCKET_TIMEOUT);
 	}
 
 }
