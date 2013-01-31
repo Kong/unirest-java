@@ -49,16 +49,19 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.conn.params.ConnManagerPNames;
+import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
 
 import com.google.gson.Gson;
 import com.mashape.client.authentication.Authentication;
@@ -74,6 +77,11 @@ public class HttpClient {
 	
 	private static final String USER_AGENT = "mashape-java/2.0";
 	public static final String JSON_PARAM_BODY = "88416847677069008618"; // Just a random value
+	
+	private static final HttpContext localContext = new BasicHttpContext();
+	static {
+		localContext.setAttribute(ClientContext.COOKIE_STORE, new BasicCookieStore());
+	}
 	
 	private static final int CONNECTION_TIMEOUT = 600000; 
 	private static final int SOCKET_TIMEOUT = 600000; 
@@ -234,7 +242,7 @@ public class HttpClient {
 		org.apache.http.client.HttpClient client = new DefaultHttpClient();
 		HttpResponse response;
 		try {
-			response = client.execute(request);
+			response = client.execute(request, localContext);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
