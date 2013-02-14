@@ -1,5 +1,7 @@
 package com.mashape.client.http;
 
+import com.mashape.client.request.HttpRequest;
+
 
 public class HttpClient {
 

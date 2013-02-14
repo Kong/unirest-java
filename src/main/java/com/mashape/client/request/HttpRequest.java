@@ -1,19 +1,20 @@
-package com.mashape.client.http;
+package com.mashape.client.request;
 
 import java.io.File;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.codehaus.jackson.JsonNode;
 
-import com.mashape.client.request.Body;
-import com.mashape.client.request.MultipartBody;
-import com.mashape.client.request.RequestBodyEntity;
+import com.mashape.client.http.HttpMethod;
+import com.mashape.client.request.body.Body;
+import com.mashape.client.request.body.MultipartBody;
+import com.mashape.client.request.body.RequestBodyEntity;
 
-public class HttpRequest {
+public class HttpRequest extends BaseRequest {
 
 	private HttpMethod httpMethod;
 	private String url;
@@ -38,6 +39,8 @@ public class HttpRequest {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		
+		super.httpRequest = this;
 	}
 	
 	public HttpRequest header(String name, String value) {
@@ -60,6 +63,21 @@ public class HttpRequest {
 	
 	public MultipartBody field(String name, Object value) {
 		MultipartBody body =  new MultipartBody(this).field(name, value.toString());
+		this.body = body;
+		return body;
+	}
+	
+	public MultipartBody parameters(Map<String, Object> parameters) {
+		MultipartBody body =  new MultipartBody(this);
+		if (parameters != null) {
+			for(Entry<String, Object> param : parameters.entrySet()) {
+				if (param.getValue() instanceof File) {
+					body.field(param.getKey(), (File)param.getValue());
+				} else {
+					body.field(param.getKey(), param.getValue().toString());
+				}
+			}
+		}
 		this.body = body;
 		return body;
 	}
@@ -89,18 +107,6 @@ public class HttpRequest {
 
 	public Body getBody() {
 		return body;
-	}
-	
-	public HttpResponse<String> asString() {
-		return HttpClientHelper.request(this, String.class);
-	}
-	
-	public HttpResponse<JsonNode> asJson() {
-		return HttpClientHelper.request(this, JsonNode.class);
-	}
-	
-	public HttpResponse<InputStream> asBinary() {
-		return HttpClientHelper.request(this, InputStream.class);
 	}
 	
 }

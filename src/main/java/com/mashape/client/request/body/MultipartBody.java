@@ -1,7 +1,6 @@
-package com.mashape.client.request;
+package com.mashape.client.request.body;
 
 import java.io.File;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -14,23 +13,19 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.protocol.HTTP;
-import org.codehaus.jackson.JsonNode;
 
-import com.mashape.client.http.HttpClientHelper;
-import com.mashape.client.http.HttpRequest;
-import com.mashape.client.http.HttpResponse;
 import com.mashape.client.http.utils.MapUtil;
+import com.mashape.client.request.BaseRequest;
+import com.mashape.client.request.HttpRequest;
 
-public class MultipartBody implements Body {
+public class MultipartBody extends BaseRequest implements Body {
 
 	private Map<String, Object> parameters = new HashMap<String, Object>();
 
-	private HttpRequest httpRequest;
-	
 	private boolean hasFile;
 	
 	public MultipartBody(HttpRequest httpRequest) {
-		this.httpRequest = httpRequest;
+		super(httpRequest);
 	}
 	
 	public MultipartBody field(String name, File file) {
@@ -67,18 +62,6 @@ public class MultipartBody implements Body {
 				throw new RuntimeException(e);
 			}
 		}
-	}
-	
-	public HttpResponse<String> asString() {
-		return HttpClientHelper.request(httpRequest, String.class);
-	}
-	
-	public HttpResponse<JsonNode> asJson() {
-		return HttpClientHelper.request(httpRequest, JsonNode.class);
-	}
-	
-	public HttpResponse<InputStream> asBinary() {
-		return HttpClientHelper.request(httpRequest, InputStream.class);
 	}
 
 }

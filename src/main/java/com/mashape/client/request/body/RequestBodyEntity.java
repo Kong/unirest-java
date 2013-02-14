@@ -1,23 +1,20 @@
-package com.mashape.client.request;
+package com.mashape.client.request.body;
 
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.StringEntity;
 import org.codehaus.jackson.JsonNode;
 
-import com.mashape.client.http.HttpClientHelper;
-import com.mashape.client.http.HttpRequest;
-import com.mashape.client.http.HttpResponse;
+import com.mashape.client.request.BaseRequest;
+import com.mashape.client.request.HttpRequest;
 
-public class RequestBodyEntity implements Body {
+public class RequestBodyEntity extends BaseRequest implements Body {
 
 	private Object body;
-	private HttpRequest httpRequest;
 	
 	public RequestBodyEntity(HttpRequest httpRequest) {
-		this.httpRequest = httpRequest;
+		super(httpRequest);
 	}
 	
 	public RequestBodyEntity body(String body) {
@@ -40,18 +37,6 @@ public class RequestBodyEntity implements Body {
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
-	}
-	
-	public HttpResponse<String> asString() {
-		return HttpClientHelper.request(httpRequest, String.class);
-	}
-	
-	public HttpResponse<JsonNode> asJson() {
-		return HttpClientHelper.request(httpRequest, JsonNode.class);
-	}
-	
-	public HttpResponse<InputStream> asBinary() {
-		return HttpClientHelper.request(httpRequest, InputStream.class);
 	}
 	
 }

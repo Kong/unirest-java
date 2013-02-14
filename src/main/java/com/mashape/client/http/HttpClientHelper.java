@@ -11,6 +11,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpParams;
 
+import com.mashape.client.request.HttpRequest;
+
 
 public class HttpClientHelper {
 
