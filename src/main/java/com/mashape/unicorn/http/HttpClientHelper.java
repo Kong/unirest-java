@@ -16,7 +16,7 @@ import com.mashape.unicorn.request.HttpRequest;
 
 public class HttpClientHelper {
 
-	private static final String USER_AGENT = "mashape-java/3.0";
+	private static final String USER_AGENT = "unicorn-java/1.0";
 	private static final int CONNECTION_TIMEOUT = 600000; 
 	private static final int SOCKET_TIMEOUT = 600000;
 	
