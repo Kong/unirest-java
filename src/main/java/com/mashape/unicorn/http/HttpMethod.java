@@ -22,7 +22,7 @@
  * 
  */
 
-package com.mashape.client.http;
+package com.mashape.unicorn.http;
 
 public enum HttpMethod {
 	GET, POST, PUT, DELETE, PATCH;

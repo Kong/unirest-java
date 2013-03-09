@@ -1,4 +1,4 @@
-package com.mashape.client.request.body;
+package com.mashape.unicorn.request.body;
 
 import java.io.UnsupportedEncodingException;
 
@@ -6,8 +6,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.entity.StringEntity;
 import org.codehaus.jackson.JsonNode;
 
-import com.mashape.client.request.BaseRequest;
-import com.mashape.client.request.HttpRequest;
+import com.mashape.unicorn.request.BaseRequest;
+import com.mashape.unicorn.request.HttpRequest;
 
 public class RequestBodyEntity extends BaseRequest implements Body {
 

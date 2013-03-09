@@ -1,4 +1,4 @@
-package com.mashape.client.http;
+package com.mashape.unicorn.http;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

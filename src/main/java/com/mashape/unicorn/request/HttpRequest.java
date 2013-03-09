@@ -1,12 +1,12 @@
-package com.mashape.client.request;
+package com.mashape.unicorn.request;
 
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mashape.client.http.HttpMethod;
-import com.mashape.client.request.body.Body;
+import com.mashape.unicorn.http.HttpMethod;
+import com.mashape.unicorn.request.body.Body;
 
 public class HttpRequest extends BaseRequest {
 

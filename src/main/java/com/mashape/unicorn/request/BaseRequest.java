@@ -1,13 +1,13 @@
-package com.mashape.client.request;
+package com.mashape.unicorn.request;
 
 import java.io.InputStream;
 
 import org.codehaus.jackson.JsonNode;
 
-import com.mashape.client.http.HttpClientHelper;
-import com.mashape.client.http.HttpResponse;
-import com.mashape.client.http.async.Callback;
-import com.mashape.client.http.async.RequestThread;
+import com.mashape.unicorn.http.HttpClientHelper;
+import com.mashape.unicorn.http.HttpResponse;
+import com.mashape.unicorn.http.async.Callback;
+import com.mashape.unicorn.http.async.RequestThread;
 
 public abstract class BaseRequest {
 

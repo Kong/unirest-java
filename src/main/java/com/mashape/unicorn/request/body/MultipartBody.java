@@ -1,4 +1,4 @@
-package com.mashape.client.request.body;
+package com.mashape.unicorn.request.body;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -14,9 +14,9 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.protocol.HTTP;
 
-import com.mashape.client.http.utils.MapUtil;
-import com.mashape.client.request.BaseRequest;
-import com.mashape.client.request.HttpRequest;
+import com.mashape.unicorn.http.utils.MapUtil;
+import com.mashape.unicorn.request.BaseRequest;
+import com.mashape.unicorn.request.HttpRequest;
 
 public class MultipartBody extends BaseRequest implements Body {
 

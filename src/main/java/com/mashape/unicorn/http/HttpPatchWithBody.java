@@ -22,7 +22,7 @@
  * 
  */
 
-package com.mashape.client.http;
+package com.mashape.unicorn.http;
 
 import java.net.URI;
 

@@ -1,4 +1,4 @@
-package com.mashape.client.http.utils;
+package com.mashape.unicorn.http.utils;
 
 public class URLParamEncoder {
 

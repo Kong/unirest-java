@@ -1,4 +1,4 @@
-package com.mashape.client.request.body;
+package com.mashape.unicorn.request.body;
 
 import org.apache.http.HttpEntity;
 

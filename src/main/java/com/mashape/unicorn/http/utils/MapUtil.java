@@ -1,4 +1,4 @@
-package com.mashape.client.http.utils;
+package com.mashape.unicorn.http.utils;
 
 import java.util.ArrayList;
 import java.util.List;

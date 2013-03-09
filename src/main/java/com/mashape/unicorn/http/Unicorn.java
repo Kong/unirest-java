@@ -1,10 +1,10 @@
-package com.mashape.client.http;
+package com.mashape.unicorn.http;
 
-import com.mashape.client.request.HttpRequest;
-import com.mashape.client.request.HttpRequestWithBody;
+import com.mashape.unicorn.request.HttpRequest;
+import com.mashape.unicorn.request.HttpRequestWithBody;
 
 
-public class HttpClient {
+public class Unicorn {
 
 	public static HttpRequest get(String url) {
 		return new HttpRequest(HttpMethod.GET, url);

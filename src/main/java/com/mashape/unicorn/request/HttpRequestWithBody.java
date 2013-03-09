@@ -1,4 +1,4 @@
-package com.mashape.client.request;
+package com.mashape.unicorn.request;
 
 import java.io.File;
 import java.util.Map;
@@ -6,9 +6,9 @@ import java.util.Map.Entry;
 
 import org.codehaus.jackson.JsonNode;
 
-import com.mashape.client.http.HttpMethod;
-import com.mashape.client.request.body.MultipartBody;
-import com.mashape.client.request.body.RequestBodyEntity;
+import com.mashape.unicorn.http.HttpMethod;
+import com.mashape.unicorn.request.body.MultipartBody;
+import com.mashape.unicorn.request.body.RequestBodyEntity;
 
 public class HttpRequestWithBody extends HttpRequest {
 

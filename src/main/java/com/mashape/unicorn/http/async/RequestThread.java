@@ -1,8 +1,8 @@
-package com.mashape.client.http.async;
+package com.mashape.unicorn.http.async;
 
-import com.mashape.client.http.HttpClientHelper;
-import com.mashape.client.http.HttpResponse;
-import com.mashape.client.request.HttpRequest;
+import com.mashape.unicorn.http.HttpClientHelper;
+import com.mashape.unicorn.http.HttpResponse;
+import com.mashape.unicorn.request.HttpRequest;
 
 public class RequestThread<T> extends Thread {
 
