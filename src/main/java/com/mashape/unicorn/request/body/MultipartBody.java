@@ -28,17 +28,17 @@ public class MultipartBody extends BaseRequest implements Body {
 		super(httpRequest);
 	}
 	
+	public MultipartBody field(String name, String value) {
+		parameters.put(name, value);
+		return this;
+	}
+	
 	public MultipartBody field(String name, File file) {
 		this.parameters.put(name, file);
 		hasFile = true;
 		return this;
 	}
 	
-	public MultipartBody field(String name, String value) {
-		parameters.put(name, value);
-		return this;
-	}
-
 	public HttpEntity getEntity() {
 		if (hasFile) {
 			MultipartEntity entity = new MultipartEntity();

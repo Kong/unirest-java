@@ -1,21 +1,31 @@
 package com.mashape.unicorn.test.http;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+
+import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 
+import com.mashape.unicorn.http.HttpResponse;
 import com.mashape.unicorn.http.Unicorn;
 
 public class UnicornTest {
 
 	@Test
-	public void t() throws Exception {
+	public void testRequests() throws Exception {
+		HttpResponse<JsonNode> jsonResponse = Unicorn.post("http://httpbin.org/post")
+													 .header("accept", "application/json")
+													 .field("param1", "value1")
+													 .field("param2", new File("/tmp/file"))
+													 .asJson();
 		
-		System.out.println(Unicorn.get("http://components.mashape.com/sub/test/api.php?_method=getHello&name=Marco")
-				.asString().getBody());
-		
-		System.out.println(Unicorn.post("http://components.mashape.com/sub/test/api.php")
-				.field("_method", "postHello")
-				.field("name", "Marco")
-				.asString().getBody());
+		assertTrue(jsonResponse.getHeaders().size() > 0);
+		assertTrue(jsonResponse.getBody().toString().length() > 0);
+		assertFalse(jsonResponse.getRawBody() == null);
+		assertEquals(200, jsonResponse.getCode());
 	}
-
+	
 }

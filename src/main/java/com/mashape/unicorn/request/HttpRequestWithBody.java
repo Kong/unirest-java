@@ -20,13 +20,23 @@ public class HttpRequestWithBody extends HttpRequest {
 		return field(name, file);
 	}
 	
+	@Override
+	public HttpRequestWithBody header(String name, String value) {
+		return (HttpRequestWithBody) super.header(name, value);
+	}
+	
+	@Override
+	public HttpRequest headers(Map<String, String> headers) {
+		return super.headers(headers);
+	}
+	
 	public MultipartBody field(String name, Object value) {
 		MultipartBody body =  new MultipartBody(this).field(name, value.toString());
 		this.body = body;
 		return body;
 	}
 	
-	public MultipartBody parameters(Map<String, Object> parameters) {
+	public MultipartBody fields(Map<String, Object> parameters) {
 		MultipartBody body =  new MultipartBody(this);
 		if (parameters != null) {
 			for(Entry<String, Object> param : parameters.entrySet()) {
