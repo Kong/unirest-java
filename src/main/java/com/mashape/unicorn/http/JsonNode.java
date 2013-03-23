@@ -23,45 +23,57 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.mashape.unicorn.request.body;
+package com.mashape.unicorn.http;
 
-import java.io.UnsupportedEncodingException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.entity.StringEntity;
-
-import com.mashape.unicorn.http.JsonNode;
-import com.mashape.unicorn.request.BaseRequest;
-import com.mashape.unicorn.request.HttpRequest;
-
-public class RequestBodyEntity extends BaseRequest implements Body {
-
-	private Object body;
+public class JsonNode {
 	
-	public RequestBodyEntity(HttpRequest httpRequest) {
-		super(httpRequest);
-	}
+	private JSONObject jsonObject;
+	private JSONArray jsonArray;
 	
-	public RequestBodyEntity body(String body) {
-		this.body = body;
-		return this;
-	}
-	
-	public RequestBodyEntity body(JsonNode body) {
-		this.body = body.toString();
-		return this;
-	}
-	
-	public Object getBody() {
-		return body;
-	}
+	private boolean array;
 
-	public HttpEntity getEntity() {
+	public JsonNode(String json) {
 		try {
-			return new StringEntity(body.toString(), "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
+			jsonObject = new JSONObject(json);
+		} catch (JSONException e) {
+			// It may be an array
+			try {
+				jsonArray = new JSONArray(json);
+				array = true;
+			} catch (JSONException e1) {
+				throw new RuntimeException(e1);
+			}
 		}
 	}
 	
+	public JSONObject getObject() {
+		return this.jsonObject;
+	}
+	
+	public JSONArray getArray() {
+		JSONArray result = this.jsonArray;
+		if (array == false) {
+			result = new JSONArray();
+			result.put(jsonObject);
+		}
+		return result;
+	}
+	
+	public boolean isArray() {
+		return this.array;
+	}
+	
+	@Override
+	public String toString() {
+		if (isArray()) {
+			if (jsonArray == null) return null;
+			return jsonArray.toString();
+		}
+		if (jsonObject == null) return null;
+		return jsonObject.toString();
+	}
 }

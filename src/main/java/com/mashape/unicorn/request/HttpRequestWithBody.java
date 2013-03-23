@@ -29,9 +29,8 @@ import java.io.File;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.codehaus.jackson.JsonNode;
-
 import com.mashape.unicorn.http.HttpMethod;
+import com.mashape.unicorn.http.JsonNode;
 import com.mashape.unicorn.request.body.MultipartBody;
 import com.mashape.unicorn.request.body.RequestBodyEntity;
 

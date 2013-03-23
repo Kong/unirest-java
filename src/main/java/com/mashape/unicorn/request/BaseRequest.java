@@ -27,10 +27,9 @@ package com.mashape.unicorn.request;
 
 import java.io.InputStream;
 
-import org.codehaus.jackson.JsonNode;
-
 import com.mashape.unicorn.http.HttpClientHelper;
 import com.mashape.unicorn.http.HttpResponse;
+import com.mashape.unicorn.http.JsonNode;
 import com.mashape.unicorn.http.async.Callback;
 import com.mashape.unicorn.http.async.RequestThread;
 

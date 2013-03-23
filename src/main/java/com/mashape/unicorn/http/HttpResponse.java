@@ -34,10 +34,6 @@ import java.util.Map;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.map.ObjectMapper;
 
 public class HttpResponse<T> {
 
@@ -70,9 +66,7 @@ public class HttpResponse<T> {
 
 				if (JsonNode.class.equals(responseClass)) {
 					String jsonString = new String(rawBody).trim();
-					JsonFactory factory = new ObjectMapper().getJsonFactory();
-					JsonParser jp = factory.createJsonParser(jsonString);
-					this.body = (T) new ObjectMapper().readTree(jp);
+					this.body = (T) new JsonNode(jsonString);
 				} else if (String.class.equals(responseClass)) {
 					this.body = (T) new String(rawBody);
 				} else if (InputStream.class.equals(responseClass)) {
