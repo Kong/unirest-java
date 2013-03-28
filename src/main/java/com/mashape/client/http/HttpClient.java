@@ -52,6 +52,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.BasicCookieStore;
@@ -196,6 +197,8 @@ public class HttpClient {
 				for(Entry<String, Object> parameter : parameters.entrySet()) {
 					if (parameter.getValue() instanceof File) {
 						entity.addPart(parameter.getKey(), new FileBody((File) parameter.getValue()));
+					} else if (parameter.getValue() instanceof byte[]) {
+						entity.addPart(parameter.getKey(), new ByteArrayBody((byte[])parameter.getValue(), "default.filename"));
 					} else {
 						try {
 							entity.addPart(parameter.getKey(), new StringBody(parameter.getValue().toString(), Charset.forName("UTF-8")));
