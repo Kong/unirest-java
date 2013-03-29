@@ -23,6 +23,15 @@ public class MashapeResponse<T> {
 		this.rawBody = rawBody;
 		this.body = body;
 	}
+	
+
+	public MashapeResponse(int code, Map<String, String> headers, InputStream rawBody, T body) {
+		this.code = code;
+		this.headers = headers;
+		this.rawBody = rawBody;
+		this.body = body;
+	}
+
 
 	public int getCode() {
 		return code;
