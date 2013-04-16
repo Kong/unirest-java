@@ -5,10 +5,52 @@ This is the base library for Mashape client libraries.
 
 For questions or feedback visit [mashape.com](http://mashape.com/)
 
+Installation
+-------------------
+
+You can install Unicorn-Java with Maven by adding the Mashape repository:
+
+```xml
+<repository>
+	<id>mashape-releases</id>
+	<url>http://maven.mashape.com/releases</url>
+</repository>
+```
+And including the library:
+```xml
+<dependency>
+	<groupId>com.mashape.unicorn</groupId>
+	<artifactId>unicorn-java</artifactId>
+	<version>1.0.0</version>
+</dependency>
+```
+
+Dependencies
+-------------------
+Unicorn-Java requires the following dependencies to be already included:
+
+```xml
+<dependency>
+	<groupId>org.apache.httpcomponents</groupId>
+	<artifactId>httpclient</artifactId>
+	<version>4.2.3</version>
+</dependency>
+<dependency>
+	<groupId>org.apache.httpcomponents</groupId>
+	<artifactId>httpmime</artifactId>
+	<version>4.2.3</version>
+</dependency>
+<dependency>
+	<groupId>org.json</groupId>
+	<artifactId>json</artifactId>
+	<version>20090211</version>
+</dependency>
+```
+
 Documentation
 -------------------
 
-For the documentation, please visit http://www.mashape.com/docs/consume/java
+For the documentation, please visit http://getunicorn.io/?language=Java
 
 License
 ---------------
