@@ -21,10 +21,11 @@ Using with Maven by adding the Mashape repository:
 and including the library:
 
 ```
-<repository>
-    <id>mashape-releases</id>
-    <url>http://maven.mashape.com/releases</url>
-</repository>
+<dependency>
+    <groupId>com.mashape.unicorn</groupId>
+    <artifactId>unicorn-java</artifactId>
+    <version>1.0.0</version>
+</dependency>
 ```
 
 There are dependencies for the Java library, these should be already installed, and they are as follows:
