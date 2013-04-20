@@ -11,7 +11,7 @@ Is easy as pie. Kidding. It's about as easy as doing these little steps:
 
 Using with Maven by adding the Mashape repository:
 
-```
+```xml
 <repository>
     <id>mashape-releases</id>
     <url>http://maven.mashape.com/releases</url>
@@ -20,7 +20,7 @@ Using with Maven by adding the Mashape repository:
 
 and including the library:
 
-```
+```xml
 <dependency>
     <groupId>com.mashape.unicorn</groupId>
     <artifactId>unicorn-java</artifactId>
@@ -30,7 +30,7 @@ and including the library:
 
 There are dependencies for the Java library, these should be already installed, and they are as follows:
 
-```
+```xml
 <dependency>
     <groupId>org.apache.httpcomponents</groupId>
     <artifactId>httpclient</artifactId>
