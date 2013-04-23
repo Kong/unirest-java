@@ -1,7 +1,7 @@
-Unicorn-Java
+Unirest-Java
 ============================================
 
-Unicorn is a set of lightweight HTTP libraries available in PHP, Ruby, Python, Java, Objective-C.
+Unirest is a set of lightweight HTTP libraries available in PHP, Ruby, Python, Java, Objective-C.
 
 Documentation
 -------------------
@@ -22,8 +22,8 @@ and including the library:
 
 ```xml
 <dependency>
-    <groupId>com.mashape.unicorn</groupId>
-    <artifactId>unicorn-java</artifactId>
+    <groupId>com.mashape.unirest</groupId>
+    <artifactId>unirest-java</artifactId>
     <version>1.0.0</version>
 </dependency>
 ```
@@ -51,10 +51,10 @@ There are dependencies for the Java library, these should be already installed, 
 
 
 ### Creating Request
-So you're probably wondering how using Unicorn makes creating requests in Java easier, here is a basic POST request that will explain everything:
+So you're probably wondering how using Unirest makes creating requests in Java easier, here is a basic POST request that will explain everything:
 
 ```java
-HttpResponse<JsonNode> jsonResponse = Unicorn.post("http://httpbin.org/post")
+HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
   .header("accept", "application/json")
   .field("parameter", "value")
   .field("foo", "bar")
@@ -66,10 +66,10 @@ Requests are made when `as[Type]()` is invoked, possible types include `Json`, `
 `.headers(Map<String, String> headers)` is also supported in replacement of multiple header methods.
 
 ### Asynchronous Requests
-Sometimes, well most of the time, you want your application to be asynchronous and not block, Unicorn supports this in Java using anonymous callbacks, or direct method placement:
+Sometimes, well most of the time, you want your application to be asynchronous and not block, Unirest supports this in Java using anonymous callbacks, or direct method placement:
 
 ```java
-Thread thread = Unicorn.post("http://httpbin.org/post")
+Thread thread = Unirest.post("http://httpbin.org/post")
   .header("accept", "application/json")
   .field("param1", "value1")
   .field("param2", "value2")
@@ -87,7 +87,7 @@ Thread thread = Unicorn.post("http://httpbin.org/post")
 Creating `multipart` requests with Java is trivial, simply pass along a `File` Object as a field:
 
 ```java
-HttpResponse<JsonNode> jsonResponse = Unicorn.post("http://httpbin.org/post")
+HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
   .header("accept", "application/json")
   .field("parameter", "value")
   .field("file", new File("/tmp/file"))
@@ -97,7 +97,7 @@ HttpResponse<JsonNode> jsonResponse = Unicorn.post("http://httpbin.org/post")
 ### Custom Entity Body
 
 ```java
-HttpResponse<JsonNode> jsonResponse = Unicorn.post("http://httpbin.org/post")
+HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
   .header("accept", "application/json")
   .body("{\"parameter\":\"value\", \"foo\":\"bar\"}")
   .asJson();
@@ -105,19 +105,19 @@ HttpResponse<JsonNode> jsonResponse = Unicorn.post("http://httpbin.org/post")
 
 ### Request Reference
 
-The Java Unicorn library follows the builder style conventions. You start building your request by creating a `HttpRequest` object using one of the following:
+The Java Unirest library follows the builder style conventions. You start building your request by creating a `HttpRequest` object using one of the following:
 
 ```java
-HttpRequest request = Unicorn.get(String url);
-HttpRequestWithBody request = Unicorn.post(String url);
-HttpRequestWithBody request = Unicorn.put(String url);
-HttpRequestWithBody request = Unicorn.patch(String url);
-HttpRequest request = Unicorn.delete(String url);
+HttpRequest request = Unirest.get(String url);
+HttpRequestWithBody request = Unirest.post(String url);
+HttpRequestWithBody request = Unirest.put(String url);
+HttpRequestWithBody request = Unirest.patch(String url);
+HttpRequest request = Unirest.delete(String url);
 ```
 
 ### Response Reference
 
-Upon recieving a response Unicorn returns the result in the form of an Object, this object should always have the same keys for each language regarding to the response details.
+Upon recieving a response Unirest returns the result in the form of an Object, this object should always have the same keys for each language regarding to the response details.
 
 `.getCode()`  
 HTTP Response Status Code (Example 200)
