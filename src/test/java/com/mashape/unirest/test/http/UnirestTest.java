@@ -23,7 +23,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.mashape.unicorn.test.http;
+package com.mashape.unirest.test.http;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -32,15 +32,15 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.mashape.unicorn.http.HttpResponse;
-import com.mashape.unicorn.http.JsonNode;
-import com.mashape.unicorn.http.Unicorn;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
 
-public class UnicornTest {
+public class UnirestTest {
 
 	@Test
 	public void testRequests() throws Exception {
-		HttpResponse<JsonNode> jsonResponse = Unicorn.post("http://httpbin.org/post")
+		HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
 													 .header("accept", "application/json")
 													 .field("param1", "value1")
 													 .field("param2","bye")
@@ -57,7 +57,6 @@ public class UnicornTest {
 		assertNotNull(json.getArray());
 		assertEquals(1, json.getArray().length());
 		assertNotNull(json.getArray().get(0));
-		
 	}
 	
 }

@@ -23,30 +23,23 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.mashape.unicorn.http.utils;
+package com.mashape.unirest.http;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.net.URI;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 
-public class MapUtil {
+class HttpDeleteWithBody extends HttpEntityEnclosingRequestBase {
+    public static final String METHOD_NAME = "DELETE";
+    public String getMethod() { return METHOD_NAME; }
 
-	public static List<NameValuePair> getList(Map<String, Object> parameters) {
-		List<NameValuePair> result = new ArrayList<NameValuePair>();
-		if (parameters != null) {
-
-			Set<String> keySet = parameters.keySet();
-			for (String key : keySet) {
-				result.add(new BasicNameValuePair(key, parameters.get(key).toString()));
-			}
-
-		}
-		return result;
-	}
-
+    public HttpDeleteWithBody(final String uri) {
+        super();
+        setURI(URI.create(uri));
+    }
+    public HttpDeleteWithBody(final URI uri) {
+        super();
+        setURI(uri);
+    }
+    public HttpDeleteWithBody() { super(); }
 }
-

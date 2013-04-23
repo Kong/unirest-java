@@ -23,7 +23,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.mashape.unicorn.request.body;
+package com.mashape.unirest.request.body;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -39,9 +39,9 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.protocol.HTTP;
 
-import com.mashape.unicorn.http.utils.MapUtil;
-import com.mashape.unicorn.request.BaseRequest;
-import com.mashape.unicorn.request.HttpRequest;
+import com.mashape.unirest.http.utils.MapUtil;
+import com.mashape.unirest.request.BaseRequest;
+import com.mashape.unirest.request.HttpRequest;
 
 public class MultipartBody extends BaseRequest implements Body {
 

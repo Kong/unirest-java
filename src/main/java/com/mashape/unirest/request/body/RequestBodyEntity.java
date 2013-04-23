@@ -23,29 +23,44 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.mashape.unicorn.http.async;
+package com.mashape.unirest.request.body;
 
-import com.mashape.unicorn.http.HttpClientHelper;
-import com.mashape.unicorn.http.HttpResponse;
-import com.mashape.unicorn.request.HttpRequest;
+import java.io.UnsupportedEncodingException;
 
-public class RequestThread<T> extends Thread {
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.StringEntity;
 
-	private HttpRequest httpRequest;
-	private Class<T> responseClass;
-	private Callback<T> callback;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.request.BaseRequest;
+import com.mashape.unirest.request.HttpRequest;
+
+public class RequestBodyEntity extends BaseRequest implements Body {
+
+	private Object body;
 	
-	public RequestThread(HttpRequest httpRequest, Class<T> responseClass, Callback<T> callback) {
-		this.httpRequest = httpRequest;
-		this.responseClass = responseClass;
-		this.callback = callback;
+	public RequestBodyEntity(HttpRequest httpRequest) {
+		super(httpRequest);
 	}
 	
-	@Override
-	public void run() {
-		HttpResponse<T> response = HttpClientHelper.request(httpRequest, responseClass);
-		if (callback != null) {
-			callback.completed(response);
+	public RequestBodyEntity body(String body) {
+		this.body = body;
+		return this;
+	}
+	
+	public RequestBodyEntity body(JsonNode body) {
+		this.body = body.toString();
+		return this;
+	}
+	
+	public Object getBody() {
+		return body;
+	}
+
+	public HttpEntity getEntity() {
+		try {
+			return new StringEntity(body.toString(), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
 		}
 	}
 	

@@ -23,23 +23,32 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.mashape.unicorn.http;
+package com.mashape.unirest.http;
 
-import java.net.URI;
+import com.mashape.unirest.request.HttpRequest;
+import com.mashape.unirest.request.HttpRequestWithBody;
 
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 
-class HttpPatchWithBody extends HttpEntityEnclosingRequestBase {
-    public static final String METHOD_NAME = "PATCH";
-    public String getMethod() { return METHOD_NAME; }
+public class Unirest {
 
-    public HttpPatchWithBody(final String uri) {
-        super();
-        setURI(URI.create(uri));
-    }
-    public HttpPatchWithBody(final URI uri) {
-        super();
-        setURI(uri);
-    }
-    public HttpPatchWithBody() { super(); }
+	public static HttpRequest get(String url) {
+		return new HttpRequest(HttpMethod.GET, url);
+	}
+	
+	public static HttpRequestWithBody post(String url) {
+		return new HttpRequestWithBody(HttpMethod.POST, url);
+	}
+	
+	public static HttpRequest delete(String url) {
+		return new HttpRequest(HttpMethod.DELETE, url);
+	}
+	
+	public static HttpRequestWithBody patch(String url) {
+		return new HttpRequestWithBody(HttpMethod.PATCH, url);
+	}
+	
+	public static HttpRequestWithBody put(String url) {
+		return new HttpRequestWithBody(HttpMethod.PUT, url);
+	}
+	
 }

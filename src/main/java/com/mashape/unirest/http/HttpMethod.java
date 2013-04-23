@@ -23,23 +23,8 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.mashape.unicorn.http;
+package com.mashape.unirest.http;
 
-import java.net.URI;
-
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-
-class HttpDeleteWithBody extends HttpEntityEnclosingRequestBase {
-    public static final String METHOD_NAME = "DELETE";
-    public String getMethod() { return METHOD_NAME; }
-
-    public HttpDeleteWithBody(final String uri) {
-        super();
-        setURI(URI.create(uri));
-    }
-    public HttpDeleteWithBody(final URI uri) {
-        super();
-        setURI(uri);
-    }
-    public HttpDeleteWithBody() { super(); }
+public enum HttpMethod {
+	GET, POST, PUT, DELETE, PATCH;
 }

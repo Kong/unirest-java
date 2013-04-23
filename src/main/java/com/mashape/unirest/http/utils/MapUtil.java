@@ -23,57 +23,30 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.mashape.unicorn.http;
+package com.mashape.unirest.http.utils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-public class JsonNode {
-	
-	private JSONObject jsonObject;
-	private JSONArray jsonArray;
-	
-	private boolean array;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
-	public JsonNode(String json) {
-		try {
-			jsonObject = new JSONObject(json);
-		} catch (JSONException e) {
-			// It may be an array
-			try {
-				jsonArray = new JSONArray(json);
-				array = true;
-			} catch (JSONException e1) {
-				throw new RuntimeException(e1);
+public class MapUtil {
+
+	public static List<NameValuePair> getList(Map<String, Object> parameters) {
+		List<NameValuePair> result = new ArrayList<NameValuePair>();
+		if (parameters != null) {
+
+			Set<String> keySet = parameters.keySet();
+			for (String key : keySet) {
+				result.add(new BasicNameValuePair(key, parameters.get(key).toString()));
 			}
-		}
-	}
-	
-	public JSONObject getObject() {
-		return this.jsonObject;
-	}
-	
-	public JSONArray getArray() {
-		JSONArray result = this.jsonArray;
-		if (array == false) {
-			result = new JSONArray();
-			result.put(jsonObject);
+
 		}
 		return result;
 	}
-	
-	public boolean isArray() {
-		return this.array;
-	}
-	
-	@Override
-	public String toString() {
-		if (isArray()) {
-			if (jsonArray == null) return null;
-			return jsonArray.toString();
-		}
-		if (jsonObject == null) return null;
-		return jsonObject.toString();
-	}
+
 }
+

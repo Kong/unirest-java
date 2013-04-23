@@ -23,7 +23,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.mashape.unicorn.http;
+package com.mashape.unirest.http;
 
 import java.util.Map;
 
@@ -36,7 +36,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpParams;
 
-import com.mashape.unicorn.request.HttpRequest;
+import com.mashape.unirest.request.HttpRequest;
 
 
 public class HttpClientHelper {

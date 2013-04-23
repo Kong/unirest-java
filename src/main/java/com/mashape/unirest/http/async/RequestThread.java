@@ -23,32 +23,30 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.mashape.unicorn.http;
+package com.mashape.unirest.http.async;
 
-import com.mashape.unicorn.request.HttpRequest;
-import com.mashape.unicorn.request.HttpRequestWithBody;
+import com.mashape.unirest.http.HttpClientHelper;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.request.HttpRequest;
 
+public class RequestThread<T> extends Thread {
 
-public class Unicorn {
-
-	public static HttpRequest get(String url) {
-		return new HttpRequest(HttpMethod.GET, url);
+	private HttpRequest httpRequest;
+	private Class<T> responseClass;
+	private Callback<T> callback;
+	
+	public RequestThread(HttpRequest httpRequest, Class<T> responseClass, Callback<T> callback) {
+		this.httpRequest = httpRequest;
+		this.responseClass = responseClass;
+		this.callback = callback;
 	}
 	
-	public static HttpRequestWithBody post(String url) {
-		return new HttpRequestWithBody(HttpMethod.POST, url);
-	}
-	
-	public static HttpRequest delete(String url) {
-		return new HttpRequest(HttpMethod.DELETE, url);
-	}
-	
-	public static HttpRequestWithBody patch(String url) {
-		return new HttpRequestWithBody(HttpMethod.PATCH, url);
-	}
-	
-	public static HttpRequestWithBody put(String url) {
-		return new HttpRequestWithBody(HttpMethod.PUT, url);
+	@Override
+	public void run() {
+		HttpResponse<T> response = HttpClientHelper.request(httpRequest, responseClass);
+		if (callback != null) {
+			callback.completed(response);
+		}
 	}
 	
 }

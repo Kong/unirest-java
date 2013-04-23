@@ -23,45 +23,23 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.mashape.unicorn.request.body;
+package com.mashape.unirest.http;
 
-import java.io.UnsupportedEncodingException;
+import java.net.URI;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 
-import com.mashape.unicorn.http.JsonNode;
-import com.mashape.unicorn.request.BaseRequest;
-import com.mashape.unicorn.request.HttpRequest;
+class HttpPatchWithBody extends HttpEntityEnclosingRequestBase {
+    public static final String METHOD_NAME = "PATCH";
+    public String getMethod() { return METHOD_NAME; }
 
-public class RequestBodyEntity extends BaseRequest implements Body {
-
-	private Object body;
-	
-	public RequestBodyEntity(HttpRequest httpRequest) {
-		super(httpRequest);
-	}
-	
-	public RequestBodyEntity body(String body) {
-		this.body = body;
-		return this;
-	}
-	
-	public RequestBodyEntity body(JsonNode body) {
-		this.body = body.toString();
-		return this;
-	}
-	
-	public Object getBody() {
-		return body;
-	}
-
-	public HttpEntity getEntity() {
-		try {
-			return new StringEntity(body.toString(), "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
+    public HttpPatchWithBody(final String uri) {
+        super();
+        setURI(URI.create(uri));
+    }
+    public HttpPatchWithBody(final URI uri) {
+        super();
+        setURI(uri);
+    }
+    public HttpPatchWithBody() { super(); }
 }

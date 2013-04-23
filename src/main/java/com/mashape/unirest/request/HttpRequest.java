@@ -23,15 +23,15 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.mashape.unicorn.request;
+package com.mashape.unirest.request;
 
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mashape.unicorn.http.HttpMethod;
-import com.mashape.unicorn.request.body.Body;
+import com.mashape.unirest.http.HttpMethod;
+import com.mashape.unirest.request.body.Body;
 
 public class HttpRequest extends BaseRequest {
 
