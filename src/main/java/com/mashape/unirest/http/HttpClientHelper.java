@@ -27,15 +27,16 @@ package com.mashape.unirest.http;
 
 import java.util.Map;
 
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpParams;
 
+import com.mashape.unirest.http.utils.ClientFactory;
 import com.mashape.unirest.request.HttpRequest;
 
 
@@ -81,8 +82,7 @@ public class HttpClientHelper {
 		}
 		
 		setTimeouts(reqObj.getParams());
-		
-		org.apache.http.client.HttpClient client = new DefaultHttpClient();
+		HttpClient client = ClientFactory.getClient(); // The DefaultHttpClient is thread-safe
 		org.apache.http.HttpResponse response;
 		try {
 			response = client.execute(reqObj);
