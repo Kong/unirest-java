@@ -26,12 +26,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.mashape.unirest.request;
 
 import java.io.InputStream;
+import java.util.concurrent.Future;
 
 import com.mashape.unirest.http.HttpClientHelper;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.async.Callback;
-import com.mashape.unirest.http.async.RequestThread;
 
 public abstract class BaseRequest {
 
@@ -49,30 +49,36 @@ public abstract class BaseRequest {
 		return HttpClientHelper.request(httpRequest, String.class);
 	}
 
-	public Thread asString(Callback<String> callback) {
-		Thread thread = new RequestThread<String>(httpRequest, String.class, callback);
-		thread.start();
-		return thread;
+	public Future<HttpResponse<String>> asStringAsync() {
+		return HttpClientHelper.requestAsync(httpRequest, String.class, null);
+	}
+	
+	public Future<HttpResponse<String>> asStringAsync(Callback<String> callback) {
+		return HttpClientHelper.requestAsync(httpRequest, String.class, callback);
 	}
 
 	public HttpResponse<JsonNode> asJson() {
 		return HttpClientHelper.request(httpRequest, JsonNode.class);
 	}
 
-	public Thread asJson(Callback<JsonNode> callback) {
-		Thread thread = new RequestThread<JsonNode>(httpRequest, JsonNode.class, callback);
-		thread.start();
-		return thread;
+	public Future<HttpResponse<JsonNode>> asJsonAsync() {
+		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class, null);
+	}
+	
+	public Future<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback) {
+		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class, callback);
 	}
 
 	public HttpResponse<InputStream> asBinary() {
 		return HttpClientHelper.request(httpRequest, InputStream.class);
 	}
 
-	public Thread asBinary(Callback<InputStream> callback) {
-		Thread thread = new RequestThread<InputStream>(httpRequest, InputStream.class, callback);
-		thread.start();
-		return thread;
+	public Future<HttpResponse<InputStream>> asBinaryAsync() {
+		return HttpClientHelper.requestAsync(httpRequest, InputStream.class, null);
+	}
+	
+	public Future<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback) {
+		return HttpClientHelper.requestAsync(httpRequest, InputStream.class, callback);
 	}
 
 }
