@@ -30,6 +30,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.InputStream;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -39,6 +41,7 @@ import org.junit.Test;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.async.Callback;
 
 public class UnirestTest {
 
@@ -66,25 +69,49 @@ public class UnirestTest {
 	
 	@Test
 	public void testAsync() throws JSONException, InterruptedException, ExecutionException {
+//		Future<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.org/post")
+//				 .header("accept", "application/json")
+//				 .field("param1", "value1")
+//				 .field("param2","bye")
+//				 .asJsonAsync();
+//		
+//		assertNotNull(future);
+//		HttpResponse<JsonNode> jsonResponse = future.get();
+//		
+//		assertTrue(jsonResponse.getHeaders().size() > 0);
+//		assertTrue(jsonResponse.getBody().toString().length() > 0);
+//		assertFalse(jsonResponse.getRawBody() == null);
+//		assertEquals(200, jsonResponse.getCode());
+//		
+//		JsonNode json = jsonResponse.getBody();
+//		assertFalse(json.isArray());
+//		assertNotNull(json.getObject());
+//		assertNotNull(json.getArray());
+//		assertEquals(1, json.getArray().length());
+//		assertNotNull(json.getArray().get(0));
+		
+		
 		Future<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.org/post")
-				 .header("accept", "application/json")
-				 .field("param1", "value1")
-				 .field("param2","bye")
-				 .asJsonAsync();
-		
-		assertNotNull(future);
-		HttpResponse<JsonNode> jsonResponse = future.get();
-		
-		assertTrue(jsonResponse.getHeaders().size() > 0);
-		assertTrue(jsonResponse.getBody().toString().length() > 0);
-		assertFalse(jsonResponse.getRawBody() == null);
-		assertEquals(200, jsonResponse.getCode());
-		
-		JsonNode json = jsonResponse.getBody();
-		assertFalse(json.isArray());
-		assertNotNull(json.getObject());
-		assertNotNull(json.getArray());
-		assertEquals(1, json.getArray().length());
-		assertNotNull(json.getArray().get(0));
+		  .header("accept", "application/json")
+		  .field("param1", "value1")
+		  .field("param2", "value2")
+		  .asJsonAsync(new Callback<JsonNode>() {
+			  
+			public void failed(Exception e) {
+				System.out.println("The request has failed");
+			}
+			
+			public void completed(HttpResponse<JsonNode> response) {
+				 int code = response.getCode();
+			     Map<String, String> headers = response.getHeaders();
+			     JsonNode body = response.getBody();
+			     InputStream rawBody = response.getRawBody();
+			}
+			
+			public void cancelled() {
+				System.out.println("The request has been cancelled");
+			}
+			
+		});
 	}
 }

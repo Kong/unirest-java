@@ -69,18 +69,28 @@ Requests are made when `as[Type]()` is invoked, possible types include `Json`, `
 Sometimes, well most of the time, you want your application to be asynchronous and not block, Unirest supports this in Java using anonymous callbacks, or direct method placement:
 
 ```java
-Thread thread = Unirest.post("http://httpbin.org/post")
+Future<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.org/post")
   .header("accept", "application/json")
   .field("param1", "value1")
   .field("param2", "value2")
-  .asJson(new Callback<JsonNode>() {
-    public void completed(HttpResponse<JsonNode> response) {
-      int code = response.getCode();
-      Map<String, String> headers = response.getHeaders();
-      JsonNode body = response.getBody();
-      InputStream rawBody = response.getRawBody();
-    }
-  });
+  .asJsonAsync(new Callback<JsonNode>() {
+	  
+	public void failed(Exception e) {
+		System.out.println("The request has failed");
+	}
+	
+	public void completed(HttpResponse<JsonNode> response) {
+		 int code = response.getCode();
+	     Map<String, String> headers = response.getHeaders();
+	     JsonNode body = response.getBody();
+	     InputStream rawBody = response.getRawBody();
+	}
+	
+	public void cancelled() {
+		System.out.println("The request has been cancelled");
+	}
+	
+});
 ```
 
 ### File Uploads
