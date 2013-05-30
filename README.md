@@ -1,4 +1,4 @@
-Unirest-Java
+Unirest-Java [![Build Status](https://api.travis-ci.org/Mashape/unirest-java.png)](https://travis-ci.org/Mashape/unirest-java)
 ============================================
 
 Unirest is a set of lightweight HTTP libraries available in PHP, Ruby, Python, Java, Objective-C.
