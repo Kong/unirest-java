@@ -37,7 +37,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.protocol.HTTP;
 
 import com.mashape.unirest.http.utils.MapUtil;
 import com.mashape.unirest.request.BaseRequest;
@@ -73,7 +72,7 @@ public class MultipartBody extends BaseRequest implements Body {
 					entity.addPart(part.getKey(), new FileBody((File) part.getValue()));
 				} else {
 					try {
-						entity.addPart(part.getKey(), new StringBody(part.getValue().toString(), Charset.forName("UTF-8")));
+						entity.addPart(part.getKey(), new StringBody(part.getValue().toString(), Charset.forName(UTF_8)));
 					} catch (UnsupportedEncodingException e) {
 						throw new RuntimeException(e);
 					}
@@ -82,7 +81,7 @@ public class MultipartBody extends BaseRequest implements Body {
 			return entity;
 		} else {
 			try {
-				return new UrlEncodedFormEntity(MapUtil.getList(parameters), HTTP.UTF_8);
+				return new UrlEncodedFormEntity(MapUtil.getList(parameters), UTF_8);
 			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException(e);
 			}

@@ -48,7 +48,7 @@ import com.mashape.unirest.request.HttpRequest;
 
 public class HttpClientHelper {
 
-	private static final String USER_AGENT = "unirest-java/1.0";
+	private static final String USER_AGENT = "unirest-java/1.1";
 	private static final int CONNECTION_TIMEOUT = 600000; 
 	private static final int SOCKET_TIMEOUT = 600000;
 	

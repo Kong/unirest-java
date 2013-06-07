@@ -35,6 +35,8 @@ import com.mashape.unirest.http.async.Callback;
 
 public abstract class BaseRequest {
 
+	protected static final String UTF_8 = "UTF-8";
+	
 	protected HttpRequest httpRequest;
 	
 	protected BaseRequest(HttpRequest httpRequest) {
