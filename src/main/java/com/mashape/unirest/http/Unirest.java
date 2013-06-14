@@ -28,9 +28,8 @@ package com.mashape.unirest.http;
 import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
 
-
 public class Unirest {
-
+	
 	public static HttpRequest get(String url) {
 		return new HttpRequest(HttpMethod.GET, url);
 	}
