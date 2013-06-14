@@ -30,6 +30,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.net.URISyntaxException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -75,6 +77,24 @@ public class UnirestTest {
 		assertNotNull(future);
 		HttpResponse<JsonNode> jsonResponse = future.get();
 		
+		assertTrue(jsonResponse.getHeaders().size() > 0);
+		assertTrue(jsonResponse.getBody().toString().length() > 0);
+		assertFalse(jsonResponse.getRawBody() == null);
+		assertEquals(200, jsonResponse.getCode());
+		
+		JsonNode json = jsonResponse.getBody();
+		assertFalse(json.isArray());
+		assertNotNull(json.getObject());
+		assertNotNull(json.getArray());
+		assertEquals(1, json.getArray().length());
+		assertNotNull(json.getArray().get(0));
+	}
+	
+	@Test
+	public void testMultipart() throws JSONException, InterruptedException, ExecutionException, URISyntaxException {
+		HttpResponse<JsonNode> jsonResponse =
+				Unirest.post("http://httpbin.org/post")
+				.field("file", new File(getClass().getResource("/test").toURI())).asJson();
 		assertTrue(jsonResponse.getHeaders().size() > 0);
 		assertTrue(jsonResponse.getBody().toString().length() > 0);
 		assertFalse(jsonResponse.getRawBody() == null);
