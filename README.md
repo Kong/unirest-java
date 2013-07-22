@@ -118,6 +118,12 @@ HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
   .asJson();
 ```
 
+### Basic Authentication
+Authenticating the request with basic authentication can be done by calling the `basicAuth(username, password)` function:
+```java
+HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/headers").basicAuth("username", "password").asJson();
+```
+
 ### Request Reference
 
 The Java Unirest library follows the builder style conventions. You start building your request by creating a `HttpRequest` object using one of the following:
