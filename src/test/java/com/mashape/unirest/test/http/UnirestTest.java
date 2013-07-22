@@ -65,6 +65,11 @@ public class UnirestTest {
 		assertNotNull(json.getArray().get(0));
 	}
 	
+	@Test
+	public void testBasicAuth() throws JSONException { 
+		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/headers").basicAuth("user", "test").asJson();
+		assertEquals(response.getBody().getObject().getJSONObject("headers").getString("Authorization"), "Basic dXNlcjp0ZXN0");
+	}
 	
 	@Test
 	public void testAsync() throws JSONException, InterruptedException, ExecutionException {
