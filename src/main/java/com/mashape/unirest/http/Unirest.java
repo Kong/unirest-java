@@ -25,13 +25,33 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.http;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.nio.client.HttpAsyncClient;
+
+import com.mashape.unirest.http.options.Option;
+import com.mashape.unirest.http.options.Options;
+import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
 
 public class Unirest {
 	
-	public static HttpRequest get(String url) {
-		return new HttpRequest(HttpMethod.GET, url);
+	/**
+	 * Set the HttpClient implementation to use for every synchronous request
+	 */
+	public static void setHttpClient(HttpClient httpClient) {
+		Options.setOption(Option.HTTPCLIENT, httpClient);
+	}
+	
+	/**
+	 * Set the asynchronous AbstractHttpAsyncClient implementation to use for every asynchronous request
+	 */
+	public static void setAsyncHttpClient(HttpAsyncClient asyncHttpClient) {
+		Options.setOption(Option.ASYNCHTTPCLIENT, asyncHttpClient);
+	}
+	
+	public static GetRequest get(String url) {
+		return new GetRequest(HttpMethod.GET, url);
 	}
 	
 	public static HttpRequestWithBody post(String url) {

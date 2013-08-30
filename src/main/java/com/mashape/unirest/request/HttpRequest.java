@@ -38,7 +38,7 @@ import com.mashape.unirest.request.body.Body;
 public class HttpRequest extends BaseRequest {
 
 	private HttpMethod httpMethod;
-	private String url;
+	protected String url;
 	private Map<String, String> headers = new HashMap<String, String>();
 	protected Body body;
 	

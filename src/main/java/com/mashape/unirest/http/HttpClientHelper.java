@@ -38,19 +38,14 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.HttpParams;
 
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.utils.ClientFactory;
 import com.mashape.unirest.request.HttpRequest;
 
-
 public class HttpClientHelper {
 
 	private static final String USER_AGENT = "unirest-java/1.1";
-	private static final int CONNECTION_TIMEOUT = 600000; 
-	private static final int SOCKET_TIMEOUT = 600000;
 	
 	private static <T> FutureCallback<org.apache.http.HttpResponse> prepareCallback(final Class<T> responseClass, final Callback<T> callback) {
 		if (callback == null) return null;
@@ -154,13 +149,7 @@ public class HttpClientHelper {
 			}
 		}
 		
-		setTimeouts(reqObj.getParams());
 		return reqObj;
 	}
 	
-	private static void setTimeouts(HttpParams params) {
-	    params.setIntParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 
-	        CONNECTION_TIMEOUT);
-	    params.setIntParameter(CoreConnectionPNames.SO_TIMEOUT, SOCKET_TIMEOUT);
-	}
 }

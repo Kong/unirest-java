@@ -1,31 +1,26 @@
 package com.mashape.unirest.http.utils;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.nio.client.AbstractHttpAsyncClient;
-import org.apache.http.impl.nio.client.DefaultHttpAsyncClient;
-import org.apache.http.nio.reactor.IOReactorException;
+import org.apache.http.nio.client.HttpAsyncClient;
+
+import com.mashape.unirest.http.options.Option;
+import com.mashape.unirest.http.options.Options;
 
 public class ClientFactory {
 
 	private static HttpClient httpClient;
-	private static AbstractHttpAsyncClient asyncHttpClient;
+	private static HttpAsyncClient asyncHttpClient;
 	
 	public static HttpClient getClient() {
 		if (httpClient == null) {
-			httpClient = new DefaultHttpClient();
+			httpClient = (HttpClient) Options.getOption(Option.HTTPCLIENT);
 		}
 		return httpClient;
 	}
 	
-	public static AbstractHttpAsyncClient getAsyncClient() {
+	public static HttpAsyncClient getAsyncClient() {
 		if (asyncHttpClient == null) {
-			try {
-				asyncHttpClient = new DefaultHttpAsyncClient();
-				asyncHttpClient.start();
-			} catch (IOReactorException e) {
-				throw new RuntimeException(e);
-			}
+			asyncHttpClient = (HttpAsyncClient) Options.getOption(Option.ASYNCHTTPCLIENT);
 		}
 		return asyncHttpClient;
 	}
