@@ -24,7 +24,7 @@ and including the library:
 <dependency>
     <groupId>com.mashape.unirest</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>1.1.2</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 
@@ -32,28 +32,26 @@ There are dependencies for the Java library, these should be already installed, 
 
 ```xml
 <dependency>
-    <groupId>org.apache.httpcomponents</groupId>
-    <artifactId>httpclient</artifactId>
-    <version>4.2.3</version>
+  <groupId>org.apache.httpcomponents</groupId>
+  <artifactId>httpclient</artifactId>
+  <version>4.3-beta2</version>
 </dependency>
 <dependency>
-	<groupId>org.apache.httpcomponents</groupId>
-	<artifactId>httpasyncclient</artifactId>
-	<version>4.0-beta3</version>
+  <groupId>org.apache.httpcomponents</groupId>
+  <artifactId>httpasyncclient</artifactId>
+  <version>4.0-beta4</version>
 </dependency>
 <dependency>
-    <groupId>org.apache.httpcomponents</groupId>
-    <artifactId>httpmime</artifactId>
-    <version>4.2.3</version>
+  <groupId>org.apache.httpcomponents</groupId>
+  <artifactId>httpmime</artifactId>
+  <version>4.3-beta2</version>
 </dependency>
 <dependency>
-    <groupId>org.json</groupId>
-    <artifactId>json</artifactId>
-    <version>20090211</version>
+  <groupId>org.json</groupId>
+  <artifactId>json</artifactId>
+  <version>20090211</version>
 </dependency>
 ```
-
-
 
 ### Creating Request
 So you're probably wondering how using Unirest makes creating requests in Java easier, here is a basic POST request that will explain everything:
@@ -152,7 +150,14 @@ Parsed response body where applicable, for example JSON responses are parsed to 
 `.getRawBody()`  
 Un-parsed response body
 
+### Advanced Configuration
 
+You can explicitly set your own `HttpClient` and `HttpAsyncClient` implementations by using the following methods before making any request:
+
+```java
+Unirest.setHttpClient(httpClient);
+Unirest.setAsyncHttpClient(asyncHttpClient);
+```
 
 License
 ---------------
