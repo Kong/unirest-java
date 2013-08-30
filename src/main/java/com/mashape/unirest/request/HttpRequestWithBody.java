@@ -57,7 +57,7 @@ public class HttpRequestWithBody extends HttpRequest {
 	}
 	
 	public MultipartBody field(String name, Object value) {
-		MultipartBody body =  new MultipartBody(this).field(name, value.toString());
+		MultipartBody body =  new MultipartBody(this).field(name, (value == null) ? "" : value.toString());
 		this.body = body;
 		return body;
 	}
@@ -69,7 +69,7 @@ public class HttpRequestWithBody extends HttpRequest {
 				if (param.getValue() instanceof File) {
 					body.field(param.getKey(), (File)param.getValue());
 				} else {
-					body.field(param.getKey(), param.getValue().toString());
+					body.field(param.getKey(), (param.getValue() == null) ? "" : param.getValue().toString());
 				}
 			}
 		}
