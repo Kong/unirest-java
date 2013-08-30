@@ -24,5 +24,9 @@ public class ClientFactory {
 		}
 		return asyncHttpClient;
 	}
+
+	public static void setHttpClient(HttpClient httpClient) {
+		ClientFactory.httpClient = httpClient;
+	}
 	
 }
