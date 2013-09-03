@@ -70,7 +70,7 @@ public class HttpClientHelper {
 	public static <T> Future<HttpResponse<T>> requestAsync(HttpRequest request, final Class<T> responseClass, Callback<T> callback) {
 		HttpUriRequest requestObj = prepareRequest(request);
 		
-		final Future<org.apache.http.HttpResponse> future = ClientFactory.getAsyncClient().execute(requestObj, prepareCallback(responseClass, callback));
+		final Future<org.apache.http.HttpResponse> future = ClientFactory.getAsyncHttpClient().execute(requestObj, prepareCallback(responseClass, callback));
 		
 		return new Future<HttpResponse<T>>() {
 
@@ -103,7 +103,7 @@ public class HttpClientHelper {
 	
 	public static <T> HttpResponse<T> request(HttpRequest request, Class<T> responseClass) {
 		HttpUriRequest requestObj = prepareRequest(request);
-		HttpClient client = ClientFactory.getClient(); // The DefaultHttpClient is thread-safe
+		HttpClient client = ClientFactory.getHttpClient(); // The DefaultHttpClient is thread-safe
 		org.apache.http.HttpResponse response;
 		try {
 			response = client.execute(requestObj);

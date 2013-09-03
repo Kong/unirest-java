@@ -41,7 +41,10 @@ public class MapUtil {
 
 			Set<String> keySet = parameters.keySet();
 			for (String key : keySet) {
-				result.add(new BasicNameValuePair(key, parameters.get(key).toString()));
+				Object object = parameters.get(key);
+				if (object != null) {
+					result.add(new BasicNameValuePair(key, object.toString()));
+				}
 			}
 
 		}

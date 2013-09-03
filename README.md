@@ -24,7 +24,7 @@ and including the library:
 <dependency>
     <groupId>com.mashape.unirest</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
 </dependency>
 ```
 

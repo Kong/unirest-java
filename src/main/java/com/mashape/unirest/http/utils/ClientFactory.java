@@ -8,21 +8,12 @@ import com.mashape.unirest.http.options.Options;
 
 public class ClientFactory {
 
-	private static HttpClient httpClient;
-	private static HttpAsyncClient asyncHttpClient;
-	
-	public static HttpClient getClient() {
-		if (httpClient == null) {
-			httpClient = (HttpClient) Options.getOption(Option.HTTPCLIENT);
-		}
-		return httpClient;
+	public static HttpClient getHttpClient() {
+		return (HttpClient) Options.getOption(Option.HTTPCLIENT);
 	}
 	
-	public static HttpAsyncClient getAsyncClient() {
-		if (asyncHttpClient == null) {
-			asyncHttpClient = (HttpAsyncClient) Options.getOption(Option.ASYNCHTTPCLIENT);
-		}
-		return asyncHttpClient;
+	public static HttpAsyncClient getAsyncHttpClient() {
+		return (HttpAsyncClient) Options.getOption(Option.ASYNCHTTPCLIENT);
 	}
 	
 }
