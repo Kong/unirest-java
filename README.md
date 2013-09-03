@@ -152,7 +152,7 @@ Un-parsed response body
 
 ### Advanced Configuration
 
-You can explicitly set your own `HttpClient` and `HttpAsyncClient` implementations by using the following methods before making any request:
+You can explicitly set your own `HttpClient` and `HttpAsyncClient` implementations by using the following methods:
 
 ```java
 Unirest.setHttpClient(httpClient);
