@@ -24,7 +24,7 @@ and including the library:
 <dependency>
     <groupId>com.mashape.unirest</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>1.2.2</version>
+    <version>1.2.3</version>
 </dependency>
 ```
 
@@ -34,7 +34,7 @@ There are dependencies for the Java library, these should be already installed, 
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
   <artifactId>httpclient</artifactId>
-  <version>4.3-beta2</version>
+  <version>4.3</version>
 </dependency>
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
@@ -44,7 +44,7 @@ There are dependencies for the Java library, these should be already installed, 
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
   <artifactId>httpmime</artifactId>
-  <version>4.3-beta2</version>
+  <version>4.3</version>
 </dependency>
 <dependency>
   <groupId>org.json</groupId>
