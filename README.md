@@ -159,6 +159,14 @@ Unirest.setHttpClient(httpClient);
 Unirest.setAsyncHttpClient(asyncHttpClient);
 ```
 
+You can also set custom connection and socket timeout values (in milliseconds):
+
+```java
+Unirest.setTimeouts(long connectionTimeout, long socketTimeout);
+```
+
+By default the connection timeout is `10000ms`, and the socket timeout is `60000ms`.
+
 License
 ---------------
 
