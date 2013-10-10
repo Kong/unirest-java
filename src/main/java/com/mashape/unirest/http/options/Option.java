@@ -1,5 +1,5 @@
 package com.mashape.unirest.http.options;
 
 public enum Option {
-	HTTPCLIENT, ASYNCHTTPCLIENT
+	HTTPCLIENT, ASYNCHTTPCLIENT, CONNECTION_TIMEOUT, SOCKET_TIMEOUT
 }

@@ -29,6 +29,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -41,8 +42,11 @@ import org.junit.Test;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.options.Options;
 
 public class UnirestTest {
+
+	private static final String UNEXISTING_IP = "http://192.168.1.100/";
 
 	@Test
 	public void testRequests() throws JSONException {
@@ -120,5 +124,26 @@ public class UnirestTest {
 		assertNotNull(json.getArray());
 		assertEquals(1, json.getArray().length());
 		assertNotNull(json.getArray().get(0));
+	}
+	
+	@Test
+	public void testSetTimeouts() {
+		long start = System.currentTimeMillis();
+		try {
+			Unirest.get(UNEXISTING_IP).asString();
+		} catch (Exception e) {
+			if (System.currentTimeMillis() - start > Options.CONNECTION_TIMEOUT + 100) { // Add 100ms for code execution
+				fail();
+			}
+		}
+		Unirest.setTimeouts(2000, 10000);
+		start = System.currentTimeMillis();
+		try {
+			Unirest.get(UNEXISTING_IP).asString();
+		} catch (Exception e) {
+			if (System.currentTimeMillis() - start > 2100) { // Add 100ms for code execution
+				fail();
+			}
+		}
 	}
 }

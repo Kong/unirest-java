@@ -10,8 +10,8 @@ import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 
 public class Options {
 
-	private static final int CONNECTION_TIMEOUT = 600000;
-	private static final int SOCKET_TIMEOUT = 600000;
+	public static final long CONNECTION_TIMEOUT = 10000;
+	private static final long SOCKET_TIMEOUT = 60000;
 	
 	private static Map<Option, Object> options = new HashMap<Option, Object>();
 	
@@ -24,8 +24,20 @@ public class Options {
 	}
 
 	static {
-		RequestConfig clientConfig = RequestConfig.custom().setConnectTimeout(CONNECTION_TIMEOUT).setSocketTimeout(SOCKET_TIMEOUT).build();
+		refresh();
+	}
+	
+	public static void refresh() {
+		// Load timeouts
+		Object connectionTimeout = Options.getOption(Option.CONNECTION_TIMEOUT);
+		if (connectionTimeout == null) connectionTimeout = CONNECTION_TIMEOUT;
+		Object socketTimeout = Options.getOption(Option.SOCKET_TIMEOUT);
+		if (socketTimeout == null) socketTimeout = SOCKET_TIMEOUT;
 		
+		// Create common default configuration
+		RequestConfig clientConfig = RequestConfig.custom().setConnectTimeout(((Long) connectionTimeout).intValue()).setSocketTimeout(((Long) socketTimeout).intValue()).build();
+		
+		// Create clients
 		setOption(Option.HTTPCLIENT, HttpClientBuilder.create().setDefaultRequestConfig(clientConfig).build());
 		
 		CloseableHttpAsyncClient asyncClient = HttpAsyncClientBuilder.create().setDefaultRequestConfig(clientConfig).build();
