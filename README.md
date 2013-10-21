@@ -2,10 +2,7 @@
 
 Unirest is a set of lightweight HTTP libraries available in multiple languages.
 
-Documentation
--------------------
-
-### Installing
+## Installing
 Is easy as pie. Kidding. It's about as easy as doing these little steps:
 
 Using with Maven by adding the Mashape repository:
@@ -52,7 +49,7 @@ There are dependencies for the Java library, these should be already installed, 
 </dependency>
 ```
 
-### Creating Request
+## Creating Request
 So you're probably wondering how using Unirest makes creating requests in Java easier, here is a basic POST request that will explain everything:
 
 ```java
@@ -67,7 +64,7 @@ Requests are made when `as[Type]()` is invoked, possible types include `Json`, `
 
 `.headers(Map<String, String> headers)` is also supported in replacement of multiple header methods.
 
-### Asynchronous Requests
+## Asynchronous Requests
 Sometimes, well most of the time, you want your application to be asynchronous and not block, Unirest supports this in Java using anonymous callbacks, or direct method placement:
 
 ```java
@@ -95,7 +92,7 @@ Future<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.org/post")
 });
 ```
 
-### File Uploads
+## File Uploads
 Creating `multipart` requests with Java is trivial, simply pass along a `File` Object as a field:
 
 ```java
@@ -106,7 +103,7 @@ HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
   .asJson();
 ```
 
-### Custom Entity Body
+## Custom Entity Body
 
 ```java
 HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
@@ -115,13 +112,13 @@ HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
   .asJson();
 ```
 
-### Basic Authentication
+## Basic Authentication
 Authenticating the request with basic authentication can be done by calling the `basicAuth(username, password)` function:
 ```java
 HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/headers").basicAuth("username", "password").asJson();
 ```
 
-### Request Reference
+# Request
 
 The Java Unirest library follows the builder style conventions. You start building your request by creating a `HttpRequest` object using one of the following:
 
@@ -133,23 +130,16 @@ HttpRequestWithBody request = Unirest.patch(String url);
 HttpRequest request = Unirest.delete(String url);
 ```
 
-### Response Reference
+# Response
 
 Upon recieving a response Unirest returns the result in the form of an Object, this object should always have the same keys for each language regarding to the response details.
 
-`.getCode()`  
-HTTP Response Status Code (Example 200)
+- `.getCode()` - HTTP Response Status Code (Example 200)
+- `.getHeaders()` - HTTP Response Headers
+- `.getBody()` - Parsed response body where applicable, for example JSON responses are parsed to Objects / Associative Arrays.
+- `.getRawBody()` - Un-parsed response body
 
-`.getHeaders()`  
-HTTP Response Headers
-
-`.getBody()`  
-Parsed response body where applicable, for example JSON responses are parsed to Objects / Associative Arrays.
-
-`.getRawBody()`  
-Un-parsed response body
-
-### Advanced Configuration
+# Advanced Configuration
 
 You can explicitly set your own `HttpClient` and `HttpAsyncClient` implementations by using the following methods:
 
