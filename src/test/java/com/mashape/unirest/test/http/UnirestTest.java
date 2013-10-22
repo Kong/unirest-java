@@ -25,11 +25,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.test.http;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -139,6 +135,32 @@ public class UnirestTest {
 		JsonNode json = jsonResponse.getBody();
 		assertFalse(json.isArray());
 		assertTrue(json.getObject().getBoolean("gzipped"));
+	}
+	
+	@Test
+	public void testDefaultHeaders() throws UnirestException, JSONException {
+		Unirest.setDefaultHeader("X-Custom-Header", "hello");
+		
+		HttpResponse<JsonNode> jsonResponse =
+				Unirest.get("http://httpbin.org/headers").asJson();
+		assertTrue(jsonResponse.getHeaders().size() > 0);
+		assertTrue(jsonResponse.getBody().toString().length() > 0);
+		assertFalse(jsonResponse.getRawBody() == null);
+		assertEquals(200, jsonResponse.getCode());
+		
+		JsonNode json = jsonResponse.getBody();
+		assertFalse(json.isArray());
+		assertTrue(jsonResponse.getBody().getObject().getJSONObject("headers").has("X-Custom-Header"));
+		assertEquals("hello", json.getObject().getJSONObject("headers").getString("X-Custom-Header"));
+		
+		jsonResponse = Unirest.get("http://httpbin.org/headers").asJson();
+		assertTrue(jsonResponse.getBody().getObject().getJSONObject("headers").has("X-Custom-Header"));
+		assertEquals("hello", jsonResponse.getBody().getObject().getJSONObject("headers").getString("X-Custom-Header"));
+		
+		Unirest.clearDefaultHeaders();
+		
+		jsonResponse = Unirest.get("http://httpbin.org/headers").asJson();
+		assertFalse(jsonResponse.getBody().getObject().getJSONObject("headers").has("X-Custom-Header"));
 	}
 	
 	@Test

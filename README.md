@@ -141,17 +141,35 @@ Upon recieving a response Unirest returns the result in the form of an Object, t
 
 # Advanced Configuration
 
+## Custom HTTP clients
+
 You can explicitly set your own `HttpClient` and `HttpAsyncClient` implementations by using the following methods:
 
 ```java
 Unirest.setHttpClient(httpClient);
 Unirest.setAsyncHttpClient(asyncHttpClient);
 ```
+## Timeouts
 
-You can also set custom connection and socket timeout values (in milliseconds):
+You can set custom connection and socket timeout values (in milliseconds):
 
 ```java
 Unirest.setTimeouts(long connectionTimeout, long socketTimeout);
 ```
 
 By default the connection timeout is `10000`, and the socket timeout is `60000`.
+
+## Default Request Headers
+
+You can set default headers that will be send on every request:
+
+```java
+Unirest.setDefaultHeader("Header1", "Value1");
+Unirest.setDefaultHeader("Header2", "Value2");
+```
+
+You can clear the default headers anytime with:
+
+```java
+Unirest.clearDefaultHeaders();
+```

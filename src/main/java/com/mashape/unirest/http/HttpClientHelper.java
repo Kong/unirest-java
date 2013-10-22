@@ -26,6 +26,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.mashape.unirest.http;
 
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +43,8 @@ import org.apache.http.concurrent.FutureCallback;
 
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.http.options.Option;
+import com.mashape.unirest.http.options.Options;
 import com.mashape.unirest.http.utils.ClientFactory;
 import com.mashape.unirest.request.HttpRequest;
 
@@ -119,6 +123,15 @@ public class HttpClientHelper {
 		
 		request.header("user-agent", USER_AGENT);
 		request.header("accept-encoding", "gzip");
+		
+		Object defaultHeaders = Options.getOption(Option.DEFAULT_HEADERS);
+		if (defaultHeaders != null) {
+			@SuppressWarnings("unchecked")
+			Set<Entry<String, String>> entrySet = ((Map<String, String>) defaultHeaders).entrySet();
+			for(Entry<String, String> entry : entrySet) {
+				request.header(entry.getKey(), entry.getValue());
+			}
+		}
 		
 		HttpUriRequest reqObj = null;
 		

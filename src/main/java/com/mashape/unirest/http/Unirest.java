@@ -25,6 +25,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.http;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.nio.client.HttpAsyncClient;
 
@@ -52,6 +55,26 @@ public class Unirest {
 		
 		// Reload the client implementations
 		Options.refresh();
+	}
+	
+	/**
+	 * Clear default headers
+	 */
+	public static void clearDefaultHeaders() {
+		Options.setOption(Option.DEFAULT_HEADERS, null);
+	}
+	
+	/**
+	 * Set default header
+	 */
+	@SuppressWarnings("unchecked")
+	public static void setDefaultHeader(String name, String value) {
+		Object headers = Options.getOption(Option.DEFAULT_HEADERS);
+		if (headers == null) {
+			headers = new HashMap<String, String>();
+		}
+		((Map<String, String>) headers).put(name, value);
+		Options.setOption(Option.DEFAULT_HEADERS, headers);
 	}
 	
 	/**

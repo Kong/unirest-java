@@ -49,7 +49,7 @@ public class HttpResponse<T> {
 		Header[] allHeaders = response.getAllHeaders();
 		this.headers = new HashMap<String, String>();
 		for(Header header : allHeaders) {
-			headers.put(header.getName(), header.getValue());
+			headers.put(header.getName().toLowerCase(), header.getValue());
 		}
 		this.code = response.getStatusLine().getStatusCode();
 		
