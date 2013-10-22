@@ -40,6 +40,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
 
 import com.mashape.unirest.http.async.Callback;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.http.utils.ClientFactory;
 import com.mashape.unirest.request.HttpRequest;
 
@@ -61,7 +62,7 @@ public class HttpClientHelper {
 			}
 
 			public void failed(Exception arg0) {
-				callback.failed(arg0);
+				callback.failed(new UnirestException(arg0));
 			}
 			
 		};
@@ -101,14 +102,14 @@ public class HttpClientHelper {
 		};
 	}
 	
-	public static <T> HttpResponse<T> request(HttpRequest request, Class<T> responseClass) {
+	public static <T> HttpResponse<T> request(HttpRequest request, Class<T> responseClass) throws UnirestException {
 		HttpUriRequest requestObj = prepareRequest(request);
 		HttpClient client = ClientFactory.getHttpClient(); // The DefaultHttpClient is thread-safe
 		org.apache.http.HttpResponse response;
 		try {
 			response = client.execute(requestObj);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new UnirestException(e);
 		}
 		
 		return new HttpResponse<T>(response, responseClass);
@@ -117,6 +118,7 @@ public class HttpClientHelper {
 	private static HttpUriRequest prepareRequest(HttpRequest request) {
 		
 		request.header("user-agent", USER_AGENT);
+		request.header("accept-encoding", "gzip");
 		
 		HttpUriRequest reqObj = null;
 		

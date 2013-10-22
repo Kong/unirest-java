@@ -32,6 +32,7 @@ import com.mashape.unirest.http.HttpClientHelper;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.async.Callback;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 public abstract class BaseRequest {
 
@@ -47,7 +48,7 @@ public abstract class BaseRequest {
 		super();
 	}
 	
-	public HttpResponse<String> asString() {
+	public HttpResponse<String> asString() throws UnirestException {
 		return HttpClientHelper.request(httpRequest, String.class);
 	}
 
@@ -59,7 +60,7 @@ public abstract class BaseRequest {
 		return HttpClientHelper.requestAsync(httpRequest, String.class, callback);
 	}
 
-	public HttpResponse<JsonNode> asJson() {
+	public HttpResponse<JsonNode> asJson() throws UnirestException {
 		return HttpClientHelper.request(httpRequest, JsonNode.class);
 	}
 
@@ -71,7 +72,7 @@ public abstract class BaseRequest {
 		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class, callback);
 	}
 
-	public HttpResponse<InputStream> asBinary() {
+	public HttpResponse<InputStream> asBinary() throws UnirestException {
 		return HttpClientHelper.request(httpRequest, InputStream.class);
 	}
 

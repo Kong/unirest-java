@@ -27,6 +27,7 @@ package com.mashape.unirest.http.async;
 
 import com.mashape.unirest.http.HttpClientHelper;
 import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.HttpRequest;
 
 public class RequestThread<T> extends Thread {
@@ -43,9 +44,14 @@ public class RequestThread<T> extends Thread {
 	
 	@Override
 	public void run() {
-		HttpResponse<T> response = HttpClientHelper.request(httpRequest, responseClass);
-		if (callback != null) {
-			callback.completed(response);
+		HttpResponse<T> response;
+		try {
+			response = HttpClientHelper.request(httpRequest, responseClass);
+			if (callback != null) {
+				callback.completed(response);
+			}
+		} catch (UnirestException e) {
+			callback.failed(e);
 		}
 	}
 	

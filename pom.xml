@@ -5,11 +5,30 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mashape.unirest</groupId>
 	<artifactId>unirest-java</artifactId>
-	<version>1.2.5</version>
+	<version>1.2.6</version>
+
 	<name>unirest-java</name>
+	<description>Unirest is a set of lightweight HTTP libraries available in multiple languages.</description>
+	<url>http://unirest.io/</url>
+
+	<licenses>
+		<license>
+			<name>MIT</name>
+			<url>http://opensource.org/licenses/MIT</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<url>https://github.com/mashape/unirest-java</url>
+		<connection>scm:git:git@github.com:Mashape/unirest-java.git</connection>
+		<developerConnection>scm:git:git@github.com:Mashape/unirest-java.git</developerConnection>
+	</scm>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -33,6 +52,7 @@
 			</plugin>
 		</plugins>
 	</build>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -61,4 +81,5 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	
 </project>

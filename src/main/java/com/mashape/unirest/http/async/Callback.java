@@ -26,12 +26,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.mashape.unirest.http.async;
 
 import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 public interface Callback<T> {
 
 	void completed(HttpResponse<T> response);	
 	
-	void failed(Exception e);
+	void failed(UnirestException e);
 	
 	void cancelled();
 }

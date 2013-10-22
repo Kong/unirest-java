@@ -42,6 +42,7 @@ import org.junit.Test;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.http.options.Options;
 
 public class UnirestTest {
@@ -49,7 +50,7 @@ public class UnirestTest {
 	private static final String UNEXISTING_IP = "http://192.168.1.100/";
 
 	@Test
-	public void testRequests() throws JSONException {
+	public void testRequests() throws JSONException, UnirestException {
 		HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
 													 .header("accept", "application/json")
 													 .field("param1", "value1")
@@ -70,7 +71,7 @@ public class UnirestTest {
 	}
 	
 	@Test
-	public void testGet() throws JSONException { 
+	public void testGet() throws JSONException, UnirestException { 
 		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get?name=mark").asJson();
 		assertEquals(response.getBody().getObject().getJSONObject("args").getString("name"), "mark");
 		
@@ -79,7 +80,7 @@ public class UnirestTest {
 	}
 	
 	@Test
-	public void testBasicAuth() throws JSONException { 
+	public void testBasicAuth() throws JSONException, UnirestException { 
 		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/headers").basicAuth("user", "test").asJson();
 		assertEquals(response.getBody().getObject().getJSONObject("headers").getString("Authorization"), "Basic dXNlcjp0ZXN0");
 	}
@@ -109,7 +110,7 @@ public class UnirestTest {
 	}
 	
 	@Test
-	public void testMultipart() throws JSONException, InterruptedException, ExecutionException, URISyntaxException {
+	public void testMultipart() throws JSONException, InterruptedException, ExecutionException, URISyntaxException, UnirestException {
 		HttpResponse<JsonNode> jsonResponse =
 				Unirest.post("http://httpbin.org/post")
 				.field("file", new File(getClass().getResource("/test").toURI())).asJson();
@@ -124,6 +125,20 @@ public class UnirestTest {
 		assertNotNull(json.getArray());
 		assertEquals(1, json.getArray().length());
 		assertNotNull(json.getArray().get(0));
+	}
+	
+	@Test
+	public void testGzip() throws UnirestException, JSONException {
+		HttpResponse<JsonNode> jsonResponse =
+				Unirest.get("http://httpbin.org/gzip").asJson();
+		assertTrue(jsonResponse.getHeaders().size() > 0);
+		assertTrue(jsonResponse.getBody().toString().length() > 0);
+		assertFalse(jsonResponse.getRawBody() == null);
+		assertEquals(200, jsonResponse.getCode());
+		
+		JsonNode json = jsonResponse.getBody();
+		assertFalse(json.isArray());
+		assertTrue(json.getObject().getBoolean("gzipped"));
 	}
 	
 	@Test
