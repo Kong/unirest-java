@@ -127,7 +127,7 @@ HttpRequest request = Unirest.get(String url);
 HttpRequestWithBody request = Unirest.post(String url);
 HttpRequestWithBody request = Unirest.put(String url);
 HttpRequestWithBody request = Unirest.patch(String url);
-HttpRequest request = Unirest.delete(String url);
+HttpRequestWithBody request = Unirest.delete(String url);
 ```
 
 # Response

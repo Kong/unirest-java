@@ -158,7 +158,7 @@ public class HttpClientHelper {
 		}
 		
 		// Set body
-		if (!(request.getHttpMethod() == HttpMethod.GET || request.getHttpMethod() == HttpMethod.DELETE)) {
+		if (request.getHttpMethod() != HttpMethod.GET) {
 			if (request.getBody() != null) {
 				((HttpEntityEnclosingRequestBase) reqObj).setEntity(request.getBody().getEntity());
 			}

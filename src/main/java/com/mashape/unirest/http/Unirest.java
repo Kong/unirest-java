@@ -34,7 +34,6 @@ import org.apache.http.nio.client.HttpAsyncClient;
 import com.mashape.unirest.http.options.Option;
 import com.mashape.unirest.http.options.Options;
 import com.mashape.unirest.request.GetRequest;
-import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
 
 public class Unirest {
@@ -92,8 +91,8 @@ public class Unirest {
 		return new HttpRequestWithBody(HttpMethod.POST, url);
 	}
 	
-	public static HttpRequest delete(String url) {
-		return new HttpRequest(HttpMethod.DELETE, url);
+	public static HttpRequestWithBody delete(String url) {
+		return new HttpRequestWithBody(HttpMethod.DELETE, url);
 	}
 	
 	public static HttpRequestWithBody patch(String url) {
