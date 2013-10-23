@@ -100,4 +100,12 @@ public class HttpRequest extends BaseRequest {
 		return body;
 	}
 	
+	public HttpRequest plainURL(String plainURL) {
+		if(plainURL == null) {
+			throw new RuntimeException(new Exception("Plain URL == null"));
+		}
+		this.url = plainURL;
+		return this;
+	}
+	
 }
