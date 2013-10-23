@@ -43,14 +43,7 @@ public class HttpRequest extends BaseRequest {
 	protected Body body;
 	
 	private URL parseUrl(String s) throws Exception {
-	     URL u = new URL(s);
-	     return new URI(
-	            u.getProtocol(), 
-	            u.getAuthority(), 
-	            u.getPath(),
-	            u.getQuery(), 
-	            u.getRef()).
-	            toURL();
+		return new URI(s.replaceAll("\\s+", "%20")).toURL();
 	}
 	
 	public HttpRequest(HttpMethod method, String url) {
