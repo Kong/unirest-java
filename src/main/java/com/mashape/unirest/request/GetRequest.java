@@ -38,7 +38,7 @@ public class GetRequest extends HttpRequest {
 
 	public GetRequest field(String name, Object value) {
 		StringBuilder queryString  = new StringBuilder();
-		if (this.url.contains("\\?")) {
+		if (this.url.contains("?")) {
 			queryString.append("&");
 		} else {
 			queryString.append("?");
