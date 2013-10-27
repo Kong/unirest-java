@@ -40,6 +40,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.nio.client.HttpAsyncClient;
+import org.apache.http.nio.reactor.IOReactorStatus;
 
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -72,10 +75,18 @@ public class HttpClientHelper {
 		};
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static <T> Future<HttpResponse<T>> requestAsync(HttpRequest request, final Class<T> responseClass, Callback<T> callback) {
 		HttpUriRequest requestObj = prepareRequest(request);
 		
-		final Future<org.apache.http.HttpResponse> future = ClientFactory.getAsyncHttpClient().execute(requestObj, prepareCallback(responseClass, callback));
+		HttpAsyncClient asyncHttpClient = ClientFactory.getAsyncHttpClient();
+		if (asyncHttpClient instanceof CloseableHttpAsyncClient) {
+			if (asyncHttpClient.getStatus() != IOReactorStatus.ACTIVE) {
+				asyncHttpClient.start();
+			}
+		}
+		
+		final Future<org.apache.http.HttpResponse> future = asyncHttpClient.execute(requestObj, prepareCallback(responseClass, callback));
 		
 		return new Future<HttpResponse<T>>() {
 

@@ -41,7 +41,6 @@ public class Options {
 		setOption(Option.HTTPCLIENT, HttpClientBuilder.create().setDefaultRequestConfig(clientConfig).build());
 		
 		CloseableHttpAsyncClient asyncClient = HttpAsyncClientBuilder.create().setDefaultRequestConfig(clientConfig).build();
-		asyncClient.start();
 		
 		setOption(Option.ASYNCHTTPCLIENT, asyncClient);
 	}
