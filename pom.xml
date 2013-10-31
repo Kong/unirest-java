@@ -6,10 +6,17 @@
 	<groupId>com.mashape.unirest</groupId>
 	<artifactId>unirest-java</artifactId>
 	<version>1.2.8</version>
+	<packaging>jar</packaging>
 
 	<name>unirest-java</name>
 	<description>Unirest is a set of lightweight HTTP libraries available in multiple languages.</description>
 	<url>http://unirest.io/</url>
+
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
 
 	<licenses>
 		<license>
@@ -25,10 +32,21 @@
 		<developerConnection>scm:git:git@github.com:Mashape/unirest-java.git</developerConnection>
 	</scm>
 
+	<developers>
+		<developer>
+			<id>thefosk</id>
+			<name>Marco</name>
+			<email>marco@mashape.com</email>
+			<url>https://github.com/thefosk</url>
+			<organization>Mashape</organization>
+			<organizationUrl>https://mashape.com</organizationUrl>
+		</developer>
+	</developers>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -52,7 +70,7 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -81,5 +99,5 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 </project>
