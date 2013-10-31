@@ -1,8 +1,18 @@
 # Unirest for Java [![Build Status](https://api.travis-ci.org/Mashape/unirest-java.png)](https://travis-ci.org/Mashape/unirest-java)
 
-Unirest is a set of lightweight HTTP libraries available in multiple languages.
+Unirest is a set of lightweight HTTP libraries available in multiple languages, ideal for most applications:
 
-Created with love by http://mashape.com
+* Make `GET`, `POST`, `PUT`, `PATCH`, `DELETE` requests
+* Both syncronous and asynchronous (non-blocking) requests
+* It supports form parameters, file uploads and custom body entities
+* Supports gzip
+* Supports Basic Authentication natively
+* Customizable timeout
+* Customizable default headers for every request (DRY)
+* Customizable `HttpClient` and `HttpAsyncClient` implementation
+* Automatic JSON parsing into a native object for JSON responses
+
+Created with love by [thefosk](https://github.com/thefosk) @ [mashape.com](https://mashape.com)
 
 
 ## Installing
