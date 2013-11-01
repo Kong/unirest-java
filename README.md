@@ -18,26 +18,17 @@ Created with love by [thefosk](https://github.com/thefosk) @ [mashape.com](https
 ## Installing
 Is easy as pie. Kidding. It's about as easy as doing these little steps:
 
-Using with Maven by adding the Mashape repository:
-
-```xml
-<repository>
-    <id>mashape-releases</id>
-    <url>http://maven.mashape.com/releases</url>
-</repository>
-```
-
-and including the library:
+You can use Maven by including the library:
 
 ```xml
 <dependency>
     <groupId>com.mashape.unirest</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>1.2.8</version>
+    <version>1.2.9-SNAPSHOT</version>
 </dependency>
 ```
 
-There are dependencies for the Java library, these should be already installed, and they are as follows:
+There are dependencies for Unirest-Java, these should be already installed, and they are as follows:
 
 ```xml
 <dependency>
@@ -61,6 +52,8 @@ There are dependencies for the Java library, these should be already installed, 
   <version>20090211</version>
 </dependency>
 ```
+
+Alternatively if you don't use Maven, you can just include the JAR file for Unirest-Java and its dependencies in the classpath.
 
 ## Creating Request
 So you're probably wondering how using Unirest makes creating requests in Java easier, here is a basic POST request that will explain everything:
