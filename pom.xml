@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.mashape.unirest</groupId>
 	<artifactId>unirest-java</artifactId>
-	<version>1.2.8</version>
+	<version>1.2.9-SNAPSHOT</version>
 
 	<name>unirest-java</name>
 	<description>Unirest is a set of lightweight HTTP libraries available in multiple languages.</description>
