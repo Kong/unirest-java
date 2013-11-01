@@ -47,9 +47,11 @@ public class MultipartBody extends BaseRequest implements Body {
 	private Map<String, Object> parameters = new HashMap<String, Object>();
 
 	private boolean hasFile;
+	private HttpRequest httpRequestObj;
 	
 	public MultipartBody(HttpRequest httpRequest) {
 		super(httpRequest);
+		this.httpRequestObj = httpRequest;
 	}
 	
 	public MultipartBody field(String name, String value) {
@@ -60,6 +62,11 @@ public class MultipartBody extends BaseRequest implements Body {
 	public MultipartBody field(String name, File file) {
 		this.parameters.put(name, file);
 		hasFile = true;
+		return this;
+	}
+	
+	public MultipartBody basicAuth(String username, String password) {
+		httpRequestObj.basicAuth(username, password);
 		return this;
 	}
 	

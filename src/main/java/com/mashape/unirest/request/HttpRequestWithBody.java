@@ -29,8 +29,6 @@ import java.io.File;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.codec.binary.Base64;
-
 import com.mashape.unirest.http.HttpMethod;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.request.body.MultipartBody;
@@ -53,7 +51,7 @@ public class HttpRequestWithBody extends HttpRequest {
 	}
 	
 	public HttpRequestWithBody basicAuth(String username, String password) {
-		header("Authorization", "Basic " + Base64.encodeBase64String((username+ ":" + password).getBytes()));
+		super.basicAuth(username, password);
 		return this;
 	}
 

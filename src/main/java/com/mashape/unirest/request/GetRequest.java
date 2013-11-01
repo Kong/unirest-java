@@ -27,6 +27,8 @@ package com.mashape.unirest.request;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.mashape.unirest.http.HttpMethod;
 
@@ -52,4 +54,21 @@ public class GetRequest extends HttpRequest {
 		return this;
 	}
 	
+	public GetRequest fields(Map<String, Object> parameters) {
+		if (parameters != null) {
+			for(Entry<String, Object> param : parameters.entrySet()) {
+				if (param.getValue() instanceof String || param.getValue() instanceof Number || param.getValue() instanceof Boolean) {
+					field(param.getKey(), param.getValue());
+				} else {
+					throw new RuntimeException("Parameter \"" + param.getKey() + "\" can't be sent with a GET request because of type: " + param.getValue().getClass().getName());
+				}
+			}
+		}
+		return this;
+	}
+	
+	public GetRequest basicAuth(String username, String password) {
+		super.basicAuth(username, password);
+		return this;
+	}
 }
