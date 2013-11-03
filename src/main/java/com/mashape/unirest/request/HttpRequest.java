@@ -30,9 +30,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Base64;
-
 import com.mashape.unirest.http.HttpMethod;
+import com.mashape.unirest.http.utils.Base64Coder;
 import com.mashape.unirest.request.body.Body;
 
 public class HttpRequest extends BaseRequest {
@@ -58,7 +57,7 @@ public class HttpRequest extends BaseRequest {
 	}
 	
 	public HttpRequest basicAuth(String username, String password) {
-		header("Authorization", "Basic " + Base64.encodeBase64String((username+ ":" + password).getBytes()));
+		header("Authorization", "Basic " + Base64Coder.encodeString(username+ ":" + password));
 		return this;
 	}
 	
