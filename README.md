@@ -24,7 +24,7 @@ You can use Maven by including the library:
 <dependency>
     <groupId>com.mashape.unirest</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>1.2.9-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
 </dependency>
 ```
 
