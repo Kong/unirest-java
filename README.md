@@ -80,7 +80,7 @@ Future<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.org/post")
   .field("param2", "value2")
   .asJsonAsync(new Callback<JsonNode>() {
 	  
-	public void failed(Exception e) {
+	public void failed(UnirestException e) {
 		System.out.println("The request has failed");
 	}
 	
