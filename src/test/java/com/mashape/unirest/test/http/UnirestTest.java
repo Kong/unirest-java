@@ -184,6 +184,20 @@ public class UnirestTest {
 	}
 	
 	@Test
+	public void testGzipAsync() throws UnirestException, JSONException, InterruptedException, ExecutionException {
+		HttpResponse<JsonNode> jsonResponse =
+				Unirest.get("http://httpbin.org/gzip").asJsonAsync().get();
+		assertTrue(jsonResponse.getHeaders().size() > 0);
+		assertTrue(jsonResponse.getBody().toString().length() > 0);
+		assertFalse(jsonResponse.getRawBody() == null);
+		assertEquals(200, jsonResponse.getCode());
+		
+		JsonNode json = jsonResponse.getBody();
+		assertFalse(json.isArray());
+		assertTrue(json.getObject().getBoolean("gzipped"));
+	}
+	
+	@Test
 	public void testDefaultHeaders() throws UnirestException, JSONException {
 		Unirest.setDefaultHeader("X-Custom-Header", "hello");
 		

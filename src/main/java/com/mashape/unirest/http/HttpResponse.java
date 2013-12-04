@@ -31,6 +31,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -42,6 +45,18 @@ public class HttpResponse<T> {
 	private InputStream rawBody;
 	private T body;
 
+	private boolean isGzipped() {
+		Set<Entry<String, String>> headers = this.headers.entrySet();
+		for(Entry<String, String> header : headers) {
+			if (header.getKey().equalsIgnoreCase("content-encoding")) {
+				if (header.getValue() != null && header.getValue().equalsIgnoreCase("gzip")) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public HttpResponse(org.apache.http.HttpResponse response, Class<T> responseClass) {
 		HttpEntity responseEntity = response.getEntity();
@@ -57,7 +72,11 @@ public class HttpResponse<T> {
 			try {
 				byte[] rawBody;
 				try {
-					rawBody = getBytes(responseEntity.getContent());
+					InputStream responseInputStream = responseEntity.getContent();
+					if (isGzipped()) {
+						responseInputStream = new GZIPInputStream(responseEntity.getContent());
+					}
+					rawBody = getBytes(responseInputStream);
 				} catch (IOException e2) {
 					throw new RuntimeException(e2);
 				}
