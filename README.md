@@ -18,6 +18,8 @@ Created with love by [thefosk](https://github.com/thefosk) @ [mashape.com](https
 ## Installing
 Is easy as pie. Kidding. It's about as easy as doing these little steps:
 
+### With Maven
+
 You can use Maven by including the library:
 
 ```xml
@@ -53,7 +55,13 @@ There are dependencies for Unirest-Java, these should be already installed, and 
 </dependency>
 ```
 
-Alternatively if you don't use Maven, you can just include the JAR file for Unirest-Java and its dependencies in the classpath.
+### Without Maven
+
+Alternatively if you don't use Maven, you can directly include the JAR file in the classpath: http://oss.sonatype.org/content/repositories/releases/com/mashape/unirest/unirest-java/1.3.1/unirest-java-1.3.1.jar
+
+Don't forget to also install the dependencies (`org.json`, `httpclient 4.3.1`, `httpmime 4.3.1`, `httpasyncclient 4.0`) in the classpath too. 
+
+There is also a way to generate a Unirest-Java JAR file that already includes the required dependencies, but you will need Maven to generate it. Follow the instructions at http://blog.mashape.com/post/69117323931/installing-unirest-java-with-the-maven-assembly-plugin
 
 ## Creating Request
 So you're probably wondering how using Unirest makes creating requests in Java easier, here is a basic POST request that will explain everything:
