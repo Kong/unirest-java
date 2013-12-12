@@ -38,6 +38,7 @@ import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
@@ -117,21 +118,25 @@ public class HttpClientHelper {
 	}
 
 	public static <T> HttpResponse<T> request(HttpRequest request, Class<T> responseClass) throws UnirestException {
-		HttpUriRequest requestObj = prepareRequest(request);
+		HttpRequestBase requestObj = prepareRequest(request);
 		HttpClient client = ClientFactory.getHttpClient(); // The
 															// DefaultHttpClient
 															// is thread-safe
+		
 		org.apache.http.HttpResponse response;
 		try {
 			response = client.execute(requestObj);
+			HttpResponse<T> httpResponse = new HttpResponse<T>(response, responseClass);
+			requestObj.releaseConnection();
+			return httpResponse;
 		} catch (Exception e) {
 			throw new UnirestException(e);
+		} finally {
+			requestObj.releaseConnection();
 		}
-
-		return new HttpResponse<T>(response, responseClass);
 	}
 
-	private static HttpUriRequest prepareRequest(HttpRequest request) {
+	private static HttpRequestBase prepareRequest(HttpRequest request) {
 
 		request.header("user-agent", USER_AGENT);
 		request.header("accept-encoding", "gzip");
@@ -144,8 +149,8 @@ public class HttpClientHelper {
 				request.header(entry.getKey(), entry.getValue());
 			}
 		}
-
-		HttpUriRequest reqObj = null;
+		
+		HttpRequestBase reqObj = null;
 
 		switch (request.getHttpMethod()) {
 		case GET:
