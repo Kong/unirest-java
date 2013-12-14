@@ -80,11 +80,9 @@ public class HttpClientHelper {
 	public static <T> Future<HttpResponse<T>> requestAsync(HttpRequest request, final Class<T> responseClass, Callback<T> callback) {
 		HttpUriRequest requestObj = prepareRequest(request);
 
-		HttpAsyncClient asyncHttpClient = ClientFactory.getAsyncHttpClient();
-		if (asyncHttpClient instanceof CloseableHttpAsyncClient) {
-			if (!((CloseableHttpAsyncClient) asyncHttpClient).isRunning()) {
-				((CloseableHttpAsyncClient) asyncHttpClient).start();
-			}
+		CloseableHttpAsyncClient asyncHttpClient = ClientFactory.getAsyncHttpClient();
+		if (!asyncHttpClient.isRunning()) {
+			asyncHttpClient.start();
 		}
 
 		final Future<org.apache.http.HttpResponse> future = asyncHttpClient.execute(requestObj,

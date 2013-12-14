@@ -25,11 +25,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.http;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.nio.client.HttpAsyncClient;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 
 import com.mashape.unirest.http.options.Option;
 import com.mashape.unirest.http.options.Options;
@@ -79,8 +80,16 @@ public class Unirest {
 	/**
 	 * Set the asynchronous AbstractHttpAsyncClient implementation to use for every asynchronous request
 	 */
-	public static void setAsyncHttpClient(HttpAsyncClient asyncHttpClient) {
+	public static void setAsyncHttpClient(CloseableHttpAsyncClient asyncHttpClient) {
 		Options.setOption(Option.ASYNCHTTPCLIENT, asyncHttpClient);
+	}
+	
+	/**
+	 * Close the asynchronous client and its event loop. Use this method to close all the threads and allow an application to exit.  
+	 */
+	public static void shutdown() throws IOException {
+		CloseableHttpAsyncClient asyncClient = (CloseableHttpAsyncClient) Options.getOption(Option.ASYNCHTTPCLIENT);
+		if (asyncClient.isRunning()) asyncClient.close();
 	}
 	
 	public static GetRequest get(String url) {
