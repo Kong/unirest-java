@@ -189,3 +189,11 @@ You can clear the default headers anytime with:
 ```java
 Unirest.clearDefaultHeaders();
 ```
+
+# Exiting an application
+
+If you are using the asynchronous client, a background event loop is started and your Java application won't be able to exit until you manually shutdown all the threads by invoking:
+
+```java
+Unirest.shutdown();
+```
