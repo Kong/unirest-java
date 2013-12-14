@@ -1,0 +1,8 @@
+#!/bin/bash
+
+mvn clean deploy
+mvn release:clean
+mvn release:prepare
+mvn release:perform
+
+# Now go to https://oss.sonatype.org/index.html and release it

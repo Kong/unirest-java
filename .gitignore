@@ -3,7 +3,6 @@ pom.xml.releaseBackup
 .project
 target
 .DS_Store
-deploy.sh
 .settings
 release.properties
 META-INF
