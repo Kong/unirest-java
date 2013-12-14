@@ -81,20 +81,10 @@ public class UnirestTest {
 	
 	@Test
 	public void testGetMultiple() throws JSONException, UnirestException { 
-		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get?try=1").asJson();
-		assertEquals(response.getBody().getObject().getJSONObject("args").getString("try"), "1");
-		
-		response = Unirest.get("http://httpbin.org/get?try=2").asJson();
-		assertEquals(response.getBody().getObject().getJSONObject("args").getString("try"), "2");
-		
-		response = Unirest.get("http://httpbin.org/get?try=3").asJson();
-		assertEquals(response.getBody().getObject().getJSONObject("args").getString("try"), "3");
-		
-		response = Unirest.get("http://httpbin.org/get?try=4").asJson();
-		assertEquals(response.getBody().getObject().getJSONObject("args").getString("try"), "4");
-		
-		response = Unirest.get("http://httpbin.org/get?try=5").asJson();
-		assertEquals(response.getBody().getObject().getJSONObject("args").getString("try"), "5");
+		for(int i=1;i<=20;i++) {
+			HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get?try=" + i).asJson();
+			assertEquals(response.getBody().getObject().getJSONObject("args").getString("try"), ((Integer)i).toString());
+		}
 	}
 	
 	@Test
