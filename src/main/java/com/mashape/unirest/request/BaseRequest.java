@@ -51,25 +51,49 @@ public abstract class BaseRequest {
 	public HttpResponse<String> asString() throws UnirestException {
 		return HttpClientHelper.request(httpRequest, String.class);
 	}
+	
+	public HttpResponse<String> asString(String charset) throws UnirestException {
+		return HttpClientHelper.request(httpRequest, String.class, charset);
+	}
 
 	public Future<HttpResponse<String>> asStringAsync() {
 		return HttpClientHelper.requestAsync(httpRequest, String.class, null);
 	}
 	
+	public Future<HttpResponse<String>> asStringAsync(String charset) {
+		return HttpClientHelper.requestAsync(httpRequest, String.class, null, charset);
+	}
+	
 	public Future<HttpResponse<String>> asStringAsync(Callback<String> callback) {
 		return HttpClientHelper.requestAsync(httpRequest, String.class, callback);
+	}
+	
+	public Future<HttpResponse<String>> asStringAsync(Callback<String> callback, String charset) {
+		return HttpClientHelper.requestAsync(httpRequest, String.class, callback, charset);
 	}
 
 	public HttpResponse<JsonNode> asJson() throws UnirestException {
 		return HttpClientHelper.request(httpRequest, JsonNode.class);
+	}
+	
+	public HttpResponse<JsonNode> asJson(String charset) throws UnirestException {
+		return HttpClientHelper.request(httpRequest, JsonNode.class, charset);
 	}
 
 	public Future<HttpResponse<JsonNode>> asJsonAsync() {
 		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class, null);
 	}
 	
+	public Future<HttpResponse<JsonNode>> asJsonAsync(String charset) {
+		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class, null, charset);
+	}
+	
 	public Future<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback) {
 		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class, callback);
+	}
+	
+	public Future<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback, String charset) {
+		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class, callback, charset);
 	}
 
 	public HttpResponse<InputStream> asBinary() throws UnirestException {

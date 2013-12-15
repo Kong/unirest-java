@@ -57,8 +57,12 @@ public class HttpResponse<T> {
 		return false;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public HttpResponse(org.apache.http.HttpResponse response, Class<T> responseClass) {
+		this(response, responseClass, null);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public HttpResponse(org.apache.http.HttpResponse response, Class<T> responseClass, String charset) {
 		HttpEntity responseEntity = response.getEntity();
 		
 		Header[] allHeaders = response.getAllHeaders();
@@ -84,10 +88,10 @@ public class HttpResponse<T> {
 				this.rawBody = inputStream;
 
 				if (JsonNode.class.equals(responseClass)) {
-					String jsonString = new String(rawBody).trim();
+					String jsonString = charset == null ? new String(rawBody).trim() : new String(rawBody, charset).trim();
 					this.body = (T) new JsonNode(jsonString);
 				} else if (String.class.equals(responseClass)) {
-					this.body = (T) new String(rawBody);
+					this.body = charset == null ? (T) new String(rawBody) : (T) new String(rawBody, charset);
 				} else if (InputStream.class.equals(responseClass)) {
 					this.body = (T) this.rawBody;
 				} else {
