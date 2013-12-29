@@ -46,8 +46,8 @@ public class HttpRequestWithBody extends HttpRequest {
 	}
 	
 	@Override
-	public HttpRequest headers(Map<String, String> headers) {
-		return super.headers(headers);
+	public HttpRequestWithBody headers(Map<String, String> headers) {
+		return (HttpRequestWithBody) super.headers(headers);
 	}
 	
 	public HttpRequestWithBody basicAuth(String username, String password) {
