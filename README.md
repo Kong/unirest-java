@@ -84,7 +84,10 @@ Requests are made when `as[Type]()` is invoked, possible types include `Json`, `
 Sometimes you want to add dynamic parameters in the URL, you can easily do that by adding a placeholder in the URL, and then by setting the route parameters with the `routeParam` function, like:
 
 ```java
-Unirest.get("http://httpbin.org/{method}").routeParam("method", "get").field("name", "Mark").asJson();
+Unirest.get("http://httpbin.org/{method}")
+  .routeParam("method", "get")
+  .field("name", "Mark")
+  .asJson();
 ```
 
 The placeholder's format is as easy as: `{custom_name}`
