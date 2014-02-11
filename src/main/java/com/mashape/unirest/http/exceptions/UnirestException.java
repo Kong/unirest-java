@@ -8,4 +8,8 @@ public class UnirestException extends Exception {
 		super(e);
 	}
 	
+	public UnirestException(String msg) {
+		super(msg);
+	}
+	
 }

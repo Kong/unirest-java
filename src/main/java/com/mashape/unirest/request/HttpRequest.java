@@ -29,9 +29,13 @@ import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.mashape.unirest.http.HttpMethod;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.http.utils.Base64Coder;
+import com.mashape.unirest.http.utils.URLParamEncoder;
 import com.mashape.unirest.request.body.Body;
 
 public class HttpRequest extends BaseRequest {
@@ -47,13 +51,21 @@ public class HttpRequest extends BaseRequest {
 	
 	public HttpRequest(HttpMethod method, String url) {
 		this.httpMethod = method;
-		try {
-			this.url = parseUrl(url).toString();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		
+		this.url = url;
 		super.httpRequest = this;
+	}
+	
+	public HttpRequest routeParam(String name, String value) throws UnirestException {
+		Matcher matcher = Pattern.compile("\\{" + name + "\\}").matcher(url);
+		int count = 0;
+		while(matcher.find()) {
+			count++;
+		}
+		if (count == 0) {
+			throw new UnirestException("Can't find route parameter name \"" + name + "\"");
+		}
+		this.url = url.replaceAll("\\{" + name + "\\}", URLParamEncoder.encode(value));
+		return this;
 	}
 	
 	public HttpRequest basicAuth(String username, String password) {
@@ -80,7 +92,11 @@ public class HttpRequest extends BaseRequest {
 	}
 
 	public String getUrl() {
-		return url;
+		try {
+			return parseUrl(url).toString();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public Map<String, String> getHeaders() {

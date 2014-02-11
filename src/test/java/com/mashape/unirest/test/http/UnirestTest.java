@@ -108,7 +108,7 @@ public class UnirestTest {
 		String body = "{\"jsonString\":{\"members\":\"members1\"}}";
 		HttpResponse<JsonNode> response = Unirest.delete("http://httpbin.org/delete").body(body).asJson();
 		assertEquals(200, response.getCode());
-		assertEquals(body, response.getBody().getObject().getString("json"));
+		assertEquals(body, response.getBody().getObject().getString("data"));
 	}
 	
 	@Test
@@ -231,6 +231,24 @@ public class UnirestTest {
 			if (System.currentTimeMillis() - start > 2100) { // Add 100ms for code execution
 				fail();
 			}
+		}
+	}
+	
+	@Test
+	public void testPathParameters() throws UnirestException {
+		HttpResponse<JsonNode> jsonResponse = Unirest.get("http://httpbin.org/{method}").routeParam("method", "get").field("name", "Mark").asJson();
+		
+		assertEquals(200, jsonResponse.getCode());
+		assertEquals(jsonResponse.getBody().getObject().getJSONObject("args").getString("name"), "Mark");
+	}
+	
+	@Test
+	public void testMissingPathParameter() {
+		try {
+			Unirest.get("http://httpbin.org/{method}").routeParam("method222", "get").field("name", "Mark").asJson();
+			fail();
+		} catch (UnirestException e) {
+			// OK
 		}
 	}
 }
