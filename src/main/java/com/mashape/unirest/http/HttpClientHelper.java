@@ -77,6 +77,10 @@ public class HttpClientHelper {
 	}
 
 	public static <T> Future<HttpResponse<T>> requestAsync(HttpRequest request, final Class<T> responseClass, Callback<T> callback) {
+		return requestAsync(request, responseClass, callback, null);
+	}
+	
+	public static <T> Future<HttpResponse<T>> requestAsync(HttpRequest request, final Class<T> responseClass, Callback<T> callback, final String charset) {
 		HttpUriRequest requestObj = prepareRequest(request);
 
 		CloseableHttpAsyncClient asyncHttpClient = ClientFactory.getAsyncHttpClient();
@@ -103,18 +107,22 @@ public class HttpClientHelper {
 
 			public HttpResponse<T> get() throws InterruptedException, ExecutionException {
 				org.apache.http.HttpResponse httpResponse = future.get();
-				return new HttpResponse<T>(httpResponse, responseClass);
+				return new HttpResponse<T>(httpResponse, responseClass, charset);
 			}
 
 			public HttpResponse<T> get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException,
 					TimeoutException {
 				org.apache.http.HttpResponse httpResponse = future.get(timeout, unit);
-				return new HttpResponse<T>(httpResponse, responseClass);
+				return new HttpResponse<T>(httpResponse, responseClass, charset);
 			}
 		};
 	}
 
 	public static <T> HttpResponse<T> request(HttpRequest request, Class<T> responseClass) throws UnirestException {
+		return request(request, responseClass, null);
+	}
+	
+	public static <T> HttpResponse<T> request(HttpRequest request, Class<T> responseClass, String charset) throws UnirestException {
 		HttpRequestBase requestObj = prepareRequest(request);
 		HttpClient client = ClientFactory.getHttpClient(); // The
 															// DefaultHttpClient
@@ -123,7 +131,7 @@ public class HttpClientHelper {
 		org.apache.http.HttpResponse response;
 		try {
 			response = client.execute(requestObj);
-			HttpResponse<T> httpResponse = new HttpResponse<T>(response, responseClass);
+			HttpResponse<T> httpResponse = new HttpResponse<T>(response, responseClass, charset);
 			requestObj.releaseConnection();
 			return httpResponse;
 		} catch (Exception e) {
