@@ -89,7 +89,7 @@ Unirest.get("http://httpbin.org/{method}")
   .field("name", "Mark")
   .asJson();
 ```
-In the above example final URL will be `http://httpbin.org/get` - Basically the placeholder `{method}` will be replaced with `get`.
+In the example above the final URL will be `http://httpbin.org/get` - Basically the placeholder `{method}` will be replaced with `get`.
 
 The placeholder's format is as easy as: `{custom_name}`
 
