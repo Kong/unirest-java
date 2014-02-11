@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.mashape.unirest.http.HttpMethod;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 public class GetRequest extends HttpRequest {
 
@@ -38,6 +39,11 @@ public class GetRequest extends HttpRequest {
 		super(method, url);
 	}
 
+	public GetRequest routeParam(String name, String value) throws UnirestException {
+		super.routeParam(name, value);
+		return this;
+	}
+	
 	public GetRequest field(String name, Object value) {
 		StringBuilder queryString  = new StringBuilder();
 		if (this.url.contains("?")) {

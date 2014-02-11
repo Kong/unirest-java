@@ -5,6 +5,7 @@ Unirest is a set of lightweight HTTP libraries available in multiple languages, 
 * Make `GET`, `POST`, `PUT`, `PATCH`, `DELETE` requests
 * Both syncronous and asynchronous (non-blocking) requests
 * It supports form parameters, file uploads and custom body entities
+* Easily add route parameters without ugly string concatenations
 * Supports gzip
 * Supports Basic Authentication natively
 * Customizable timeout
@@ -26,7 +27,7 @@ You can use Maven by including the library:
 <dependency>
     <groupId>com.mashape.unirest</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>1.3.3</version>
+    <version>1.3.4</version>
 </dependency>
 ```
 
@@ -36,7 +37,7 @@ There are dependencies for Unirest-Java, these should be already installed, and 
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
   <artifactId>httpclient</artifactId>
-  <version>4.3.1</version>
+  <version>4.3.2</version>
 </dependency>
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
@@ -46,20 +47,20 @@ There are dependencies for Unirest-Java, these should be already installed, and 
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
   <artifactId>httpmime</artifactId>
-  <version>4.3.1</version>
+  <version>4.3.2</version>
 </dependency>
 <dependency>
   <groupId>org.json</groupId>
   <artifactId>json</artifactId>
-  <version>20090211</version>
+  <version>20131018</version>
 </dependency>
 ```
 
 ### Without Maven
 
-Alternatively if you don't use Maven, you can directly include the JAR file in the classpath: http://oss.sonatype.org/content/repositories/releases/com/mashape/unirest/unirest-java/1.3.3/unirest-java-1.3.3.jar
+Alternatively if you don't use Maven, you can directly include the JAR file in the classpath: http://oss.sonatype.org/content/repositories/releases/com/mashape/unirest/unirest-java/1.3.4/unirest-java-1.3.4.jar
 
-Don't forget to also install the dependencies (`org.json`, `httpclient 4.3.1`, `httpmime 4.3.1`, `httpasyncclient 4.0`) in the classpath too. 
+Don't forget to also install the dependencies (`org.json`, `httpclient 4.3.2`, `httpmime 4.3.2`, `httpasyncclient 4.0`) in the classpath too. 
 
 There is also a way to generate a Unirest-Java JAR file that already includes the required dependencies, but you will need Maven to generate it. Follow the instructions at http://blog.mashape.com/post/69117323931/installing-unirest-java-with-the-maven-assembly-plugin
 
@@ -77,6 +78,16 @@ HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
 Requests are made when `as[Type]()` is invoked, possible types include `Json`, `Binary`, `String`. If the request supports and it is of type `HttpRequestWithBody`, a body it can be passed along with `.body(String|JsonNode)`. If you already have a map of parameters or do not wish to use seperate field methods for each one there is a `.fields(Map<String, Object> fields)` method that will serialize each key - value to form parameters on your request.
 
 `.headers(Map<String, String> headers)` is also supported in replacement of multiple header methods.
+
+### Route Parameters
+
+Sometimes you want to add dynamic parameters in the URL, you can easily do that by adding a placeholder in the URL, and then by setting the route parameters with the `routeParam` function, like:
+
+```java
+Unirest.get("http://httpbin.org/{method}").routeParam("method", "get").field("name", "Mark").asJson();
+```
+
+The placeholder's format is as easy as: `{custom_name}`
 
 ## Asynchronous Requests
 Sometimes, well most of the time, you want your application to be asynchronous and not block, Unirest supports this in Java using anonymous callbacks, or direct method placement:
