@@ -250,6 +250,5 @@ public class UnirestTest {
 		} catch (UnirestException e) {
 			// OK
 		}
-		
 	}
 }
