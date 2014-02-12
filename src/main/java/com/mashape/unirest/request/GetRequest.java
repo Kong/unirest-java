@@ -52,7 +52,8 @@ public class GetRequest extends HttpRequest {
 			queryString.append("?");
 		}
 		try {
-			queryString.append(name).append("=").append(URLEncoder.encode((value == null) ? "" : value.toString(), "UTF-8"));
+			String valueAsStr = (value == null) ? "" : value.toString().replace(" ", "%20");
+			queryString.append(name).append("=").append(URLEncoder.encode(valueAsStr, "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
