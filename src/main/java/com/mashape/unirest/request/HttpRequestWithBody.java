@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 
 import com.mashape.unirest.http.HttpMethod;
 import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.body.MultipartBody;
 import com.mashape.unirest.request.body.RequestBodyEntity;
 
@@ -38,6 +39,11 @@ public class HttpRequestWithBody extends HttpRequest {
 
 	public HttpRequestWithBody(HttpMethod method, String url) {
 		super(method, url);
+	}
+	
+	public HttpRequestWithBody routeParam(String name, String value) throws UnirestException {
+		super.routeParam(name, value);
+		return this;
 	}
 
 	@Override

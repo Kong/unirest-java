@@ -243,6 +243,14 @@ public class UnirestTest {
 	}
 	
 	@Test
+	public void testPathParameters2() throws UnirestException {
+		HttpResponse<JsonNode> jsonResponse = Unirest.patch("http://httpbin.org/{method}").routeParam("method", "patch").field("name", "Mark").asJson();
+		
+		assertEquals(200, jsonResponse.getCode());
+		assertEquals(jsonResponse.getBody().getObject().getJSONObject("form").getString("name"), "Mark");
+	}
+	
+	@Test
 	public void testMissingPathParameter() {
 		try {
 			Unirest.get("http://httpbin.org/{method}").routeParam("method222", "get").field("name", "Mark").asJson();
