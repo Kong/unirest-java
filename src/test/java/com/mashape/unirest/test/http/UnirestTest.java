@@ -114,7 +114,7 @@ public class UnirestTest {
 	@Test
 	public void testBasicAuth() throws JSONException, UnirestException { 
 		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/headers").basicAuth("user", "test").asJson();
-		assertEquals(response.getBody().getObject().getJSONObject("headers").getString("Authorization"), "Basic dXNlcjp0ZXN0");
+		assertEquals( "Basic dXNlcjp0ZXN0", response.getBody().getObject().getJSONObject("headers").getString("Authorization"));
 	}
 	
 	@Test
@@ -251,11 +251,11 @@ public class UnirestTest {
 	}
 	
 	@Test
-	public void testMissingPathParameter() {
+	public void testMissingPathParameter() throws UnirestException {
 		try {
 			Unirest.get("http://httpbin.org/{method}").routeParam("method222", "get").field("name", "Mark").asJson();
 			fail();
-		} catch (UnirestException e) {
+		} catch (RuntimeException e) {
 			// OK
 		}
 	}

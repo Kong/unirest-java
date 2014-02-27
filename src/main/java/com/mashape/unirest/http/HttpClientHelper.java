@@ -25,6 +25,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.http;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -166,9 +167,15 @@ public class HttpClientHelper {
 			reqObj = new HttpPatchWithBody(request.getUrl());
 			break;
 		}
-
-		for (Map.Entry<String, String> entry : request.getHeaders().entrySet()) {
-			reqObj.addHeader(entry.getKey(), entry.getValue());
+		
+		Set<Entry<String, List<String>>> entrySet = request.getHeaders().entrySet();
+		for(Entry<String, List<String>> entry : entrySet) {
+			List<String> values = entry.getValue();
+			if (values != null) {
+				for(String value : values) {
+					reqObj.addHeader(entry.getKey(), value);
+				}
+			}
 		}
 
 		// Set body

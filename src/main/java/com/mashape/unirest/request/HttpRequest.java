@@ -27,13 +27,14 @@ package com.mashape.unirest.request;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.mashape.unirest.http.HttpMethod;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.http.utils.Base64Coder;
 import com.mashape.unirest.http.utils.URLParamEncoder;
 import com.mashape.unirest.request.body.Body;
@@ -42,7 +43,7 @@ public class HttpRequest extends BaseRequest {
 
 	private HttpMethod httpMethod;
 	protected String url;
-	private Map<String, String> headers = new HashMap<String, String>();
+	private Map<String, List<String>> headers = new HashMap<String, List<String>>();
 	protected Body body;
 	
 	private URL parseUrl(String s) throws Exception {
@@ -55,14 +56,14 @@ public class HttpRequest extends BaseRequest {
 		super.httpRequest = this;
 	}
 	
-	public HttpRequest routeParam(String name, String value) throws UnirestException {
+	public HttpRequest routeParam(String name, String value) {
 		Matcher matcher = Pattern.compile("\\{" + name + "\\}").matcher(url);
 		int count = 0;
 		while(matcher.find()) {
 			count++;
 		}
 		if (count == 0) {
-			throw new UnirestException("Can't find route parameter name \"" + name + "\"");
+			throw new RuntimeException("Can't find route parameter name \"" + name + "\"");
 		}
 		this.url = url.replaceAll("\\{" + name + "\\}", URLParamEncoder.encode(value));
 		return this;
@@ -74,7 +75,12 @@ public class HttpRequest extends BaseRequest {
 	}
 	
 	public HttpRequest header(String name, String value) {
-		this.headers.put(name.toLowerCase(), value);
+		List<String> list = this.headers.get(name.trim());
+		if (list == null) {
+			list = new ArrayList<String>();
+		}
+		list.add(value);
+		this.headers.put(name.trim(), list);
 		return this;
 	}
 	
@@ -99,8 +105,8 @@ public class HttpRequest extends BaseRequest {
 		}
 	}
 
-	public Map<String, String> getHeaders() {
-		if (headers == null) return new HashMap<String, String>();
+	public Map<String, List<String>> getHeaders() {
+		if (headers == null) return new HashMap<String, List<String>>();
 		return headers;
 	}
 
