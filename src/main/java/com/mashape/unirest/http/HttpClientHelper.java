@@ -27,8 +27,6 @@ package com.mashape.unirest.http;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -49,8 +47,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.nio.entity.NByteArrayEntity;
-
-import sun.misc.IOUtils;
 
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -195,13 +191,6 @@ public class HttpClientHelper {
 						ByteArrayOutputStream output = new ByteArrayOutputStream();
 						entity.writeTo(output);
 						NByteArrayEntity en = new NByteArrayEntity(output.toByteArray());
-						InputStream content = en.getContent();
-						
-						java.util.Scanner s = new java.util.Scanner(content).useDelimiter("\\A");
-					    String result = s.hasNext() ? s.next() : "";
-					    System.out.println("Result is:");
-					    System.out.println(result);
-						
 						((HttpEntityEnclosingRequestBase) reqObj).setEntity(en);
 					} catch (IOException e) {
 						throw new RuntimeException(e);
