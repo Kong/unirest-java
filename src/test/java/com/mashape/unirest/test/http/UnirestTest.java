@@ -42,6 +42,7 @@ import org.junit.Test;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.http.options.Options;
 
@@ -157,6 +158,52 @@ public class UnirestTest {
 		assertNotNull(json.getArray());
 		assertEquals(1, json.getArray().length());
 		assertNotNull(json.getArray().get(0));
+		assertNotNull(json.getObject().getJSONObject("files"));
+	}
+	
+	@Test
+	public void testMultipartAsync() throws JSONException, InterruptedException, ExecutionException, URISyntaxException, UnirestException {
+		Future<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.org/post")
+		.field("file", new File(getClass().getResource("/test").toURI())).asJsonAsync(new Callback<JsonNode>() {
+			
+			public void failed(UnirestException e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void completed(HttpResponse<JsonNode> response) {
+				assertTrue(response.getHeaders().size() > 0);
+				assertTrue(response.getBody().toString().length() > 0);
+				assertFalse(response.getRawBody() == null);
+				assertEquals(200, response.getCode());
+				
+				JsonNode json = response.getBody();
+				assertFalse(json.isArray());
+				assertNotNull(json.getObject());
+				assertNotNull(json.getArray());
+				assertEquals(1, json.getArray().length());
+				assertNotNull(json.getArray().get(0));
+			}
+			
+			public void cancelled() {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+	
+		HttpResponse<JsonNode> response = future.get();
+		assertTrue(response.getHeaders().size() > 0);
+		assertTrue(response.getBody().toString().length() > 0);
+		assertFalse(response.getRawBody() == null);
+		assertEquals(200, response.getCode());
+		
+		JsonNode json = response.getBody();
+		assertFalse(json.isArray());
+		assertNotNull(json.getObject());
+		assertNotNull(json.getArray());
+		assertEquals(1, json.getArray().length());
+		assertNotNull(json.getArray().get(0));
+		assertNotNull(json.getObject().getJSONObject("files"));
 	}
 	
 	@Test

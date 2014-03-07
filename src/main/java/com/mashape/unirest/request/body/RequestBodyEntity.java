@@ -57,5 +57,5 @@ public class RequestBodyEntity extends BaseRequest implements Body {
 	public HttpEntity getEntity() {
 		return new StringEntity(body.toString(), UTF_8);
 	}
-	
+
 }

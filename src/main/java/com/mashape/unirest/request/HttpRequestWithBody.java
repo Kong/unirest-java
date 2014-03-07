@@ -61,13 +61,13 @@ public class HttpRequestWithBody extends HttpRequest {
 	}
 
 	public MultipartBody field(String name, Object value) {
-		MultipartBody body =  new MultipartBody(this).field(name, (value == null) ? "" : value.toString());
+		MultipartBody body = new MultipartBody(this).field(name, (value == null) ? "" : value.toString());
 		this.body = body;
 		return body;
 	}
 	
 	public MultipartBody field(String name, File file) {
-		MultipartBody body =  new MultipartBody(this).field(name, file);
+		MultipartBody body = new MultipartBody(this).field(name, file);
 		this.body = body;
 		return body;
 	}

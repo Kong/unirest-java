@@ -25,6 +25,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.http;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,6 +38,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
@@ -43,6 +48,9 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.nio.entity.NByteArrayEntity;
+
+import sun.misc.IOUtils;
 
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -53,7 +61,7 @@ import com.mashape.unirest.request.HttpRequest;
 
 public class HttpClientHelper {
 
-	private static final String USER_AGENT = "unirest-java/1.1";
+	private static final String USER_AGENT = "unirest-java/1.3.6";
 
 	private static <T> FutureCallback<org.apache.http.HttpResponse> prepareCallback(final Class<T> responseClass,
 			final Callback<T> callback) {
@@ -78,7 +86,7 @@ public class HttpClientHelper {
 	}
 
 	public static <T> Future<HttpResponse<T>> requestAsync(HttpRequest request, final Class<T> responseClass, Callback<T> callback) {
-		HttpUriRequest requestObj = prepareRequest(request);
+		HttpUriRequest requestObj = prepareRequest(request, true);
 
 		CloseableHttpAsyncClient asyncHttpClient = ClientFactory.getAsyncHttpClient();
 		if (!asyncHttpClient.isRunning()) {
@@ -116,7 +124,7 @@ public class HttpClientHelper {
 	}
 
 	public static <T> HttpResponse<T> request(HttpRequest request, Class<T> responseClass) throws UnirestException {
-		HttpRequestBase requestObj = prepareRequest(request);
+		HttpRequestBase requestObj = prepareRequest(request, false);
 		HttpClient client = ClientFactory.getHttpClient(); // The
 															// DefaultHttpClient
 															// is thread-safe
@@ -134,7 +142,7 @@ public class HttpClientHelper {
 		}
 	}
 
-	private static HttpRequestBase prepareRequest(HttpRequest request) {
+	private static HttpRequestBase prepareRequest(HttpRequest request, boolean async) {
 
 		request.header("user-agent", USER_AGENT);
 		request.header("accept-encoding", "gzip");
@@ -181,7 +189,26 @@ public class HttpClientHelper {
 		// Set body
 		if (request.getHttpMethod() != HttpMethod.GET) {
 			if (request.getBody() != null) {
-				((HttpEntityEnclosingRequestBase) reqObj).setEntity(request.getBody().getEntity());
+				HttpEntity entity = request.getBody().getEntity();
+				if (async) {
+					try {
+						ByteArrayOutputStream output = new ByteArrayOutputStream();
+						entity.writeTo(output);
+						NByteArrayEntity en = new NByteArrayEntity(output.toByteArray());
+						InputStream content = en.getContent();
+						
+						java.util.Scanner s = new java.util.Scanner(content).useDelimiter("\\A");
+					    String result = s.hasNext() ? s.next() : "";
+					    System.out.println("Result is:");
+					    System.out.println(result);
+						
+						((HttpEntityEnclosingRequestBase) reqObj).setEntity(en);
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+				} else {
+					((HttpEntityEnclosingRequestBase) reqObj).setEntity(entity);
+				}
 			}
 		}
 

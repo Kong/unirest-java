@@ -37,15 +37,19 @@ public class JsonNode {
 	private boolean array;
 
 	public JsonNode(String json) {
-		try {
-			jsonObject = new JSONObject(json);
-		} catch (JSONException e) {
-			// It may be an array
+		if (json == null || "".equals(json.trim())) {
+			jsonObject = new JSONObject();
+		} else {
 			try {
-				jsonArray = new JSONArray(json);
-				array = true;
-			} catch (JSONException e1) {
-				throw new RuntimeException(e1);
+				jsonObject = new JSONObject(json);
+			} catch (JSONException e) {
+				// It may be an array
+				try {
+					jsonArray = new JSONArray(json);
+					array = true;
+				} catch (JSONException e1) {
+					throw new RuntimeException(e1);
+				}
 			}
 		}
 	}

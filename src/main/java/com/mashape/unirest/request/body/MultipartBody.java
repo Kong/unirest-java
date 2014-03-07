@@ -75,7 +75,6 @@ public class MultipartBody extends BaseRequest implements Body {
 			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 			for(Entry<String, Object> part : parameters.entrySet()) {
 				if (part.getValue() instanceof File) {
-					hasFile = true;
 					builder.addPart(part.getKey(), new FileBody((File) part.getValue()));
 				} else {
 					builder.addPart(part.getKey(), new StringBody(part.getValue().toString(), ContentType.APPLICATION_FORM_URLENCODED));
