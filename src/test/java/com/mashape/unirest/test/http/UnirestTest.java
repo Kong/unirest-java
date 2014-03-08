@@ -33,10 +33,13 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONException;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.mashape.unirest.http.HttpResponse;
@@ -50,6 +53,15 @@ public class UnirestTest {
 
 	private static final String UNEXISTING_IP = "http://192.168.1.100/";
 
+	private CountDownLatch lock;
+	private boolean status;
+	
+	@Before
+	public void setUp() {
+		lock = new CountDownLatch(1);
+		status = false;
+	}
+	
 	@Test
 	public void testRequests() throws JSONException, UnirestException {
 		HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
@@ -140,6 +152,43 @@ public class UnirestTest {
 		assertNotNull(json.getArray());
 		assertEquals(1, json.getArray().length());
 		assertNotNull(json.getArray().get(0));
+	}
+	
+	@Test
+	public void testAsyncCallback() throws JSONException, InterruptedException, ExecutionException {
+		Unirest.post("http://httpbin.org/post")
+		 .header("accept", "application/json")
+		 .field("param1", "value1")
+		 .field("param2","bye")
+		 .asJsonAsync(new Callback<JsonNode>() {
+			
+			public void failed(UnirestException e) {
+				fail();
+			}
+			
+			public void completed(HttpResponse<JsonNode> jsonResponse) {
+				assertTrue(jsonResponse.getHeaders().size() > 0);
+				assertTrue(jsonResponse.getBody().toString().length() > 0);
+				assertFalse(jsonResponse.getRawBody() == null);
+				assertEquals(200, jsonResponse.getCode());
+				
+				JsonNode json = jsonResponse.getBody();
+				assertFalse(json.isArray());
+				assertNotNull(json.getObject());
+				assertNotNull(json.getArray());
+				assertEquals(1, json.getArray().length());
+				assertNotNull(json.getArray().get(0));
+				status = true;
+				lock.countDown();
+			}
+			
+			public void cancelled() {
+				fail();
+			}
+		});
+		
+		lock.await(10, TimeUnit.SECONDS);
+		assertTrue(status);
 	}
 	
 	@Test

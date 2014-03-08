@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 
 import com.mashape.unirest.http.options.Option;
@@ -88,6 +89,11 @@ public class Unirest {
 	 * Close the asynchronous client and its event loop. Use this method to close all the threads and allow an application to exit.  
 	 */
 	public static void shutdown() throws IOException {
+		// Closing the sync client
+		CloseableHttpClient syncClient = (CloseableHttpClient) Options.getOption(Option.HTTPCLIENT);
+		syncClient.close();
+		
+		// Closing the async client (if running)
 		CloseableHttpAsyncClient asyncClient = (CloseableHttpAsyncClient) Options.getOption(Option.ASYNCHTTPCLIENT);
 		if (asyncClient.isRunning()) asyncClient.close();
 	}
