@@ -29,10 +29,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
@@ -41,18 +39,14 @@ import org.apache.http.HttpEntity;
 public class HttpResponse<T> {
 
 	private int code;
-	private Map<String, String> headers;
+	private Headers headers = new Headers();
 	private InputStream rawBody;
 	private T body;
 
 	private boolean isGzipped() {
-		Set<Entry<String, String>> headers = this.headers.entrySet();
-		for(Entry<String, String> header : headers) {
-			if (header.getKey().equalsIgnoreCase("content-encoding")) {
-				if (header.getValue() != null && header.getValue().equalsIgnoreCase("gzip")) {
-					return true;
-				}
-			}
+		String contentEncoding = this.headers.getFirst("content-encoding");
+		if (contentEncoding != null && "gzip".equals(contentEncoding.toLowerCase().trim())) {
+			return true;
 		}
 		return false;
 	}
@@ -62,9 +56,12 @@ public class HttpResponse<T> {
 		HttpEntity responseEntity = response.getEntity();
 		
 		Header[] allHeaders = response.getAllHeaders();
-		this.headers = new HashMap<String, String>();
 		for(Header header : allHeaders) {
-			headers.put(header.getName().toLowerCase(), header.getValue());
+			String headerName = header.getName().toLowerCase();
+			List<String> list = headers.get(headerName);
+			if (list == null) list = new ArrayList<String>();
+			list.add(header.getValue());
+			headers.put(headerName, list);
 		}
 		this.code = response.getStatusLine().getStatusCode();
 		
@@ -122,7 +119,7 @@ public class HttpResponse<T> {
 		return code;
 	}
 
-	public Map<String, String> getHeaders() {
+	public Headers getHeaders() {
 		return headers;
 	}
 
