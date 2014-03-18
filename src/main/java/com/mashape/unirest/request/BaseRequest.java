@@ -44,6 +44,10 @@ public abstract class BaseRequest {
 		this.httpRequest = httpRequest;
 	}
 	
+	public HttpRequest getHttpRequest() {
+		return this.httpRequest;
+	}
+	
 	protected BaseRequest() {
 		super();
 	}
