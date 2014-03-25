@@ -33,8 +33,10 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 
+import com.mashape.unirest.http.async.utils.AsyncIdleConnectionMonitorThread;
 import com.mashape.unirest.http.options.Option;
 import com.mashape.unirest.http.options.Options;
+import com.mashape.unirest.http.utils.SyncIdleConnectionMonitorThread;
 import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
 
@@ -93,9 +95,17 @@ public class Unirest {
 		CloseableHttpClient syncClient = (CloseableHttpClient) Options.getOption(Option.HTTPCLIENT);
 		syncClient.close();
 		
+		SyncIdleConnectionMonitorThread syncIdleConnectionMonitorThread = (SyncIdleConnectionMonitorThread) Options.getOption(Option.SYNC_MONITOR);
+		syncIdleConnectionMonitorThread.shutdown();
+		
 		// Closing the async client (if running)
 		CloseableHttpAsyncClient asyncClient = (CloseableHttpAsyncClient) Options.getOption(Option.ASYNCHTTPCLIENT);
-		if (asyncClient.isRunning()) asyncClient.close();
+		if (asyncClient.isRunning()) {
+			asyncClient.close();
+			AsyncIdleConnectionMonitorThread asyncIdleConnectionMonitorThread = (AsyncIdleConnectionMonitorThread) Options.getOption(Option.ASYNC_MONITOR);
+			asyncIdleConnectionMonitorThread.shutdown();
+		}
+		
 	}
 	
 	public static GetRequest get(String url) {

@@ -49,6 +49,7 @@ import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.nio.entity.NByteArrayEntity;
 
 import com.mashape.unirest.http.async.Callback;
+import com.mashape.unirest.http.async.utils.AsyncIdleConnectionMonitorThread;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.http.options.Option;
 import com.mashape.unirest.http.options.Options;
@@ -87,6 +88,8 @@ public class HttpClientHelper {
 		CloseableHttpAsyncClient asyncHttpClient = ClientFactory.getAsyncHttpClient();
 		if (!asyncHttpClient.isRunning()) {
 			asyncHttpClient.start();
+			AsyncIdleConnectionMonitorThread asyncIdleConnectionMonitorThread = (AsyncIdleConnectionMonitorThread) Options.getOption(Option.ASYNC_MONITOR);
+			asyncIdleConnectionMonitorThread.start();
 		}
 
 		final Future<org.apache.http.HttpResponse> future = asyncHttpClient.execute(requestObj,
