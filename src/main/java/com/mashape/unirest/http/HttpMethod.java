@@ -26,5 +26,5 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.mashape.unirest.http;
 
 public enum HttpMethod {
-	GET, POST, PUT, DELETE, PATCH;
+	GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS;
 }

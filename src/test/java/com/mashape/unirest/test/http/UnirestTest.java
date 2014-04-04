@@ -236,8 +236,8 @@ public class UnirestTest {
 			
 			public void cancelled() {
 				// TODO Auto-generated method stub
-				
 			}
+			
 		});
 	
 		HttpResponse<JsonNode> response = future.get();
