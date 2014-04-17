@@ -37,22 +37,22 @@ There are dependencies for Unirest-Java, these should be already installed, and 
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
   <artifactId>httpclient</artifactId>
-  <version>4.3.2</version>
+  <version>4.3.3</version>
 </dependency>
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
   <artifactId>httpasyncclient</artifactId>
-  <version>4.0</version>
+  <version>4.0.1</version>
 </dependency>
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
   <artifactId>httpmime</artifactId>
-  <version>4.3.2</version>
+  <version>4.3.3</version>
 </dependency>
 <dependency>
   <groupId>org.json</groupId>
   <artifactId>json</artifactId>
-  <version>20131018</version>
+  <version>20140107</version>
 </dependency>
 ```
 
