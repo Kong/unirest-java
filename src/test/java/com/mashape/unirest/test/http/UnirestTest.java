@@ -178,6 +178,10 @@ public class UnirestTest {
 				assertNotNull(json.getArray());
 				assertEquals(1, json.getArray().length());
 				assertNotNull(json.getArray().get(0));
+				
+				assertEquals("value1", json.getObject().getJSONObject("form").getString("param1"));
+				assertEquals("bye", json.getObject().getJSONObject("form").getString("param2"));
+				
 				status = true;
 				lock.countDown();
 			}
@@ -195,6 +199,7 @@ public class UnirestTest {
 	public void testMultipart() throws JSONException, InterruptedException, ExecutionException, URISyntaxException, UnirestException {
 		HttpResponse<JsonNode> jsonResponse =
 				Unirest.post("http://httpbin.org/post")
+				.field("name", "Mark")
 				.field("file", new File(getClass().getResource("/test").toURI())).asJson();
 		assertTrue(jsonResponse.getHeaders().size() > 0);
 		assertTrue(jsonResponse.getBody().toString().length() > 0);
@@ -208,16 +213,19 @@ public class UnirestTest {
 		assertEquals(1, json.getArray().length());
 		assertNotNull(json.getArray().get(0));
 		assertNotNull(json.getObject().getJSONObject("files"));
+		
+		assertEquals("This \nis \na \ntest \nfile", json.getObject().getJSONObject("files").getString("file"));
+		assertEquals("Mark", json.getObject().getJSONObject("form").getString("name"));
 	}
 	
 	@Test
 	public void testMultipartAsync() throws JSONException, InterruptedException, ExecutionException, URISyntaxException, UnirestException {
-		Future<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.org/post")
+		Unirest.post("http://httpbin.org/post")
+		.field("name", "Mark")
 		.field("file", new File(getClass().getResource("/test").toURI())).asJsonAsync(new Callback<JsonNode>() {
 			
 			public void failed(UnirestException e) {
-				// TODO Auto-generated method stub
-				
+				fail();
 			}
 			
 			public void completed(HttpResponse<JsonNode> response) {
@@ -227,32 +235,28 @@ public class UnirestTest {
 				assertEquals(200, response.getCode());
 				
 				JsonNode json = response.getBody();
+				System.out.println(json);
 				assertFalse(json.isArray());
 				assertNotNull(json.getObject());
 				assertNotNull(json.getArray());
 				assertEquals(1, json.getArray().length());
 				assertNotNull(json.getArray().get(0));
+				
+				assertEquals("This \nis \na \ntest \nfile", json.getObject().getJSONObject("files").getString("file"));
+				assertEquals("Mark", json.getObject().getJSONObject("form").getString("name"));
+				
+				status = true;
+				lock.countDown();
 			}
 			
 			public void cancelled() {
-				// TODO Auto-generated method stub
+				fail();
 			}
 			
 		});
-	
-		HttpResponse<JsonNode> response = future.get();
-		assertTrue(response.getHeaders().size() > 0);
-		assertTrue(response.getBody().toString().length() > 0);
-		assertFalse(response.getRawBody() == null);
-		assertEquals(200, response.getCode());
 		
-		JsonNode json = response.getBody();
-		assertFalse(json.isArray());
-		assertNotNull(json.getObject());
-		assertNotNull(json.getArray());
-		assertEquals(1, json.getArray().length());
-		assertNotNull(json.getArray().get(0));
-//		assertNotNull(json.getObject().getJSONObject("files"));
+		lock.await(10, TimeUnit.SECONDS);
+		assertTrue(status);
 	}
 	
 	@Test

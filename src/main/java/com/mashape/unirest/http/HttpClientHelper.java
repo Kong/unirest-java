@@ -40,12 +40,15 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.nio.entity.NByteArrayEntity;
 
 import com.mashape.unirest.http.async.Callback;
@@ -173,6 +176,12 @@ public class HttpClientHelper {
 		case PATCH:
 			reqObj = new HttpPatchWithBody(request.getUrl());
 			break;
+		case OPTIONS:
+			reqObj = new HttpOptions(request.getUrl());
+			break;
+		case HEAD:
+			reqObj = new HttpHead(request.getUrl());
+			break;
 		}
 		
 		Set<Entry<String, List<String>>> entrySet = request.getHeaders().entrySet();
@@ -186,10 +195,11 @@ public class HttpClientHelper {
 		}
 
 		// Set body
-		if (request.getHttpMethod() != HttpMethod.GET) {
+		if (!(request.getHttpMethod() == HttpMethod.GET || request.getHttpMethod() == HttpMethod.HEAD)) {
 			if (request.getBody() != null) {
 				HttpEntity entity = request.getBody().getEntity();
 				if (async) {
+					reqObj.setHeader(entity.getContentType());
 					try {
 						ByteArrayOutputStream output = new ByteArrayOutputStream();
 						entity.writeTo(output);
