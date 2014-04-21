@@ -27,7 +27,9 @@ package com.mashape.unirest.request.body;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -44,6 +46,7 @@ import com.mashape.unirest.request.HttpRequest;
 
 public class MultipartBody extends BaseRequest implements Body {
 
+	private List<String> keyOrder = new ArrayList<String>();
 	private Map<String, Object> parameters = new HashMap<String, Object>();
 
 	private boolean hasFile;
@@ -55,11 +58,13 @@ public class MultipartBody extends BaseRequest implements Body {
 	}
 	
 	public MultipartBody field(String name, String value) {
+		keyOrder.add(name);
 		parameters.put(name, value);
 		return this;
 	}
 	
 	public MultipartBody field(String name, File file) {
+		keyOrder.add(name);
 		this.parameters.put(name, file);
 		hasFile = true;
 		return this;
@@ -73,11 +78,12 @@ public class MultipartBody extends BaseRequest implements Body {
 	public HttpEntity getEntity() {
 		if (hasFile) {
 			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-			for(Entry<String, Object> part : parameters.entrySet()) {
-				if (part.getValue() instanceof File) {
-					builder.addPart(part.getKey(), new FileBody((File) part.getValue()));
+			for(String key: keyOrder) {
+				Object value = parameters.get(key);
+				if (value instanceof File) {
+					builder.addPart(key, new FileBody((File) value));
 				} else {
-					builder.addPart(part.getKey(), new StringBody(part.getValue().toString(), ContentType.APPLICATION_FORM_URLENCODED));
+					builder.addPart(key, new StringBody(value.toString(), ContentType.APPLICATION_FORM_URLENCODED));
 				}
 			}
 			return builder.build();
