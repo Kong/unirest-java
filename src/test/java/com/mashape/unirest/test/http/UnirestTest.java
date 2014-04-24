@@ -32,7 +32,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -51,8 +54,6 @@ import com.mashape.unirest.http.options.Options;
 
 public class UnirestTest {
 
-	private static final String UNEXISTING_IP = "http://192.168.1.100/";
-
 	private CountDownLatch lock;
 	private boolean status;
 	
@@ -60,6 +61,17 @@ public class UnirestTest {
 	public void setUp() {
 		lock = new CountDownLatch(1);
 		status = false;
+	}
+	
+	private String findAvailableIpAddress() throws UnknownHostException, IOException {
+		for(int i = 100;i<=255;i++) {
+			String ip = "192.168.1." + i;
+			if (!InetAddress.getByName(ip).isReachable(1000)) {
+				return ip;
+			}
+		}
+		
+		throw new RuntimeException("Couldn't find an available IP address in the range of 192.168.0.100-255");
 	}
 	
 	@Test
@@ -86,6 +98,15 @@ public class UnirestTest {
 	@Test
 	public void testGet() throws JSONException, UnirestException { 
 		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get?name=mark").asJson();
+		assertEquals(response.getBody().getObject().getJSONObject("args").getString("name"), "mark");
+		
+		response = Unirest.get("http://httpbin.org/get").field("name", "mark2").asJson();
+		assertEquals(response.getBody().getObject().getJSONObject("args").getString("name"), "mark2");
+	}
+	
+	@Test
+	public void testHead() throws JSONException, UnirestException { 
+		HttpResponse<JsonNode> response = Unirest.head("http://httpbin.org/get?name=mark").asJson();
 		assertEquals(response.getBody().getObject().getJSONObject("args").getString("name"), "mark");
 		
 		response = Unirest.get("http://httpbin.org/get").field("name", "mark2").asJson();
@@ -235,7 +256,6 @@ public class UnirestTest {
 				assertEquals(200, response.getCode());
 				
 				JsonNode json = response.getBody();
-				System.out.println(json);
 				assertFalse(json.isArray());
 				assertNotNull(json.getObject());
 				assertNotNull(json.getArray());
@@ -314,10 +334,11 @@ public class UnirestTest {
 	}
 	
 	@Test
-	public void testSetTimeouts() {
+	public void testSetTimeouts() throws UnknownHostException, IOException {
+		String address = "http://" + findAvailableIpAddress() + "/";
 		long start = System.currentTimeMillis();
 		try {
-			Unirest.get(UNEXISTING_IP).asString();
+			Unirest.get("http://" + address + "/").asString();
 		} catch (Exception e) {
 			if (System.currentTimeMillis() - start > Options.CONNECTION_TIMEOUT + 100) { // Add 100ms for code execution
 				fail();
@@ -326,7 +347,7 @@ public class UnirestTest {
 		Unirest.setTimeouts(2000, 10000);
 		start = System.currentTimeMillis();
 		try {
-			Unirest.get(UNEXISTING_IP).asString();
+			Unirest.get("http://" + address + "/").asString();
 		} catch (Exception e) {
 			if (System.currentTimeMillis() - start > 2100) { // Add 100ms for code execution
 				fail();

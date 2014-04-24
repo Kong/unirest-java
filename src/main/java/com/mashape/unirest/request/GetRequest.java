@@ -43,6 +43,18 @@ public class GetRequest extends HttpRequest {
 		return this;
 	}
 	
+	@Override
+	public HttpRequest header(String name, String value) {
+		super.header(name, value);
+		return this;
+	}
+	
+	@Override
+	public HttpRequest headers(Map<String, String> headers) {
+		super.headers(headers);
+		return this;
+	}
+	
 	public GetRequest field(String name, Object value) {
 		StringBuilder queryString  = new StringBuilder();
 		if (this.url.contains("?")) {
@@ -72,6 +84,7 @@ public class GetRequest extends HttpRequest {
 		return this;
 	}
 	
+	@Override
 	public GetRequest basicAuth(String username, String password) {
 		super.basicAuth(username, password);
 		return this;

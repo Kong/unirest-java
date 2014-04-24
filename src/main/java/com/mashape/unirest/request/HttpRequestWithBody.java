@@ -55,6 +55,7 @@ public class HttpRequestWithBody extends HttpRequest {
 		return (HttpRequestWithBody) super.headers(headers);
 	}
 	
+	@Override
 	public HttpRequestWithBody basicAuth(String username, String password) {
 		super.basicAuth(username, password);
 		return this;

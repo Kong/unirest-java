@@ -112,6 +112,14 @@ public class Unirest {
 		return new GetRequest(HttpMethod.GET, url);
 	}
 	
+	public static GetRequest head(String url) {
+		return new GetRequest(HttpMethod.HEAD, url);
+	}
+	
+	public static HttpRequestWithBody options(String url) {
+		return new HttpRequestWithBody(HttpMethod.OPTIONS, url);
+	}
+	
 	public static HttpRequestWithBody post(String url) {
 		return new HttpRequestWithBody(HttpMethod.POST, url);
 	}
