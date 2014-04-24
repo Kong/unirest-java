@@ -105,15 +105,6 @@ public class UnirestTest {
 	}
 	
 	@Test
-	public void testHead() throws JSONException, UnirestException { 
-		HttpResponse<JsonNode> response = Unirest.head("http://httpbin.org/get?name=mark").asJson();
-		assertEquals(response.getBody().getObject().getJSONObject("args").getString("name"), "mark");
-		
-		response = Unirest.get("http://httpbin.org/get").field("name", "mark2").asJson();
-		assertEquals(response.getBody().getObject().getJSONObject("args").getString("name"), "mark2");
-	}
-	
-	@Test
 	public void testGetMultiple() throws JSONException, UnirestException { 
 		for(int i=1;i<=20;i++) {
 			HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get?try=" + i).asJson();
