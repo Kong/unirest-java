@@ -2,7 +2,7 @@
 
 Unirest is a set of lightweight HTTP libraries available in multiple languages, ideal for most applications:
 
-* Make `GET`, `POST`, `PUT`, `PATCH`, `DELETE` requests
+* Make `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS` requests
 * Both syncronous and asynchronous (non-blocking) requests
 * It supports form parameters, file uploads and custom body entities
 * Easily add route parameters without ugly string concatenations
@@ -152,10 +152,12 @@ HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/headers").basi
 The Java Unirest library follows the builder style conventions. You start building your request by creating a `HttpRequest` object using one of the following:
 
 ```java
-HttpRequest request = Unirest.get(String url);
+GetRequest request = Unirest.get(String url);
+GetRequest request = Unirest.head(String url);
 HttpRequestWithBody request = Unirest.post(String url);
 HttpRequestWithBody request = Unirest.put(String url);
 HttpRequestWithBody request = Unirest.patch(String url);
+HttpRequestWithBody request = Unirest.options(String url);
 HttpRequestWithBody request = Unirest.delete(String url);
 ```
 
