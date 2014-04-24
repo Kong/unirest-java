@@ -48,7 +48,6 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.nio.entity.NByteArrayEntity;
 
 import com.mashape.unirest.http.async.Callback;
@@ -61,7 +60,7 @@ import com.mashape.unirest.request.HttpRequest;
 
 public class HttpClientHelper {
 
-	private static final String USER_AGENT = "unirest-java/1.3.6";
+	private static final String USER_AGENT = "unirest-java/1.3.11";
 
 	private static <T> FutureCallback<org.apache.http.HttpResponse> prepareCallback(final Class<T> responseClass,
 			final Callback<T> callback) {
