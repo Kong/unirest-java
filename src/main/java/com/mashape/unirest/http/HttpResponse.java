@@ -35,6 +35,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.util.EntityUtils;
 
 public class HttpResponse<T> {
 
@@ -42,6 +43,7 @@ public class HttpResponse<T> {
 	private Headers headers = new Headers();
 	private InputStream rawBody;
 	private T body;
+	private String charSet;
 
 	private boolean isGzipped() {
 		String contentEncoding = this.headers.getFirst("content-encoding");
@@ -81,10 +83,10 @@ public class HttpResponse<T> {
 				this.rawBody = inputStream;
 
 				if (JsonNode.class.equals(responseClass)) {
-					String jsonString = new String(rawBody).trim();
+					String jsonString =EntityUtils.toString(responseEntity).trim();
 					this.body = (T) new JsonNode(jsonString);
 				} else if (String.class.equals(responseClass)) {
-					this.body = (T) new String(rawBody);
+					this.body= (T) EntityUtils.toString(responseEntity);	
 				} else if (InputStream.class.equals(responseClass)) {
 					this.body = (T) this.rawBody;
 				} else {
