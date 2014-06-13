@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -58,6 +57,12 @@ public class MultipartBody extends BaseRequest implements Body {
 	}
 	
 	public MultipartBody field(String name, String value) {
+		keyOrder.add(name);
+		parameters.put(name, value);
+		return this;
+	}
+	
+	public MultipartBody field(String name, Object value) {
 		keyOrder.add(name);
 		parameters.put(name, value);
 		return this;
