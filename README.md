@@ -27,7 +27,7 @@ You can use Maven by including the library:
 <dependency>
     <groupId>com.mashape.unirest</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>1.3.14</version>
+    <version>1.3.15</version>
 </dependency>
 ```
 
@@ -37,7 +37,7 @@ There are dependencies for Unirest-Java, these should be already installed, and 
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
   <artifactId>httpclient</artifactId>
-  <version>4.3.3</version>
+  <version>4.3.4</version>
 </dependency>
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
@@ -47,7 +47,7 @@ There are dependencies for Unirest-Java, these should be already installed, and 
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
   <artifactId>httpmime</artifactId>
-  <version>4.3.3</version>
+  <version>4.3.4</version>
 </dependency>
 <dependency>
   <groupId>org.json</groupId>
@@ -58,7 +58,7 @@ There are dependencies for Unirest-Java, these should be already installed, and 
 
 ### Without Maven
 
-Alternatively if you don't use Maven, you can directly include the JAR file in the classpath: http://oss.sonatype.org/content/repositories/releases/com/mashape/unirest/unirest-java/1.3.14/unirest-java-1.3.14.jar
+Alternatively if you don't use Maven, you can directly include the JAR file in the classpath: http://oss.sonatype.org/content/repositories/releases/com/mashape/unirest/unirest-java/1.3.15/unirest-java-1.3.15.jar
 
 Don't forget to also install the dependencies (`org.json`, `httpclient 4.3.3`, `httpmime 4.3.3`, `httpasyncclient 4.0.1`) in the classpath too. 
 
