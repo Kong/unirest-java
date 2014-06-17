@@ -27,7 +27,7 @@ You can use Maven by including the library:
 <dependency>
     <groupId>com.mashape.unirest</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>1.3.13</version>
+    <version>1.3.14</version>
 </dependency>
 ```
 
@@ -58,7 +58,7 @@ There are dependencies for Unirest-Java, these should be already installed, and 
 
 ### Without Maven
 
-Alternatively if you don't use Maven, you can directly include the JAR file in the classpath: http://oss.sonatype.org/content/repositories/releases/com/mashape/unirest/unirest-java/1.3.13/unirest-java-1.3.13.jar
+Alternatively if you don't use Maven, you can directly include the JAR file in the classpath: http://oss.sonatype.org/content/repositories/releases/com/mashape/unirest/unirest-java/1.3.14/unirest-java-1.3.14.jar
 
 Don't forget to also install the dependencies (`org.json`, `httpclient 4.3.3`, `httpmime 4.3.3`, `httpasyncclient 4.0.1`) in the classpath too. 
 
