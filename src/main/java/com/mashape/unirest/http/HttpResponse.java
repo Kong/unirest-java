@@ -35,6 +35,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.util.EntityUtils;
 
 public class HttpResponse<T> {
 
@@ -42,6 +43,7 @@ public class HttpResponse<T> {
 	private Headers headers = new Headers();
 	private InputStream rawBody;
 	private T body;
+	private String charSet;
 
 	private boolean isGzipped() {
 		String contentEncoding = this.headers.getFirst("content-encoding");
@@ -63,6 +65,10 @@ public class HttpResponse<T> {
 			list.add(header.getValue());
 			headers.put(headerName, list);
 		}
+		String contentType=headers.get("content-type").toString();
+		if((contentType!=null)&&(contentType.contains("charset=")))
+			charSet=contentType.substring(contentType.indexOf("charset=")+8,contentType.length()-1).toLowerCase();
+		else charSet="utf-8";
 		this.code = response.getStatusLine().getStatusCode();
 		
 		if (responseEntity != null) {
@@ -81,10 +87,12 @@ public class HttpResponse<T> {
 				this.rawBody = inputStream;
 
 				if (JsonNode.class.equals(responseClass)) {
-					String jsonString = new String(rawBody).trim();
+					//String jsonString =EntityUtils.toString( response.getEntity()).trim();
+					String jsonString =new String(rawBody,charSet).trim();
 					this.body = (T) new JsonNode(jsonString);
 				} else if (String.class.equals(responseClass)) {
-					this.body = (T) new String(rawBody);
+					//this.body= (T) EntityUtils.toString( response.getEntity());	
+					this.body=(T) new String(rawBody,charSet);
 				} else if (InputStream.class.equals(responseClass)) {
 					this.body = (T) this.rawBody;
 				} else {
