@@ -26,7 +26,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.mashape.unirest.http;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -36,6 +35,8 @@ import java.util.zip.GZIPInputStream;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 
+import com.mashape.unirest.http.utils.ResponseUtils;
+
 public class HttpResponse<T> {
 
 	private int code;
@@ -43,14 +44,6 @@ public class HttpResponse<T> {
 	private InputStream rawBody;
 	private T body;
 
-	private boolean isGzipped() {
-		String contentEncoding = this.headers.getFirst("content-encoding");
-		if (contentEncoding != null && "gzip".equals(contentEncoding.toLowerCase().trim())) {
-			return true;
-		}
-		return false;
-	}
-	
 	@SuppressWarnings("unchecked")
 	public HttpResponse(org.apache.http.HttpResponse response, Class<T> responseClass) {
 		HttpEntity responseEntity = response.getEntity();
@@ -65,15 +58,25 @@ public class HttpResponse<T> {
 		}
 		this.code = response.getStatusLine().getStatusCode();
 		
+		String charset = "UTF-8";
+		
+		Header contentType = responseEntity.getContentType();
+		if (contentType != null) {
+			String responseCharset = ResponseUtils.getCharsetFromContentType(contentType.getValue());
+			if (responseCharset != null && !responseCharset.trim().equals("")) {
+				charset = responseCharset;
+			}
+		}
+		
 		if (responseEntity != null) {
 			try {
 				byte[] rawBody;
 				try {
 					InputStream responseInputStream = responseEntity.getContent();
-					if (isGzipped()) {
+					if (ResponseUtils.isGzipped(responseEntity.getContentEncoding())) {
 						responseInputStream = new GZIPInputStream(responseEntity.getContent());
 					}
-					rawBody = getBytes(responseInputStream);
+					rawBody = ResponseUtils.getBytes(responseInputStream);
 				} catch (IOException e2) {
 					throw new RuntimeException(e2);
 				}
@@ -81,10 +84,10 @@ public class HttpResponse<T> {
 				this.rawBody = inputStream;
 
 				if (JsonNode.class.equals(responseClass)) {
-					String jsonString = new String(rawBody).trim();
+					String jsonString = new String(rawBody, charset).trim();
 					this.body = (T) new JsonNode(jsonString);
 				} else if (String.class.equals(responseClass)) {
-					this.body = (T) new String(rawBody);
+					this.body = (T) new String(rawBody, charset);
 				} else if (InputStream.class.equals(responseClass)) {
 					this.body = (T) this.rawBody;
 				} else {
@@ -94,25 +97,6 @@ public class HttpResponse<T> {
 				throw new RuntimeException(e);
 			}
 		}
-	}
-
-	private static byte[] getBytes(InputStream is) throws IOException {
-		int len;
-		int size = 1024;
-		byte[] buf;
-
-		if (is instanceof ByteArrayInputStream) {
-			size = is.available();
-			buf = new byte[size];
-			len = is.read(buf, 0, size);
-		} else {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			buf = new byte[size];
-			while ((len = is.read(buf, 0, size)) != -1)
-				bos.write(buf, 0, len);
-			buf = bos.toByteArray();
-		}
-		return buf;
 	}
 
 	public int getCode() {

@@ -17,6 +17,8 @@ import com.mashape.unirest.http.utils.SyncIdleConnectionMonitorThread;
 
 public class Options {
 
+	private static final int MAX_PER_ROUTE = 10000;
+	private static final int MAX_TOTAL = 10000;
 	public static final long CONNECTION_TIMEOUT = 10000;
 	private static final long SOCKET_TIMEOUT = 60000;
 	
@@ -41,13 +43,12 @@ public class Options {
 		Object socketTimeout = Options.getOption(Option.SOCKET_TIMEOUT);
 		if (socketTimeout == null) socketTimeout = SOCKET_TIMEOUT;
 		
-		
 		// Create common default configuration
 		RequestConfig clientConfig = RequestConfig.custom().setConnectTimeout(((Long) connectionTimeout).intValue()).setSocketTimeout(((Long) socketTimeout).intValue()).setConnectionRequestTimeout(((Long)socketTimeout).intValue()).build();
 		
 		PoolingHttpClientConnectionManager syncConnectionManager = new PoolingHttpClientConnectionManager();
-		syncConnectionManager.setMaxTotal(10000);
-		syncConnectionManager.setDefaultMaxPerRoute(10000);
+		syncConnectionManager.setMaxTotal(MAX_TOTAL);
+		syncConnectionManager.setDefaultMaxPerRoute(MAX_PER_ROUTE);
 		
 		// Create clients
 		setOption(Option.HTTPCLIENT, HttpClientBuilder.create().setDefaultRequestConfig(clientConfig).setConnectionManager(syncConnectionManager).build());
@@ -60,6 +61,8 @@ public class Options {
 		try {
 			ioreactor = new DefaultConnectingIOReactor();
 			asyncConnectionManager = new PoolingNHttpClientConnectionManager(ioreactor);
+			asyncConnectionManager.setMaxTotal(MAX_TOTAL);
+			asyncConnectionManager.setDefaultMaxPerRoute(MAX_PER_ROUTE);
 		} catch (IOReactorException e) {
 			throw new RuntimeException(e);
 		}
