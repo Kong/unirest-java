@@ -58,17 +58,17 @@ public class HttpResponse<T> {
 		}
 		this.code = response.getStatusLine().getStatusCode();
 		
-		String charset = "UTF-8";
-		
-		Header contentType = responseEntity.getContentType();
-		if (contentType != null) {
-			String responseCharset = ResponseUtils.getCharsetFromContentType(contentType.getValue());
-			if (responseCharset != null && !responseCharset.trim().equals("")) {
-				charset = responseCharset;
-			}
-		}
-		
 		if (responseEntity != null) {
+			String charset = "UTF-8";
+			
+			Header contentType = responseEntity.getContentType();
+			if (contentType != null) {
+				String responseCharset = ResponseUtils.getCharsetFromContentType(contentType.getValue());
+				if (responseCharset != null && !responseCharset.trim().equals("")) {
+					charset = responseCharset;
+				}
+			}
+		
 			try {
 				byte[] rawBody;
 				try {
