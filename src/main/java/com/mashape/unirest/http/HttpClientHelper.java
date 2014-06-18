@@ -27,6 +27,8 @@ package com.mashape.unirest.http;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -159,27 +161,36 @@ public class HttpClientHelper {
 		
 		HttpRequestBase reqObj = null;
 
+		String urlToRequest = null;
+		try {
+			URL url = new URL(request.getUrl());
+			URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+			urlToRequest = uri.toURL().toString();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		
 		switch (request.getHttpMethod()) {
 		case GET:
-			reqObj = new HttpGet(request.getUrl());
+			reqObj = new HttpGet(urlToRequest);
 			break;
 		case POST:
-			reqObj = new HttpPost(request.getUrl());
+			reqObj = new HttpPost(urlToRequest);
 			break;
 		case PUT:
-			reqObj = new HttpPut(request.getUrl());
+			reqObj = new HttpPut(urlToRequest);
 			break;
 		case DELETE:
-			reqObj = new HttpDeleteWithBody(request.getUrl());
+			reqObj = new HttpDeleteWithBody(urlToRequest);
 			break;
 		case PATCH:
-			reqObj = new HttpPatchWithBody(request.getUrl());
+			reqObj = new HttpPatchWithBody(urlToRequest);
 			break;
 		case OPTIONS:
-			reqObj = new HttpOptions(request.getUrl());
+			reqObj = new HttpOptions(urlToRequest);
 			break;
 		case HEAD:
-			reqObj = new HttpHead(request.getUrl());
+			reqObj = new HttpHead(urlToRequest);
 			break;
 		}
 		

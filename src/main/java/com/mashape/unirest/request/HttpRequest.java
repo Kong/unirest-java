@@ -25,8 +25,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.request;
 
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,12 +43,6 @@ public class HttpRequest extends BaseRequest {
 	protected String url;
 	private Map<String, List<String>> headers = new HashMap<String, List<String>>();
 	protected Body body;
-	
-	private URL parseUrl(String s) throws Exception {
-		URL url = new URL(s);
-		URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
-		return uri.toURL();
-	}
 	
 	public HttpRequest(HttpMethod method, String url) {
 		this.httpMethod = method;
@@ -100,11 +92,7 @@ public class HttpRequest extends BaseRequest {
 	}
 
 	public String getUrl() {
-		try {
-			return parseUrl(url).toString();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		return url;
 	}
 
 	public Map<String, List<String>> getHeaders() {
