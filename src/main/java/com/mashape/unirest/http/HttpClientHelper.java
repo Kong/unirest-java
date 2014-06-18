@@ -29,6 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -164,7 +165,7 @@ public class HttpClientHelper {
 		String urlToRequest = null;
 		try {
 			URL url = new URL(request.getUrl());
-			URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+			URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), URLDecoder.decode(url.getPath(), "UTF-8"), url.getQuery(), url.getRef());
 			urlToRequest = uri.toURL().toString();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
