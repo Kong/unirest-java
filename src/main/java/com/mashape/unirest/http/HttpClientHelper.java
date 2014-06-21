@@ -27,6 +27,7 @@ package com.mashape.unirest.http;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -60,6 +61,8 @@ import com.mashape.unirest.http.options.Option;
 import com.mashape.unirest.http.options.Options;
 import com.mashape.unirest.http.utils.ClientFactory;
 import com.mashape.unirest.request.HttpRequest;
+import com.mashape.unirest.request.progress.ProgressListener;
+import com.mashape.unirest.request.progress.ProgressReportingOutputStream;
 
 public class HttpClientHelper {
 
@@ -86,9 +89,26 @@ public class HttpClientHelper {
 
 		};
 	}
+	
+	private static <T> ProgressListener adaptCallbackUploadProgress(final Callback<T> callback) {
+		if (callback == null)
+			return null;
+		
+		return new ProgressListener() {
+			private long written = 0l;
+			
+			@Override
+			public void progress(long deltaBytes, long totalLength) {
+				written += deltaBytes;
+				callback.uploadProgress(written, totalLength);
+			}
+			
+		};
+	}
 
 	public static <T> Future<HttpResponse<T>> requestAsync(HttpRequest request, final Class<T> responseClass, Callback<T> callback) {
-		HttpUriRequest requestObj = prepareRequest(request, true);
+		HttpUriRequest requestObj = prepareRequest(request, true,
+				adaptCallbackUploadProgress(callback));
 
 		CloseableHttpAsyncClient asyncHttpClient = ClientFactory.getAsyncHttpClient();
 		if (!asyncHttpClient.isRunning()) {
@@ -128,7 +148,7 @@ public class HttpClientHelper {
 	}
 
 	public static <T> HttpResponse<T> request(HttpRequest request, Class<T> responseClass) throws UnirestException {
-		HttpRequestBase requestObj = prepareRequest(request, false);
+		HttpRequestBase requestObj = prepareRequest(request, false, null);
 		HttpClient client = ClientFactory.getHttpClient(); // The
 															// DefaultHttpClient
 															// is thread-safe
@@ -146,7 +166,8 @@ public class HttpClientHelper {
 		}
 	}
 
-	private static HttpRequestBase prepareRequest(HttpRequest request, boolean async) {
+	private static HttpRequestBase prepareRequest(HttpRequest request,
+			boolean async, ProgressListener listener) {
 
 		request.header("user-agent", USER_AGENT);
 		request.header("accept-encoding", "gzip");
@@ -212,9 +233,15 @@ public class HttpClientHelper {
 				if (async) {
 					reqObj.setHeader(entity.getContentType());
 					try {
-						ByteArrayOutputStream output = new ByteArrayOutputStream();
+						ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+						OutputStream output = byteOut;
+						if (listener != null) {
+							output = new ProgressReportingOutputStream(
+									byteOut, entity.getContentLength(),
+									listener);
+						}
 						entity.writeTo(output);
-						NByteArrayEntity en = new NByteArrayEntity(output.toByteArray());
+						NByteArrayEntity en = new NByteArrayEntity(byteOut.toByteArray());
 						((HttpEntityEnclosingRequestBase) reqObj).setEntity(en);
 					} catch (IOException e) {
 						throw new RuntimeException(e);

@@ -35,4 +35,7 @@ public interface Callback<T> {
 	void failed(UnirestException e);
 	
 	void cancelled();
+	
+	void uploadProgress(long bytesSent, long totalLength);
+	
 }

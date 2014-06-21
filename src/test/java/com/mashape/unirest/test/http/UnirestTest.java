@@ -27,6 +27,7 @@ package com.mashape.unirest.test.http;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -56,11 +57,13 @@ public class UnirestTest {
 
 	private CountDownLatch lock;
 	private boolean status;
+	private long uploadSize, uploadBytesLeft;
 	
 	@Before
 	public void setUp() {
 		lock = new CountDownLatch(1);
 		status = false;
+		uploadSize = uploadBytesLeft = -1;
 	}
 	
 	private String findAvailableIpAddress() throws UnknownHostException, IOException {
@@ -202,10 +205,23 @@ public class UnirestTest {
 			public void cancelled() {
 				fail();
 			}
+
+			@Override
+			public void uploadProgress(long bytesSent, long totalLength) {
+				assertNotEquals(0, totalLength);
+				if (uploadSize == -1) {
+					uploadSize = totalLength;
+				} else {
+					assertEquals(uploadSize, totalLength);
+				}
+				uploadBytesLeft = totalLength - bytesSent;
+			}
 		});
 		
 		lock.await(10, TimeUnit.SECONDS);
 		assertTrue(status);
+		assertEquals(0, uploadBytesLeft);
+		assertNotEquals(0, uploadSize);
 	}
 	
 	@Test
@@ -264,11 +280,23 @@ public class UnirestTest {
 			public void cancelled() {
 				fail();
 			}
-			
+
+			@Override
+			public void uploadProgress(long bytesSent, long totalLength) {
+				assertNotEquals(0, totalLength);
+				if (uploadSize == -1) {
+					uploadSize = totalLength;
+				} else {
+					assertEquals(uploadSize, totalLength);
+				}
+				uploadBytesLeft = totalLength - bytesSent;
+			}
 		});
 		
 		lock.await(10, TimeUnit.SECONDS);
 		assertTrue(status);
+		assertEquals(0, uploadBytesLeft);
+		assertNotEquals(0, uploadSize);
 	}
 	
 	@Test
