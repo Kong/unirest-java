@@ -120,6 +120,12 @@ public class UnirestTest {
 	}
 	
 	@Test
+	public void testGetFields2() throws JSONException, UnirestException { 
+		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get").field("email", "hello@hello.com").asJson();
+		assertEquals("hello@hello.com", response.getBody().getObject().getJSONObject("args").getString("email"));
+	}
+	
+	@Test
 	public void testDelete() throws JSONException, UnirestException { 
 		HttpResponse<JsonNode> response = Unirest.delete("http://httpbin.org/delete").asJson();
 		assertEquals(200, response.getCode());
