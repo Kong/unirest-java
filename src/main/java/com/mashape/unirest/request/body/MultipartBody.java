@@ -88,7 +88,7 @@ public class MultipartBody extends BaseRequest implements Body {
 				if (value instanceof File) {
 					builder.addPart(key, new FileBody((File) value));
 				} else {
-					builder.addPart(key, new StringBody(value.toString(), ContentType.APPLICATION_FORM_URLENCODED));
+					builder.addPart(key, new StringBody(value.toString(), ContentType.create("text/plain", UTF_8)));
 				}
 			}
 			return builder.build();
