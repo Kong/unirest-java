@@ -172,6 +172,8 @@ public class HttpClientHelper {
 					urlToRequest += "?";
 				}
 				urlToRequest += url.getQuery();
+			} else if (urlToRequest.substring(urlToRequest.length() - 1).equals("?")) {
+				urlToRequest = urlToRequest.substring(0, urlToRequest.length() - 1);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
