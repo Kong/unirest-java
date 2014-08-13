@@ -44,15 +44,13 @@ public class GetRequest extends HttpRequest {
 	}
 	
 	@Override
-	public HttpRequest header(String name, String value) {
-		super.header(name, value);
-		return this;
+	public GetRequest header(String name, String value) {
+		return (GetRequest) super.header(name, value);
 	}
 	
 	@Override
-	public HttpRequest headers(Map<String, String> headers) {
-		super.headers(headers);
-		return this;
+	public GetRequest headers(Map<String, String> headers) {
+		return (GetRequest) super.headers(headers);
 	}
 	
 	public GetRequest field(String name, Object value) {

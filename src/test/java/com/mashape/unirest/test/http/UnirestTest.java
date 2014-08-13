@@ -105,6 +105,12 @@ public class UnirestTest {
 	}
 	
 	@Test
+	public void testCustomUserAgent() throws JSONException, UnirestException { 
+		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get?name=mark").header("user-agent", "hello-world").asJson();
+		assertEquals("hello-world", response.getBody().getObject().getJSONObject("headers").getString("User-Agent"));
+	}
+	
+	@Test
 	public void testGetMultiple() throws JSONException, UnirestException { 
 		for(int i=1;i<=20;i++) {
 			HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get?try=" + i).asJson();

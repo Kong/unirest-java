@@ -63,6 +63,8 @@ import com.mashape.unirest.request.HttpRequest;
 
 public class HttpClientHelper {
 
+	private static final String ACCEPT_ENCODING_HEADER = "accept-encoding";
+	private static final String USER_AGENT_HEADER = "user-agent";
 	private static final String USER_AGENT = "unirest-java/1.3.11";
 
 	private static <T> FutureCallback<org.apache.http.HttpResponse> prepareCallback(final Class<T> responseClass,
@@ -148,8 +150,12 @@ public class HttpClientHelper {
 
 	private static HttpRequestBase prepareRequest(HttpRequest request, boolean async) {
 
-		request.header("user-agent", USER_AGENT);
-		request.header("accept-encoding", "gzip");
+		if (!request.getHeaders().containsKey(USER_AGENT_HEADER)) {
+			request.header(USER_AGENT_HEADER, USER_AGENT);
+		}
+		if (!request.getHeaders().containsKey(ACCEPT_ENCODING_HEADER)) { 
+			request.header(ACCEPT_ENCODING_HEADER, "gzip");
+		}
 
 		Object defaultHeaders = Options.getOption(Option.DEFAULT_HEADERS);
 		if (defaultHeaders != null) {
