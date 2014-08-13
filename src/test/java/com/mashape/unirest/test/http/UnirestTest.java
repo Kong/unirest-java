@@ -126,8 +126,6 @@ public class UnirestTest {
 		.field("param3","こんにちは")
 		.field("file", new File(getClass().getResource("/test").toURI())).asJson();
 		
-		System.out.println(response.getBody().toString());
-		
 		assertEquals("This \nis \na \ntest \nfile", response.getBody().getObject().getJSONObject("files").getString("file"));
 		assertEquals("こんにちは", response.getBody().getObject().getJSONObject("form").getString("param3"));
 	}
