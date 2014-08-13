@@ -185,6 +185,7 @@ public class UnirestTest {
 		 .header("accept", "application/json")
 		 .field("param1", "value1")
 		 .field("param2","bye")
+		 .field("param3","こんにちは")
 		 .asJsonAsync(new Callback<JsonNode>() {
 			
 			public void failed(UnirestException e) {
@@ -206,6 +207,7 @@ public class UnirestTest {
 				
 				assertEquals("value1", json.getObject().getJSONObject("form").getString("param1"));
 				assertEquals("bye", json.getObject().getJSONObject("form").getString("param2"));
+				assertEquals("こんにちは", json.getObject().getJSONObject("form").getString("param3"));
 				
 				status = true;
 				lock.countDown();
@@ -225,6 +227,7 @@ public class UnirestTest {
 		HttpResponse<JsonNode> jsonResponse =
 				Unirest.post("http://httpbin.org/post")
 				.field("name", "Mark")
+				.field("greeting", "こんにちは")
 				.field("file", new File(getClass().getResource("/test").toURI())).asJson();
 		assertTrue(jsonResponse.getHeaders().size() > 0);
 		assertTrue(jsonResponse.getBody().toString().length() > 0);
@@ -241,6 +244,7 @@ public class UnirestTest {
 		
 		assertEquals("This \nis \na \ntest \nfile", json.getObject().getJSONObject("files").getString("file"));
 		assertEquals("Mark", json.getObject().getJSONObject("form").getString("name"));
+		assertEquals("こんにちは", json.getObject().getJSONObject("form").getString("greeting"));
 	}
 	
 	@Test
