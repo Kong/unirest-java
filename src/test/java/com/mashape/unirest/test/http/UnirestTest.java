@@ -105,6 +105,34 @@ public class UnirestTest {
 	}
 	
 	@Test
+	public void testGetUTF8() throws UnirestException {
+		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get")
+		.field("param3","こんにちは").asJson();
+		
+		assertEquals(response.getBody().getObject().getJSONObject("args").getString("param3"), "こんにちは");
+	}
+	
+	@Test
+	public void testPostUTF8() throws UnirestException {
+		HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post")
+		.field("param3","こんにちは").asJson();
+		
+		assertEquals(response.getBody().getObject().getJSONObject("form").getString("param3"), "こんにちは");
+	}
+	
+	@Test
+	public void testPostBinaryUTF8() throws UnirestException, URISyntaxException {
+		HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post")
+		.field("param3","こんにちは")
+		.field("file", new File(getClass().getResource("/test").toURI())).asJson();
+		
+		System.out.println(response.getBody().toString());
+		
+		assertEquals("This \nis \na \ntest \nfile", response.getBody().getObject().getJSONObject("files").getString("file"));
+		assertEquals("こんにちは", response.getBody().getObject().getJSONObject("form").getString("param3"));
+	}
+	
+	@Test
 	public void testCustomUserAgent() throws JSONException, UnirestException { 
 		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get?name=mark").header("user-agent", "hello-world").asJson();
 		assertEquals("hello-world", response.getBody().getObject().getJSONObject("headers").getString("User-Agent"));

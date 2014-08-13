@@ -27,6 +27,7 @@ package com.mashape.unirest.request.body;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,7 +89,7 @@ public class MultipartBody extends BaseRequest implements Body {
 				if (value instanceof File) {
 					builder.addPart(key, new FileBody((File) value));
 				} else {
-					builder.addPart(key, new StringBody(value.toString(), ContentType.APPLICATION_FORM_URLENCODED));
+					builder.addPart(key, new StringBody(value.toString(), ContentType.create(ContentType.APPLICATION_FORM_URLENCODED.getMimeType(), Charset.forName(UTF_8))));
 				}
 			}
 			return builder.build();
