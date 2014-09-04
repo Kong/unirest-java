@@ -99,9 +99,9 @@ public class HttpRequestWithBody extends HttpRequest {
 		return b;
 	}
 
-    public RawBody body(byte[] body){
-        RawBody b = new RawBody(this).body(body);
-        this.body = b;
-        return b;
-    }
+	public RawBody body(byte[] body) {
+		RawBody b = new RawBody(this).body(body);
+		this.body = b;
+		return b;
+	}
 }
