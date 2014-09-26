@@ -340,7 +340,8 @@ public class UnirestTest {
 	@Test
 	public void testDefaultHeaders() throws UnirestException, JSONException {
 		Unirest.setDefaultHeader("X-Custom-Header", "hello");
-		
+		Unirest.setDefaultHeader("user-agent", "foobar");
+
 		HttpResponse<JsonNode> jsonResponse =
 				Unirest.get("http://httpbin.org/headers").asJson();
 		assertTrue(jsonResponse.getHeaders().size() > 0);
@@ -352,7 +353,9 @@ public class UnirestTest {
 		assertFalse(json.isArray());
 		assertTrue(jsonResponse.getBody().getObject().getJSONObject("headers").has("X-Custom-Header"));
 		assertEquals("hello", json.getObject().getJSONObject("headers").getString("X-Custom-Header"));
-		
+		assertTrue(jsonResponse.getBody().getObject().getJSONObject("headers").has("User-Agent"));
+		assertEquals("foobar", json.getObject().getJSONObject("headers").getString("User-Agent"));
+
 		jsonResponse = Unirest.get("http://httpbin.org/headers").asJson();
 		assertTrue(jsonResponse.getBody().getObject().getJSONObject("headers").has("X-Custom-Header"));
 		assertEquals("hello", jsonResponse.getBody().getObject().getJSONObject("headers").getString("X-Custom-Header"));
