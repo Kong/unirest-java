@@ -25,10 +25,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.request;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -82,6 +85,35 @@ public class HttpRequest extends BaseRequest {
 		if (headers != null) {
 			for(Map.Entry<String, String> entry : headers.entrySet()) {
 				header(entry.getKey(), entry.getValue());
+			}
+		}
+		return this;
+	}
+	
+	public HttpRequest queryString(String name, Object value) {
+		StringBuilder queryString  = new StringBuilder();
+		if (this.url.contains("?")) {
+			queryString.append("&");
+		} else {
+			queryString.append("?");
+		}
+		try {
+			queryString.append(name).append("=").append(URLEncoder.encode((value == null) ? "" : value.toString(), "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+		this.url += queryString.toString();
+		return this;
+	}
+	
+	public HttpRequest queryString(Map<String, Object> parameters) {
+		if (parameters != null) {
+			for(Entry<String, Object> param : parameters.entrySet()) {
+				if (param.getValue() instanceof String || param.getValue() instanceof Number || param.getValue() instanceof Boolean) {
+					queryString(param.getKey(), param.getValue());
+				} else {
+					throw new RuntimeException("Parameter \"" + param.getKey() + "\" can't be sent with a GET request because of type: " + param.getValue().getClass().getName());
+				}
 			}
 		}
 		return this;

@@ -60,6 +60,16 @@ public class HttpRequestWithBody extends HttpRequest {
 		super.basicAuth(username, password);
 		return this;
 	}
+	
+	@Override
+	public HttpRequestWithBody queryString(Map<String, Object> parameters) {
+		return (HttpRequestWithBody) super.queryString(parameters);
+	}
+	
+	@Override
+	public HttpRequestWithBody queryString(String name, Object value) {
+		return (HttpRequestWithBody) super.queryString(name, value);
+	}
 
 	public MultipartBody field(String name, Object value) {
 		MultipartBody body = new MultipartBody(this).field(name, (value == null) ? "" : value.toString());

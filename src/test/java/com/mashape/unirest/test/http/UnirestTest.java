@@ -100,14 +100,14 @@ public class UnirestTest {
 		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get?name=mark").asJson();
 		assertEquals(response.getBody().getObject().getJSONObject("args").getString("name"), "mark");
 		
-		response = Unirest.get("http://httpbin.org/get").field("name", "mark2").asJson();
+		response = Unirest.get("http://httpbin.org/get").queryString("name", "mark2").asJson();
 		assertEquals(response.getBody().getObject().getJSONObject("args").getString("name"), "mark2");
 	}
 	
 	@Test
 	public void testGetUTF8() throws UnirestException {
 		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get")
-		.field("param3","こんにちは").asJson();
+		.queryString("param3","こんにちは").asJson();
 		
 		assertEquals(response.getBody().getObject().getJSONObject("args").getString("param3"), "こんにちは");
 	}
@@ -146,14 +146,14 @@ public class UnirestTest {
 	
 	@Test
 	public void testGetFields() throws JSONException, UnirestException { 
-		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get").field("name", "mark").field("nick", "thefosk").asJson();
+		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get").queryString("name", "mark").queryString("nick", "thefosk").asJson();
 		assertEquals(response.getBody().getObject().getJSONObject("args").getString("name"), "mark");
 		assertEquals(response.getBody().getObject().getJSONObject("args").getString("nick"), "thefosk");
 	}
 	
 	@Test
 	public void testGetFields2() throws JSONException, UnirestException { 
-		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get").field("email", "hello@hello.com").asJson();
+		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get").queryString("email", "hello@hello.com").asJson();
 		assertEquals("hello@hello.com", response.getBody().getObject().getJSONObject("args").getString("email"));
 	}
 	
@@ -387,10 +387,19 @@ public class UnirestTest {
 	
 	@Test
 	public void testPathParameters() throws UnirestException {
-		HttpResponse<JsonNode> jsonResponse = Unirest.get("http://httpbin.org/{method}").routeParam("method", "get").field("name", "Mark").asJson();
+		HttpResponse<JsonNode> jsonResponse = Unirest.get("http://httpbin.org/{method}").routeParam("method", "get").queryString("name", "Mark").asJson();
 		
 		assertEquals(200, jsonResponse.getCode());
 		assertEquals(jsonResponse.getBody().getObject().getJSONObject("args").getString("name"), "Mark");
+	}
+	
+	@Test
+	public void testQueryAndBodyParameters() throws UnirestException {
+		HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/{method}").routeParam("method", "post").queryString("name", "Mark").field("wot", "wat").asJson();
+		
+		assertEquals(200, jsonResponse.getCode());
+		assertEquals(jsonResponse.getBody().getObject().getJSONObject("args").getString("name"), "Mark");
+		assertEquals(jsonResponse.getBody().getObject().getJSONObject("form").getString("wot"), "wat");
 	}
 	
 	@Test
@@ -404,7 +413,7 @@ public class UnirestTest {
 	@Test
 	public void testMissingPathParameter() throws UnirestException {
 		try {
-			Unirest.get("http://httpbin.org/{method}").routeParam("method222", "get").field("name", "Mark").asJson();
+			Unirest.get("http://httpbin.org/{method}").routeParam("method222", "get").queryString("name", "Mark").asJson();
 			fail();
 		} catch (RuntimeException e) {
 			// OK
