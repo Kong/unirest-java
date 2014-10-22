@@ -34,6 +34,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.util.EntityUtils;
 
 import com.mashape.unirest.http.utils.ResponseUtils;
 
@@ -96,6 +97,12 @@ public class HttpResponse<T> {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
+		}
+		
+		try {
+			EntityUtils.consume(responseEntity);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
