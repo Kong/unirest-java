@@ -27,7 +27,7 @@ You can use Maven by including the library:
 <dependency>
     <groupId>com.mashape.unirest</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>1.3.23</version>
+    <version>1.3.24</version>
 </dependency>
 ```
 
@@ -37,17 +37,17 @@ There are dependencies for Unirest-Java, these should be already installed, and 
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
   <artifactId>httpclient</artifactId>
-  <version>4.3.4</version>
+  <version>4.3.5</version>
 </dependency>
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
   <artifactId>httpasyncclient</artifactId>
-  <version>4.0.1</version>
+  <version>4.0.2</version>
 </dependency>
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
   <artifactId>httpmime</artifactId>
-  <version>4.3.4</version>
+  <version>4.3.5</version>
 </dependency>
 <dependency>
   <groupId>org.json</groupId>
