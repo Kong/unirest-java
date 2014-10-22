@@ -81,6 +81,7 @@ So you're probably wondering how using Unirest makes creating requests in Java e
 ```java
 HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
   .header("accept", "application/json")
+  .queryString("apiKey", "123")
   .field("parameter", "value")
   .field("foo", "bar")
   .asJson();
@@ -97,7 +98,7 @@ Sometimes you want to add dynamic parameters in the URL, you can easily do that 
 ```java
 Unirest.get("http://httpbin.org/{method}")
   .routeParam("method", "get")
-  .field("name", "Mark")
+  .queryString("name", "Mark")
   .asJson();
 ```
 In the example above the final URL will be `http://httpbin.org/get` - Basically the placeholder `{method}` will be replaced with `get`.
