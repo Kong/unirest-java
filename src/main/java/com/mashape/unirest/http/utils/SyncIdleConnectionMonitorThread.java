@@ -11,6 +11,7 @@ public class SyncIdleConnectionMonitorThread extends Thread {
     
     public SyncIdleConnectionMonitorThread(HttpClientConnectionManager connMgr) {
         super();
+        super.setDaemon(true);        
         this.connMgr = connMgr;
     }
 
