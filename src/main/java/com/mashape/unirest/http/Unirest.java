@@ -96,14 +96,14 @@ public class Unirest {
 		syncClient.close();
 		
 		SyncIdleConnectionMonitorThread syncIdleConnectionMonitorThread = (SyncIdleConnectionMonitorThread) Options.getOption(Option.SYNC_MONITOR);
-		syncIdleConnectionMonitorThread.shutdown();
+		syncIdleConnectionMonitorThread.interrupt();
 		
 		// Closing the async client (if running)
 		CloseableHttpAsyncClient asyncClient = (CloseableHttpAsyncClient) Options.getOption(Option.ASYNCHTTPCLIENT);
 		if (asyncClient.isRunning()) {
 			asyncClient.close();
 			AsyncIdleConnectionMonitorThread asyncIdleConnectionMonitorThread = (AsyncIdleConnectionMonitorThread) Options.getOption(Option.ASYNC_MONITOR);
-			asyncIdleConnectionMonitorThread.shutdown();
+			asyncIdleConnectionMonitorThread.interrupt();
 		}
 		
 	}

@@ -7,7 +7,6 @@ import org.apache.http.conn.HttpClientConnectionManager;
 public class SyncIdleConnectionMonitorThread extends Thread {
     
     private final HttpClientConnectionManager connMgr;
-    private volatile boolean shutdown;
     
     public SyncIdleConnectionMonitorThread(HttpClientConnectionManager connMgr) {
         super();
@@ -18,7 +17,7 @@ public class SyncIdleConnectionMonitorThread extends Thread {
     @Override
     public void run() {
         try {
-            while (!shutdown) {
+        	while (!Thread.currentThread().isInterrupted()) {
                 synchronized (this) {
                     wait(5000);
                     // Close expired connections
@@ -30,13 +29,6 @@ public class SyncIdleConnectionMonitorThread extends Thread {
             }
         } catch (InterruptedException ex) {
             // terminate
-        }
-    }
-    
-    public void shutdown() {
-        shutdown = true;
-        synchronized (this) {
-            notifyAll();
         }
     }
     
