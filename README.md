@@ -36,7 +36,7 @@ You can use Maven by including the library:
 <dependency>
     <groupId>com.mashape.unirest</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>1.3.24</version>
+    <version>1.3.25</version>
 </dependency>
 ```
 
@@ -78,7 +78,7 @@ If you would like to run tests, also add the following dependency along with the
 
 ### Without Maven
 
-Alternatively if you don't use Maven, you can directly include the JAR file in the classpath: http://oss.sonatype.org/content/repositories/releases/com/mashape/unirest/unirest-java/1.3.24/unirest-java-1.3.24.jar
+Alternatively if you don't use Maven, you can directly include the JAR file in the classpath: http://oss.sonatype.org/content/repositories/releases/com/mashape/unirest/unirest-java/1.3.25/unirest-java-1.3.25.jar
 
 Don't forget to also install the dependencies (`org.json`, `httpclient 4.3.5`, `httpmime 4.3.5`, `httpasyncclient 4.0.2`) in the classpath too. 
 
@@ -129,7 +129,7 @@ Future<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.org/post")
 	}
 	
 	public void completed(HttpResponse<JsonNode> response) {
-		 int code = response.getCode();
+		 int code = response.getStatus();
 	     Map<String, String> headers = response.getHeaders();
 	     JsonNode body = response.getBody();
 	     InputStream rawBody = response.getRawBody();
@@ -186,7 +186,8 @@ HttpRequestWithBody request = Unirest.delete(String url);
 
 Upon recieving a response Unirest returns the result in the form of an Object, this object should always have the same keys for each language regarding to the response details.
 
-- `.getCode()` - HTTP Response Status Code (Example 200)
+- `.getStatus()` - HTTP Response Status Code (Example: 200)
+- `.getStatusTest()` - HTTP Response Status Text (Example: "OK")
 - `.getHeaders()` - HTTP Response Headers
 - `.getBody()` - Parsed response body where applicable, for example JSON responses are parsed to Objects / Associative Arrays.
 - `.getRawBody()` - Un-parsed response body

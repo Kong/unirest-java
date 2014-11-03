@@ -91,21 +91,27 @@ public class Unirest {
 	 * Close the asynchronous client and its event loop. Use this method to close all the threads and allow an application to exit.  
 	 */
 	public static void shutdown() throws IOException {
-		// Closing the sync client
+		// Closing the Sync HTTP client
 		CloseableHttpClient syncClient = (CloseableHttpClient) Options.getOption(Option.HTTPCLIENT);
-		syncClient.close();
-		
-		SyncIdleConnectionMonitorThread syncIdleConnectionMonitorThread = (SyncIdleConnectionMonitorThread) Options.getOption(Option.SYNC_MONITOR);
-		syncIdleConnectionMonitorThread.interrupt();
-		
-		// Closing the async client (if running)
-		CloseableHttpAsyncClient asyncClient = (CloseableHttpAsyncClient) Options.getOption(Option.ASYNCHTTPCLIENT);
-		if (asyncClient.isRunning()) {
-			asyncClient.close();
-			AsyncIdleConnectionMonitorThread asyncIdleConnectionMonitorThread = (AsyncIdleConnectionMonitorThread) Options.getOption(Option.ASYNC_MONITOR);
-			asyncIdleConnectionMonitorThread.interrupt();
+		if (syncClient != null) {
+			syncClient.close();
 		}
 		
+		SyncIdleConnectionMonitorThread syncIdleConnectionMonitorThread = (SyncIdleConnectionMonitorThread) Options.getOption(Option.SYNC_MONITOR);
+		if (syncIdleConnectionMonitorThread != null) {
+			syncIdleConnectionMonitorThread.interrupt();
+		}
+		
+		// Closing the Async HTTP client (if running)
+		CloseableHttpAsyncClient asyncClient = (CloseableHttpAsyncClient) Options.getOption(Option.ASYNCHTTPCLIENT);
+		if (asyncClient != null && asyncClient.isRunning()) {
+			asyncClient.close();
+		}
+		
+		AsyncIdleConnectionMonitorThread asyncMonitorThread = (AsyncIdleConnectionMonitorThread) Options.getOption(Option.ASYNC_MONITOR);
+		if (asyncMonitorThread != null) {
+			asyncMonitorThread.interrupt();
+		}
 	}
 	
 	public static GetRequest get(String url) {
