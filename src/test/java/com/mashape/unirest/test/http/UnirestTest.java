@@ -129,7 +129,20 @@ public class UnirestTest {
 		assertEquals("This \nis \na \ntest \nfile", response.getBody().getObject().getJSONObject("files").getString("file"));
 		assertEquals("こんにちは", response.getBody().getObject().getJSONObject("form").getString("param3"));
 	}
-	
+
+    @Test
+    public void testPostRawBody() throws UnirestException, URISyntaxException, IOException {
+
+        String sourceString = "'\"@こんにちは-test-123-" + Math.random();
+        byte[] sentBytes = sourceString.getBytes();
+
+        HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post")
+                .body(sentBytes)
+                .asJson();
+
+        assertEquals(sourceString, response.getBody().getObject().getString("data"));
+    }
+
 	@Test
 	public void testCustomUserAgent() throws JSONException, UnirestException { 
 		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get?name=mark").header("user-agent", "hello-world").asJson();

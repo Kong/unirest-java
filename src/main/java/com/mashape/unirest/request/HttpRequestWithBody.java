@@ -32,6 +32,7 @@ import java.util.Map.Entry;
 import com.mashape.unirest.http.HttpMethod;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.request.body.MultipartBody;
+import com.mashape.unirest.request.body.RawBody;
 import com.mashape.unirest.request.body.RequestBodyEntity;
 
 public class HttpRequestWithBody extends HttpRequest {
@@ -39,7 +40,7 @@ public class HttpRequestWithBody extends HttpRequest {
 	public HttpRequestWithBody(HttpMethod method, String url) {
 		super(method, url);
 	}
-	
+
 	public HttpRequestWithBody routeParam(String name, String value) {
 		super.routeParam(name, value);
 		return this;
@@ -49,12 +50,12 @@ public class HttpRequestWithBody extends HttpRequest {
 	public HttpRequestWithBody header(String name, String value) {
 		return (HttpRequestWithBody) super.header(name, value);
 	}
-	
+
 	@Override
 	public HttpRequestWithBody headers(Map<String, String> headers) {
 		return (HttpRequestWithBody) super.headers(headers);
 	}
-	
+
 	@Override
 	public HttpRequestWithBody basicAuth(String username, String password) {
 		super.basicAuth(username, password);
@@ -76,13 +77,13 @@ public class HttpRequestWithBody extends HttpRequest {
 		this.body = body;
 		return body;
 	}
-	
+
 	public MultipartBody field(String name, File file) {
 		MultipartBody body = new MultipartBody(this).field(name, file);
 		this.body = body;
 		return body;
 	}
-	
+
 	public MultipartBody fields(Map<String, Object> parameters) {
 		MultipartBody body =  new MultipartBody(this);
 		if (parameters != null) {
@@ -97,15 +98,20 @@ public class HttpRequestWithBody extends HttpRequest {
 		this.body = body;
 		return body;
 	}
-	
+
 	public RequestBodyEntity body(JsonNode body) {
 		return body(body.toString());
 	}
-	
+
 	public RequestBodyEntity body(String body) {
 		RequestBodyEntity b =  new RequestBodyEntity(this).body(body);
 		this.body = b;
 		return b;
 	}
-	
+
+	public RawBody body(byte[] body) {
+		RawBody b = new RawBody(this).body(body);
+		this.body = b;
+		return b;
+	}
 }
