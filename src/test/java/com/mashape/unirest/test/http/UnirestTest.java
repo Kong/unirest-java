@@ -132,7 +132,6 @@ public class UnirestTest {
 
     @Test
     public void testPostRawBody() throws UnirestException, URISyntaxException, IOException {
-
         String sourceString = "'\"@こんにちは-test-123-" + Math.random();
         byte[] sentBytes = sourceString.getBytes();
 
