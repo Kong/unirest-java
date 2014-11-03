@@ -34,13 +34,15 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.StatusLine;
 import org.apache.http.util.EntityUtils;
 
 import com.mashape.unirest.http.utils.ResponseUtils;
 
 public class HttpResponse<T> {
 
-	private int code;
+	private int statusCode;
+	private String statusText;
 	private Headers headers = new Headers();
 	private InputStream rawBody;
 	private T body;
@@ -57,7 +59,9 @@ public class HttpResponse<T> {
 			list.add(header.getValue());
 			headers.put(headerName, list);
 		}
-		this.code = response.getStatusLine().getStatusCode();
+		StatusLine statusLine = response.getStatusLine();
+		this.statusCode = statusLine.getStatusCode();
+		this.statusText = statusLine.getReasonPhrase();
 		
 		if (responseEntity != null) {
 			String charset = "UTF-8";
@@ -106,8 +110,20 @@ public class HttpResponse<T> {
 		}
 	}
 
+	/**
+	 * @deprecated Use {@link #getStatus()} instead
+	 */
+	@Deprecated
 	public int getCode() {
-		return code;
+		return statusCode;
+	}
+	
+	public int getStatus() {
+		return statusCode;
+	}
+	
+	public String getStatusText() {
+		return statusText;
 	}
 
 	public Headers getHeaders() {

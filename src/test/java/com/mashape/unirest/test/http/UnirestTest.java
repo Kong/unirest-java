@@ -85,7 +85,7 @@ public class UnirestTest {
 		assertTrue(jsonResponse.getHeaders().size() > 0);
 		assertTrue(jsonResponse.getBody().toString().length() > 0);
 		assertFalse(jsonResponse.getRawBody() == null);
-		assertEquals(200, jsonResponse.getCode());
+		assertEquals(200, jsonResponse.getStatus());
 		
 		JsonNode json = jsonResponse.getBody();
 		assertFalse(json.isArray());
@@ -160,18 +160,17 @@ public class UnirestTest {
 	@Test
 	public void testDelete() throws JSONException, UnirestException { 
 		HttpResponse<JsonNode> response = Unirest.delete("http://httpbin.org/delete").asJson();
-		assertEquals(200, response.getCode());
+		assertEquals(200, response.getStatus());
 	
-		//TODO: Uncomment when https://github.com/Mashape/unirest-java/issues/36 has been fixed
-//		response = Unirest.delete("http://httpbin.org/delete").field("name", "mark").asJson();
-//		assertEquals("name=mark", response.getBody().getObject().getString("data"));
+		response = Unirest.delete("http://httpbin.org/delete").field("name", "mark").asJson();
+		assertEquals("mark", response.getBody().getObject().getJSONObject("form").getString("name"));
 	}
 	
 	@Test
 	public void testDeleteBody() throws JSONException, UnirestException {
 		String body = "{\"jsonString\":{\"members\":\"members1\"}}";
 		HttpResponse<JsonNode> response = Unirest.delete("http://httpbin.org/delete").body(body).asJson();
-		assertEquals(200, response.getCode());
+		assertEquals(200, response.getStatus());
 		assertEquals(body, response.getBody().getObject().getString("data"));
 	}
 	
@@ -195,7 +194,7 @@ public class UnirestTest {
 		assertTrue(jsonResponse.getHeaders().size() > 0);
 		assertTrue(jsonResponse.getBody().toString().length() > 0);
 		assertFalse(jsonResponse.getRawBody() == null);
-		assertEquals(200, jsonResponse.getCode());
+		assertEquals(200, jsonResponse.getStatus());
 		
 		JsonNode json = jsonResponse.getBody();
 		assertFalse(json.isArray());
@@ -221,7 +220,7 @@ public class UnirestTest {
 				assertTrue(jsonResponse.getHeaders().size() > 0);
 				assertTrue(jsonResponse.getBody().toString().length() > 0);
 				assertFalse(jsonResponse.getRawBody() == null);
-				assertEquals(200, jsonResponse.getCode());
+				assertEquals(200, jsonResponse.getStatus());
 				
 				JsonNode json = jsonResponse.getBody();
 				assertFalse(json.isArray());
@@ -255,7 +254,7 @@ public class UnirestTest {
 		assertTrue(jsonResponse.getHeaders().size() > 0);
 		assertTrue(jsonResponse.getBody().toString().length() > 0);
 		assertFalse(jsonResponse.getRawBody() == null);
-		assertEquals(200, jsonResponse.getCode());
+		assertEquals(200, jsonResponse.getStatus());
 		
 		JsonNode json = jsonResponse.getBody();
 		assertFalse(json.isArray());
@@ -283,7 +282,7 @@ public class UnirestTest {
 				assertTrue(response.getHeaders().size() > 0);
 				assertTrue(response.getBody().toString().length() > 0);
 				assertFalse(response.getRawBody() == null);
-				assertEquals(200, response.getCode());
+				assertEquals(200, response.getStatus());
 				
 				JsonNode json = response.getBody();
 				assertFalse(json.isArray());
@@ -316,7 +315,7 @@ public class UnirestTest {
 		assertTrue(jsonResponse.getHeaders().size() > 0);
 		assertTrue(jsonResponse.getBody().toString().length() > 0);
 		assertFalse(jsonResponse.getRawBody() == null);
-		assertEquals(200, jsonResponse.getCode());
+		assertEquals(200, jsonResponse.getStatus());
 		
 		JsonNode json = jsonResponse.getBody();
 		assertFalse(json.isArray());
@@ -330,7 +329,7 @@ public class UnirestTest {
 		assertTrue(jsonResponse.getHeaders().size() > 0);
 		assertTrue(jsonResponse.getBody().toString().length() > 0);
 		assertFalse(jsonResponse.getRawBody() == null);
-		assertEquals(200, jsonResponse.getCode());
+		assertEquals(200, jsonResponse.getStatus());
 		
 		JsonNode json = jsonResponse.getBody();
 		assertFalse(json.isArray());
@@ -346,7 +345,7 @@ public class UnirestTest {
 		assertTrue(jsonResponse.getHeaders().size() > 0);
 		assertTrue(jsonResponse.getBody().toString().length() > 0);
 		assertFalse(jsonResponse.getRawBody() == null);
-		assertEquals(200, jsonResponse.getCode());
+		assertEquals(200, jsonResponse.getStatus());
 		
 		JsonNode json = jsonResponse.getBody();
 		assertFalse(json.isArray());
@@ -389,7 +388,7 @@ public class UnirestTest {
 	public void testPathParameters() throws UnirestException {
 		HttpResponse<JsonNode> jsonResponse = Unirest.get("http://httpbin.org/{method}").routeParam("method", "get").queryString("name", "Mark").asJson();
 		
-		assertEquals(200, jsonResponse.getCode());
+		assertEquals(200, jsonResponse.getStatus());
 		assertEquals(jsonResponse.getBody().getObject().getJSONObject("args").getString("name"), "Mark");
 	}
 	
@@ -397,7 +396,7 @@ public class UnirestTest {
 	public void testQueryAndBodyParameters() throws UnirestException {
 		HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/{method}").routeParam("method", "post").queryString("name", "Mark").field("wot", "wat").asJson();
 		
-		assertEquals(200, jsonResponse.getCode());
+		assertEquals(200, jsonResponse.getStatus());
 		assertEquals(jsonResponse.getBody().getObject().getJSONObject("args").getString("name"), "Mark");
 		assertEquals(jsonResponse.getBody().getObject().getJSONObject("form").getString("wot"), "wat");
 	}
@@ -406,7 +405,8 @@ public class UnirestTest {
 	public void testPathParameters2() throws UnirestException {
 		HttpResponse<JsonNode> jsonResponse = Unirest.patch("http://httpbin.org/{method}").routeParam("method", "patch").field("name", "Mark").asJson();
 		
-		assertEquals(200, jsonResponse.getCode());
+		assertEquals(200, jsonResponse.getStatus());
+		assertEquals("OK", jsonResponse.getStatusText());
 		assertEquals(jsonResponse.getBody().getObject().getJSONObject("form").getString("name"), "Mark");
 	}
 	
