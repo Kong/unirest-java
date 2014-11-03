@@ -1,5 +1,14 @@
 # Unirest for Java [![Build Status](https://api.travis-ci.org/Mashape/unirest-java.png)](https://travis-ci.org/Mashape/unirest-java)
 
+Do yourself a favor, and start making HTTP requests like this:
+
+```java
+Unirest.post("http://httpbin.org/post")
+  .queryString("name", "Mark")
+  .field("last", "Polo")
+  .asJson()
+```
+
 Unirest is a set of lightweight HTTP libraries available in multiple languages, ideal for most applications:
 
 * Make `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS` requests
