@@ -11,6 +11,7 @@ public class AsyncIdleConnectionMonitorThread extends Thread {
     
     public AsyncIdleConnectionMonitorThread(PoolingNHttpClientConnectionManager connMgr) {
         super();
+        super.setDaemon(true);
         this.connMgr = connMgr;
     }
 

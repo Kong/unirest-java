@@ -150,13 +150,6 @@ public class HttpClientHelper {
 
 	private static HttpRequestBase prepareRequest(HttpRequest request, boolean async) {
 
-		if (!request.getHeaders().containsKey(USER_AGENT_HEADER)) {
-			request.header(USER_AGENT_HEADER, USER_AGENT);
-		}
-		if (!request.getHeaders().containsKey(ACCEPT_ENCODING_HEADER)) { 
-			request.header(ACCEPT_ENCODING_HEADER, "gzip");
-		}
-
 		Object defaultHeaders = Options.getOption(Option.DEFAULT_HEADERS);
 		if (defaultHeaders != null) {
 			@SuppressWarnings("unchecked")
@@ -165,7 +158,14 @@ public class HttpClientHelper {
 				request.header(entry.getKey(), entry.getValue());
 			}
 		}
-		
+
+		if (!request.getHeaders().containsKey(USER_AGENT_HEADER)) {
+			request.header(USER_AGENT_HEADER, USER_AGENT);
+		}
+		if (!request.getHeaders().containsKey(ACCEPT_ENCODING_HEADER)) {
+			request.header(ACCEPT_ENCODING_HEADER, "gzip");
+		}
+
 		HttpRequestBase reqObj = null;
 
 		String urlToRequest = null;
