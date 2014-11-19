@@ -110,14 +110,6 @@ public class HttpResponse<T> {
 		}
 	}
 
-	/**
-	 * @deprecated Use {@link #getStatus()} instead
-	 */
-	@Deprecated
-	public int getCode() {
-		return statusCode;
-	}
-	
 	public int getStatus() {
 		return statusCode;
 	}
