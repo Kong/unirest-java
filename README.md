@@ -17,7 +17,7 @@ Unirest is a set of lightweight HTTP libraries available in multiple languages, 
 * Easily add route parameters without ugly string concatenations
 * Supports gzip
 * Supports Basic Authentication natively
-* Customizable timeout
+* Customizable timeout and concurrency levels
 * Customizable default headers for every request (DRY)
 * Customizable `HttpClient` and `HttpAsyncClient` implementation
 * Automatic JSON parsing into a native object for JSON responses
