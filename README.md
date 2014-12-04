@@ -36,7 +36,7 @@ You can use Maven by including the library:
 <dependency>
     <groupId>com.mashape.unirest</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>1.3.26</version>
+    <version>1.3.27</version>
 </dependency>
 ```
 
@@ -61,7 +61,7 @@ There are dependencies for Unirest-Java, these should be already installed, and 
 <dependency>
   <groupId>org.json</groupId>
   <artifactId>json</artifactId>
-  <version>20141113</version>
+  <version>20140107</version>
 </dependency>
 ```
 
@@ -78,9 +78,9 @@ If you would like to run tests, also add the following dependency along with the
 
 ### Without Maven
 
-Alternatively if you don't use Maven, you can directly include the JAR file in the classpath: http://oss.sonatype.org/content/repositories/releases/com/mashape/unirest/unirest-java/1.3.26/unirest-java-1.3.26.jar
+Alternatively if you don't use Maven, you can directly include the JAR file in the classpath: http://oss.sonatype.org/content/repositories/releases/com/mashape/unirest/unirest-java/1.3.27/unirest-java-1.3.27.jar
 
-Don't forget to also install the dependencies (`org.json`, `httpclient 4.3.5`, `httpmime 4.3.5`, `httpasyncclient 4.0.2`) in the classpath too.
+Don't forget to also install the dependencies (`org.json`, `httpclient 4.3.6`, `httpmime 4.3.6`, `httpasyncclient 4.0.2`) in the classpath too.
 
 There is also a way to generate a Unirest-Java JAR file that already includes the required dependencies, but you will need Maven to generate it. Follow the instructions at http://blog.mashape.com/post/69117323931/installing-unirest-java-with-the-maven-assembly-plugin
 
