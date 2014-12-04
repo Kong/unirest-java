@@ -80,7 +80,7 @@ If you would like to run tests, also add the following dependency along with the
 
 Alternatively if you don't use Maven, you can directly include the JAR file in the classpath: http://oss.sonatype.org/content/repositories/releases/com/mashape/unirest/unirest-java/1.3.26/unirest-java-1.3.26.jar
 
-Don't forget to also install the dependencies (`org.json`, `httpclient 4.3.5`, `httpmime 4.3.5`, `httpasyncclient 4.0.2`) in the classpath too. 
+Don't forget to also install the dependencies (`org.json`, `httpclient 4.3.5`, `httpmime 4.3.5`, `httpasyncclient 4.0.2`) in the classpath too.
 
 There is also a way to generate a Unirest-Java JAR file that already includes the required dependencies, but you will need Maven to generate it. Follow the instructions at http://blog.mashape.com/post/69117323931/installing-unirest-java-with-the-maven-assembly-plugin
 
@@ -123,22 +123,22 @@ Future<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.org/post")
   .field("param1", "value1")
   .field("param2", "value2")
   .asJsonAsync(new Callback<JsonNode>() {
-	  
+
 	public void failed(UnirestException e) {
 		System.out.println("The request has failed");
 	}
-	
+
 	public void completed(HttpResponse<JsonNode> response) {
 		 int code = response.getStatus();
 	     Map<String, String> headers = response.getHeaders();
 	     JsonNode body = response.getBody();
 	     InputStream rawBody = response.getRawBody();
 	}
-	
+
 	public void cancelled() {
 		System.out.println("The request has been cancelled");
 	}
-	
+
 });
 ```
 
@@ -212,7 +212,7 @@ You can set custom connection and socket timeout values (in **milliseconds**):
 Unirest.setTimeouts(long connectionTimeout, long socketTimeout);
 ```
 
-By default the connection timeout is `10000`, and the socket timeout is `60000`.
+By default the connection timeout (the time it takes to connect to a server) is `10000`, and the socket timeout (the time it takes to receive data) is `60000`. You can set any of these timeouts to zero to disable the timeout.
 
 ### Default Request Headers
 
@@ -228,6 +228,16 @@ You can clear the default headers anytime with:
 ```java
 Unirest.clearDefaultHeaders();
 ```
+
+### Concurrency
+
+You can set custom concurrency levels if you need to tune the performance of the syncronous or asyncronous client:
+
+```java
+Unirest.setConcurrency(int maxTotal, int maxPerRoute);
+```
+
+By default the maxTotal (overall connection limit in the pool) is `200`, and the maxPerRoute (connection limit per target host) is `20`.
 
 # Exiting an application
 

@@ -19,6 +19,8 @@ public class Options {
 
 	public static final long CONNECTION_TIMEOUT = 10000;
 	private static final long SOCKET_TIMEOUT = 60000;
+	public static final int MAX_TOTAL = 200;
+	public static final int MAX_PER_ROUTE = 20;
 	
 	private static Map<Option, Object> options = new HashMap<Option, Object>();
 	
@@ -41,12 +43,18 @@ public class Options {
 		Object socketTimeout = Options.getOption(Option.SOCKET_TIMEOUT);
 		if (socketTimeout == null) socketTimeout = SOCKET_TIMEOUT;
 		
+		// Load limits
+		Object maxTotal = Options.getOption(Option.MAX_TOTAL);
+		if (maxTotal == null) maxTotal = MAX_TOTAL;
+		Object maxPerRoute = Options.getOption(Option.MAX_PER_ROUTE);
+		if (maxPerRoute == null) maxPerRoute = MAX_PER_ROUTE;
+		
 		// Create common default configuration
 		RequestConfig clientConfig = RequestConfig.custom().setConnectTimeout(((Long) connectionTimeout).intValue()).setSocketTimeout(((Long) socketTimeout).intValue()).setConnectionRequestTimeout(((Long)socketTimeout).intValue()).build();
 		
 		PoolingHttpClientConnectionManager syncConnectionManager = new PoolingHttpClientConnectionManager();
-		syncConnectionManager.setMaxTotal(Integer.MAX_VALUE);
-		syncConnectionManager.setDefaultMaxPerRoute(Integer.MAX_VALUE);
+		syncConnectionManager.setMaxTotal((Integer) maxTotal);
+		syncConnectionManager.setDefaultMaxPerRoute((Integer) maxPerRoute);
 		
 		// Create clients
 		setOption(Option.HTTPCLIENT, HttpClientBuilder.create().setDefaultRequestConfig(clientConfig).setConnectionManager(syncConnectionManager).build());
@@ -59,8 +67,8 @@ public class Options {
 		try {
 			ioreactor = new DefaultConnectingIOReactor();
 			asyncConnectionManager = new PoolingNHttpClientConnectionManager(ioreactor);
-			asyncConnectionManager.setMaxTotal(Integer.MAX_VALUE);
-			asyncConnectionManager.setDefaultMaxPerRoute(Integer.MAX_VALUE);
+			asyncConnectionManager.setMaxTotal((Integer) maxTotal);
+			asyncConnectionManager.setDefaultMaxPerRoute((Integer) maxPerRoute);
 		} catch (IOReactorException e) {
 			throw new RuntimeException(e);
 		}

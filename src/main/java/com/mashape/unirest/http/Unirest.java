@@ -50,11 +50,33 @@ public class Unirest {
 	}
 	
 	/**
+	 * Set the asynchronous AbstractHttpAsyncClient implementation to use for every asynchronous request
+	 */
+	public static void setAsyncHttpClient(CloseableHttpAsyncClient asyncHttpClient) {
+		Options.setOption(Option.ASYNCHTTPCLIENT, asyncHttpClient);
+	}
+	
+	/**
 	 * Set the connection timeout and socket timeout
+	 * @param connectionTimeout The timeout until a connection with the server is established (in milliseconds). Default is 10000. Set to zero to disable the timeout.
+	 * @param socketTimeout The timeout to receive data (in milliseconds). Default is 60000. Set to zero to disable the timeout.
 	 */
 	public static void setTimeouts(long connectionTimeout, long socketTimeout) {
 		Options.setOption(Option.CONNECTION_TIMEOUT, connectionTimeout);
 		Options.setOption(Option.SOCKET_TIMEOUT, socketTimeout);
+		
+		// Reload the client implementations
+		Options.refresh();
+	}
+	
+	/**
+	 * Set the concurrency levels
+	 * @param maxTotal Defines the overall connection limit for a connection pool. Default is 200.
+	 * @param maxPerRoute Defines a connection limit per one HTTP route (this can be considered a per target host limit). Default is 20.
+	 */
+	public static void setConcurrency(int maxTotal, int maxPerRoute) {
+		Options.setOption(Option.MAX_TOTAL, maxTotal);
+		Options.setOption(Option.MAX_PER_ROUTE, maxPerRoute);
 		
 		// Reload the client implementations
 		Options.refresh();
@@ -78,13 +100,6 @@ public class Unirest {
 		}
 		((Map<String, String>) headers).put(name, value);
 		Options.setOption(Option.DEFAULT_HEADERS, headers);
-	}
-	
-	/**
-	 * Set the asynchronous AbstractHttpAsyncClient implementation to use for every asynchronous request
-	 */
-	public static void setAsyncHttpClient(CloseableHttpAsyncClient asyncHttpClient) {
-		Options.setOption(Option.ASYNCHTTPCLIENT, asyncHttpClient);
 	}
 	
 	/**

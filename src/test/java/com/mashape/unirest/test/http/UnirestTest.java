@@ -38,8 +38,12 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.JSONException;
 import org.junit.Before;
@@ -51,6 +55,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.http.options.Options;
+import com.mashape.unirest.request.HttpRequest;
 
 public class UnirestTest {
 
@@ -433,5 +438,40 @@ public class UnirestTest {
 		} catch (RuntimeException e) {
 			// OK
 		}
+	}
+	
+	@Test
+	public void parallelTest() throws InterruptedException {
+		Unirest.setConcurrency(10, 5);
+		
+		long start = System.currentTimeMillis();
+		makeParallelRequests();
+		long smallerConcurrencyTime = (System.currentTimeMillis() - start);
+		
+		Unirest.setConcurrency(200, 20);
+		start = System.currentTimeMillis();
+		makeParallelRequests();
+		long higherConcurrencyTime = (System.currentTimeMillis() - start);
+		
+		assertTrue(higherConcurrencyTime < smallerConcurrencyTime);
+	}
+
+	private void makeParallelRequests() throws InterruptedException {
+		ExecutorService newFixedThreadPool = Executors.newFixedThreadPool(10);
+		final AtomicInteger counter = new AtomicInteger(0);
+		for(int i=0;i< 200;i++) {
+			newFixedThreadPool.execute(new Runnable() {
+				public void run() {
+					try {
+						Unirest.get("http://httpbin.org/get").queryString("index", counter.incrementAndGet()).asJson();
+					} catch (UnirestException e) {
+						throw new RuntimeException(e);
+					}
+				}
+			});
+		}
+		
+		newFixedThreadPool.shutdown();
+		newFixedThreadPool.awaitTermination(10, TimeUnit.MINUTES);
 	}
 }
