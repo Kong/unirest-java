@@ -46,7 +46,7 @@ There are dependencies for Unirest-Java, these should be already installed, and 
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
   <artifactId>httpclient</artifactId>
-  <version>4.3.5</version>
+  <version>4.3.6</version>
 </dependency>
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
@@ -56,12 +56,12 @@ There are dependencies for Unirest-Java, these should be already installed, and 
 <dependency>
   <groupId>org.apache.httpcomponents</groupId>
   <artifactId>httpmime</artifactId>
-  <version>4.3.5</version>
+  <version>4.3.6</version>
 </dependency>
 <dependency>
   <groupId>org.json</groupId>
   <artifactId>json</artifactId>
-  <version>20140107</version>
+  <version>20141113</version>
 </dependency>
 ```
 
