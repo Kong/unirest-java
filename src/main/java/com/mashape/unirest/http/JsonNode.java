@@ -53,7 +53,12 @@ public class JsonNode {
 			}
 		}
 	}
-	
+
+	public JsonNode(JSONObject object) {
+		jsonObject = object;
+		array = false;
+	}
+
 	public JSONObject getObject() {
 		return this.jsonObject;
 	}
