@@ -28,9 +28,6 @@ Unirest.post("http://httpbin.org/post")
 * Customizable `HttpClient` and `HttpAsyncClient` implementation
 * Automatic JSON parsing into a native object for JSON responses
 
-Created with love by [thefosk](https://github.com/thefosk) @ [mashape.com](https://mashape.com)
-
-
 ## Installing
 Is easy as pie. Kidding. It's about as easy as doing these little steps:
 
