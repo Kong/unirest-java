@@ -1,4 +1,10 @@
-# Unirest for Java [![Build Status](https://api.travis-ci.org/Mashape/unirest-java.png)](https://travis-ci.org/Mashape/unirest-java)
+# Unirest for Java [![Build Status][travis-image]][travis-url] [![version][maven-version]][maven-url]
+
+[![License][license-image]][license-url]
+[![Dependencies][versioneye-image]][versioneye-url]
+[![Gitter][gitter-image]][gitter-url]
+
+Unirest is a set of lightweight HTTP libraries available in [multiple languages](http://unirest.io).
 
 Do yourself a favor, and start making HTTP requests like this:
 
@@ -9,7 +15,7 @@ Unirest.post("http://httpbin.org/post")
   .asJson()
 ```
 
-Unirest is a set of lightweight HTTP libraries available in multiple languages, ideal for most applications:
+## Features 
 
 * Make `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS` requests
 * Both syncronous and asynchronous (non-blocking) requests
@@ -246,3 +252,22 @@ Unirest starts a background event loop and your Java application won't be able t
 ```java
 Unirest.shutdown();
 ```
+
+----
+
+Made with &#9829; from the [Mashape](https://www.mashape.com/) team
+
+[license-url]: https://github.com/Mashape/unirest-java/blob/master/LICENSE
+[license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
+
+[gitter-url]: https://gitter.im/Mashape/unirest-java
+[gitter-image]: https://img.shields.io/badge/Gitter-Join%20Chat-blue.svg?style=flat-square
+
+[travis-url]: https://travis-ci.org/Mashape/unirest-java
+[travis-image]: https://img.shields.io/travis/Mashape/unirest-java.svg?style=flat-square
+
+[maven-url]: http://search.maven.org/#browse%7C1262490619
+[maven-version]: https://img.shields.io/maven-central/v/com.mashape.unirest/unirest-java.svg?style=flat-square
+
+[versioneye-url]: https://www.versioneye.com/user/projects/54b83a12050646ca5c0001fc
+[versioneye-image]: https://www.versioneye.com/user/projects/54b83a12050646ca5c0001fc/badge.svg?style=flat-square
