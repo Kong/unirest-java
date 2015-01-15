@@ -255,16 +255,16 @@ Unirest.shutdown();
 Made with &#9829; from the [Mashape](https://www.mashape.com/) team
 
 [license-url]: https://github.com/Mashape/unirest-java/blob/master/LICENSE
-[license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
+[license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat
 
 [gitter-url]: https://gitter.im/Mashape/unirest-java
-[gitter-image]: https://img.shields.io/badge/Gitter-Join%20Chat-blue.svg?style=flat-square
+[gitter-image]: https://img.shields.io/badge/Gitter-Join%20Chat-blue.svg?style=flat
 
 [travis-url]: https://travis-ci.org/Mashape/unirest-java
-[travis-image]: https://img.shields.io/travis/Mashape/unirest-java.svg?style=flat-square
+[travis-image]: https://img.shields.io/travis/Mashape/unirest-java.svg?style=flat
 
 [maven-url]: http://search.maven.org/#browse%7C1262490619
-[maven-version]: https://img.shields.io/maven-central/v/com.mashape.unirest/unirest-java.svg?style=flat-square
+[maven-version]: https://img.shields.io/maven-central/v/com.mashape.unirest/unirest-java.svg?style=flat
 
 [versioneye-url]: https://www.versioneye.com/user/projects/54b83a12050646ca5c0001fc
-[versioneye-image]: https://www.versioneye.com/user/projects/54b83a12050646ca5c0001fc/badge.svg?style=flat-square
+[versioneye-image]: https://www.versioneye.com/user/projects/54b83a12050646ca5c0001fc/badge.svg?style=flat
