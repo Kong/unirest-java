@@ -225,8 +225,7 @@ public class HttpClientHelper {
 			if (request.getBody() != null) {
 				HttpEntity entity = request.getBody().getEntity();
 				if (async) {
-					
-					if (reqObj.getHeaders(CONTENT_TYPE) == null) {
+					if (reqObj.getHeaders(CONTENT_TYPE) == null || reqObj.getHeaders(CONTENT_TYPE).length == 0) {
 						reqObj.setHeader(entity.getContentType());
 					}
 					try {

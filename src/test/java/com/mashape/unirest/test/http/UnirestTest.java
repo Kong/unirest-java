@@ -499,7 +499,40 @@ public class UnirestTest {
 			}
 		});
 		
-		lock.await(100000, TimeUnit.SECONDS);
+		lock.await(10, TimeUnit.SECONDS);
+		assertTrue(status);
+	}
+	
+	@Test
+	public void testAsyncCustomContentTypeAndFormParams() throws InterruptedException {
+		Unirest.post("http://httpbin.org/post")
+		 .header("accept", "application/json")
+		 .header("Content-Type", "application/x-www-form-urlencoded")
+		 .field("name", "Mark")
+		 .field("hello", "world")
+		 .asJsonAsync(new Callback<JsonNode>() {
+			
+			public void failed(UnirestException e) {
+				fail();
+			}
+			
+			public void completed(HttpResponse<JsonNode> jsonResponse) {
+				JsonNode json = jsonResponse.getBody();
+				assertEquals("Mark", json.getObject().getJSONObject("form").getString("name"));
+				assertEquals("world", json.getObject().getJSONObject("form").getString("hello"));
+				
+				assertEquals("application/x-www-form-urlencoded", json.getObject().getJSONObject("headers").getString("Content-Type"));
+				
+				status = true;
+				lock.countDown();
+			}
+			
+			public void cancelled() {
+				fail();
+			}
+		});
+		
+		lock.await(10, TimeUnit.SECONDS);
 		assertTrue(status);
 	}
 }
