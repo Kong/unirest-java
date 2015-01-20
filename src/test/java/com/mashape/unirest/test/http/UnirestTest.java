@@ -129,7 +129,7 @@ public class UnirestTest {
 		.field("param3","こんにちは")
 		.field("file", new File(getClass().getResource("/test").toURI())).asJson();
 		
-		assertEquals("This \nis \na \ntest \nfile", response.getBody().getObject().getJSONObject("files").getString("file"));
+		assertEquals("This\nis\na\ntest\nfile", response.getBody().getObject().getJSONObject("files").getString("file"));
 		assertEquals("こんにちは", response.getBody().getObject().getJSONObject("form").getString("param3"));
 	}
 
@@ -279,7 +279,7 @@ public class UnirestTest {
 		assertNotNull(json.getArray().get(0));
 		assertNotNull(json.getObject().getJSONObject("files"));
 		
-		assertEquals("This \nis \na \ntest \nfile", json.getObject().getJSONObject("files").getString("file"));
+		assertEquals("This\nis\na\ntest\nfile", json.getObject().getJSONObject("files").getString("file"));
 		assertEquals("Mark", json.getObject().getJSONObject("form").getString("name"));
 	}
 	
@@ -306,7 +306,7 @@ public class UnirestTest {
 				assertEquals(1, json.getArray().length());
 				assertNotNull(json.getArray().get(0));
 				
-				assertEquals("This \nis \na \ntest \nfile", json.getObject().getJSONObject("files").getString("file"));
+				assertEquals("This\nis\na\ntest\nfile", json.getObject().getJSONObject("files").getString("file"));
 				assertEquals("Mark", json.getObject().getJSONObject("form").getString("name"));
 				
 				status = true;
