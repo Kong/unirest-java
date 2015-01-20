@@ -1,7 +1,7 @@
-# Unirest for Java [![Build Status][travis-image]][travis-url] [![version][maven-version]][maven-url]
+# Unirest for Java [![Build Status][travis-image]][travis-url]
 
 [![License][license-image]][license-url]
-[![Dependencies][versioneye-image]][versioneye-url]
+[![version][maven-version]][maven-url]
 [![Gitter][gitter-image]][gitter-url]
 
 Unirest is a set of lightweight HTTP libraries available in [multiple languages](http://unirest.io).
@@ -64,7 +64,7 @@ There are dependencies for Unirest-Java, these should be already installed, and 
 <dependency>
   <groupId>org.json</groupId>
   <artifactId>json</artifactId>
-  <version>20141113</version>
+  <version>20140107</version>
 </dependency>
 ```
 
