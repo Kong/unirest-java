@@ -64,7 +64,7 @@ There are dependencies for Unirest-Java, these should be already installed, and 
 <dependency>
   <groupId>org.json</groupId>
   <artifactId>json</artifactId>
-  <version>20140107</version>
+  <version>20141113</version>
 </dependency>
 ```
 
