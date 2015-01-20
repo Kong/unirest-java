@@ -63,6 +63,7 @@ import com.mashape.unirest.request.HttpRequest;
 
 public class HttpClientHelper {
 
+	private static final String CONTENT_TYPE = "content-type";
 	private static final String ACCEPT_ENCODING_HEADER = "accept-encoding";
 	private static final String USER_AGENT_HEADER = "user-agent";
 	private static final String USER_AGENT = "unirest-java/1.3.11";
@@ -224,7 +225,10 @@ public class HttpClientHelper {
 			if (request.getBody() != null) {
 				HttpEntity entity = request.getBody().getEntity();
 				if (async) {
-					reqObj.setHeader(entity.getContentType());
+					
+					if (reqObj.getHeaders(CONTENT_TYPE) == null) {
+						reqObj.setHeader(entity.getContentType());
+					}
 					try {
 						ByteArrayOutputStream output = new ByteArrayOutputStream();
 						entity.writeTo(output);

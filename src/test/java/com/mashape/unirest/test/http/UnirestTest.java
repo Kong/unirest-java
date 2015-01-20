@@ -472,4 +472,34 @@ public class UnirestTest {
 		newFixedThreadPool.shutdown();
 		newFixedThreadPool.awaitTermination(10, TimeUnit.MINUTES);
 	}
+	
+	@Test
+	public void testAsyncCustomContentType() throws InterruptedException {
+		Unirest.post("http://httpbin.org/post")
+		 .header("accept", "application/json")
+		 .header("Content-Type", "application/json")
+		 .body("{\"hello\":\"world\"}")
+		 .asJsonAsync(new Callback<JsonNode>() {
+			
+			public void failed(UnirestException e) {
+				fail();
+			}
+			
+			public void completed(HttpResponse<JsonNode> jsonResponse) {
+				JsonNode json = jsonResponse.getBody();
+				assertEquals("{\"hello\":\"world\"}", json.getObject().getString("data"));
+				assertEquals("application/json", json.getObject().getJSONObject("headers").getString("Content-Type"));
+				
+				status = true;
+				lock.countDown();
+			}
+			
+			public void cancelled() {
+				fail();
+			}
+		});
+		
+		lock.await(100000, TimeUnit.SECONDS);
+		assertTrue(status);
+	}
 }
