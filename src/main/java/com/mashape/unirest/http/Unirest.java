@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
@@ -54,6 +55,16 @@ public class Unirest {
 	 */
 	public static void setAsyncHttpClient(CloseableHttpAsyncClient asyncHttpClient) {
 		Options.setOption(Option.ASYNCHTTPCLIENT, asyncHttpClient);
+	}
+	
+	/**
+	 * Set a proxy
+	 */
+	public static void setProxy(HttpHost proxy) {
+		Options.setOption(Option.PROXY, proxy);
+		
+		// Reload the client implementations
+		Options.refresh();
 	}
 	
 	/**

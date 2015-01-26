@@ -44,6 +44,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.http.HttpHost;
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
@@ -535,4 +536,5 @@ public class UnirestTest {
 		lock.await(10, TimeUnit.SECONDS);
 		assertTrue(status);
 	}
+	
 }

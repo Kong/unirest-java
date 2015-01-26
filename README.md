@@ -242,6 +242,14 @@ Unirest.setConcurrency(int maxTotal, int maxPerRoute);
 
 By default the maxTotal (overall connection limit in the pool) is `200`, and the maxPerRoute (connection limit per target host) is `20`.
 
+### Proxy
+
+You can set a proxy by invoking:
+
+```java
+Unirest.setProxy(new HttpHost("127.0.0.1", 8000));
+```
+
 # Exiting an application
 
 Unirest starts a background event loop and your Java application won't be able to exit until you manually shutdown all the threads by invoking:
