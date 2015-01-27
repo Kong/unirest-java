@@ -44,8 +44,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.http.HttpHost;
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -535,6 +536,43 @@ public class UnirestTest {
 		
 		lock.await(10, TimeUnit.SECONDS);
 		assertTrue(status);
+	}
+	
+	@Test
+	public void testGetQuerystringArray() throws JSONException, UnirestException { 
+		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get").queryString("name","Mark").queryString("name", "Tom").asJson();
+		
+		JSONArray names = response.getBody().getObject().getJSONObject("args").getJSONArray("name");
+		assertEquals(2, names.length());
+		
+		assertEquals("Mark", names.getString(0));
+		assertEquals("Tom", names.getString(1));
+	}
+	
+	@Test
+	public void testPostMultipleFiles() throws JSONException, UnirestException, URISyntaxException { 
+		HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post")
+				.field("param3","wot")
+				.field("file1", new File(getClass().getResource("/test").toURI())).field("file2", new File(getClass().getResource("/test").toURI())).asJson();
+		
+		JSONObject names = response.getBody().getObject().getJSONObject("files");
+		assertEquals(2, names.length());
+		
+		assertEquals("This is a test file", names.getString("file1"));
+		assertEquals("This is a test file", names.getString("file2"));
+		
+		assertEquals("wot", response.getBody().getObject().getJSONObject("form").getString("param3"));
+	}
+	
+	@Test
+	public void testPostArray() throws JSONException, UnirestException { 
+		HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post").field("name","Mark").field("name", "Tom").asJson();
+		
+		JSONArray names = response.getBody().getObject().getJSONObject("form").getJSONArray("name");
+		assertEquals(2, names.length());
+		
+		assertEquals("Mark", names.getString(0));
+		assertEquals("Tom", names.getString(1));
 	}
 	
 }

@@ -30,6 +30,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +48,7 @@ import com.mashape.unirest.request.HttpRequest;
 public class MultipartBody extends BaseRequest implements Body {
 
 	private List<String> keyOrder = new ArrayList<String>();
-	private Map<String, Object> parameters = new HashMap<String, Object>();
+	private Map<String, List<Object>> parameters = new HashMap<String, List<Object>>();
 
 	private boolean hasFile;
 	private HttpRequest httpRequestObj;
@@ -59,19 +60,34 @@ public class MultipartBody extends BaseRequest implements Body {
 	
 	public MultipartBody field(String name, String value) {
 		keyOrder.add(name);
-		parameters.put(name, value);
+		
+		List<Object> list = parameters.get(name);
+		if (list == null) list = new LinkedList<Object>();
+		list.add(value);
+		parameters.put(name, list);
+		
 		return this;
 	}
 	
 	public MultipartBody field(String name, Object value) {
 		keyOrder.add(name);
-		parameters.put(name, value);
+		
+		List<Object> list = parameters.get(name);
+		if (list == null) list = new LinkedList<Object>();
+		list.add(value);
+		parameters.put(name, list);
+		
 		return this;
 	}
 	
 	public MultipartBody field(String name, File file) {
 		keyOrder.add(name);
-		this.parameters.put(name, file);
+		
+		List<Object> list = parameters.get(name);
+		if (list == null) list = new LinkedList<Object>();
+		list.add(file);
+		parameters.put(name, list);
+		
 		hasFile = true;
 		return this;
 	}
@@ -85,11 +101,13 @@ public class MultipartBody extends BaseRequest implements Body {
 		if (hasFile) {
 			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 			for(String key: keyOrder) {
-				Object value = parameters.get(key);
-				if (value instanceof File) {
-					builder.addPart(key, new FileBody((File) value));
-				} else {
-					builder.addPart(key, new StringBody(value.toString(), ContentType.create(ContentType.APPLICATION_FORM_URLENCODED.getMimeType(), Charset.forName(UTF_8))));
+				List<Object> value = parameters.get(key);
+				for(Object cur : value) {
+					if (cur instanceof File) {
+						builder.addPart(key, new FileBody((File) cur));
+					} else {
+						builder.addPart(key, new StringBody(cur.toString(), ContentType.create(ContentType.APPLICATION_FORM_URLENCODED.getMimeType(), Charset.forName(UTF_8))));
+					}
 				}
 			}
 			return builder.build();
