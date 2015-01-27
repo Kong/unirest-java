@@ -15,7 +15,7 @@ Unirest.post("http://httpbin.org/post")
   .asJson()
 ```
 
-## Features 
+## Features
 
 * Make `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS` requests
 * Both syncronous and asynchronous (non-blocking) requests
@@ -39,7 +39,7 @@ You can use Maven by including the library:
 <dependency>
     <groupId>com.mashape.unirest</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>1.3.28</version>
+    <version>1.4.1</version>
 </dependency>
 ```
 
@@ -81,7 +81,7 @@ If you would like to run tests, also add the following dependency along with the
 
 ### Without Maven
 
-Alternatively if you don't use Maven, you can directly include the JAR file in the classpath: http://oss.sonatype.org/content/repositories/releases/com/mashape/unirest/unirest-java/1.3.28/unirest-java-1.3.28.jar
+Alternatively if you don't use Maven, you can directly include the JAR file in the classpath: http://oss.sonatype.org/content/repositories/releases/com/mashape/unirest/unirest-java/1.4.1/unirest-java-1.4.1.jar
 
 Don't forget to also install the dependencies ([`org.json`](http://www.json.org/java/), [`httpclient 4.3.6`](http://hc.apache.org/downloads.cgi), [`httpmime 4.3.6`](http://hc.apache.org/downloads.cgi), [`httpasyncclient 4.0.2`](http://hc.apache.org/downloads.cgi)) in the classpath too.
 
