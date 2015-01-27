@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,6 +61,14 @@ public class MultipartBody extends BaseRequest implements Body {
 	
 	public MultipartBody field(String name, String value) {
 		return field(name, value, false);
+	}
+	
+	public MultipartBody field(String name, Collection<?> collection) {
+		for(Object current : collection) {
+			boolean isFile = current instanceof File;
+			field(name, current, isFile);
+		}
+		return this;
 	}
 	
 	public MultipartBody field(String name, Object value) {

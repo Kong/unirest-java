@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -56,6 +57,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.http.options.Options;
+import com.mashape.unirest.request.GetRequest;
 
 public class UnirestTest {
 
@@ -151,6 +153,13 @@ public class UnirestTest {
 	public void testCustomUserAgent() throws JSONException, UnirestException { 
 		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get?name=mark").header("user-agent", "hello-world").asJson();
 		assertEquals("hello-world", response.getBody().getObject().getJSONObject("headers").getString("User-Agent"));
+		
+		
+		GetRequest getRequest = Unirest.get("http");
+		for(Object current : Arrays.asList(0, 1, 2)) {
+			getRequest.queryString("name", current);
+		}
+		
 	}
 	
 	@Test
@@ -567,6 +576,19 @@ public class UnirestTest {
 	@Test
 	public void testPostArray() throws JSONException, UnirestException { 
 		HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post").field("name","Mark").field("name", "Tom").asJson();
+		
+		JSONArray names = response.getBody().getObject().getJSONObject("form").getJSONArray("name");
+		assertEquals(2, names.length());
+		
+		assertEquals("Mark", names.getString(0));
+		assertEquals("Tom", names.getString(1));
+	}
+	
+	@Test
+	public void testPostCollection() throws JSONException, UnirestException { 
+		HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post").field("name", Arrays.asList("Mark", "Tom")).asJson();
+		
+		System.out.println(response.getBody().toString());
 		
 		JSONArray names = response.getBody().getObject().getJSONObject("form").getJSONArray("name");
 		assertEquals(2, names.length());

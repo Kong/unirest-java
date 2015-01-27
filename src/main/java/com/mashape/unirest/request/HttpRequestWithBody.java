@@ -26,6 +26,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.mashape.unirest.request;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -72,6 +73,12 @@ public class HttpRequestWithBody extends HttpRequest {
 		return (HttpRequestWithBody) super.queryString(name, value);
 	}
 
+	public MultipartBody field(String name, Collection<?> value) {
+		MultipartBody body = new MultipartBody(this).field(name, value);
+		this.body = body;
+		return body;
+	}
+	
 	public MultipartBody field(String name, Object value) {
 		MultipartBody body = new MultipartBody(this).field(name, (value == null) ? "" : value.toString());
 		this.body = body;
