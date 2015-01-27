@@ -588,8 +588,6 @@ public class UnirestTest {
 	public void testPostCollection() throws JSONException, UnirestException { 
 		HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post").field("name", Arrays.asList("Mark", "Tom")).asJson();
 		
-		System.out.println(response.getBody().toString());
-		
 		JSONArray names = response.getBody().getObject().getJSONObject("form").getJSONArray("name");
 		assertEquals(2, names.length());
 		
