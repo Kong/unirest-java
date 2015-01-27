@@ -59,37 +59,30 @@ public class MultipartBody extends BaseRequest implements Body {
 	}
 	
 	public MultipartBody field(String name, String value) {
-		keyOrder.add(name);
-		
-		List<Object> list = parameters.get(name);
-		if (list == null) list = new LinkedList<Object>();
-		list.add(value);
-		parameters.put(name, list);
-		
-		return this;
+		return field(name, value, false);
 	}
 	
 	public MultipartBody field(String name, Object value) {
+		return field(name, value, false);
+	}
+	
+	public MultipartBody field(String name, Object value, boolean file) {
 		keyOrder.add(name);
 		
 		List<Object> list = parameters.get(name);
 		if (list == null) list = new LinkedList<Object>();
 		list.add(value);
 		parameters.put(name, list);
+		
+		if (!hasFile && file) {
+			hasFile = true;
+		}
 		
 		return this;
 	}
 	
 	public MultipartBody field(String name, File file) {
-		keyOrder.add(name);
-		
-		List<Object> list = parameters.get(name);
-		if (list == null) list = new LinkedList<Object>();
-		list.add(file);
-		parameters.put(name, list);
-		
-		hasFile = true;
-		return this;
+		return field(name, file, true);
 	}
 	
 	public MultipartBody basicAuth(String username, String password) {
