@@ -38,13 +38,14 @@ public class MapUtil {
 	public static List<NameValuePair> getList(Map<String, List<Object>> parameters) {
 		List<NameValuePair> result = new ArrayList<NameValuePair>();
 		if (parameters != null) {
-
 			for(Entry<String, List<Object>> entry : parameters.entrySet()) {
-				for(Object cur : entry.getValue()) {
-					result.add(new BasicNameValuePair(entry.getKey(), cur.toString()));
+				List<Object> entryValue = entry.getValue();
+				if (entryValue != null) {
+					for(Object cur : entryValue) {
+						result.add(new BasicNameValuePair(entry.getKey(), cur.toString()));
+					}
 				}
 			}
-
 		}
 		return result;
 	}
