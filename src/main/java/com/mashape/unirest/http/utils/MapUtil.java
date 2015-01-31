@@ -42,7 +42,9 @@ public class MapUtil {
 				List<Object> entryValue = entry.getValue();
 				if (entryValue != null) {
 					for(Object cur : entryValue) {
-						result.add(new BasicNameValuePair(entry.getKey(), cur.toString()));
+						if (cur != null) {
+							result.add(new BasicNameValuePair(entry.getKey(), cur.toString()));
+						}
 					}
 				}
 			}
