@@ -574,6 +574,17 @@ public class UnirestTest {
 	}
 	
 	@Test
+	public void testGetArray() throws JSONException, UnirestException { 
+		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get").queryString("name", Arrays.asList("Mark", "Tom")).asJson();
+		
+		JSONArray names = response.getBody().getObject().getJSONObject("args").getJSONArray("name");
+		assertEquals(2, names.length());
+		
+		assertEquals("Mark", names.getString(0));
+		assertEquals("Tom", names.getString(1));
+	}
+	
+	@Test
 	public void testPostArray() throws JSONException, UnirestException { 
 		HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post").field("name","Mark").field("name", "Tom").asJson();
 		

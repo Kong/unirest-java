@@ -28,6 +28,7 @@ package com.mashape.unirest.request;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +87,13 @@ public class HttpRequest extends BaseRequest {
 			for(Map.Entry<String, String> entry : headers.entrySet()) {
 				header(entry.getKey(), entry.getValue());
 			}
+		}
+		return this;
+	}
+	
+	public HttpRequest queryString(String name, Collection<?> value) {
+		for(Object cur : value) {
+			queryString(name, cur);
 		}
 		return this;
 	}
