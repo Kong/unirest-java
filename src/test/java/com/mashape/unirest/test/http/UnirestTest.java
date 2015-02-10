@@ -295,6 +295,30 @@ public class UnirestTest {
 	}
 	
 	@Test
+	public void testMultipartContentType() throws JSONException, InterruptedException, ExecutionException,
+		URISyntaxException, UnirestException {
+		HttpResponse<JsonNode> jsonResponse =
+			Unirest.post("http://httpbin.org/post")
+				.field("name", "Mark")
+				.field("file", new File(getClass().getResource("/image.jpg").toURI()), "image/jpeg").asJson();
+		assertTrue(jsonResponse.getHeaders().size() > 0);
+		assertTrue(jsonResponse.getBody().toString().length() > 0);
+		assertFalse(jsonResponse.getRawBody() == null);
+		assertEquals(200, jsonResponse.getStatus());
+
+		JsonNode json = jsonResponse.getBody();
+		assertFalse(json.isArray());
+		assertNotNull(json.getObject());
+		assertNotNull(json.getArray());
+		assertEquals(1, json.getArray().length());
+		assertNotNull(json.getArray().get(0));
+		assertNotNull(json.getObject().getJSONObject("files"));
+
+		assertTrue(json.getObject().getJSONObject("files").getString("file").contains("data:image/jpeg"));
+		assertEquals("Mark", json.getObject().getJSONObject("form").getString("name"));
+	}
+
+	@Test
 	public void testMultipartAsync() throws JSONException, InterruptedException, ExecutionException, URISyntaxException, UnirestException {
 		Unirest.post("http://httpbin.org/post")
 		.field("name", "Mark")
