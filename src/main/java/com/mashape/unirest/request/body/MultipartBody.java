@@ -38,6 +38,7 @@ import java.util.Map;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
@@ -50,32 +51,42 @@ public class MultipartBody extends BaseRequest implements Body {
 
 	private List<String> keyOrder = new ArrayList<String>();
 	private Map<String, List<Object>> parameters = new HashMap<String, List<Object>>();
+	private Map<String, ContentType> contentTypes = new HashMap<String, ContentType>();
 
 	private boolean hasFile;
 	private HttpRequest httpRequestObj;
-	
+	private HttpMultipartMode mode;
+
 	public MultipartBody(HttpRequest httpRequest) {
 		super(httpRequest);
 		this.httpRequestObj = httpRequest;
 	}
 	
 	public MultipartBody field(String name, String value) {
-		return field(name, value, false);
+		return field(name, value, false, null);
 	}
-	
+
+	public MultipartBody field(String name, String value, String contentType) {
+		return field(name, value, false, contentType);
+	}
+
 	public MultipartBody field(String name, Collection<?> collection) {
 		for(Object current : collection) {
 			boolean isFile = current instanceof File;
-			field(name, current, isFile);
+			field(name, current, isFile, null);
 		}
 		return this;
 	}
 	
 	public MultipartBody field(String name, Object value) {
-		return field(name, value, false);
+		return field(name, value, false, null);
 	}
 	
 	public MultipartBody field(String name, Object value, boolean file) {
+		return field(name, value, file, null);
+	}
+
+	public MultipartBody field(String name, Object value, boolean file, String contentType) {
 		keyOrder.add(name);
 		
 		List<Object> list = parameters.get(name);
@@ -83,32 +94,50 @@ public class MultipartBody extends BaseRequest implements Body {
 		list.add(value);
 		parameters.put(name, list);
 		
+		ContentType type = null;
+		if (contentType != null && !contentType.isEmpty()) { type = ContentType.parse(contentType); }
+		else if (file) { type = ContentType.APPLICATION_OCTET_STREAM; }
+		else { type = ContentType.APPLICATION_FORM_URLENCODED.withCharset(UTF_8); }
+		contentTypes.put(name, type);
+
 		if (!hasFile && file) {
 			hasFile = true;
 		}
-		
+
 		return this;
 	}
-	
+
 	public MultipartBody field(String name, File file) {
-		return field(name, file, true);
+		return field(name, file, true, null);
+	}
+
+	public MultipartBody field(String name, File file, String contentType) {
+		return field(name, file, true, contentType);
 	}
 	
 	public MultipartBody basicAuth(String username, String password) {
 		httpRequestObj.basicAuth(username, password);
 		return this;
 	}
-	
+
+	public MultipartBody mode(String mode) {
+		this.mode = HttpMultipartMode.valueOf(mode);
+		return this;
+	}
+
 	public HttpEntity getEntity() {
 		if (hasFile) {
 			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+			if (mode != null) { builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE); }
 			for(String key: keyOrder) {
 				List<Object> value = parameters.get(key);
+				ContentType contentType = contentTypes.get(key);
 				for(Object cur : value) {
 					if (cur instanceof File) {
-						builder.addPart(key, new FileBody((File) cur));
+						File file = (File) cur;
+						builder.addPart(key, new FileBody(file, contentType, file.getName()));
 					} else {
-						builder.addPart(key, new StringBody(cur.toString(), ContentType.create(ContentType.APPLICATION_FORM_URLENCODED.getMimeType(), Charset.forName(UTF_8))));
+						builder.addPart(key, new StringBody(cur.toString(), contentType));
 					}
 				}
 			}
