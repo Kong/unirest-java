@@ -25,7 +25,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.test.http;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,6 +45,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -647,6 +653,37 @@ public class UnirestTest {
 		
 		headers = request.asJson().getBody().getObject().getJSONObject("headers");
 		assertEquals("Marco,John", headers.get("Name"));
+	}
+	
+	@Test
+	public void setTimeoutsAndCustomClient() {
+		try {
+			Unirest.setTimeouts(1000, 2000);
+		} catch(Exception e) {
+			fail();
+		}
+		
+		try {
+			Unirest.setAsyncHttpClient(HttpAsyncClientBuilder.create().build());
+		} catch(Exception e) {
+			fail();
+		}
+		
+		try {
+			Unirest.setAsyncHttpClient(HttpAsyncClientBuilder.create().build());
+			Unirest.setTimeouts(1000, 2000);
+			fail();
+		} catch(Exception e) {
+			// Ok
+		}
+		
+		try {
+			Unirest.setHttpClient(HttpClientBuilder.create().build());
+			Unirest.setTimeouts(1000, 2000);
+			fail();
+		} catch(Exception e) {
+			// Ok
+		}
 	}
 	
 }

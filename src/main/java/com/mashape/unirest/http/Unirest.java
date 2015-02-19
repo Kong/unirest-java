@@ -48,6 +48,7 @@ public class Unirest {
 	 */
 	public static void setHttpClient(HttpClient httpClient) {
 		Options.setOption(Option.HTTPCLIENT, httpClient);
+		Options.customClientSet();
 	}
 	
 	/**
@@ -55,6 +56,7 @@ public class Unirest {
 	 */
 	public static void setAsyncHttpClient(CloseableHttpAsyncClient asyncHttpClient) {
 		Options.setOption(Option.ASYNCHTTPCLIENT, asyncHttpClient);
+		Options.customClientSet();
 	}
 	
 	/**

@@ -25,7 +25,16 @@ public class Options {
 	
 	private static Map<Option, Object> options = new HashMap<Option, Object>();
 	
+	private static boolean customClientSet = false;
+	
+	public static void customClientSet() {
+		customClientSet = true;
+	}
+	
 	public static void setOption(Option option, Object value) {
+		if ((option == Option.CONNECTION_TIMEOUT || option == Option.SOCKET_TIMEOUT) && customClientSet) {
+			throw new RuntimeException("You can't set custom timeouts when providing custom client implementations. Set the timeouts directly in your custom client configuration instead.");
+		}
 		options.put(option, value);
 	}
 	
