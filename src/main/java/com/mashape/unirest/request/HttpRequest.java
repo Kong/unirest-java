@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,7 +46,7 @@ public class HttpRequest extends BaseRequest {
 
 	private HttpMethod httpMethod;
 	protected String url;
-	private Map<String, List<String>> headers = new HashMap<String, List<String>>();
+	Map<String, List<String>> headers = new TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER);
 	protected Body body;
 	
 	public HttpRequest(HttpMethod method, String url) {

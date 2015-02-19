@@ -27,7 +27,6 @@ package com.mashape.unirest.request.body;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

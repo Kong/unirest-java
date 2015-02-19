@@ -25,11 +25,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.test.http;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -628,6 +624,29 @@ public class UnirestTest {
 		
 		assertEquals("Mark", names.getString(0));
 		assertEquals("Tom", names.getString(1));
+	}
+	
+	@Test
+	public void testCaseInsensitiveHeaders() throws UnirestException {
+		GetRequest request = Unirest.get("http://httpbin.org/headers").header("Name", "Marco");
+		assertEquals(1, request.getHeaders().size());
+		assertEquals("Marco", request.getHeaders().get("name").get(0));
+		assertEquals("Marco", request.getHeaders().get("NAme").get(0));
+		assertEquals("Marco", request.getHeaders().get("Name").get(0));
+		JSONObject headers = request.asJson().getBody().getObject().getJSONObject("headers");
+		assertEquals("Marco", headers.getString("Name"));
+		
+		request = Unirest.get("http://httpbin.org/headers").header("Name", "Marco").header("Name", "John");
+		assertEquals(1, request.getHeaders().size());
+		assertEquals("Marco", request.getHeaders().get("name").get(0));
+		assertEquals("John", request.getHeaders().get("name").get(1));
+		assertEquals("Marco", request.getHeaders().get("NAme").get(0));
+		assertEquals("John", request.getHeaders().get("NAme").get(1));
+		assertEquals("Marco", request.getHeaders().get("Name").get(0));
+		assertEquals("John", request.getHeaders().get("Name").get(1));
+		
+		headers = request.asJson().getBody().getObject().getJSONObject("headers");
+		assertEquals("Marco,John", headers.get("Name"));
 	}
 	
 }
