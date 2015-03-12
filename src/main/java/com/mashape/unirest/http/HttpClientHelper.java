@@ -56,6 +56,7 @@ import org.apache.http.nio.entity.NByteArrayEntity;
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.async.utils.AsyncIdleConnectionMonitorThread;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.http.method.HttpCustomMethod;
 import com.mashape.unirest.http.options.Option;
 import com.mashape.unirest.http.options.Options;
 import com.mashape.unirest.http.utils.ClientFactory;
@@ -208,6 +209,8 @@ public class HttpClientHelper {
 		case HEAD:
 			reqObj = new HttpHead(urlToRequest);
 			break;
+		case CUSTOM :
+			reqObj = new HttpCustomMethod(urlToRequest, request.getMethodName());
 		}
 		
 		Set<Entry<String, List<String>>> entrySet = request.getHeaders().entrySet();

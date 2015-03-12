@@ -170,4 +170,12 @@ public class Unirest {
 		return new HttpRequestWithBody(HttpMethod.PUT, url);
 	}
 	
+	public static HttpRequestWithBody customMethod(String methodName, String url) {
+		if (methodName == null
+				|| (methodName != null && methodName.length() == 0)) {
+			throw new RuntimeException("Method name is required.");
+		}
+		return new HttpRequestWithBody(HttpMethod.CUSTOM, methodName.toUpperCase(), url);
+	}
+
 }

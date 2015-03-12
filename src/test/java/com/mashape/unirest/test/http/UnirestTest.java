@@ -51,6 +51,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mashape.unirest.http.HttpResponse;
@@ -686,4 +687,28 @@ public class UnirestTest {
 		}
 	}
 	
+	@Test
+	@Ignore
+	public void testCustomMethod() throws UnirestException, URISyntaxException,
+			IOException {
+		String sourceString = "'\"@こんにちは-test-123-" + Math.random();
+		byte[] sentBytes = sourceString.getBytes();
+
+		HttpResponse<String> response = Unirest
+				.customMethod("cutom", "http://httpconsole.com/request")
+				.body(sentBytes).asString();
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void testCustomMethodWithNoMethodName() throws UnirestException,
+			URISyntaxException, IOException {
+		String sourceString = "'\"@こんにちは-test-123-" + Math.random();
+		byte[] sentBytes = sourceString.getBytes();
+
+		HttpResponse<JsonNode> response = Unirest
+				.customMethod(null, "http://httpbin.org/user-agent")
+				.body(sentBytes).asJson();
+
+	}
+
 }

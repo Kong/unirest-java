@@ -42,6 +42,10 @@ public class HttpRequestWithBody extends HttpRequest {
 		super(method, url);
 	}
 
+	public HttpRequestWithBody(HttpMethod method, String url, String methodName) {
+		super(method, methodName, url);
+	}
+
 	public HttpRequestWithBody routeParam(String name, String value) {
 		super.routeParam(name, value);
 		return this;
