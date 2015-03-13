@@ -688,7 +688,6 @@ public class UnirestTest {
 	}
 	
 	@Test
-	@Ignore
 	public void testCustomMethod() throws UnirestException, URISyntaxException,
 			IOException {
 		String sourceString = "'\"@こんにちは-test-123-" + Math.random();

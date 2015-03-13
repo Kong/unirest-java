@@ -42,7 +42,7 @@ public class HttpRequestWithBody extends HttpRequest {
 		super(method, url);
 	}
 
-	public HttpRequestWithBody(HttpMethod method, String url, String methodName) {
+	public HttpRequestWithBody(HttpMethod method, String methodName, String url) {
 		super(method, methodName, url);
 	}
 

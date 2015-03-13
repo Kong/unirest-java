@@ -58,7 +58,7 @@ public class HttpRequest extends BaseRequest {
 		super.httpRequest = this;
 	}
 
-	public HttpRequest(HttpMethod method, String url, String methodName) {
+	public HttpRequest(HttpMethod method, String methodName, String url) {
 		this.httpMethod = method;
 		this.url = url;
 		this.methodName = methodName;
