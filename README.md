@@ -108,15 +108,14 @@ For example, serializing Json to Object using the popular Jackson ObjectMapper t
 
 ```java
 Unirest.setObjectMapper(new ObjectMapper() {
-    private objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+    private com.fasterxml.jackson.databind.objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
     public Object readValue(String value) {
         return objectMapper.readValue(value);
     }
 });
 
-HttpResponse<Book> objectResponse = Unirest.post("http://httpbin.org/books/1")
-  .header("accept", "application/json")
+HttpResponse<Book> objectResponse = Unirest.get("http://httpbin.org/books/1")
   .asObject(Book.class);
   
 Book firstBook = objectResponse.getBody();

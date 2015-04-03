@@ -679,7 +679,7 @@ public class UnirestTest {
 	}
 
 	@Test
-	public void testObjectMapper() throws UnirestException {
+	public void setObjectMapper() throws UnirestException, IOException {
 		Unirest.setObjectMapper(new ObjectMapper() {
 			public Object readValue(String value) {
 				return Locale.ENGLISH;
@@ -687,6 +687,7 @@ public class UnirestTest {
 		});
 
 		HttpResponse<Locale> response = Unirest.get("http://httpbin.org/get").asObject(Locale.class);
+
 		assertNotNull(response);
 		assertEquals(response.getBody(), Locale.ENGLISH);
 	}

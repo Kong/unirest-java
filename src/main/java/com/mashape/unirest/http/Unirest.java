@@ -74,7 +74,9 @@ public class Unirest {
 	 */
 	public static void setObjectMapper(ObjectMapper objectMapper) {
 		Options.setOption(Option.OBJECT_MAPPER, objectMapper);
-		Options.customClientSet();
+
+		// Reload the client implementations
+		Options.refresh();
 	}
 	
 	/**
