@@ -127,7 +127,7 @@ Unirest.setObjectMapper(new ObjectMapper() {
 HttpResponse<Book> bookResponse = Unirest.get("http://httpbin.org/books/1").asObject(Book.class);
 Book bookObject = bookResponse.getBody();
 
-HttpResponse<Author> authorResponse = Unirest.get("http://httpbin.org/book/{id}/author")
+HttpResponse<Author> authorResponse = Unirest.get("http://httpbin.org/books/{id}/author")
     .routeParam("id", bookObject.getId())
     .asObject(Author.class);
     
