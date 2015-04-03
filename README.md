@@ -101,29 +101,38 @@ HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
 ```
 
 Requests are made when `as[Type]()` is invoked, possible types include `Json`, `Binary`, `String`, `Object`.
+
+If the request supports and it is of type `HttpRequestWithBody`, a body it can be passed along with `.body(String|JsonNode)`. If you already have a map of parameters or do not wish to use seperate field methods for each one there is a `.fields(Map<String, Object> fields)` method that will serialize each key - value to form parameters on your request.
+
+`.headers(Map<String, String> headers)` is also supported in replacement of multiple header methods.
+
+## Response to Object
 Before an `asObject(Class)` invokation, is necessary to provide a custom implementation of the `ObjectMapper` interface.
 This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
 
 For example, serializing Json to Object using the popular Jackson ObjectMapper takes only few lines of code.
 
 ```java
+// Only one time
 Unirest.setObjectMapper(new ObjectMapper() {
-    private com.fasterxml.jackson.databind.objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+    private com.fasterxml.jackson.databind.ObjectMapper objectMapper 
+        = new com.fasterxml.jackson.databind.ObjectMapper();
 
     public Object readValue(String value) {
         return objectMapper.readValue(value);
     }
 });
 
-HttpResponse<Book> objectResponse = Unirest.get("http://httpbin.org/books/1")
-  .asObject(Book.class);
-  
-Book firstBook = objectResponse.getBody();
+// Multiple Requests
+HttpResponse<Book> bookResponse = Unirest.get("http://httpbin.org/books/1").asObject(Book.class);
+Book bookObject = bookResponse.getBody();
+
+HttpResponse<Author> authorResponse = Unirest.get("http://httpbin.org/book/{id}/author")
+    .routeParam("id", bookObject.getId())
+    .asObject(Author.class);
+    
+Author authorObject = authorResponse.getBody();
 ```
-
-If the request supports and it is of type `HttpRequestWithBody`, a body it can be passed along with `.body(String|JsonNode)`. If you already have a map of parameters or do not wish to use seperate field methods for each one there is a `.fields(Map<String, Object> fields)` method that will serialize each key - value to form parameters on your request.
-
-`.headers(Map<String, String> headers)` is also supported in replacement of multiple header methods.
 
 ### Route Parameters
 
