@@ -679,16 +679,30 @@ public class UnirestTest {
 	}
 
 	@Test
-	public void setObjectMapper() throws UnirestException, IOException {
+	public void testObjectMapper() throws UnirestException, IOException {
+		final String responseJson = "{\"locale\": \"english\"}";
+
 		Unirest.setObjectMapper(new ObjectMapper() {
-			public Object readValue(String value) {
+			public Object readValue(String ignored) {
 				return Locale.ENGLISH;
+			}
+
+			public String writeValue(Object ignored) {
+				return responseJson;
 			}
 		});
 
-		HttpResponse<Locale> response = Unirest.get("http://httpbin.org/get").asObject(Locale.class);
+		HttpResponse<Locale> getResponse = Unirest.get("http://httpbin.org/get").asObject(Locale.class);
+		assertEquals(200, getResponse.getStatus());
+		assertEquals(getResponse.getBody(), Locale.ENGLISH);
 
-		assertNotNull(response);
-		assertEquals(response.getBody(), Locale.ENGLISH);
+		HttpResponse<JsonNode> postResponse = Unirest.post("http://httpbin.org/post")
+				.header("accept", "application/json")
+				.header("Content-Type", "application/json")
+				.body(Locale.ENGLISH)
+				.asJson();
+
+		assertEquals(200, postResponse.getStatus());
+		assertEquals(postResponse.getBody().getObject().getString("data"), responseJson);
 	}
 }
