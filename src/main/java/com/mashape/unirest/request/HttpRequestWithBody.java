@@ -83,6 +83,10 @@ public class HttpRequestWithBody extends HttpRequest {
 		return field(name, value, null);
 	}
 	
+	public MultipartBody field(String name, Object value, boolean forceMultipart) {
+		return field(name, value, null, forceMultipart);
+	}
+
 	public MultipartBody field(String name, File file) {
 		return field(name, file, null);
 	}
@@ -93,6 +97,12 @@ public class HttpRequestWithBody extends HttpRequest {
 		return body;
 	}
 	
+	public MultipartBody field(String name, Object value, String contentType, boolean forceMultipart) {
+		MultipartBody body = new MultipartBody(this).field(name, (value == null) ? "" : value.toString(), forceMultipart, contentType);
+		this.body = body;
+		return body;
+	}
+
 	public MultipartBody field(String name, File file, String contentType) {
 		MultipartBody body = new MultipartBody(this).field(name, file, contentType);
 		this.body = body;
