@@ -32,6 +32,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
@@ -45,6 +47,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.json.JSONArray;
@@ -319,7 +322,71 @@ public class UnirestTest {
 		assertTrue(json.getObject().getJSONObject("files").getString("file").contains("data:image/jpeg"));
 		assertEquals("Mark", json.getObject().getJSONObject("form").getString("name"));
 	}
+	
+	@Test
+	public void testMultipartInputStreamContentType() throws JSONException, InterruptedException, ExecutionException,
+		URISyntaxException, UnirestException, FileNotFoundException {
+		HttpResponse<JsonNode> jsonResponse =
+			Unirest.post("http://httpbin.org/post")
+				.field("name", "Mark")
+				.field("file", new FileInputStream(new File(getClass().getResource("/image.jpg").toURI())), ContentType.APPLICATION_OCTET_STREAM, "image.jpg").asJson();
+		assertTrue(jsonResponse.getHeaders().size() > 0);
+		assertTrue(jsonResponse.getBody().toString().length() > 0);
+		assertFalse(jsonResponse.getRawBody() == null);
+		assertEquals(200, jsonResponse.getStatus());
 
+		JsonNode json = jsonResponse.getBody();
+		assertFalse(json.isArray());
+		assertNotNull(json.getObject());
+		assertNotNull(json.getArray());
+		assertEquals(1, json.getArray().length());
+		assertNotNull(json.getArray().get(0));
+		assertNotNull(json.getObject().getJSONObject("files"));
+
+		assertTrue(json.getObject().getJSONObject("files").getString("file").contains("data:application/octet-stream"));
+		assertEquals("Mark", json.getObject().getJSONObject("form").getString("name"));
+	}
+	
+	@Test
+	public void testMultipartInputStreamContentTypeAsync() throws JSONException, InterruptedException, ExecutionException, URISyntaxException, UnirestException, FileNotFoundException {
+		Unirest.post("http://httpbin.org/post")
+		.field("name", "Mark")
+		.field("file", new FileInputStream(new File(getClass().getResource("/test").toURI())), ContentType.APPLICATION_OCTET_STREAM, "test").asJsonAsync(new Callback<JsonNode>() {
+			
+			public void failed(UnirestException e) {
+				fail();
+			}
+			
+			public void completed(HttpResponse<JsonNode> response) {
+				assertTrue(response.getHeaders().size() > 0);
+				assertTrue(response.getBody().toString().length() > 0);
+				assertFalse(response.getRawBody() == null);
+				assertEquals(200, response.getStatus());
+				
+				JsonNode json = response.getBody();
+				assertFalse(json.isArray());
+				assertNotNull(json.getObject());
+				assertNotNull(json.getArray());
+				assertEquals(1, json.getArray().length());
+				assertNotNull(json.getArray().get(0));
+				
+				assertEquals("This is a test file", json.getObject().getJSONObject("files").getString("file"));
+				assertEquals("Mark", json.getObject().getJSONObject("form").getString("name"));
+				
+				status = true;
+				lock.countDown();
+			}
+			
+			public void cancelled() {
+				fail();
+			}
+			
+		});
+		
+		lock.await(10, TimeUnit.SECONDS);
+		assertTrue(status);
+	}
+	
 	@Test
 	public void testMultipartAsync() throws JSONException, InterruptedException, ExecutionException, URISyntaxException, UnirestException {
 		Unirest.post("http://httpbin.org/post")
