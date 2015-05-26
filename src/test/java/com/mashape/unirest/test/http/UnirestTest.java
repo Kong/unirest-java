@@ -822,7 +822,7 @@ public class UnirestTest {
 			Unirest.setTimeouts(1000, 2000);
 			fail();
 		} catch(Exception e) {
-			// Ok
+			// Ok 
 		}
 	}
 	
