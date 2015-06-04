@@ -50,10 +50,10 @@ public class HttpResponse<T> {
 	@SuppressWarnings("unchecked")
 	public HttpResponse(org.apache.http.HttpResponse response, Class<T> responseClass) {
 		HttpEntity responseEntity = response.getEntity();
-		
+
 		Header[] allHeaders = response.getAllHeaders();
 		for(Header header : allHeaders) {
-			String headerName = header.getName().toLowerCase();
+			String headerName = header.getName();
 			List<String> list = headers.get(headerName);
 			if (list == null) list = new ArrayList<String>();
 			list.add(header.getValue());
@@ -62,10 +62,10 @@ public class HttpResponse<T> {
 		StatusLine statusLine = response.getStatusLine();
 		this.statusCode = statusLine.getStatusCode();
 		this.statusText = statusLine.getReasonPhrase();
-		
+
 		if (responseEntity != null) {
 			String charset = "UTF-8";
-			
+
 			Header contentType = responseEntity.getContentType();
 			if (contentType != null) {
 				String responseCharset = ResponseUtils.getCharsetFromContentType(contentType.getValue());
@@ -73,7 +73,7 @@ public class HttpResponse<T> {
 					charset = responseCharset;
 				}
 			}
-		
+
 			try {
 				byte[] rawBody;
 				try {
@@ -102,7 +102,7 @@ public class HttpResponse<T> {
 				throw new RuntimeException(e);
 			}
 		}
-		
+
 		try {
 			EntityUtils.consume(responseEntity);
 		} catch (IOException e) {
@@ -113,7 +113,7 @@ public class HttpResponse<T> {
 	public int getStatus() {
 		return statusCode;
 	}
-	
+
 	public String getStatusText() {
 		return statusText;
 	}
