@@ -25,19 +25,18 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.http;
 
+import com.mashape.unirest.http.utils.ResponseUtils;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.StatusLine;
+import org.apache.http.util.EntityUtils;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
-
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.StatusLine;
-import org.apache.http.util.EntityUtils;
-
-import com.mashape.unirest.http.utils.ResponseUtils;
 
 public class HttpResponse<T> {
 
@@ -52,7 +51,7 @@ public class HttpResponse<T> {
 		HttpEntity responseEntity = response.getEntity();
 
 		Header[] allHeaders = response.getAllHeaders();
-		for(Header header : allHeaders) {
+		for (Header header : allHeaders) {
 			String headerName = header.getName();
 			List<String> list = headers.get(headerName);
 			if (list == null) list = new ArrayList<String>();
@@ -120,6 +119,10 @@ public class HttpResponse<T> {
 
 	public Headers getHeaders() {
 		return headers;
+	}
+
+	public String header(String headerName) {
+		return headers.getFirst(headerName);
 	}
 
 	public InputStream getRawBody() {
