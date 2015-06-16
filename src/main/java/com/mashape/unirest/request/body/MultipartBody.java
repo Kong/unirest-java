@@ -60,7 +60,7 @@ public class MultipartBody extends BaseRequest implements Body {
 		super(httpRequest);
 		this.httpRequestObj = httpRequest;
 	}
-	
+
 	public MultipartBody field(String name, String value) {
 		return field(name, value, false, null);
 	}
@@ -76,23 +76,23 @@ public class MultipartBody extends BaseRequest implements Body {
 		}
 		return this;
 	}
-	
+
 	public MultipartBody field(String name, Object value) {
 		return field(name, value, false, null);
 	}
-	
+
 	public MultipartBody field(String name, Object value, boolean file) {
 		return field(name, value, file, null);
 	}
 
 	public MultipartBody field(String name, Object value, boolean file, String contentType) {
-		keyOrder.add(name);
-		
+		if (!keyOrder.contains(name)) keyOrder.add(name);
+
 		List<Object> list = parameters.get(name);
 		if (list == null) list = new LinkedList<Object>();
 		list.add(value);
 		parameters.put(name, list);
-		
+
 		ContentType type = null;
 		if (contentType != null && !contentType.isEmpty()) { type = ContentType.parse(contentType); }
 		else if (file) { type = ContentType.APPLICATION_OCTET_STREAM; }
@@ -113,7 +113,7 @@ public class MultipartBody extends BaseRequest implements Body {
 	public MultipartBody field(String name, File file, String contentType) {
 		return field(name, file, true, contentType);
 	}
-	
+
 	public MultipartBody basicAuth(String username, String password) {
 		httpRequestObj.basicAuth(username, password);
 		return this;
