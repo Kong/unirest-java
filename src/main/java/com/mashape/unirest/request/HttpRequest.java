@@ -48,13 +48,13 @@ public class HttpRequest extends BaseRequest {
 	protected String url;
 	Map<String, List<String>> headers = new TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER);
 	protected Body body;
-	
+
 	public HttpRequest(HttpMethod method, String url) {
 		this.httpMethod = method;
 		this.url = url;
 		super.httpRequest = this;
 	}
-	
+
 	public HttpRequest routeParam(String name, String value) {
 		Matcher matcher = Pattern.compile("\\{" + name + "\\}").matcher(url);
 		int count = 0;
@@ -67,12 +67,12 @@ public class HttpRequest extends BaseRequest {
 		this.url = url.replaceAll("\\{" + name + "\\}", URLParamEncoder.encode(value));
 		return this;
 	}
-	
+
 	public HttpRequest basicAuth(String username, String password) {
 		header("Authorization", "Basic " + Base64Coder.encodeString(username+ ":" + password));
 		return this;
 	}
-	
+
 	public HttpRequest header(String name, String value) {
 		List<String> list = this.headers.get(name.trim());
 		if (list == null) {
@@ -82,7 +82,7 @@ public class HttpRequest extends BaseRequest {
 		this.headers.put(name.trim(), list);
 		return this;
 	}
-	
+
 	public HttpRequest headers(Map<String, String> headers) {
 		if (headers != null) {
 			for(Map.Entry<String, String> entry : headers.entrySet()) {
@@ -91,14 +91,14 @@ public class HttpRequest extends BaseRequest {
 		}
 		return this;
 	}
-	
+
 	public HttpRequest queryString(String name, Collection<?> value) {
 		for(Object cur : value) {
 			queryString(name, cur);
 		}
 		return this;
 	}
-	
+
 	public HttpRequest queryString(String name, Object value) {
 		StringBuilder queryString  = new StringBuilder();
 		if (this.url.contains("?")) {
@@ -114,20 +114,20 @@ public class HttpRequest extends BaseRequest {
 		this.url += queryString.toString();
 		return this;
 	}
-	
+
 	public HttpRequest queryString(Map<String, Object> parameters) {
 		if (parameters != null) {
 			for(Entry<String, Object> param : parameters.entrySet()) {
-				if (param.getValue() instanceof String || param.getValue() instanceof Number || param.getValue() instanceof Boolean) {
+//				if (param.getValue() instanceof String || param.getValue() instanceof Number || param.getValue() instanceof Boolean) {
 					queryString(param.getKey(), param.getValue());
-				} else {
-					throw new RuntimeException("Parameter \"" + param.getKey() + "\" can't be sent with a GET request because of type: " + param.getValue().getClass().getName());
-				}
+//				} else {
+//					throw new RuntimeException("Parameter \"" + param.getKey() + "\" can't be sent with a GET request because of type: " + param.getValue().getClass().getName());
+//				}
 			}
 		}
 		return this;
 	}
-	
+
 	public HttpMethod getHttpMethod() {
 		return httpMethod;
 	}
@@ -144,5 +144,5 @@ public class HttpRequest extends BaseRequest {
 	public Body getBody() {
 		return body;
 	}
-	
+
 }
