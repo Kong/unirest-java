@@ -26,6 +26,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.mashape.unirest.request.body;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +40,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 
@@ -106,8 +108,16 @@ public class MultipartBody extends BaseRequest implements Body {
 		return this;
 	}
 
+	public MultipartBody field(String name, org.springframework.web.multipart.MultipartFile file) {
+		return field(name, file, true, null);
+	}
+
 	public MultipartBody field(String name, File file) {
 		return field(name, file, true, null);
+	}
+
+	public MultipartBody field(String name, org.springframework.web.multipart.MultipartFile file, String contentType) {
+		return field(name, file, true, contentType);
 	}
 
 	public MultipartBody field(String name, File file, String contentType) {
@@ -135,6 +145,16 @@ public class MultipartBody extends BaseRequest implements Body {
 					if (cur instanceof File) {
 						File file = (File) cur;
 						builder.addPart(key, new FileBody(file, contentType, file.getName()));
+					} else if (cur instanceof org.springframework.web.multipart.MultipartFile) {
+						org.springframework.web.multipart.MultipartFile file
+								= (org.springframework.web.multipart.MultipartFile) cur;
+						byte[] bytes = new byte[0];
+						try {
+							bytes = file.getBytes();
+						} catch (IOException e) {
+							// fuck this exception
+						}
+						builder.addPart(key, new ByteArrayBody(bytes, contentType, file.getName()));
 					} else {
 						builder.addPart(key, new StringBody(cur.toString(), contentType));
 					}

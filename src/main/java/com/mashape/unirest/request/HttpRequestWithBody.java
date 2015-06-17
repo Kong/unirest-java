@@ -25,16 +25,16 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.request;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import com.mashape.unirest.http.HttpMethod;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.request.body.MultipartBody;
 import com.mashape.unirest.request.body.RawBody;
 import com.mashape.unirest.request.body.RequestBodyEntity;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class HttpRequestWithBody extends HttpRequest {
 
@@ -62,12 +62,12 @@ public class HttpRequestWithBody extends HttpRequest {
 		super.basicAuth(username, password);
 		return this;
 	}
-	
+
 	@Override
 	public HttpRequestWithBody queryString(Map<String, Object> parameters) {
 		return (HttpRequestWithBody) super.queryString(parameters);
 	}
-	
+
 	@Override
 	public HttpRequestWithBody queryString(String name, Object value) {
 		return (HttpRequestWithBody) super.queryString(name, value);
@@ -78,12 +78,16 @@ public class HttpRequestWithBody extends HttpRequest {
 		this.body = body;
 		return body;
 	}
-	
+
 	public MultipartBody field(String name, Object value) {
 		return field(name, value, null);
 	}
-	
+
 	public MultipartBody field(String name, File file) {
+		return field(name, file, null);
+	}
+
+	public MultipartBody field(String name, org.springframework.web.multipart.MultipartFile file) {
 		return field(name, file, null);
 	}
 
@@ -92,19 +96,27 @@ public class HttpRequestWithBody extends HttpRequest {
 		this.body = body;
 		return body;
 	}
-	
+
 	public MultipartBody field(String name, File file, String contentType) {
 		MultipartBody body = new MultipartBody(this).field(name, file, contentType);
 		this.body = body;
 		return body;
 	}
 
+	public MultipartBody field(String name, org.springframework.web.multipart.MultipartFile file, String contentType) {
+		MultipartBody body = new MultipartBody(this).field(name, file, contentType);
+		this.body = body;
+		return body;
+	}
+
 	public MultipartBody fields(Map<String, Object> parameters) {
-		MultipartBody body =  new MultipartBody(this);
+		MultipartBody body = new MultipartBody(this);
 		if (parameters != null) {
-			for(Entry<String, Object> param : parameters.entrySet()) {
+			for (Entry<String, Object> param : parameters.entrySet()) {
 				if (param.getValue() instanceof File) {
-					body.field(param.getKey(), (File)param.getValue());
+					body.field(param.getKey(), (File) param.getValue());
+				} else if (param.getValue() instanceof org.springframework.web.multipart.MultipartFile) {
+					body.field(param.getKey(), (org.springframework.web.multipart.MultipartFile) param.getValue());
 				} else {
 					body.field(param.getKey(), (param.getValue() == null) ? "" : param.getValue().toString());
 				}
@@ -119,7 +131,7 @@ public class HttpRequestWithBody extends HttpRequest {
 	}
 
 	public RequestBodyEntity body(String body) {
-		RequestBodyEntity b =  new RequestBodyEntity(this).body(body);
+		RequestBodyEntity b = new RequestBodyEntity(this).body(body);
 		this.body = b;
 		return b;
 	}
