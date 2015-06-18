@@ -4,7 +4,7 @@
 	<groupId>com.github.bingoohuang</groupId>
 	<artifactId>unirest-java</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.5-SNAPSHOT</version>
+	<version>0.0.5</version>
 	<name>unirest-java</name>
 	<description>Simplified, lightweight HTTP client library</description>
 	<url>http://unirest.io/</url>
@@ -180,6 +180,16 @@
 	</distributionManagement>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.github.bingoohuang</groupId>
+			<artifactId>java-utils</artifactId>
+			<version>0.0.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>18.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
