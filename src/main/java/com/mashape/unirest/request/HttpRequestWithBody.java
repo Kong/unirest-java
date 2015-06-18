@@ -92,10 +92,12 @@ public class HttpRequestWithBody extends HttpRequest {
 	}
 
 	public MultipartBody field(String name, Object value, String contentType) {
-		MultipartBody body = new MultipartBody(this).field(name, (value == null) ? "" : value.toString(), contentType);
+		String value1 = ValueUtils.processValue(value);
+		MultipartBody body = new MultipartBody(this).field(name, value1, contentType);
 		this.body = body;
 		return body;
 	}
+
 
 	public MultipartBody field(String name, File file, String contentType) {
 		MultipartBody body = new MultipartBody(this).field(name, file, contentType);
