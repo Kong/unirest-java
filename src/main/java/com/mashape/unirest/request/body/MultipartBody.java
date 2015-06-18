@@ -154,7 +154,7 @@ public class MultipartBody extends BaseRequest implements Body {
 						} catch (IOException e) {
 							// fuck this exception
 						}
-						builder.addPart(key, new ByteArrayBody(bytes, contentType, file.getName()));
+						builder.addPart(key, new ByteArrayBody(bytes, contentType, file.getOriginalFilename()));
 					} else {
 						builder.addPart(key, new StringBody(cur.toString(), contentType));
 					}
