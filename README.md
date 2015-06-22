@@ -190,7 +190,7 @@ HttpRequestWithBody request = Unirest.delete(String url);
 Upon recieving a response Unirest returns the result in the form of an Object, this object should always have the same keys for each language regarding to the response details.
 
 - `.getStatus()` - HTTP Response Status Code (Example: 200)
-- `.getStatusTest()` - HTTP Response Status Text (Example: "OK")
+- `.getStatusText()` - HTTP Response Status Text (Example: "OK")
 - `.getHeaders()` - HTTP Response Headers
 - `.getBody()` - Parsed response body where applicable, for example JSON responses are parsed to Objects / Associative Arrays.
 - `.getRawBody()` - Un-parsed response body
