@@ -26,6 +26,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.mashape.unirest.request.body;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +40,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ByteArrayBody;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 
@@ -60,7 +62,7 @@ public class MultipartBody extends BaseRequest implements Body {
 		super(httpRequest);
 		this.httpRequestObj = httpRequest;
 	}
-	
+
 	public MultipartBody field(String name, String value) {
 		return field(name, value, false, null);
 	}
@@ -76,23 +78,23 @@ public class MultipartBody extends BaseRequest implements Body {
 		}
 		return this;
 	}
-	
+
 	public MultipartBody field(String name, Object value) {
 		return field(name, value, false, null);
 	}
-	
+
 	public MultipartBody field(String name, Object value, boolean file) {
 		return field(name, value, file, null);
 	}
 
 	public MultipartBody field(String name, Object value, boolean file, String contentType) {
-		keyOrder.add(name);
-		
+		if (!keyOrder.contains(name)) keyOrder.add(name);
+
 		List<Object> list = parameters.get(name);
 		if (list == null) list = new LinkedList<Object>();
 		list.add(value);
 		parameters.put(name, list);
-		
+
 		ContentType type = null;
 		if (contentType != null && !contentType.isEmpty()) { type = ContentType.parse(contentType); }
 		else if (file) { type = ContentType.APPLICATION_OCTET_STREAM; }
@@ -106,14 +108,22 @@ public class MultipartBody extends BaseRequest implements Body {
 		return this;
 	}
 
+	public MultipartBody field(String name, org.springframework.web.multipart.MultipartFile file) {
+		return field(name, file, true, null);
+	}
+
 	public MultipartBody field(String name, File file) {
 		return field(name, file, true, null);
+	}
+
+	public MultipartBody field(String name, org.springframework.web.multipart.MultipartFile file, String contentType) {
+		return field(name, file, true, contentType);
 	}
 
 	public MultipartBody field(String name, File file, String contentType) {
 		return field(name, file, true, contentType);
 	}
-	
+
 	public MultipartBody basicAuth(String username, String password) {
 		httpRequestObj.basicAuth(username, password);
 		return this;
@@ -135,6 +145,16 @@ public class MultipartBody extends BaseRequest implements Body {
 					if (cur instanceof File) {
 						File file = (File) cur;
 						builder.addPart(key, new FileBody(file, contentType, file.getName()));
+					} else if (cur instanceof org.springframework.web.multipart.MultipartFile) {
+						org.springframework.web.multipart.MultipartFile file
+								= (org.springframework.web.multipart.MultipartFile) cur;
+						byte[] bytes = new byte[0];
+						try {
+							bytes = file.getBytes();
+						} catch (IOException e) {
+							// fuck this exception
+						}
+						builder.addPart(key, new ByteArrayBody(bytes, contentType, file.getOriginalFilename()));
 					} else {
 						builder.addPart(key, new StringBody(cur.toString(), contentType));
 					}
