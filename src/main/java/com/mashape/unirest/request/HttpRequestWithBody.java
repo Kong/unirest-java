@@ -30,6 +30,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.json.JSONObject;
+
 import com.mashape.unirest.http.HttpMethod;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.request.body.MultipartBody;
@@ -112,6 +114,10 @@ public class HttpRequestWithBody extends HttpRequest {
 		}
 		this.body = body;
 		return body;
+	}
+
+	public RequestBodyEntity body(JSONObject body) {
+		return body(new JsonNode(body));
 	}
 
 	public RequestBodyEntity body(JsonNode body) {
