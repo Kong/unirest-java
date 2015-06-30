@@ -25,14 +25,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.request;
 
-import java.io.InputStream;
-import java.util.concurrent.Future;
-
 import com.mashape.unirest.http.HttpClientHelper;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
+
+import java.io.InputStream;
+import java.util.concurrent.Future;
 
 public abstract class BaseRequest {
 
@@ -74,6 +74,18 @@ public abstract class BaseRequest {
 	
 	public Future<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback) {
 		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class, callback);
+	}
+
+	public <T> HttpResponse<T> asObject(Class<? extends T> responseClass) throws UnirestException {
+		return HttpClientHelper.request(httpRequest, (Class) responseClass);
+	}
+
+	public <T> Future<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass) {
+		return HttpClientHelper.requestAsync(httpRequest, (Class) responseClass, null);
+	}
+
+	public <T> Future<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback) {
+		return HttpClientHelper.requestAsync(httpRequest, (Class) responseClass, callback);
 	}
 
 	public HttpResponse<InputStream> asBinary() throws UnirestException {

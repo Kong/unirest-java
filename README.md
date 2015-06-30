@@ -27,6 +27,7 @@ Unirest.post("http://httpbin.org/post")
 * Customizable default headers for every request (DRY)
 * Customizable `HttpClient` and `HttpAsyncClient` implementation
 * Automatic JSON parsing into a native object for JSON responses
+* Customizable binding, with mapping from response body to java Object 
 
 ## Installing
 Is easy as pie. Kidding. It's about as easy as doing these little steps:
@@ -99,9 +100,52 @@ HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
   .asJson();
 ```
 
-Requests are made when `as[Type]()` is invoked, possible types include `Json`, `Binary`, `String`. If the request supports and it is of type `HttpRequestWithBody`, a body it can be passed along with `.body(String|JsonNode)`. If you already have a map of parameters or do not wish to use seperate field methods for each one there is a `.fields(Map<String, Object> fields)` method that will serialize each key - value to form parameters on your request.
+Requests are made when `as[Type]()` is invoked, possible types include `Json`, `Binary`, `String`, `Object`.
+
+If the request supports and it is of type `HttpRequestWithBody`, a body it can be passed along with `.body(String|JsonNode|Object)`. For using `.body(Object)` some pre-configuration is needed (see below).
+
+If you already have a map of parameters or do not wish to use seperate field methods for each one there is a `.fields(Map<String, Object> fields)` method that will serialize each key - value to form parameters on your request.
 
 `.headers(Map<String, String> headers)` is also supported in replacement of multiple header methods.
+
+## Serialization
+Before an `asObject(Class)` or a `.body(Object)` invokation, is necessary to provide a custom implementation of the `ObjectMapper` interface.
+This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
+
+For example, serializing Json from\to Object using the popular Jackson ObjectMapper takes only few lines of code.
+
+```java
+// Only one time
+Unirest.setObjectMapper(new ObjectMapper() {
+    private com.fasterxml.jackson.databind.ObjectMapper objectMapper 
+        = new com.fasterxml.jackson.databind.ObjectMapper();
+
+    public Object readValue(String value) {
+        return objectMapper.readValue(value);
+    }
+    
+    public String writeValue(Object value) {
+        return objectMapper.writeValueAsString(value);
+    }
+});
+
+// Response to Object
+HttpResponse<Book> bookResponse = Unirest.get("http://httpbin.org/books/1").asObject(Book.class);
+Book bookObject = bookResponse.getBody();
+
+HttpResponse<Author> authorResponse = Unirest.get("http://httpbin.org/books/{id}/author")
+    .routeParam("id", bookObject.getId())
+    .asObject(Author.class);
+    
+Author authorObject = authorResponse.getBody();
+
+// Object to Json
+HttpResponse<JsonNode> postResponse = Unirest.post("http://httpbin.org/authors/post")
+        .header("accept", "application/json")
+        .header("Content-Type", "application/json")
+        .body(authorObject)
+        .asJson();
+```
 
 ### Route Parameters
 

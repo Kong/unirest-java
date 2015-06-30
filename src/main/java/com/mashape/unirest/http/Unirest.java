@@ -25,21 +25,20 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.http;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.http.HttpHost;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-
 import com.mashape.unirest.http.async.utils.AsyncIdleConnectionMonitorThread;
 import com.mashape.unirest.http.options.Option;
 import com.mashape.unirest.http.options.Options;
 import com.mashape.unirest.http.utils.SyncIdleConnectionMonitorThread;
 import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
+import org.apache.http.HttpHost;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Unirest {
 	
@@ -65,6 +64,17 @@ public class Unirest {
 	public static void setProxy(HttpHost proxy) {
 		Options.setOption(Option.PROXY, proxy);
 		
+		// Reload the client implementations
+		Options.refresh();
+	}
+
+	/**
+	 * Set the ObjectMapper implementation to use for Response to Object binding
+	 * @param objectMapper Custom implementation of ObjectMapper interface
+	 */
+	public static void setObjectMapper(ObjectMapper objectMapper) {
+		Options.setOption(Option.OBJECT_MAPPER, objectMapper);
+
 		// Reload the client implementations
 		Options.refresh();
 	}

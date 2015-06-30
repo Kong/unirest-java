@@ -25,16 +25,19 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.request;
 
+import com.mashape.unirest.http.HttpMethod;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.ObjectMapper;
+import com.mashape.unirest.http.options.Option;
+import com.mashape.unirest.http.options.Options;
+import com.mashape.unirest.request.body.MultipartBody;
+import com.mashape.unirest.request.body.RawBody;
+import com.mashape.unirest.request.body.RequestBodyEntity;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import com.mashape.unirest.http.HttpMethod;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.request.body.MultipartBody;
-import com.mashape.unirest.request.body.RawBody;
-import com.mashape.unirest.request.body.RequestBodyEntity;
 
 public class HttpRequestWithBody extends HttpRequest {
 
@@ -42,6 +45,7 @@ public class HttpRequestWithBody extends HttpRequest {
 		super(method, url);
 	}
 
+	@Override
 	public HttpRequestWithBody routeParam(String name, String value) {
 		super.routeParam(name, value);
 		return this;
@@ -122,6 +126,16 @@ public class HttpRequestWithBody extends HttpRequest {
 		RequestBodyEntity b =  new RequestBodyEntity(this).body(body);
 		this.body = b;
 		return b;
+	}
+
+	public RequestBodyEntity body(Object body) {
+		ObjectMapper objectMapper = (ObjectMapper) Options.getOption(Option.OBJECT_MAPPER);
+
+		if(objectMapper == null) {
+			throw new RuntimeException("Serialization Impossible. Can't find an ObjectMapper implementation.");
+		}
+
+		return body(objectMapper.writeValue(body));
 	}
 
 	public RawBody body(byte[] body) {
