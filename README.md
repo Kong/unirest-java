@@ -165,6 +165,28 @@ HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
   .asJson();
 ```
 
+## Byte Stream as Entity Body
+
+```java
+final InputStream stream = new FileInputStream(new File(getClass().getResource("/image.jpg").toURI()));
+final byte[] bytes = new byte[stream.available()];
+stream.read(bytes);
+stream.close();
+final HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
+  .field("name", "Mark")
+  .field("file", bytes, "image.jpg")
+  .asJson();
+```
+
+## InputStream as Entity Body
+
+```java
+HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
+  .field("name", "Mark")
+  .field("file", new FileInputStream(new File(getClass().getResource("/image.jpg").toURI())), ContentType.APPLICATION_OCTET_STREAM, "image.jpg")
+  .asJson();
+```
+
 ## Basic Authentication
 Authenticating the request with basic authentication can be done by calling the `basicAuth(username, password)` function:
 ```java
