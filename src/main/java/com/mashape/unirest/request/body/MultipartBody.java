@@ -26,6 +26,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.mashape.unirest.request.body;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,7 +40,10 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.entity.mime.content.StringBody;
 
 import com.mashape.unirest.http.utils.MapUtil;
@@ -114,6 +118,22 @@ public class MultipartBody extends BaseRequest implements Body {
 		return field(name, file, true, contentType);
 	}
 	
+	public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
+		return field(name, new InputStreamBody(stream, contentType, fileName), true, contentType.getMimeType());
+	}
+	
+	public MultipartBody field(String name, InputStream stream, String fileName) {
+		return field(name, new InputStreamBody(stream, ContentType.APPLICATION_OCTET_STREAM, fileName), true, ContentType.APPLICATION_OCTET_STREAM.getMimeType());
+	}
+	
+	public MultipartBody field(String name, byte[] bytes, ContentType contentType, String fileName) {
+		return field(name, new ByteArrayBody(bytes, contentType, fileName), true, contentType.getMimeType());
+	}
+	
+	public MultipartBody field(String name, byte[] bytes, String fileName) {
+		return field(name, new ByteArrayBody(bytes, ContentType.APPLICATION_OCTET_STREAM, fileName), true, ContentType.APPLICATION_OCTET_STREAM.getMimeType());
+	}
+	
 	public MultipartBody basicAuth(String username, String password) {
 		httpRequestObj.basicAuth(username, password);
 		return this;
@@ -135,6 +155,10 @@ public class MultipartBody extends BaseRequest implements Body {
 					if (cur instanceof File) {
 						File file = (File) cur;
 						builder.addPart(key, new FileBody(file, contentType, file.getName()));
+					} else if (cur instanceof InputStreamBody) {
+						builder.addPart(key, (ContentBody) cur);
+					} else if (cur instanceof ByteArrayBody) {
+						builder.addPart(key, (ContentBody) cur);
 					} else {
 						builder.addPart(key, new StringBody(cur.toString(), contentType));
 					}
