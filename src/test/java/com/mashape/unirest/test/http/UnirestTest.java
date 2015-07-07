@@ -49,6 +49,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
@@ -66,6 +67,7 @@ import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.http.options.Options;
 import com.mashape.unirest.request.GetRequest;
+import com.mashape.unirest.request.HttpRequest;
 
 public class UnirestTest {
 
@@ -854,5 +856,19 @@ public class UnirestTest {
 
 		assertEquals(200, postResponse.getStatus());
 		assertEquals(postResponse.getBody().getObject().getString("data"), responseJson);
+	}
+	
+	@Test
+	public void testPostProvidesSortedParams() throws IOException {
+		// Verify that fields are encoded into the body in sorted order.
+		HttpRequest httpRequest = Unirest.post("test")
+			.field("z", "Z")
+			.field("y", "Y")
+			.field("x", "X")
+			.getHttpRequest();
+
+		InputStream content = httpRequest.getBody().getEntity().getContent();
+		String body = IOUtils.toString(content, "UTF-8");
+		assertEquals("x=X&y=Y&z=Z", body);
 	}
 }
