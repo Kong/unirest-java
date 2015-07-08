@@ -78,6 +78,12 @@ If you would like to run tests, also add the following dependency along with the
   <version>4.11</version>
   <scope>test</scope>
 </dependency>
+<dependency>
+  <groupId>commons-io</groupId>
+  <artifactId>commons-io</artifactId>
+  <version>2.4</version>
+  <scope>test</scope>
+</dependency>
 ```
 
 ### Without Maven
