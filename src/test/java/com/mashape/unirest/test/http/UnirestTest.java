@@ -835,8 +835,8 @@ public class UnirestTest {
 		final String responseJson = "{\"locale\": \"english\"}";
 
 		Unirest.setObjectMapper(new ObjectMapper() {
-			public Object readValue(String ignored) {
-				return Locale.ENGLISH;
+			public <T> T readValue(String ignored, Class<T> type) {
+				return (T) Locale.ENGLISH;
 			}
 
 			public String writeValue(Object ignored) {

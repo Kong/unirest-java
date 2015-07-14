@@ -97,7 +97,7 @@ public class HttpResponse<T> {
 				} else if (InputStream.class.equals(responseClass)) {
 					this.body = (T) this.rawBody;
 				} else if (objectMapper != null) {
-					this.body = (T) objectMapper.readValue(new String(rawBody, charset));
+					this.body = (T) objectMapper.readValue(new String(rawBody, charset), responseClass);
 				} else {
 					throw new Exception("Only String, JsonNode and InputStream are supported, or an ObjectMapper implementation is required.");
 				}
