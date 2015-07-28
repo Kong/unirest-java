@@ -123,15 +123,23 @@ For example, serializing Json from\to Object using the popular Jackson ObjectMap
 ```java
 // Only one time
 Unirest.setObjectMapper(new ObjectMapper() {
-    private com.fasterxml.jackson.databind.ObjectMapper objectMapper 
-        = new com.fasterxml.jackson.databind.ObjectMapper();
-
-    public Object readValue(String value) {
-        return objectMapper.readValue(value);
-    }
+    private com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper
+                = new com.fasterxml.jackson.databind.ObjectMapper();
     
+    public <T> T readValue(String value, Class<T> valueType) {
+        try {
+            return jacksonObjectMapper.readValue(value, valueType);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public String writeValue(Object value) {
-        return objectMapper.writeValueAsString(value);
+        try {
+            return jacksonObjectMapper.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 });
 
