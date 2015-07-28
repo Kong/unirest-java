@@ -126,8 +126,8 @@ Unirest.setObjectMapper(new ObjectMapper() {
     private com.fasterxml.jackson.databind.ObjectMapper objectMapper 
         = new com.fasterxml.jackson.databind.ObjectMapper();
 
-    public Object readValue(String value) {
-        return objectMapper.readValue(value);
+    public <T> T readValue(String value, Class<T> type) {
+        return objectMapper.readValue(value, type);
     }
     
     public String writeValue(Object value) {
