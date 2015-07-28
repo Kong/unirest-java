@@ -25,30 +25,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.test.http;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import com.mashape.unirest.http.*;
+import com.mashape.unirest.http.async.Callback;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.http.options.Options;
+import com.mashape.unirest.request.GetRequest;
+import com.mashape.unirest.request.HttpRequest;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -59,15 +41,15 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.ObjectMapper;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.async.Callback;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.http.options.Options;
-import com.mashape.unirest.request.GetRequest;
-import com.mashape.unirest.request.HttpRequest;
+import java.io.*;
+import java.net.InetAddress;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.Assert.*;
 
 public class UnirestTest {
 
@@ -248,34 +230,34 @@ public class UnirestTest {
 		 .field("param2","bye")
 		 .asJsonAsync(new Callback<JsonNode>() {
 
-			 public void failed(UnirestException e) {
-				 fail();
-			 }
+             public void failed(UnirestException e) {
+                 fail();
+             }
 
-			 public void completed(HttpResponse<JsonNode> jsonResponse) {
-				 assertTrue(jsonResponse.getHeaders().size() > 0);
-				 assertTrue(jsonResponse.getBody().toString().length() > 0);
-				 assertFalse(jsonResponse.getRawBody() == null);
-				 assertEquals(200, jsonResponse.getStatus());
+             public void completed(HttpResponse<JsonNode> jsonResponse) {
+                 assertTrue(jsonResponse.getHeaders().size() > 0);
+                 assertTrue(jsonResponse.getBody().toString().length() > 0);
+                 assertFalse(jsonResponse.getRawBody() == null);
+                 assertEquals(200, jsonResponse.getStatus());
 
-				 JsonNode json = jsonResponse.getBody();
-				 assertFalse(json.isArray());
-				 assertNotNull(json.getObject());
-				 assertNotNull(json.getArray());
-				 assertEquals(1, json.getArray().length());
-				 assertNotNull(json.getArray().get(0));
+                 JsonNode json = jsonResponse.getBody();
+                 assertFalse(json.isArray());
+                 assertNotNull(json.getObject());
+                 assertNotNull(json.getArray());
+                 assertEquals(1, json.getArray().length());
+                 assertNotNull(json.getArray().get(0));
 
-				 assertEquals("value1", json.getObject().getJSONObject("form").getString("param1"));
-				 assertEquals("bye", json.getObject().getJSONObject("form").getString("param2"));
+                 assertEquals("value1", json.getObject().getJSONObject("form").getString("param1"));
+                 assertEquals("bye", json.getObject().getJSONObject("form").getString("param2"));
 
-				 status = true;
-				 lock.countDown();
-			 }
+                 status = true;
+                 lock.countDown();
+             }
 
-			 public void cancelled() {
-				 fail();
-			 }
-		 });
+             public void cancelled() {
+                 fail();
+             }
+         });
 		
 		lock.await(10, TimeUnit.SECONDS);
 		assertTrue(status);
@@ -831,33 +813,36 @@ public class UnirestTest {
 	}
 
 	@Test
-	public void testObjectMapper() throws UnirestException, IOException {
-		final String responseJson = "{\"locale\": \"english\"}";
+	public void testObjectMapperRead() throws UnirestException, IOException {
+        Unirest.setObjectMapper(new JacksonObjectMapper());
 
-		Unirest.setObjectMapper(new ObjectMapper() {
-			public Object readValue(String ignored) {
-				return Locale.ENGLISH;
-			}
+        GetResponse getResponseMock = new GetResponse();
+        getResponseMock.setUrl("http://httpbin.org/get");
 
-			public String writeValue(Object ignored) {
-				return responseJson;
-			}
-		});
+		HttpResponse<GetResponse> getResponse = Unirest.get(getResponseMock.getUrl())
+				.asObject(GetResponse.class);
 
-		HttpResponse<Locale> getResponse = Unirest.get("http://httpbin.org/get").asObject(Locale.class);
 		assertEquals(200, getResponse.getStatus());
-		assertEquals(getResponse.getBody(), Locale.ENGLISH);
-
-		HttpResponse<JsonNode> postResponse = Unirest.post("http://httpbin.org/post")
-				.header("accept", "application/json")
-				.header("Content-Type", "application/json")
-				.body(Locale.ENGLISH)
-				.asJson();
-
-		assertEquals(200, postResponse.getStatus());
-		assertEquals(postResponse.getBody().getObject().getString("data"), responseJson);
+		assertEquals(getResponse.getBody().getUrl(), getResponseMock.getUrl());
 	}
-	
+
+    @Test
+    public void testObjectMapperWrite() throws UnirestException, IOException {
+        Unirest.setObjectMapper(new JacksonObjectMapper());
+
+        GetResponse postResponseMock = new GetResponse();
+        postResponseMock.setUrl("http://httpbin.org/post");
+
+        HttpResponse<JsonNode> postResponse = Unirest.post(postResponseMock.getUrl())
+                .header("accept", "application/json")
+                .header("Content-Type", "application/json")
+                .body(postResponseMock)
+                .asJson();
+
+        assertEquals(200, postResponse.getStatus());
+        assertEquals(postResponse.getBody().getObject().getString("data"), "{\"url\":\"http://httpbin.org/post\"}");
+    }
+
 	@Test
 	public void testPostProvidesSortedParams() throws IOException {
 		// Verify that fields are encoded into the body in sorted order.
