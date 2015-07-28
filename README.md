@@ -4,7 +4,7 @@
 [![version][maven-version]][maven-url]
 [![Gitter][gitter-image]][gitter-url]
 
-Unirest is a set of lightweight HTTP libraries available in [multiple languages](http://unirest.io).
+Unirest is a set of lightweight HTTP libraries available in [multiple languages](http://unirest.io), built and maintained by the [Mashape team](https://github.com/Mashape).
 
 Do yourself a favor, and start making HTTP requests like this:
 
