@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class JacksonObjectMapper implements ObjectMapper {
 
-    com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper
+    private com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper
             = new com.fasterxml.jackson.databind.ObjectMapper();
 
     public <T> T readValue(String value, Class<T> valueType) {
