@@ -21,7 +21,7 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ */
 
 package com.mashape.unirest.request.body;
 
@@ -35,21 +35,21 @@ import com.mashape.unirest.request.HttpRequest;
 public class RequestBodyEntity extends BaseRequest implements Body {
 
 	private Object body;
-	
+
 	public RequestBodyEntity(HttpRequest httpRequest) {
 		super(httpRequest);
 	}
-	
+
 	public RequestBodyEntity body(String body) {
 		this.body = body;
 		return this;
 	}
-	
+
 	public RequestBodyEntity body(JsonNode body) {
 		this.body = body.toString();
 		return this;
 	}
-	
+
 	public Object getBody() {
 		return body;
 	}

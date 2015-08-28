@@ -21,7 +21,7 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ */
 
 package com.mashape.unirest.request;
 
@@ -66,12 +66,12 @@ public class HttpRequestWithBody extends HttpRequest {
 		super.basicAuth(username, password);
 		return this;
 	}
-	
+
 	@Override
 	public HttpRequestWithBody queryString(Map<String, Object> parameters) {
 		return (HttpRequestWithBody) super.queryString(parameters);
 	}
-	
+
 	@Override
 	public HttpRequestWithBody queryString(String name, Object value) {
 		return (HttpRequestWithBody) super.queryString(name, value);
@@ -82,11 +82,11 @@ public class HttpRequestWithBody extends HttpRequest {
 		this.body = body;
 		return body;
 	}
-	
+
 	public MultipartBody field(String name, Object value) {
 		return field(name, value, null);
 	}
-	
+
 	public MultipartBody field(String name, File file) {
 		return field(name, file, null);
 	}
@@ -96,7 +96,7 @@ public class HttpRequestWithBody extends HttpRequest {
 		this.body = body;
 		return body;
 	}
-	
+
 	public MultipartBody field(String name, File file, String contentType) {
 		MultipartBody body = new MultipartBody(this).field(name, file, contentType);
 		this.body = body;
@@ -104,11 +104,11 @@ public class HttpRequestWithBody extends HttpRequest {
 	}
 
 	public MultipartBody fields(Map<String, Object> parameters) {
-		MultipartBody body =  new MultipartBody(this);
+		MultipartBody body = new MultipartBody(this);
 		if (parameters != null) {
-			for(Entry<String, Object> param : parameters.entrySet()) {
+			for (Entry<String, Object> param : parameters.entrySet()) {
 				if (param.getValue() instanceof File) {
-					body.field(param.getKey(), (File)param.getValue());
+					body.field(param.getKey(), (File) param.getValue());
 				} else {
 					body.field(param.getKey(), (param.getValue() == null) ? "" : param.getValue().toString());
 				}
@@ -123,7 +123,7 @@ public class HttpRequestWithBody extends HttpRequest {
 	}
 
 	public RequestBodyEntity body(String body) {
-		RequestBodyEntity b =  new RequestBodyEntity(this).body(body);
+		RequestBodyEntity b = new RequestBodyEntity(this).body(body);
 		this.body = b;
 		return b;
 	}
@@ -131,7 +131,7 @@ public class HttpRequestWithBody extends HttpRequest {
 	public RequestBodyEntity body(Object body) {
 		ObjectMapper objectMapper = (ObjectMapper) Options.getOption(Option.OBJECT_MAPPER);
 
-		if(objectMapper == null) {
+		if (objectMapper == null) {
 			throw new RuntimeException("Serialization Impossible. Can't find an ObjectMapper implementation.");
 		}
 

@@ -21,7 +21,7 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ */
 
 package com.mashape.unirest.http;
 
@@ -30,10 +30,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class JsonNode {
-	
+
 	private JSONObject jsonObject;
 	private JSONArray jsonArray;
-	
+
 	private boolean array;
 
 	public JsonNode(String json) {
@@ -53,11 +53,11 @@ public class JsonNode {
 			}
 		}
 	}
-	
+
 	public JSONObject getObject() {
 		return this.jsonObject;
 	}
-	
+
 	public JSONArray getArray() {
 		JSONArray result = this.jsonArray;
 		if (array == false) {
@@ -66,18 +66,20 @@ public class JsonNode {
 		}
 		return result;
 	}
-	
+
 	public boolean isArray() {
 		return this.array;
 	}
-	
+
 	@Override
 	public String toString() {
 		if (isArray()) {
-			if (jsonArray == null) return null;
+			if (jsonArray == null)
+				return null;
 			return jsonArray.toString();
 		}
-		if (jsonObject == null) return null;
+		if (jsonObject == null)
+			return null;
 		return jsonObject.toString();
 	}
 }

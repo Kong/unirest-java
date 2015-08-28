@@ -1,7 +1,9 @@
-package com.mashape.unirest.http;
+package com.mashape.unirest.test.http;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.mashape.unirest.http.Headers;
 
 import java.util.Arrays;
 

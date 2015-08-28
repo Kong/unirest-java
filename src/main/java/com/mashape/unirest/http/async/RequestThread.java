@@ -21,7 +21,7 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ */
 
 package com.mashape.unirest.http.async;
 
@@ -35,13 +35,13 @@ public class RequestThread<T> extends Thread {
 	private HttpRequest httpRequest;
 	private Class<T> responseClass;
 	private Callback<T> callback;
-	
+
 	public RequestThread(HttpRequest httpRequest, Class<T> responseClass, Callback<T> callback) {
 		this.httpRequest = httpRequest;
 		this.responseClass = responseClass;
 		this.callback = callback;
 	}
-	
+
 	@Override
 	public void run() {
 		HttpResponse<T> response;
@@ -54,5 +54,5 @@ public class RequestThread<T> extends Thread {
 			callback.failed(e);
 		}
 	}
-	
+
 }

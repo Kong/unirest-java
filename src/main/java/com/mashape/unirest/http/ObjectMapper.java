@@ -2,7 +2,7 @@ package com.mashape.unirest.http;
 
 public interface ObjectMapper {
 
-    Object readValue(String value);
+	<T> T readValue(String value, Class<T> valueType);
 
-    String writeValue(Object value);
+	String writeValue(Object value);
 }

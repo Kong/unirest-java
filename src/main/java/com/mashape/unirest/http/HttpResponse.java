@@ -21,7 +21,7 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ */
 
 package com.mashape.unirest.http;
 
@@ -52,22 +52,23 @@ public class HttpResponse<T> {
 	public HttpResponse(org.apache.http.HttpResponse response, Class<T> responseClass) {
 		HttpEntity responseEntity = response.getEntity();
 		ObjectMapper objectMapper = (ObjectMapper) Options.getOption(Option.OBJECT_MAPPER);
-		
+
 		Header[] allHeaders = response.getAllHeaders();
-		for(Header header : allHeaders) {
+		for (Header header : allHeaders) {
 			String headerName = header.getName().toLowerCase();
 			List<String> list = headers.get(headerName);
-			if (list == null) list = new ArrayList<String>();
+			if (list == null)
+				list = new ArrayList<String>();
 			list.add(header.getValue());
 			headers.put(headerName, list);
 		}
 		StatusLine statusLine = response.getStatusLine();
 		this.statusCode = statusLine.getStatusCode();
 		this.statusText = statusLine.getReasonPhrase();
-		
+
 		if (responseEntity != null) {
 			String charset = "UTF-8";
-			
+
 			Header contentType = responseEntity.getContentType();
 			if (contentType != null) {
 				String responseCharset = ResponseUtils.getCharsetFromContentType(contentType.getValue());
@@ -75,7 +76,7 @@ public class HttpResponse<T> {
 					charset = responseCharset;
 				}
 			}
-		
+
 			try {
 				byte[] rawBody;
 				try {
@@ -97,7 +98,7 @@ public class HttpResponse<T> {
 				} else if (InputStream.class.equals(responseClass)) {
 					this.body = (T) this.rawBody;
 				} else if (objectMapper != null) {
-					this.body = (T) objectMapper.readValue(new String(rawBody, charset));
+					this.body = objectMapper.readValue(new String(rawBody, charset), responseClass);
 				} else {
 					throw new Exception("Only String, JsonNode and InputStream are supported, or an ObjectMapper implementation is required.");
 				}
@@ -105,7 +106,7 @@ public class HttpResponse<T> {
 				throw new RuntimeException(e);
 			}
 		}
-		
+
 		try {
 			EntityUtils.consume(responseEntity);
 		} catch (IOException e) {
@@ -116,7 +117,7 @@ public class HttpResponse<T> {
 	public int getStatus() {
 		return statusCode;
 	}
-	
+
 	public String getStatusText() {
 		return statusText;
 	}

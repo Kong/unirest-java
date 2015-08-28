@@ -11,9 +11,9 @@ public class ClientFactory {
 	public static HttpClient getHttpClient() {
 		return (HttpClient) Options.getOption(Option.HTTPCLIENT);
 	}
-	
+
 	public static CloseableHttpAsyncClient getAsyncHttpClient() {
 		return (CloseableHttpAsyncClient) Options.getOption(Option.ASYNCHTTPCLIENT);
 	}
-	
+
 }
