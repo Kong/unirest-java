@@ -7,9 +7,9 @@ public class UnirestException extends Exception {
 	public UnirestException(Exception e) {
 		super(e);
 	}
-	
+
 	public UnirestException(String msg) {
 		super(msg);
 	}
-	
+
 }

@@ -21,7 +21,7 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ */
 
 package com.mashape.unirest.request.body;
 
@@ -64,7 +64,7 @@ public class MultipartBody extends BaseRequest implements Body {
 		super(httpRequest);
 		this.httpRequestObj = httpRequest;
 	}
-	
+
 	public MultipartBody field(String name, String value) {
 		return field(name, value, false, null);
 	}
@@ -74,33 +74,38 @@ public class MultipartBody extends BaseRequest implements Body {
 	}
 
 	public MultipartBody field(String name, Collection<?> collection) {
-		for(Object current : collection) {
+		for (Object current : collection) {
 			boolean isFile = current instanceof File;
 			field(name, current, isFile, null);
 		}
 		return this;
 	}
-	
+
 	public MultipartBody field(String name, Object value) {
 		return field(name, value, false, null);
 	}
-	
+
 	public MultipartBody field(String name, Object value, boolean file) {
 		return field(name, value, file, null);
 	}
 
 	public MultipartBody field(String name, Object value, boolean file, String contentType) {
 		keyOrder.add(name);
-		
+
 		List<Object> list = parameters.get(name);
-		if (list == null) list = new LinkedList<Object>();
+		if (list == null)
+			list = new LinkedList<Object>();
 		list.add(value);
 		parameters.put(name, list);
-		
+
 		ContentType type = null;
-		if (contentType != null && !contentType.isEmpty()) { type = ContentType.parse(contentType); }
-		else if (file) { type = ContentType.APPLICATION_OCTET_STREAM; }
-		else { type = ContentType.APPLICATION_FORM_URLENCODED.withCharset(UTF_8); }
+		if (contentType != null && !contentType.isEmpty()) {
+			type = ContentType.parse(contentType);
+		} else if (file) {
+			type = ContentType.APPLICATION_OCTET_STREAM;
+		} else {
+			type = ContentType.APPLICATION_FORM_URLENCODED.withCharset(UTF_8);
+		}
 		contentTypes.put(name, type);
 
 		if (!hasFile && file) {
@@ -117,23 +122,23 @@ public class MultipartBody extends BaseRequest implements Body {
 	public MultipartBody field(String name, File file, String contentType) {
 		return field(name, file, true, contentType);
 	}
-	
+
 	public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
 		return field(name, new InputStreamBody(stream, contentType, fileName), true, contentType.getMimeType());
 	}
-	
+
 	public MultipartBody field(String name, InputStream stream, String fileName) {
 		return field(name, new InputStreamBody(stream, ContentType.APPLICATION_OCTET_STREAM, fileName), true, ContentType.APPLICATION_OCTET_STREAM.getMimeType());
 	}
-	
+
 	public MultipartBody field(String name, byte[] bytes, ContentType contentType, String fileName) {
 		return field(name, new ByteArrayBody(bytes, contentType, fileName), true, contentType.getMimeType());
 	}
-	
+
 	public MultipartBody field(String name, byte[] bytes, String fileName) {
 		return field(name, new ByteArrayBody(bytes, ContentType.APPLICATION_OCTET_STREAM, fileName), true, ContentType.APPLICATION_OCTET_STREAM.getMimeType());
 	}
-	
+
 	public MultipartBody basicAuth(String username, String password) {
 		httpRequestObj.basicAuth(username, password);
 		return this;
@@ -147,11 +152,13 @@ public class MultipartBody extends BaseRequest implements Body {
 	public HttpEntity getEntity() {
 		if (hasFile) {
 			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-			if (mode != null) { builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE); }
-			for(String key: keyOrder) {
+			if (mode != null) {
+				builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+			}
+			for (String key : keyOrder) {
 				List<Object> value = parameters.get(key);
 				ContentType contentType = contentTypes.get(key);
-				for(Object cur : value) {
+				for (Object cur : value) {
 					if (cur instanceof File) {
 						File file = (File) cur;
 						builder.addPart(key, new FileBody(file, contentType, file.getName()));

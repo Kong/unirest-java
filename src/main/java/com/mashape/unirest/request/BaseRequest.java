@@ -21,7 +21,7 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ */
 
 package com.mashape.unirest.request;
 
@@ -37,21 +37,21 @@ import java.util.concurrent.Future;
 public abstract class BaseRequest {
 
 	protected static final String UTF_8 = "UTF-8";
-	
+
 	protected HttpRequest httpRequest;
-	
+
 	protected BaseRequest(HttpRequest httpRequest) {
 		this.httpRequest = httpRequest;
 	}
-	
+
 	public HttpRequest getHttpRequest() {
 		return this.httpRequest;
 	}
-	
+
 	protected BaseRequest() {
 		super();
 	}
-	
+
 	public HttpResponse<String> asString() throws UnirestException {
 		return HttpClientHelper.request(httpRequest, String.class);
 	}
@@ -59,7 +59,7 @@ public abstract class BaseRequest {
 	public Future<HttpResponse<String>> asStringAsync() {
 		return HttpClientHelper.requestAsync(httpRequest, String.class, null);
 	}
-	
+
 	public Future<HttpResponse<String>> asStringAsync(Callback<String> callback) {
 		return HttpClientHelper.requestAsync(httpRequest, String.class, callback);
 	}
@@ -71,7 +71,7 @@ public abstract class BaseRequest {
 	public Future<HttpResponse<JsonNode>> asJsonAsync() {
 		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class, null);
 	}
-	
+
 	public Future<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback) {
 		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class, callback);
 	}
@@ -95,7 +95,7 @@ public abstract class BaseRequest {
 	public Future<HttpResponse<InputStream>> asBinaryAsync() {
 		return HttpClientHelper.requestAsync(httpRequest, InputStream.class, null);
 	}
-	
+
 	public Future<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback) {
 		return HttpClientHelper.requestAsync(httpRequest, InputStream.class, callback);
 	}

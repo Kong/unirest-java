@@ -21,7 +21,7 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ */
 
 package com.mashape.unirest.http;
 
@@ -30,16 +30,23 @@ import java.net.URI;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 
 class HttpPatchWithBody extends HttpEntityEnclosingRequestBase {
-    public static final String METHOD_NAME = "PATCH";
-    public String getMethod() { return METHOD_NAME; }
+	public static final String METHOD_NAME = "PATCH";
 
-    public HttpPatchWithBody(final String uri) {
-        super();
-        setURI(URI.create(uri));
-    }
-    public HttpPatchWithBody(final URI uri) {
-        super();
-        setURI(uri);
-    }
-    public HttpPatchWithBody() { super(); }
+	public String getMethod() {
+		return METHOD_NAME;
+	}
+
+	public HttpPatchWithBody(final String uri) {
+		super();
+		setURI(URI.create(uri));
+	}
+
+	public HttpPatchWithBody(final URI uri) {
+		super();
+		setURI(uri);
+	}
+
+	public HttpPatchWithBody() {
+		super();
+	}
 }

@@ -21,7 +21,7 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ */
 
 package com.mashape.unirest.request;
 
@@ -39,17 +39,17 @@ public class GetRequest extends HttpRequest {
 		super.routeParam(name, value);
 		return this;
 	}
-	
+
 	@Override
 	public GetRequest header(String name, String value) {
 		return (GetRequest) super.header(name, value);
 	}
-	
+
 	@Override
 	public GetRequest headers(Map<String, String> headers) {
 		return (GetRequest) super.headers(headers);
 	}
-	
+
 	@Override
 	public GetRequest basicAuth(String username, String password) {
 		super.basicAuth(username, password);

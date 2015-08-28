@@ -21,7 +21,7 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ */
 
 package com.mashape.unirest.http.utils;
 
@@ -40,10 +40,10 @@ public class MapUtil {
 		List<NameValuePair> result = new ArrayList<NameValuePair>();
 		if (parameters != null) {
 			TreeMap<String, List<Object>> sortedParameters = new TreeMap<String, List<Object>>(parameters);
-			for(Entry<String, List<Object>> entry : sortedParameters.entrySet()) {
+			for (Entry<String, List<Object>> entry : sortedParameters.entrySet()) {
 				List<Object> entryValue = entry.getValue();
 				if (entryValue != null) {
-					for(Object cur : entryValue) {
+					for (Object cur : entryValue) {
 						if (cur != null) {
 							result.add(new BasicNameValuePair(entry.getKey(), cur.toString()));
 						}
@@ -55,4 +55,3 @@ public class MapUtil {
 	}
 
 }
-

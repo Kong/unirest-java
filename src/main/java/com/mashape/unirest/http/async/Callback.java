@@ -21,7 +21,7 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-*/
+ */
 
 package com.mashape.unirest.http.async;
 
@@ -30,9 +30,9 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 public interface Callback<T> {
 
-	void completed(HttpResponse<T> response);	
-	
+	void completed(HttpResponse<T> response);
+
 	void failed(UnirestException e);
-	
+
 	void cancelled();
 }
