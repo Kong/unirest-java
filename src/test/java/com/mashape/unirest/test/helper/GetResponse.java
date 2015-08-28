@@ -1,4 +1,4 @@
-package com.mashape.unirest.http;
+package com.mashape.unirest.test.helper;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,6 +1,7 @@
-package com.mashape.unirest.http;
+package com.mashape.unirest.test.helper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mashape.unirest.http.ObjectMapper;
 
 import java.io.IOException;
 

@@ -31,6 +31,9 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.http.options.Options;
 import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequest;
+import com.mashape.unirest.test.helper.GetResponse;
+import com.mashape.unirest.test.helper.JacksonObjectMapper;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClientBuilder;
