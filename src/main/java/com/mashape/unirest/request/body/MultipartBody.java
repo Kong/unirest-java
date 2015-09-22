@@ -99,7 +99,7 @@ public class MultipartBody extends BaseRequest implements Body {
 		parameters.put(name, list);
 
 		ContentType type = null;
-		if (contentType != null && !contentType.isEmpty()) {
+		if (contentType != null && contentType.length() > 0) {
 			type = ContentType.parse(contentType);
 		} else if (file) {
 			type = ContentType.APPLICATION_OCTET_STREAM;
