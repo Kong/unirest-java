@@ -1,12 +1,9 @@
 # Unirest for Java [![Build Status][travis-image]][travis-url]
 
-[![License][license-image]][license-url]
-[![version][maven-version]][maven-url]
-[![Gitter][gitter-image]][gitter-url]
+[![][unirest-logo]][kong-url]
 
-Unirest is a set of lightweight HTTP libraries available in [multiple languages](http://unirest.io), built and maintained by the [Mashape team](https://github.com/Mashape).
 
-Do yourself a favor, and start making HTTP requests like this:
+Unirest is a set of lightweight HTTP libraries available in [multiple languages](http://unirest.io), built and maintained by the [Mashape team](https://github.com/Mashape) (who also built [Kong](https://github.com/Mashape) the most popular open-source API Gateway). Do yourself a favor, and start making HTTP requests like this:
 
 ```java
 Unirest.post("http://httpbin.org/post")
@@ -14,6 +11,11 @@ Unirest.post("http://httpbin.org/post")
   .field("last", "Polo")
   .asJson()
 ```
+
+[![License][license-image]][license-url]  |
+[![version][maven-version]][maven-url]  |
+[![Gitter][gitter-image]][gitter-url]
+
 
 ## Features
 
@@ -341,6 +343,9 @@ Unirest.shutdown();
 ----
 
 Made with &#9829; from the [Mashape](https://www.mashape.com/) team
+
+[unirest-logo]: http://cl.ly/image/2P373Y090s2O/Image%202015-10-12%20at%209.48.06%20PM.png
+
 
 [license-url]: https://github.com/Mashape/unirest-java/blob/master/LICENSE
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat
