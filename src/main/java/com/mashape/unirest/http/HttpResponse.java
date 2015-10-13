@@ -55,7 +55,7 @@ public class HttpResponse<T> {
 
 		Header[] allHeaders = response.getAllHeaders();
 		for (Header header : allHeaders) {
-			String headerName = header.getName().toLowerCase();
+			String headerName = header.getName();
 			List<String> list = headers.get(headerName);
 			if (list == null)
 				list = new ArrayList<String>();
@@ -122,6 +122,10 @@ public class HttpResponse<T> {
 		return statusText;
 	}
 
+	/**
+	 * @return Response Headers (map) with <b>same case</b> as server response.
+	 * For instance use <code>getHeaders().getFirst("Location")</code> and not <code>getHeaders().getFirst("location")</code> to get first header "Location"
+	 */
 	public Headers getHeaders() {
 		return headers;
 	}
