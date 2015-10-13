@@ -1,6 +1,6 @@
 # Unirest for Java [![Build Status][travis-image]][travis-url]
 
-![][unirest-logo]][kong-url]
+![][unirest-logo]][unirest-url]
 
 
 Unirest is a set of lightweight HTTP libraries available in [multiple languages](http://unirest.io), built and maintained by the [Mashape team](https://github.com/Mashape) (who also built [Kong](https://github.com/Mashape) the most popular open-source API Gateway). Do yourself a favor, and start making HTTP requests like this:
