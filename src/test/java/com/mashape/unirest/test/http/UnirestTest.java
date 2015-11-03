@@ -168,6 +168,14 @@ public class UnirestTest {
 	}
 
 	@Test
+	public void testQueryStringEncoding() throws JSONException, UnirestException {
+		String testKey = "email2=someKey&email";
+		String testValue = "hello@hello.com";
+		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get").queryString(testKey, testValue).asJson();
+		assertEquals(testValue, response.getBody().getObject().getJSONObject("args").getString(testKey));
+	}
+
+	@Test
 	public void testDelete() throws JSONException, UnirestException {
 		HttpResponse<JsonNode> response = Unirest.delete("http://httpbin.org/delete").asJson();
 		assertEquals(200, response.getStatus());
