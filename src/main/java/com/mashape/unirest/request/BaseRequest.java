@@ -52,16 +52,28 @@ public abstract class BaseRequest {
 		super();
 	}
 
+	public HttpResponse<String> asString(String charset) throws UnirestException {
+		return HttpClientHelper.request(httpRequest, charset, String.class);
+	}
+	
 	public HttpResponse<String> asString() throws UnirestException {
-		return HttpClientHelper.request(httpRequest, String.class);
+		return asString(UTF_8);
 	}
 
+	public Future<HttpResponse<String>> asStringAsync(String charset) {
+		return HttpClientHelper.requestAsync(httpRequest, charset, String.class, null);
+	}
+	
 	public Future<HttpResponse<String>> asStringAsync() {
-		return HttpClientHelper.requestAsync(httpRequest, String.class, null);
+		return asStringAsync(UTF_8);
 	}
 
+	public Future<HttpResponse<String>> asStringAsync(String charset, Callback<String> callback) {
+		return HttpClientHelper.requestAsync(httpRequest, charset, String.class, callback);
+	}
+	
 	public Future<HttpResponse<String>> asStringAsync(Callback<String> callback) {
-		return HttpClientHelper.requestAsync(httpRequest, String.class, callback);
+		return asStringAsync(UTF_8, callback);
 	}
 
 	public HttpResponse<JsonNode> asJson() throws UnirestException {

@@ -90,6 +90,10 @@ public class HttpClientHelper {
 	}
 
 	public static <T> Future<HttpResponse<T>> requestAsync(HttpRequest request, final Class<T> responseClass, Callback<T> callback) {
+		return requestAsync(request, "UTF-8", responseClass, callback);
+	}
+	
+	public static <T> Future<HttpResponse<T>> requestAsync(HttpRequest request, final String charset, final Class<T> responseClass, Callback<T> callback) {
 		HttpUriRequest requestObj = prepareRequest(request, true);
 
 		CloseableHttpAsyncClient asyncHttpClient = ClientFactory.getAsyncHttpClient();
@@ -117,7 +121,7 @@ public class HttpClientHelper {
 
 			public HttpResponse<T> get() throws InterruptedException, ExecutionException {
 				org.apache.http.HttpResponse httpResponse = future.get();
-				return new HttpResponse<T>(httpResponse, responseClass);
+				return new HttpResponse<T>(httpResponse, charset, responseClass);
 			}
 
 			public HttpResponse<T> get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
@@ -128,6 +132,10 @@ public class HttpClientHelper {
 	}
 
 	public static <T> HttpResponse<T> request(HttpRequest request, Class<T> responseClass) throws UnirestException {
+		return request(request, "UTF-8", responseClass);
+	}
+	
+	public static <T> HttpResponse<T> request(HttpRequest request, String charset, Class<T> responseClass) throws UnirestException {
 		HttpRequestBase requestObj = prepareRequest(request, false);
 		HttpClient client = ClientFactory.getHttpClient(); // The
 															// DefaultHttpClient
@@ -136,7 +144,7 @@ public class HttpClientHelper {
 		org.apache.http.HttpResponse response;
 		try {
 			response = client.execute(requestObj);
-			HttpResponse<T> httpResponse = new HttpResponse<T>(response, responseClass);
+			HttpResponse<T> httpResponse = new HttpResponse<T>(response, charset, responseClass);
 			requestObj.releaseConnection();
 			return httpResponse;
 		} catch (Exception e) {

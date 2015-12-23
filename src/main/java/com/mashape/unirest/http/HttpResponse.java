@@ -47,9 +47,13 @@ public class HttpResponse<T> {
 	private Headers headers = new Headers();
 	private InputStream rawBody;
 	private T body;
+	
+	public HttpResponse(org.apache.http.HttpResponse response, Class<T> responseClass) {
+		this(response, "UTF-8", responseClass);
+	}
 
 	@SuppressWarnings("unchecked")
-	public HttpResponse(org.apache.http.HttpResponse response, Class<T> responseClass) {
+	public HttpResponse(org.apache.http.HttpResponse response, String charset, Class<T> responseClass) {
 		HttpEntity responseEntity = response.getEntity();
 		ObjectMapper objectMapper = (ObjectMapper) Options.getOption(Option.OBJECT_MAPPER);
 
@@ -67,8 +71,6 @@ public class HttpResponse<T> {
 		this.statusText = statusLine.getReasonPhrase();
 
 		if (responseEntity != null) {
-			String charset = "UTF-8";
-
 			Header contentType = responseEntity.getContentType();
 			if (contentType != null) {
 				String responseCharset = ResponseUtils.getCharsetFromContentType(contentType.getValue());
