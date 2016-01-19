@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedHashMap;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -51,9 +52,7 @@ import com.mashape.unirest.request.BaseRequest;
 import com.mashape.unirest.request.HttpRequest;
 
 public class MultipartBody extends BaseRequest implements Body {
-
-	private List<String> keyOrder = new ArrayList<String>();
-	private Map<String, List<Object>> parameters = new HashMap<String, List<Object>>();
+	private Map<String, List<Object>> parameters = new LinkedHashMap<String, List<Object>>();
 	private Map<String, ContentType> contentTypes = new HashMap<String, ContentType>();
 
 	private boolean hasFile;
@@ -90,8 +89,6 @@ public class MultipartBody extends BaseRequest implements Body {
 	}
 
 	public MultipartBody field(String name, Object value, boolean file, String contentType) {
-		keyOrder.add(name);
-
 		List<Object> list = parameters.get(name);
 		if (list == null)
 			list = new LinkedList<Object>();
@@ -155,7 +152,7 @@ public class MultipartBody extends BaseRequest implements Body {
 			if (mode != null) {
 				builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 			}
-			for (String key : keyOrder) {
+			for (String key : parameters.keySet()) {
 				List<Object> value = parameters.get(key);
 				ContentType contentType = contentTypes.get(key);
 				for (Object cur : value) {
