@@ -41,6 +41,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
@@ -247,6 +248,7 @@ public class HttpClientHelper {
 			}
 		}
 
+		reqObj.setConfig(RequestConfig.custom().setRedirectsEnabled(request.isRedirectsEnabled()).build());
 		return reqObj;
 	}
 

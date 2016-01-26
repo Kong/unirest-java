@@ -48,13 +48,20 @@ public class HttpRequest extends BaseRequest {
 	protected String url;
 	Map<String, List<String>> headers = new TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER);
 	protected Body body;
+	protected boolean redirectsEnabled;
 
 	public HttpRequest(HttpMethod method, String url) {
 		this.httpMethod = method;
 		this.url = url;
+		this.redirectsEnabled = true;
 		super.httpRequest = this;
 	}
 
+	public HttpRequest redirectsEnabled(boolean redirectsEnabled) {
+		this.redirectsEnabled = redirectsEnabled;
+		return this;
+	}
+	
 	public HttpRequest routeParam(String name, String value) {
 		Matcher matcher = Pattern.compile("\\{" + name + "\\}").matcher(url);
 		int count = 0;
@@ -144,6 +151,10 @@ public class HttpRequest extends BaseRequest {
 
 	public Body getBody() {
 		return body;
+	}
+
+	public boolean isRedirectsEnabled() {
+		return redirectsEnabled;
 	}
 
 }
