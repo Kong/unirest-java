@@ -25,6 +25,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.request;
 
+import java.io.File;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.content.InputStreamBody;
+
 import com.mashape.unirest.http.HttpMethod;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.ObjectMapper;
@@ -33,11 +42,6 @@ import com.mashape.unirest.http.options.Options;
 import com.mashape.unirest.request.body.MultipartBody;
 import com.mashape.unirest.request.body.RawBody;
 import com.mashape.unirest.request.body.RequestBodyEntity;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
 
 public class HttpRequestWithBody extends HttpRequest {
 
@@ -102,6 +106,19 @@ public class HttpRequestWithBody extends HttpRequest {
 		this.body = body;
 		return body;
 	}
+	
+    public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
+        InputStreamBody inputStreamBody = new InputStreamBody(stream, contentType, fileName);
+        MultipartBody body = new MultipartBody(this).field(name, inputStreamBody, true, contentType.toString());
+        this.body = body;
+        return body;
+    }
+
+    public MultipartBody field(String name, InputStream stream, String fileName) {
+        MultipartBody body = field(name, stream, ContentType.APPLICATION_OCTET_STREAM, fileName);
+        this.body = body;
+        return body;
+    }
 
 	public MultipartBody fields(Map<String, Object> parameters) {
 		MultipartBody body = new MultipartBody(this);
