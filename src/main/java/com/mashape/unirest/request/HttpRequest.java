@@ -107,7 +107,10 @@ public class HttpRequest extends BaseRequest {
 			queryString.append("?");
 		}
 		try {
-			queryString.append(name).append("=").append(URLEncoder.encode((value == null) ? "" : value.toString(), "UTF-8"));
+			queryString
+				.append(URLEncoder.encode(name))
+				.append("=")
+				.append(URLEncoder.encode((value == null) ? "" : value.toString(), "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
