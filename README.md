@@ -208,7 +208,7 @@ Future<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.org/post")
 ```
 
 ## File Uploads
-Creating `multipart` requests with Java is trivial, simply pass along a `File` Object as a field:
+Creating `multipart` requests with Java is trivial, simply pass along a `File` or an InputStream Object as a field:
 
 ```java
 HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
