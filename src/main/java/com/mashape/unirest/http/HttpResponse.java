@@ -34,23 +34,25 @@ import org.apache.http.StatusLine;
 import org.apache.http.util.EntityUtils;
 
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-public class HttpResponse<T> {
+public class HttpResponse<T> implements Closeable {
 
 	private int statusCode;
 	private String statusText;
 	private Headers headers = new Headers();
 	private InputStream rawBody;
 	private T body;
+	private HttpEntity responseEntity;
 
 	@SuppressWarnings("unchecked")
 	public HttpResponse(org.apache.http.HttpResponse response, Class<T> responseClass) {
-		HttpEntity responseEntity = response.getEntity();
+		responseEntity = response.getEntity();
 		ObjectMapper objectMapper = (ObjectMapper) Options.getOption(Option.OBJECT_MAPPER);
 
 		Header[] allHeaders = response.getAllHeaders();
@@ -78,39 +80,44 @@ public class HttpResponse<T> {
 			}
 
 			try {
-				byte[] rawBody;
 				try {
 					InputStream responseInputStream = responseEntity.getContent();
 					if (ResponseUtils.isGzipped(responseEntity.getContentEncoding())) {
 						responseInputStream = new GZIPInputStream(responseEntity.getContent());
 					}
-					rawBody = ResponseUtils.getBytes(responseInputStream);
+					this.rawBody = responseInputStream;
 				} catch (IOException e2) {
 					throw new RuntimeException(e2);
 				}
-				this.rawBody = new ByteArrayInputStream(rawBody);
 
-				if (JsonNode.class.equals(responseClass)) {
-					String jsonString = new String(rawBody, charset).trim();
-					this.body = (T) new JsonNode(jsonString);
-				} else if (String.class.equals(responseClass)) {
-					this.body = (T) new String(rawBody, charset);
-				} else if (InputStream.class.equals(responseClass)) {
+				if (InputStream.class.equals(responseClass)) {
 					this.body = (T) this.rawBody;
-				} else if (objectMapper != null) {
-					this.body = objectMapper.readValue(new String(rawBody, charset), responseClass);
 				} else {
-					throw new Exception("Only String, JsonNode and InputStream are supported, or an ObjectMapper implementation is required.");
+					byte[] rawBody = ResponseUtils.getBytes(this.rawBody);
+					this.rawBody = new ByteArrayInputStream(rawBody);
+
+					if (JsonNode.class.equals(responseClass)) {
+						String jsonString = new String(rawBody, charset).trim();
+						this.body = (T) new JsonNode(jsonString);
+					} else if (String.class.equals(responseClass)) {
+						this.body = (T) new String(rawBody, charset);
+					} else if (objectMapper != null) {
+						this.body = objectMapper.readValue(new String(rawBody, charset), responseClass);
+					} else {
+						throw new Exception("Only String, JsonNode and InputStream are supported, or an ObjectMapper implementation is required.");
+					}
 				}
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		}
 
-		try {
-			EntityUtils.consume(responseEntity);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+		if (!InputStream.class.equals(responseClass)) {
+			try {
+				close();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
@@ -136,5 +143,9 @@ public class HttpResponse<T> {
 
 	public T getBody() {
 		return body;
+	}
+
+	public void close() throws IOException {
+		EntityUtils.consume(responseEntity);
 	}
 }
