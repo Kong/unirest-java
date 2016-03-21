@@ -35,6 +35,7 @@ import com.mashape.unirest.test.helper.GetResponse;
 import com.mashape.unirest.test.helper.JacksonObjectMapper;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpHost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;

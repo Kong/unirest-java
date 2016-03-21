@@ -25,6 +25,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.request;
 
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -41,6 +42,15 @@ import com.mashape.unirest.http.HttpMethod;
 import com.mashape.unirest.http.utils.Base64Coder;
 import com.mashape.unirest.http.utils.URLParamEncoder;
 import com.mashape.unirest.request.body.Body;
+import org.apache.commons.codec.binary.StringUtils;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.protocol.HTTP;
 
 public class HttpRequest extends BaseRequest {
 
@@ -49,9 +59,14 @@ public class HttpRequest extends BaseRequest {
 	Map<String, List<String>> headers = new TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER);
 	protected Body body;
 
+	private RequestConfig requestConfig;
+	private HttpClientContext httpClientContext;
+
 	public HttpRequest(HttpMethod method, String url) {
 		this.httpMethod = method;
 		this.url = url;
+		this.requestConfig = RequestConfig.DEFAULT;
+		this.httpClientContext = HttpClientContext.create();
 		super.httpRequest = this;
 	}
 
@@ -70,6 +85,18 @@ public class HttpRequest extends BaseRequest {
 
 	public HttpRequest basicAuth(String username, String password) {
 		header("Authorization", "Basic " + Base64Coder.encodeString(username + ":" + password));
+		return this;
+	}
+
+	public HttpRequest withBasicsProxy(HttpHost proxy, String user, String password) {
+		CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+		if (user != null && !user.trim().equals("")) {
+			credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(user + ":" + password));
+		}
+		httpClientContext.setCredentialsProvider(credentialsProvider);
+
+		requestConfig = RequestConfig.custom().setProxy(proxy).build();
+
 		return this;
 	}
 
@@ -107,10 +134,7 @@ public class HttpRequest extends BaseRequest {
 			queryString.append("?");
 		}
 		try {
-			queryString
-				.append(URLEncoder.encode(name))
-				.append("=")
-				.append(URLEncoder.encode((value == null) ? "" : value.toString(), "UTF-8"));
+			queryString.append(URLEncoder.encode(name)).append("=").append(URLEncoder.encode((value == null) ? "" : value.toString(), "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
@@ -149,4 +173,11 @@ public class HttpRequest extends BaseRequest {
 		return body;
 	}
 
+	public HttpClientContext getHttpClientContext() {
+		return httpClientContext;
+	}
+
+	public RequestConfig getRequestConfig() {
+		return requestConfig;
+	}
 }

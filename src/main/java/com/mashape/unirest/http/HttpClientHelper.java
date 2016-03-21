@@ -99,7 +99,7 @@ public class HttpClientHelper {
 			asyncIdleConnectionMonitorThread.start();
 		}
 
-		final Future<org.apache.http.HttpResponse> future = asyncHttpClient.execute(requestObj, prepareCallback(responseClass, callback));
+		final Future<org.apache.http.HttpResponse> future = asyncHttpClient.execute(requestObj, request.getHttpClientContext(), prepareCallback(responseClass, callback));
 
 		return new Future<HttpResponse<T>>() {
 
@@ -130,12 +130,12 @@ public class HttpClientHelper {
 	public static <T> HttpResponse<T> request(HttpRequest request, Class<T> responseClass) throws UnirestException {
 		HttpRequestBase requestObj = prepareRequest(request, false);
 		HttpClient client = ClientFactory.getHttpClient(); // The
-															// DefaultHttpClient
-															// is thread-safe
+		// DefaultHttpClient
+		// is thread-safe
 
 		org.apache.http.HttpResponse response;
 		try {
-			response = client.execute(requestObj);
+			response = client.execute(requestObj, request.getHttpClientContext());
 			HttpResponse<T> httpResponse = new HttpResponse<T>(response, responseClass);
 			requestObj.releaseConnection();
 			return httpResponse;
@@ -206,6 +206,8 @@ public class HttpClientHelper {
 			reqObj = new HttpHead(urlToRequest);
 			break;
 		}
+
+		reqObj.setConfig(request.getRequestConfig());
 
 		Set<Entry<String, List<String>>> entrySet = request.getHeaders().entrySet();
 		for (Entry<String, List<String>> entry : entrySet) {
