@@ -106,12 +106,8 @@ public class HttpResponse<T> {
 				throw new RuntimeException(e);
 			}
 		}
-
-		try {
-			EntityUtils.consume(responseEntity);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		
+		EntityUtils.consumeQuietly(responseEntity);
 	}
 
 	public int getStatus() {
