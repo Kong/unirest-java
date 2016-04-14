@@ -64,7 +64,11 @@ public class HttpRequest extends BaseRequest {
 		if (count == 0) {
 			throw new RuntimeException("Can't find route parameter name \"" + name + "\"");
 		}
-		this.url = url.replaceAll("\\{" + name + "\\}", URLParamEncoder.encode(value));
+		try {
+			this.url = url.replaceAll("\\{" + name + "\\}", URLEncoder.encode(value, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
 		return this;
 	}
 
