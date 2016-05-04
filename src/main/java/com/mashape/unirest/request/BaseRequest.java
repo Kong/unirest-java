@@ -101,9 +101,4 @@ public abstract class BaseRequest {
 	public Future<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback) {
 		return HttpClientHelper.requestAsync(httpRequest, InputStream.class, callback, context);
 	}
-
-	public BaseRequest context(HttpClientContext context) {
-		this.context = context;
-		return this;
-	}
 }

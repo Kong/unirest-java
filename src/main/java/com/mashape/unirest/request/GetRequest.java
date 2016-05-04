@@ -26,40 +26,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package com.mashape.unirest.request;
 
 import com.mashape.unirest.http.HttpMethod;
-import org.apache.http.client.protocol.HttpClientContext;
 
-import java.util.Map;
-
-public class GetRequest extends HttpRequest {
+public class GetRequest extends HttpRequest<GetRequest> {
 
 	public GetRequest(HttpMethod method, String url) {
 		super(method, url);
-	}
-
-	public GetRequest routeParam(String name, String value) {
-		super.routeParam(name, value);
-		return this;
-	}
-
-	@Override
-	public GetRequest header(String name, String value) {
-		return (GetRequest) super.header(name, value);
-	}
-
-	@Override
-	public GetRequest headers(Map<String, String> headers) {
-		return (GetRequest) super.headers(headers);
-	}
-
-	@Override
-	public GetRequest basicAuth(String username, String password) {
-		super.basicAuth(username, password);
-		return this;
-	}
-
-	@Override
-	public GetRequest context(HttpClientContext context) {
-		super.context(context);
-		return this;
 	}
 }

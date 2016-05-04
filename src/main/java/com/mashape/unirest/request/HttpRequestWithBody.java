@@ -25,10 +25,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.request;
 
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.content.InputStreamBody;
-
 import com.mashape.unirest.http.HttpMethod;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.ObjectMapper;
@@ -37,7 +33,8 @@ import com.mashape.unirest.http.options.Options;
 import com.mashape.unirest.request.body.MultipartBody;
 import com.mashape.unirest.request.body.RawBody;
 import com.mashape.unirest.request.body.RequestBodyEntity;
-
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.content.InputStreamBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -47,48 +44,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class HttpRequestWithBody extends HttpRequest {
+public class HttpRequestWithBody extends HttpRequest<HttpRequestWithBody> {
 
 	public HttpRequestWithBody(HttpMethod method, String url) {
 		super(method, url);
-	}
-
-	@Override
-	public HttpRequestWithBody routeParam(String name, String value) {
-		super.routeParam(name, value);
-		return this;
-	}
-
-	@Override
-	public HttpRequestWithBody header(String name, String value) {
-		return (HttpRequestWithBody) super.header(name, value);
-	}
-
-	@Override
-	public HttpRequestWithBody headers(Map<String, String> headers) {
-		return (HttpRequestWithBody) super.headers(headers);
-	}
-
-	@Override
-	public HttpRequestWithBody basicAuth(String username, String password) {
-		super.basicAuth(username, password);
-		return this;
-	}
-
-	@Override
-	public HttpRequestWithBody queryString(Map<String, Object> parameters) {
-		return (HttpRequestWithBody) super.queryString(parameters);
-	}
-
-	@Override
-	public HttpRequestWithBody queryString(String name, Object value) {
-		return (HttpRequestWithBody) super.queryString(name, value);
-	}
-
-	@Override
-	public HttpRequestWithBody context(HttpClientContext context) {
-		super.context(context);
-		return this;
 	}
 
 	public MultipartBody field(String name, Collection<?> value) {

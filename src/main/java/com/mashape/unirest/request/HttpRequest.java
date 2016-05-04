@@ -38,7 +38,8 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class HttpRequest extends BaseRequest {
+@SuppressWarnings("unchecked")
+public class HttpRequest<T extends HttpRequest<T>> extends BaseRequest {
 
 	private HttpMethod httpMethod;
 	protected String url;
@@ -51,7 +52,7 @@ public class HttpRequest extends BaseRequest {
 		super.httpRequest = this;
 	}
 
-	public HttpRequest routeParam(String name, String value) {
+	public T routeParam(String name, String value) {
 		Matcher matcher = Pattern.compile("\\{" + name + "\\}").matcher(url);
 		int count = 0;
 		while (matcher.find()) {
@@ -61,41 +62,41 @@ public class HttpRequest extends BaseRequest {
 			throw new RuntimeException("Can't find route parameter name \"" + name + "\"");
 		}
 		this.url = url.replaceAll("\\{" + name + "\\}", URLParamEncoder.encode(value));
-		return this;
+		return (T) this;
 	}
 
-	public HttpRequest basicAuth(String username, String password) {
+	public T basicAuth(String username, String password) {
 		header("Authorization", "Basic " + Base64Coder.encodeString(username + ":" + password));
-		return this;
+		return (T) this;
 	}
 
-	public HttpRequest header(String name, String value) {
+	public T header(String name, String value) {
 		List<String> list = this.headers.get(name.trim());
 		if (list == null) {
 			list = new ArrayList<String>();
 		}
 		list.add(value);
 		this.headers.put(name.trim(), list);
-		return this;
+		return (T) this;
 	}
 
-	public HttpRequest headers(Map<String, String> headers) {
+	public T headers(Map<String, String> headers) {
 		if (headers != null) {
 			for (Map.Entry<String, String> entry : headers.entrySet()) {
 				header(entry.getKey(), entry.getValue());
 			}
 		}
-		return this;
+		return (T) this;
 	}
 
-	public HttpRequest queryString(String name, Collection<?> value) {
+	public T queryString(String name, Collection<?> value) {
 		for (Object cur : value) {
 			queryString(name, cur);
 		}
-		return this;
+		return (T) this;
 	}
 
-	public HttpRequest queryString(String name, Object value) {
+	public T queryString(String name, Object value) {
 		StringBuilder queryString = new StringBuilder();
 		if (this.url.contains("?")) {
 			queryString.append("&");
@@ -111,10 +112,10 @@ public class HttpRequest extends BaseRequest {
 			throw new RuntimeException(e);
 		}
 		this.url += queryString.toString();
-		return this;
+		return (T) this;
 	}
 
-	public HttpRequest queryString(Map<String, Object> parameters) {
+	public T queryString(Map<String, Object> parameters) {
 		if (parameters != null) {
 			for (Entry<String, Object> param : parameters.entrySet()) {
 				if (param.getValue() instanceof String || param.getValue() instanceof Number || param.getValue() instanceof Boolean) {
@@ -124,7 +125,7 @@ public class HttpRequest extends BaseRequest {
 				}
 			}
 		}
-		return this;
+		return (T) this;
 	}
 
 	public HttpMethod getHttpMethod() {
@@ -145,10 +146,9 @@ public class HttpRequest extends BaseRequest {
 		return body;
 	}
 
-	@Override
-	public HttpRequest context(HttpClientContext context) {
-		super.context(context);
-		return this;
+	public T context(HttpClientContext context) {
+		this.context = context;
+		return (T) this;
 	}
 
 }
