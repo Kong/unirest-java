@@ -255,6 +255,25 @@ Authenticating the request with basic authentication can be done by calling the 
 HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/headers").basicAuth("username", "password").asJson();
 ```
 
+## Persisten Context / NTLM Authentication 
+You can also inject a `HttpClientContext` Object into the request, allowing you to store persistent information between multiple requests.
+Besides using features as Auth caches or preemptive authentication, this also allows NTLM-Authentication (which is stateful by design):
+
+```java
+CredentialsProvider credsProvider = new BasicCredentialsProvider();
+credsProvider.setCredentials(AuthScope.ANY, new NTCredentials(username, password, workstation, domain));
+HttpClientContext clientContext = HttpClientContext.create();
+clientContext.setCredentialsProvider(credsProvider);
+
+HttpResponse<JsonNode> response1 = Unirest.get("<simple call>").context(context).asJson();
+HttpResponse<JsonNode> response2 = Unirest.post("<complex call>").context(context).asJson();
+```
+
+By reusing the context, the complex handshake can be done using the first (get) request, since two requests are needed. Once successfully authenticated,
+the user identity is stored inside the context, allowing the second (potentially expansive) second request to succeed without additional roundtrips.
+
+
+
 # Request
 
 The Java Unirest library follows the builder style conventions. You start building your request by creating a `HttpRequest` object using one of the following:

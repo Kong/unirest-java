@@ -25,9 +25,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.request;
 
-import java.util.Map;
-
 import com.mashape.unirest.http.HttpMethod;
+import org.apache.http.client.protocol.HttpClientContext;
+
+import java.util.Map;
 
 public class GetRequest extends HttpRequest {
 
@@ -53,6 +54,12 @@ public class GetRequest extends HttpRequest {
 	@Override
 	public GetRequest basicAuth(String username, String password) {
 		super.basicAuth(username, password);
+		return this;
+	}
+
+	@Override
+	public GetRequest context(HttpClientContext context) {
+		super.context(context);
 		return this;
 	}
 }

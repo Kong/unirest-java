@@ -25,6 +25,21 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.http;
 
+import com.mashape.unirest.http.async.Callback;
+import com.mashape.unirest.http.async.utils.AsyncIdleConnectionMonitorThread;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.http.options.Option;
+import com.mashape.unirest.http.options.Options;
+import com.mashape.unirest.http.utils.ClientFactory;
+import com.mashape.unirest.request.HttpRequest;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.*;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.nio.entity.NByteArrayEntity;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -38,28 +53,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.client.methods.HttpOptions;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.concurrent.FutureCallback;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.apache.http.nio.entity.NByteArrayEntity;
-
-import com.mashape.unirest.http.async.Callback;
-import com.mashape.unirest.http.async.utils.AsyncIdleConnectionMonitorThread;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.http.options.Option;
-import com.mashape.unirest.http.options.Options;
-import com.mashape.unirest.http.utils.ClientFactory;
-import com.mashape.unirest.request.HttpRequest;
 
 public class HttpClientHelper {
 
@@ -90,6 +83,10 @@ public class HttpClientHelper {
 	}
 
 	public static <T> Future<HttpResponse<T>> requestAsync(HttpRequest request, final Class<T> responseClass, Callback<T> callback) {
+		return requestAsync(request, responseClass, callback, null);
+	}
+
+	public static <T> Future<HttpResponse<T>> requestAsync(HttpRequest request, final Class<T> responseClass, Callback<T> callback, HttpClientContext context) {
 		HttpUriRequest requestObj = prepareRequest(request, true);
 
 		CloseableHttpAsyncClient asyncHttpClient = ClientFactory.getAsyncHttpClient();
@@ -99,7 +96,7 @@ public class HttpClientHelper {
 			asyncIdleConnectionMonitorThread.start();
 		}
 
-		final Future<org.apache.http.HttpResponse> future = asyncHttpClient.execute(requestObj, prepareCallback(responseClass, callback));
+		final Future<org.apache.http.HttpResponse> future = asyncHttpClient.execute(requestObj, context, prepareCallback(responseClass, callback));
 
 		return new Future<HttpResponse<T>>() {
 
@@ -128,6 +125,10 @@ public class HttpClientHelper {
 	}
 
 	public static <T> HttpResponse<T> request(HttpRequest request, Class<T> responseClass) throws UnirestException {
+		return request(request, responseClass, null);
+	}
+
+	public static <T> HttpResponse<T> request(HttpRequest request, Class<T> responseClass, HttpClientContext context) throws UnirestException {
 		HttpRequestBase requestObj = prepareRequest(request, false);
 		HttpClient client = ClientFactory.getHttpClient(); // The
 															// DefaultHttpClient
@@ -135,7 +136,7 @@ public class HttpClientHelper {
 
 		org.apache.http.HttpResponse response;
 		try {
-			response = client.execute(requestObj);
+			response = client.execute(requestObj, context);
 			HttpResponse<T> httpResponse = new HttpResponse<T>(response, responseClass);
 			requestObj.releaseConnection();
 			return httpResponse;

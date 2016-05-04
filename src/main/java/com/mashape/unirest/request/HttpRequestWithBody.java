@@ -25,6 +25,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.request;
 
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.content.InputStreamBody;
 
@@ -82,6 +83,12 @@ public class HttpRequestWithBody extends HttpRequest {
 	@Override
 	public HttpRequestWithBody queryString(String name, Object value) {
 		return (HttpRequestWithBody) super.queryString(name, value);
+	}
+
+	@Override
+	public HttpRequestWithBody context(HttpClientContext context) {
+		super.context(context);
+		return this;
 	}
 
 	public MultipartBody field(String name, Collection<?> value) {
