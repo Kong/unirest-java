@@ -1,5 +1,6 @@
 package com.mashape.unirest.http.options;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,8 +69,21 @@ public class Options {
 
 		// Create common default configuration
 		RequestConfig clientConfig = RequestConfig.custom().setConnectTimeout(((Long) connectionTimeout).intValue()).setSocketTimeout(((Long) socketTimeout).intValue()).setConnectionRequestTimeout(((Long) socketTimeout).intValue()).setProxy(proxy).build();
-
+		
+		Object o = getOption(Option.POOLING_MANAGER);
+		if (o != null) ((PoolingHttpClientConnectionManager)o).shutdown();
+		o = getOption(Option.NPOOLING_MANAGER);
+		if (o != null)
+			try {
+				((PoolingNHttpClientConnectionManager)o).shutdown();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		
 		PoolingHttpClientConnectionManager syncConnectionManager = new PoolingHttpClientConnectionManager();
+		setOption(Option.POOLING_MANAGER, syncConnectionManager);
+		
 		syncConnectionManager.setMaxTotal((Integer) maxTotal);
 		syncConnectionManager.setDefaultMaxPerRoute((Integer) maxPerRoute);
 
@@ -82,8 +96,10 @@ public class Options {
 		DefaultConnectingIOReactor ioreactor;
 		PoolingNHttpClientConnectionManager asyncConnectionManager;
 		try {
+			
 			ioreactor = new DefaultConnectingIOReactor();
 			asyncConnectionManager = new PoolingNHttpClientConnectionManager(ioreactor);
+			setOption(Option.NPOOLING_MANAGER, asyncConnectionManager);
 			asyncConnectionManager.setMaxTotal((Integer) maxTotal);
 			asyncConnectionManager.setDefaultMaxPerRoute((Integer) maxPerRoute);
 		} catch (IOReactorException e) {
@@ -92,7 +108,10 @@ public class Options {
 
 		CloseableHttpAsyncClient asyncClient = HttpAsyncClientBuilder.create().setDefaultRequestConfig(clientConfig).setConnectionManager(asyncConnectionManager).build();
 		setOption(Option.ASYNCHTTPCLIENT, asyncClient);
-		setOption(Option.ASYNC_MONITOR, new AsyncIdleConnectionMonitorThread(asyncConnectionManager));
+		AsyncIdleConnectionMonitorThread aSync = new AsyncIdleConnectionMonitorThread(asyncConnectionManager);
+		setOption(Option.ASYNC_MONITOR, aSync);
+		aSync.start();
+		
 	}
 
 }
