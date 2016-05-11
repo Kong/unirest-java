@@ -35,7 +35,7 @@ import org.apache.http.client.protocol.HttpClientContext;
 import java.io.InputStream;
 import java.util.concurrent.Future;
 
-public abstract class BaseRequest {
+public abstract class BaseRequest<C> {
 
 	protected static final String UTF_8 = "UTF-8";
 
@@ -55,11 +55,11 @@ public abstract class BaseRequest {
 	}
 
 	public HttpResponse<String> asString() throws UnirestException {
-		return HttpClientHelper.request(httpRequest, String.class, context);
+		return HttpClientHelper.request(httpRequest, String.class, httpRequest.context);
 	}
 
 	public Future<HttpResponse<String>> asStringAsync() {
-		return HttpClientHelper.requestAsync(httpRequest, String.class, null, context);
+		return HttpClientHelper.requestAsync(httpRequest, String.class, null, httpRequest.context);
 	}
 
 	public Future<HttpResponse<String>> asStringAsync(Callback<String> callback) {
@@ -67,38 +67,44 @@ public abstract class BaseRequest {
 	}
 
 	public HttpResponse<JsonNode> asJson() throws UnirestException {
-		return HttpClientHelper.request(httpRequest, JsonNode.class, context);
+		return HttpClientHelper.request(httpRequest, JsonNode.class, httpRequest.context);
 	}
 
 	public Future<HttpResponse<JsonNode>> asJsonAsync() {
-		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class, null, context);
+		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class, null, httpRequest.context);
 	}
 
 	public Future<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback) {
-		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class, callback, context);
+		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class, callback, httpRequest.context);
 	}
 
 	public <T> HttpResponse<T> asObject(Class<? extends T> responseClass) throws UnirestException {
-		return HttpClientHelper.request(httpRequest, (Class) responseClass, context);
+		return HttpClientHelper.request(httpRequest, (Class) responseClass, httpRequest.context);
 	}
 
 	public <T> Future<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass) {
-		return HttpClientHelper.requestAsync(httpRequest, (Class) responseClass, null, context);
+		return HttpClientHelper.requestAsync(httpRequest, (Class) responseClass, null, httpRequest.context);
 	}
 
 	public <T> Future<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback) {
-		return HttpClientHelper.requestAsync(httpRequest, (Class) responseClass, callback, context);
+		return HttpClientHelper.requestAsync(httpRequest, (Class) responseClass, callback, httpRequest.context);
 	}
 
 	public HttpResponse<InputStream> asBinary() throws UnirestException {
-		return HttpClientHelper.request(httpRequest, InputStream.class, context);
+		return HttpClientHelper.request(httpRequest, InputStream.class, httpRequest.context);
 	}
 
 	public Future<HttpResponse<InputStream>> asBinaryAsync() {
-		return HttpClientHelper.requestAsync(httpRequest, InputStream.class, null, context);
+		return HttpClientHelper.requestAsync(httpRequest, InputStream.class, null, httpRequest.context);
 	}
 
 	public Future<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback) {
-		return HttpClientHelper.requestAsync(httpRequest, InputStream.class, callback, context);
+		return HttpClientHelper.requestAsync(httpRequest, InputStream.class, callback, httpRequest.context);
+	}
+
+	@SuppressWarnings("unchecked")
+	public C context(HttpClientContext context) {
+		httpRequest.context = context;
+		return (C) this;
 	}
 }

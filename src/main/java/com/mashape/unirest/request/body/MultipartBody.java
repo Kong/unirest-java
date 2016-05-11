@@ -25,33 +25,22 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.request.body;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.LinkedHashMap;
-
+import com.mashape.unirest.http.utils.MapUtil;
+import com.mashape.unirest.request.BaseRequest;
+import com.mashape.unirest.request.HttpRequest;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.ByteArrayBody;
-import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.InputStreamBody;
-import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.entity.mime.content.*;
 
-import com.mashape.unirest.http.utils.MapUtil;
-import com.mashape.unirest.request.BaseRequest;
-import com.mashape.unirest.request.HttpRequest;
+import java.io.File;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
-public class MultipartBody extends BaseRequest implements Body {
+public class MultipartBody extends BaseRequest<MultipartBody> implements Body {
 	private Map<String, List<Object>> parameters = new LinkedHashMap<String, List<Object>>();
 	private Map<String, ContentType> contentTypes = new HashMap<String, ContentType>();
 

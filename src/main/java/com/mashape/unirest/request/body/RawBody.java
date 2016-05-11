@@ -30,7 +30,7 @@ import com.mashape.unirest.request.HttpRequest;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 
-public class RawBody extends BaseRequest implements Body {
+public class RawBody extends BaseRequest<RawBody> implements Body {
 
 	private byte[] body;
 

@@ -29,7 +29,6 @@ import com.mashape.unirest.http.HttpMethod;
 import com.mashape.unirest.http.utils.Base64Coder;
 import com.mashape.unirest.http.utils.URLParamEncoder;
 import com.mashape.unirest.request.body.Body;
-import org.apache.http.client.protocol.HttpClientContext;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -39,7 +38,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @SuppressWarnings("unchecked")
-public class HttpRequest<T extends HttpRequest<T>> extends BaseRequest {
+public class HttpRequest<T extends HttpRequest<T>> extends BaseRequest<T> {
 
 	private HttpMethod httpMethod;
 	protected String url;
@@ -145,10 +144,4 @@ public class HttpRequest<T extends HttpRequest<T>> extends BaseRequest {
 	public Body getBody() {
 		return body;
 	}
-
-	public T context(HttpClientContext context) {
-		this.context = context;
-		return (T) this;
-	}
-
 }

@@ -32,7 +32,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.request.BaseRequest;
 import com.mashape.unirest.request.HttpRequest;
 
-public class RequestBodyEntity extends BaseRequest implements Body {
+public class RequestBodyEntity extends BaseRequest<RequestBodyEntity> implements Body {
 
 	private Object body;
 
