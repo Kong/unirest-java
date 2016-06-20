@@ -15,6 +15,7 @@ import org.apache.http.nio.reactor.IOReactorException;
 
 import com.mashape.unirest.http.async.utils.AsyncIdleConnectionMonitorThread;
 import com.mashape.unirest.http.utils.SyncIdleConnectionMonitorThread;
+import org.apache.http.client.CredentialsProvider;
 
 public class Options {
 
@@ -28,7 +29,7 @@ public class Options {
 	private static boolean customClientSet = false;
 
 	public static void customClientSet() {
-		customClientSet = true;
+		customClientSet = true; 
 	}
 
 	public static void setOption(Option option, Object value) {
@@ -65,16 +66,24 @@ public class Options {
 
 		// Load proxy if set
 		HttpHost proxy = (HttpHost) Options.getOption(Option.PROXY);
+                
+                // Load credentials provider if set
+                CredentialsProvider credentialsProvider = 
+                        (CredentialsProvider) Options.getOption(Option.CREDENTIALS_PROVIDER);
 
 		// Create common default configuration
-		RequestConfig clientConfig = RequestConfig.custom().setConnectTimeout(((Long) connectionTimeout).intValue()).setSocketTimeout(((Long) socketTimeout).intValue()).setConnectionRequestTimeout(((Long) socketTimeout).intValue()).setProxy(proxy).build();
-
+		RequestConfig clientConfig = RequestConfig.custom()
+                        .setConnectTimeout(((Long) connectionTimeout).intValue())
+                        .setSocketTimeout(((Long) socketTimeout).intValue())
+                        .setConnectionRequestTimeout(((Long) socketTimeout).intValue())
+                        .setProxy(proxy).build();
+                    
 		PoolingHttpClientConnectionManager syncConnectionManager = new PoolingHttpClientConnectionManager();
 		syncConnectionManager.setMaxTotal((Integer) maxTotal);
 		syncConnectionManager.setDefaultMaxPerRoute((Integer) maxPerRoute);
 
 		// Create clients
-		setOption(Option.HTTPCLIENT, HttpClientBuilder.create().setDefaultRequestConfig(clientConfig).setConnectionManager(syncConnectionManager).build());
+		setOption(Option.HTTPCLIENT, HttpClientBuilder.create().setDefaultRequestConfig(clientConfig).setConnectionManager(syncConnectionManager).setDefaultCredentialsProvider(credentialsProvider).build());
 		SyncIdleConnectionMonitorThread syncIdleConnectionMonitorThread = new SyncIdleConnectionMonitorThread(syncConnectionManager);
 		setOption(Option.SYNC_MONITOR, syncIdleConnectionMonitorThread);
 		syncIdleConnectionMonitorThread.start();
@@ -90,7 +99,7 @@ public class Options {
 			throw new RuntimeException(e);
 		}
 
-		CloseableHttpAsyncClient asyncClient = HttpAsyncClientBuilder.create().setDefaultRequestConfig(clientConfig).setConnectionManager(asyncConnectionManager).build();
+		CloseableHttpAsyncClient asyncClient = HttpAsyncClientBuilder.create().setDefaultRequestConfig(clientConfig).setDefaultCredentialsProvider(credentialsProvider).setConnectionManager(asyncConnectionManager).build();
 		setOption(Option.ASYNCHTTPCLIENT, asyncClient);
 		setOption(Option.ASYNC_MONITOR, new AsyncIdleConnectionMonitorThread(asyncConnectionManager));
 	}

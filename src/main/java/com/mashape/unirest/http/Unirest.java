@@ -33,6 +33,7 @@ import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 
@@ -67,6 +68,17 @@ public class Unirest {
 		// Reload the client implementations
 		Options.refresh();
 	}
+        
+        /**
+         * Set the default credentials provider to use for every request
+         * @param credentialsProvider custom implementation of the {@link CredentialsProvider} interface
+         */
+        public static void setCredentialsProvider(CredentialsProvider credentialsProvider) {
+                Options.setOption(Option.CREDENTIALS_PROVIDER, credentialsProvider);
+         
+                // Reload the client implementations
+		Options.refresh();
+        }
 
 	/**
 	 * Set the ObjectMapper implementation to use for Response to Object binding
