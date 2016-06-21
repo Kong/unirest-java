@@ -46,7 +46,7 @@ public class HttpResponse<T> {
 	private String statusText;
 	private Headers headers = new Headers();
 	private InputStream rawBody;
-	private T body;
+	private BodyReader<T> bodyReader;
 
 	@SuppressWarnings("unchecked")
 	public HttpResponse(org.apache.http.HttpResponse response, Class<T> responseClass) {
@@ -91,14 +91,13 @@ public class HttpResponse<T> {
 				this.rawBody = new ByteArrayInputStream(rawBody);
 
 				if (JsonNode.class.equals(responseClass)) {
-					String jsonString = new String(rawBody, charset).trim();
-					this.body = (T) new JsonNode(jsonString);
+					this.bodyReader = (BodyReader<T>) BodyReaders.forJsonNode(rawBody, charset);
 				} else if (String.class.equals(responseClass)) {
-					this.body = (T) new String(rawBody, charset);
+					this.bodyReader = (BodyReader<T>) BodyReaders.forString(rawBody, charset);
 				} else if (InputStream.class.equals(responseClass)) {
-					this.body = (T) this.rawBody;
+					this.bodyReader = (BodyReader<T>) BodyReaders.forInputStream(this.rawBody);
 				} else if (objectMapper != null) {
-					this.body = objectMapper.readValue(new String(rawBody, charset), responseClass);
+					this.bodyReader = BodyReaders.forObjectMapper(objectMapper, rawBody, charset, responseClass);
 				} else {
 					throw new Exception("Only String, JsonNode and InputStream are supported, or an ObjectMapper implementation is required.");
 				}
@@ -131,6 +130,6 @@ public class HttpResponse<T> {
 	}
 
 	public T getBody() {
-		return body;
+		return bodyReader.getBody();
 	}
 }
