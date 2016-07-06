@@ -75,7 +75,7 @@ public class Options {
 
 		// Create clients
 		setOption(Option.HTTPCLIENT, HttpClientBuilder.create().setDefaultRequestConfig(clientConfig).setConnectionManager(syncConnectionManager).build());
-		SyncIdleConnectionMonitorThread syncIdleConnectionMonitorThread = getOption(Option.SYNC_MONITOR);
+		SyncIdleConnectionMonitorThread syncIdleConnectionMonitorThread = (SyncIdleConnectionMonitorThread)getOption(Option.SYNC_MONITOR);
 		if(syncIdleConnectionMonitorThread!=null)
 		 syncIdleConnectionMonitorThread.interrupt();
 		syncIdleConnectionMonitorThread = new SyncIdleConnectionMonitorThread(syncConnectionManager);
