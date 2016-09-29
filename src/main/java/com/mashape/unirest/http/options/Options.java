@@ -19,7 +19,7 @@ import com.mashape.unirest.http.utils.SyncIdleConnectionMonitorThread;
 public class Options {
 
 	public static final long CONNECTION_TIMEOUT = 10000;
-	private static final long SOCKET_TIMEOUT = 60000;
+	public static final long SOCKET_TIMEOUT = 60000;
 	public static final int MAX_TOTAL = 200;
 	public static final int MAX_PER_ROUTE = 20;
 
