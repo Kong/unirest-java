@@ -79,7 +79,7 @@ public class HttpRequest extends BaseRequest {
 			list = new ArrayList<String>();
 		}
 		list.add(value);
-		this.headers.put(name.trim(), list);
+		this.headers.put(name.trim().toLowerCase(), list);
 		return this;
 	}
 
