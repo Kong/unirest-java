@@ -37,6 +37,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -154,30 +155,58 @@ public class Unirest {
 			asyncMonitorThread.interrupt();
 		}
 	}
+        
+        public static GetRequest get(URL url) {
+            return get(url.toExternalForm());
+        }
 
 	public static GetRequest get(String url) {
 		return new GetRequest(HttpMethod.GET, url);
 	}
+        
+        public static GetRequest head(URL url) {
+                return head(url.toExternalForm());
+        }
 
 	public static GetRequest head(String url) {
 		return new GetRequest(HttpMethod.HEAD, url);
 	}
+        
+        public static HttpRequestWithBody options(URL url) {
+                return options(url.toExternalForm());
+        }
 
 	public static HttpRequestWithBody options(String url) {
 		return new HttpRequestWithBody(HttpMethod.OPTIONS, url);
 	}
+        
+        public static HttpRequestWithBody post(URL url) {
+                return post(url.toExternalForm());
+        }
 
 	public static HttpRequestWithBody post(String url) {
 		return new HttpRequestWithBody(HttpMethod.POST, url);
 	}
 
+        public static HttpRequestWithBody delete(URL url) {
+                return delete(url.toExternalForm());
+        }
+        
 	public static HttpRequestWithBody delete(String url) {
 		return new HttpRequestWithBody(HttpMethod.DELETE, url);
 	}
 
+        public static HttpRequestWithBody patch(URL url) {
+                return patch(url.toExternalForm());
+        }
+        
 	public static HttpRequestWithBody patch(String url) {
-		return new HttpRequestWithBody(HttpMethod.PATCH, url);
+                return new HttpRequestWithBody(HttpMethod.PATCH, url);
 	}
+        
+        public static HttpRequestWithBody put(URL url) {
+                return put(url.toExternalForm());
+        }
 
 	public static HttpRequestWithBody put(String url) {
 		return new HttpRequestWithBody(HttpMethod.PUT, url);
