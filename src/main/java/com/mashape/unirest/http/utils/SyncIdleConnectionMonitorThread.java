@@ -1,8 +1,8 @@
 package com.mashape.unirest.http.utils;
 
-import java.util.concurrent.TimeUnit;
-
 import org.apache.http.conn.HttpClientConnectionManager;
+
+import java.util.concurrent.TimeUnit;
 
 public class SyncIdleConnectionMonitorThread extends Thread {
 

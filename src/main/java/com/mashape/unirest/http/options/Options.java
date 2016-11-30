@@ -1,8 +1,7 @@
 package com.mashape.unirest.http.options;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.mashape.unirest.http.async.utils.AsyncIdleConnectionMonitorThread;
+import com.mashape.unirest.http.utils.SyncIdleConnectionMonitorThread;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -13,8 +12,8 @@ import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
 import org.apache.http.nio.reactor.IOReactorException;
 
-import com.mashape.unirest.http.async.utils.AsyncIdleConnectionMonitorThread;
-import com.mashape.unirest.http.utils.SyncIdleConnectionMonitorThread;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Options {
 

@@ -29,7 +29,6 @@ import com.mashape.unirest.http.HttpClientHelper;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.async.Callback;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 import java.io.InputStream;
 import java.util.concurrent.Future;
@@ -52,7 +51,7 @@ public abstract class BaseRequest {
 		super();
 	}
 
-	public HttpResponse<String> asString() throws UnirestException {
+	public HttpResponse<String> asString() {
 		return HttpClientHelper.request(httpRequest, String.class);
 	}
 
@@ -64,7 +63,7 @@ public abstract class BaseRequest {
 		return HttpClientHelper.requestAsync(httpRequest, String.class, callback);
 	}
 
-	public HttpResponse<JsonNode> asJson() throws UnirestException {
+	public HttpResponse<JsonNode> asJson() {
 		return HttpClientHelper.request(httpRequest, JsonNode.class);
 	}
 
@@ -76,7 +75,7 @@ public abstract class BaseRequest {
 		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class, callback);
 	}
 
-	public <T> HttpResponse<T> asObject(Class<? extends T> responseClass) throws UnirestException {
+	public <T> HttpResponse<T> asObject(Class<? extends T> responseClass) {
 		return HttpClientHelper.request(httpRequest, (Class) responseClass);
 	}
 
@@ -88,7 +87,7 @@ public abstract class BaseRequest {
 		return HttpClientHelper.requestAsync(httpRequest, (Class) responseClass, callback);
 	}
 
-	public HttpResponse<InputStream> asBinary() throws UnirestException {
+	public HttpResponse<InputStream> asBinary() {
 		return HttpClientHelper.request(httpRequest, InputStream.class);
 	}
 

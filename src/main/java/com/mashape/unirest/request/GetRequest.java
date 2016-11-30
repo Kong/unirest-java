@@ -25,9 +25,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.request;
 
-import java.util.Map;
-
 import com.mashape.unirest.http.HttpMethod;
+
+import java.util.Map;
 
 public class GetRequest extends HttpRequest {
 

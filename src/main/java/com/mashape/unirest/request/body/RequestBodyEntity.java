@@ -25,12 +25,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.request.body;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.entity.StringEntity;
-
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.request.BaseRequest;
 import com.mashape.unirest.request.HttpRequest;
+import org.apache.http.HttpEntity;
+import org.apache.http.entity.StringEntity;
 
 public class RequestBodyEntity extends BaseRequest implements Body {
 

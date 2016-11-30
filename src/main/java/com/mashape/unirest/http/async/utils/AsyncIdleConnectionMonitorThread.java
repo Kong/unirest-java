@@ -1,8 +1,8 @@
 package com.mashape.unirest.http.async.utils;
 
-import java.util.concurrent.TimeUnit;
-
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
+
+import java.util.concurrent.TimeUnit;
 
 public class AsyncIdleConnectionMonitorThread extends Thread {
 
