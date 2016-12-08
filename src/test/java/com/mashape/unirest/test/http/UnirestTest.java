@@ -582,7 +582,7 @@ public class UnirestTest {
 		makeParallelRequests();
 		long higherConcurrencyTime = (System.currentTimeMillis() - start);
 
-		assertTrue(higherConcurrencyTime < smallerConcurrencyTime);
+		assertTrue("higherConcurrencyTime " + higherConcurrencyTime + " should be lower than smallerConcurrencyTime " + smallerConcurrencyTime + " but is not", higherConcurrencyTime < smallerConcurrencyTime);
 	}
 
 	private void makeParallelRequests() throws InterruptedException {
