@@ -123,6 +123,8 @@ public class HttpRequest extends BaseRequest {
 			for (Entry<String, Object> param : parameters.entrySet()) {
 				if (param.getValue() instanceof String || param.getValue() instanceof Number || param.getValue() instanceof Boolean) {
 					queryString(param.getKey(), param.getValue());
+				} else if (param.getValue() instanceof Collection<?>) {
+					queryString(param.getKey(), (Collection<?>) param.getValue());
 				} else {
 					throw new RuntimeException("Parameter \"" + param.getKey() + "\" can't be sent with a GET request because of type: " + param.getValue().getClass().getName());
 				}

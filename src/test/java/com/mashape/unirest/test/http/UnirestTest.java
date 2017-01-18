@@ -49,6 +49,9 @@ import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -814,5 +817,12 @@ public class UnirestTest {
 		assertEquals("Only header \"Content-Type\" should exist", null, headers.getFirst("cOnTeNt-TyPe"));
 		assertEquals("Only header \"Content-Type\" should exist", null, headers.getFirst("content-type"));
 		assertEquals("Only header \"Content-Type\" should exist", "application/json", headers.getFirst("Content-Type"));
+	}
+
+	@Test
+	public void testArrayQueryParamsInMapSupported() throws IOException {
+		Map<String, Object> queryParams = new HashMap<String, Object>();
+		queryParams.put("a", Arrays.asList(1, 2));
+		assertEquals("Should be equals", "test?a=1&a=2", Unirest.get("test").queryString(queryParams).getUrl());
 	}
 }
