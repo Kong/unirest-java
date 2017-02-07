@@ -35,6 +35,7 @@ import com.mashape.unirest.test.helper.GetResponse;
 import com.mashape.unirest.test.helper.JacksonObjectMapper;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
@@ -814,5 +815,27 @@ public class UnirestTest {
 		assertEquals("Only header \"Content-Type\" should exist", null, headers.getFirst("cOnTeNt-TyPe"));
 		assertEquals("Only header \"Content-Type\" should exist", null, headers.getFirst("content-type"));
 		assertEquals("Only header \"Content-Type\" should exist", "application/json", headers.getFirst("Content-Type"));
+	}
+
+	@Test
+	public void testCookieSpecs() throws UnirestException {
+		Unirest.setCookieSpecs(CookieSpecs.DEFAULT);
+		HttpResponse<JsonNode> jsonResponse = Unirest.get("http://httpbin.org/cookies/set")
+			.queryString("k1", "v1")
+			.asJson();
+		assertEquals("v1", jsonResponse.getBody().getObject().getJSONObject("cookies").getString("k1"));
+
+		Unirest.setCookieSpecs(CookieSpecs.IGNORE_COOKIES);
+		jsonResponse = Unirest.get("http://httpbin.org/cookies/set")
+			.queryString("k2", "v2")
+			.asJson();
+		assertFalse(jsonResponse.getBody().getObject().getJSONObject("cookies").has("k2"));
+
+		Unirest.setCookieSpecs(CookieSpecs.DEFAULT);
+		jsonResponse = Unirest.get("http://httpbin.org/cookies/delete")
+			.queryString("k1", "")
+			.queryString("k2", "")
+			.asJson();
+		assertEquals(0, jsonResponse.getBody().getObject().getJSONObject("cookies").length());
 	}
 }

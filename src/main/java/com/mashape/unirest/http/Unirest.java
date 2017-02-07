@@ -70,7 +70,7 @@ public class Unirest {
 
 	/**
 	 * Set the ObjectMapper implementation to use for Response to Object binding
-	 * 
+	 *
 	 * @param objectMapper Custom implementation of ObjectMapper interface
 	 */
 	public static void setObjectMapper(ObjectMapper objectMapper) {
@@ -82,7 +82,7 @@ public class Unirest {
 
 	/**
 	 * Set the connection timeout and socket timeout
-	 * 
+	 *
 	 * @param connectionTimeout The timeout until a connection with the server is established (in milliseconds). Default is 10000. Set to zero to disable the timeout.
 	 * @param socketTimeout The timeout to receive data (in milliseconds). Default is 60000. Set to zero to disable the timeout.
 	 */
@@ -96,13 +96,26 @@ public class Unirest {
 
 	/**
 	 * Set the concurrency levels
-	 * 
+	 *
 	 * @param maxTotal Defines the overall connection limit for a connection pool. Default is 200.
 	 * @param maxPerRoute Defines a connection limit per one HTTP route (this can be considered a per target host limit). Default is 20.
 	 */
 	public static void setConcurrency(int maxTotal, int maxPerRoute) {
 		Options.setOption(Option.MAX_TOTAL, maxTotal);
 		Options.setOption(Option.MAX_PER_ROUTE, maxPerRoute);
+
+		// Reload the client implementations
+		Options.refresh();
+	}
+
+	/**
+		* Set the cookie specs
+		*
+		* @param cookieSpecs Custom cookie specifications used by HttpClient. Default is "DEFAULT".
+		* @see org.apache.http.client.config.CookieSpecs
+		*/
+	public static void setCookieSpecs(String cookieSpecs) {
+		Options.setOption(Option.COOKIE_SPECS, cookieSpecs);
 
 		// Reload the client implementations
 		Options.refresh();
