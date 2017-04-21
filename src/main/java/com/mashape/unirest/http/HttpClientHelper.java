@@ -169,7 +169,7 @@ public class HttpClientHelper {
 		String urlToRequest = null;
 		try {
 			URL url = new URL(request.getUrl());
-			URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), URLDecoder.decode(url.getPath(), "UTF-8"), "", url.getRef());
+			URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), "", url.getRef());
 			urlToRequest = uri.toURL().toString();
 			if (url.getQuery() != null && !url.getQuery().trim().equals("")) {
 				if (!urlToRequest.substring(urlToRequest.length() - 1).equals("?")) {
