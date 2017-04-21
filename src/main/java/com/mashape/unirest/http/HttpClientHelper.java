@@ -25,11 +25,24 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.http;
 
+import com.mashape.unirest.http.async.Callback;
+import com.mashape.unirest.http.async.utils.AsyncIdleConnectionMonitorThread;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.http.options.Option;
+import com.mashape.unirest.http.options.Options;
+import com.mashape.unirest.http.utils.ClientFactory;
+import com.mashape.unirest.request.HttpRequest;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.*;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.nio.entity.NByteArrayEntity;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,28 +51,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.client.methods.HttpOptions;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.concurrent.FutureCallback;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.apache.http.nio.entity.NByteArrayEntity;
-
-import com.mashape.unirest.http.async.Callback;
-import com.mashape.unirest.http.async.utils.AsyncIdleConnectionMonitorThread;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.http.options.Option;
-import com.mashape.unirest.http.options.Options;
-import com.mashape.unirest.http.utils.ClientFactory;
-import com.mashape.unirest.request.HttpRequest;
 
 public class HttpClientHelper {
 
@@ -169,8 +160,7 @@ public class HttpClientHelper {
 		String urlToRequest = null;
 		try {
 			URL url = new URL(request.getUrl());
-			URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), "", url.getRef());
-			urlToRequest = uri.toURL().toString();
+			urlToRequest = new URIBuilder(url.toURI()).clearParameters().toString();
 			if (url.getQuery() != null && !url.getQuery().trim().equals("")) {
 				if (!urlToRequest.substring(urlToRequest.length() - 1).equals("?")) {
 					urlToRequest += "?";
