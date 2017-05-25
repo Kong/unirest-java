@@ -94,10 +94,23 @@ public class HttpClientHelper {
 
 		CloseableHttpAsyncClient asyncHttpClient = ClientFactory.getAsyncHttpClient();
 		if (!asyncHttpClient.isRunning()) {
-			asyncHttpClient.start();
-			AsyncIdleConnectionMonitorThread asyncIdleConnectionMonitorThread = (AsyncIdleConnectionMonitorThread) Options.getOption(Option.ASYNC_MONITOR);
-			asyncIdleConnectionMonitorThread.start();
+			synchronized (HttpClientHelper.class) {
+				if (!asyncHttpClient.isRunning()) {
+					asyncHttpClient.start();
+				}
+			}
 		}
+
+		AsyncIdleConnectionMonitorThread asyncIdleConnectionMonitorThread = (AsyncIdleConnectionMonitorThread) Options.getOption(Option.ASYNC_MONITOR);
+
+		if (!asyncIdleConnectionMonitorThread.isAlive()) {
+			synchronized (HttpClientHelper.class) {
+				if (!asyncIdleConnectionMonitorThread.isAlive()) {
+					asyncIdleConnectionMonitorThread.start();
+				}
+			}
+		}
+
 
 		final Future<org.apache.http.HttpResponse> future = asyncHttpClient.execute(requestObj, prepareCallback(responseClass, callback));
 
@@ -130,8 +143,8 @@ public class HttpClientHelper {
 	public static <T> HttpResponse<T> request(HttpRequest request, Class<T> responseClass) throws UnirestException {
 		HttpRequestBase requestObj = prepareRequest(request, false);
 		HttpClient client = ClientFactory.getHttpClient(); // The
-															// DefaultHttpClient
-															// is thread-safe
+		// DefaultHttpClient
+		// is thread-safe
 
 		org.apache.http.HttpResponse response;
 		try {
@@ -184,27 +197,27 @@ public class HttpClientHelper {
 		}
 
 		switch (request.getHttpMethod()) {
-		case GET:
-			reqObj = new HttpGet(urlToRequest);
-			break;
-		case POST:
-			reqObj = new HttpPost(urlToRequest);
-			break;
-		case PUT:
-			reqObj = new HttpPut(urlToRequest);
-			break;
-		case DELETE:
-			reqObj = new HttpDeleteWithBody(urlToRequest);
-			break;
-		case PATCH:
-			reqObj = new HttpPatchWithBody(urlToRequest);
-			break;
-		case OPTIONS:
-			reqObj = new HttpOptions(urlToRequest);
-			break;
-		case HEAD:
-			reqObj = new HttpHead(urlToRequest);
-			break;
+			case GET:
+				reqObj = new HttpGet(urlToRequest);
+				break;
+			case POST:
+				reqObj = new HttpPost(urlToRequest);
+				break;
+			case PUT:
+				reqObj = new HttpPut(urlToRequest);
+				break;
+			case DELETE:
+				reqObj = new HttpDeleteWithBody(urlToRequest);
+				break;
+			case PATCH:
+				reqObj = new HttpPatchWithBody(urlToRequest);
+				break;
+			case OPTIONS:
+				reqObj = new HttpOptions(urlToRequest);
+				break;
+			case HEAD:
+				reqObj = new HttpHead(urlToRequest);
+				break;
 		}
 
 		Set<Entry<String, List<String>>> entrySet = request.getHeaders().entrySet();
