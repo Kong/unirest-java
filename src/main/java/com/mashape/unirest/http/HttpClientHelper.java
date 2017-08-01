@@ -218,7 +218,7 @@ public class HttpClientHelper {
 		}
 
 		// Set body
-		if (!(request.getHttpMethod() == HttpMethod.GET || request.getHttpMethod() == HttpMethod.HEAD)) {
+		if (!(request.getHttpMethod() == HttpMethod.GET || request.getHttpMethod() == HttpMethod.HEAD || request.getHttpMethod() == HttpMethod.OPTIONS)) {
 			if (request.getBody() != null) {
 				HttpEntity entity = request.getBody().getEntity();
 				if (async) {
