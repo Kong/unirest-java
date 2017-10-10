@@ -59,6 +59,8 @@
 					<source>1.5</source>
 					<target>1.5</target>
 					<encoding>UTF-8</encoding>
+					<testSource>1.5</testSource>
+					<testTarget>1.5</testTarget>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -137,6 +139,12 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>${jackson.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sparkjava</groupId>
+			<artifactId>spark-core</artifactId>
+			<version>2.6.0</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
