@@ -78,35 +78,32 @@ public class HttpResponse<T> {
 			}
 
 			try {
-				byte[] rawBody;
-				try {
-					InputStream responseInputStream = responseEntity.getContent();
-					if (ResponseUtils.isGzipped(responseEntity.getContentEncoding())) {
-						responseInputStream = new GZIPInputStream(responseEntity.getContent());
-					}
-					rawBody = ResponseUtils.getBytes(responseInputStream);
-				} catch (IOException e2) {
-					throw new RuntimeException(e2);
-				}
-				this.rawBody = new ByteArrayInputStream(rawBody);
+				InputStream responseInputStream = ResponseUtils.isGzipped(responseEntity.getContentEncoding())
+					? new GZIPInputStream(responseEntity.getContent())
+					: responseEntity.getContent();
 
-				if (JsonNode.class.equals(responseClass)) {
-					String jsonString = new String(rawBody, charset).trim();
-					this.body = (T) new JsonNode(jsonString);
-				} else if (String.class.equals(responseClass)) {
-					this.body = (T) new String(rawBody, charset);
-				} else if (InputStream.class.equals(responseClass)) {
-					this.body = (T) this.rawBody;
-				} else if (objectMapper != null) {
-					this.body = objectMapper.readValue(new String(rawBody, charset), responseClass);
+				if (InputStream.class.equals(responseClass)) {
+					this.body = (T) responseInputStream;
+					this.rawBody = responseInputStream;
 				} else {
-					throw new Exception("Only String, JsonNode and InputStream are supported, or an ObjectMapper implementation is required.");
+					byte[] rawBytes = ResponseUtils.getBytes(responseInputStream);
+					this.rawBody = new ByteArrayInputStream(rawBytes);
+					if (JsonNode.class.equals(responseClass)) {
+						String jsonString = new String(rawBytes, charset).trim();
+						this.body = (T) new JsonNode(jsonString);
+					} else if (String.class.equals(responseClass)) {
+						this.body = (T) new String(rawBytes, charset);
+					} else if (objectMapper != null) {
+						this.body = objectMapper.readValue(new String(rawBytes, charset), responseClass);
+					} else {
+						throw new Exception("Only String, JsonNode and InputStream are supported, or an ObjectMapper implementation is required.");
+					}
 				}
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		}
-		
+
 		EntityUtils.consumeQuietly(responseEntity);
 	}
 
