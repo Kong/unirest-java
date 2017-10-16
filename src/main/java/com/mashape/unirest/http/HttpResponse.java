@@ -98,13 +98,13 @@ public class HttpResponse<T> {
 					} else {
 						throw new Exception("Only String, JsonNode and InputStream are supported, or an ObjectMapper implementation is required.");
 					}
+					EntityUtils.consumeQuietly(responseEntity);
 				}
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		}
 
-		EntityUtils.consumeQuietly(responseEntity);
 	}
 
 	public int getStatus() {
