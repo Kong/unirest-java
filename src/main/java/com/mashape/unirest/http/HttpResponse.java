@@ -47,11 +47,13 @@ public class HttpResponse<T> {
 	private Headers headers = new Headers();
 	private InputStream rawBody;
 	private T body;
+	private final Class<T> responseClass;
+	private String charset = "UTF-8";
 
 	@SuppressWarnings("unchecked")
 	public HttpResponse(org.apache.http.HttpResponse response, Class<T> responseClass) {
+		this.responseClass = responseClass;
 		HttpEntity responseEntity = response.getEntity();
-		ObjectMapper objectMapper = (ObjectMapper) Options.getOption(Option.OBJECT_MAPPER);
 
 		Header[] allHeaders = response.getAllHeaders();
 		for (Header header : allHeaders) {
@@ -67,13 +69,11 @@ public class HttpResponse<T> {
 		this.statusText = statusLine.getReasonPhrase();
 
 		if (responseEntity != null) {
-			String charset = "UTF-8";
-
 			Header contentType = responseEntity.getContentType();
 			if (contentType != null) {
 				String responseCharset = ResponseUtils.getCharsetFromContentType(contentType.getValue());
 				if (responseCharset != null && !responseCharset.trim().equals("")) {
-					charset = responseCharset;
+					this.charset = responseCharset;
 				}
 			}
 
@@ -88,16 +88,6 @@ public class HttpResponse<T> {
 				} else {
 					byte[] rawBytes = ResponseUtils.getBytes(responseInputStream);
 					this.rawBody = new ByteArrayInputStream(rawBytes);
-					if (JsonNode.class.equals(responseClass)) {
-						String jsonString = new String(rawBytes, charset).trim();
-						this.body = (T) new JsonNode(jsonString);
-					} else if (String.class.equals(responseClass)) {
-						this.body = (T) new String(rawBytes, charset);
-					} else if (objectMapper != null) {
-						this.body = objectMapper.readValue(new String(rawBytes, charset), responseClass);
-					} else {
-						throw new Exception("Only String, JsonNode and InputStream are supported, or an ObjectMapper implementation is required.");
-					}
 					EntityUtils.consumeQuietly(responseEntity);
 				}
 			} catch (Exception e) {
@@ -128,6 +118,24 @@ public class HttpResponse<T> {
 	}
 
 	public T getBody() {
+		if (this.body == null) {
+			try {
+				byte[] rawBytes = ResponseUtils.getBytes(this.rawBody);
+				ObjectMapper objectMapper = (ObjectMapper) Options.getOption(Option.OBJECT_MAPPER);
+				if (JsonNode.class.equals(this.responseClass)) {
+					String jsonString = new String(rawBytes, charset).trim();
+					this.body = (T) new JsonNode(jsonString);
+				} else if (String.class.equals(this.responseClass)) {
+					this.body = (T) new String(rawBytes, charset);
+				} else if (objectMapper != null) {
+					this.body = objectMapper.readValue(new String(rawBytes, charset), this.responseClass);
+				} else {
+					throw new Exception("Only String, JsonNode and InputStream are supported, or an ObjectMapper implementation is required.");
+				}
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
 		return body;
 	}
 }

@@ -94,6 +94,27 @@ public class UnirestTest {
 	}
 
 	@Test
+	public void testStreamResponse() throws IOException, UnirestException {
+		// test that response stream is not buffered in memory but can be read as a stream
+		HttpResponse<InputStream> response = Unirest.get("http://httpbin.org/drip?code=200&numbytes=5&duration=3").asBinary();
+		try (InputStream stream = response.getBody()) {
+			while (stream.read(new byte[5]) > 0) {
+				System.out.print(".");
+			}
+		}
+		assertEquals(200, response.getStatus());
+	}
+
+	@Test
+	public void testResponseCodeOnInvalidJson() throws IOException, UnirestException {
+		// some servers may respond json in case of success, but raw text or nothing in case of error
+		// this test only checks that json is not constructed eagerly and we get a chance to test the status code
+		// before accessing the body
+		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/html?name=mark").asJson();
+		assertEquals(200, response.getStatus());
+	}
+
+	@Test
 	public void testGet() throws JSONException, UnirestException {
 		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get?name=mark").asJson();
 		assertEquals(response.getBody().getObject().getJSONObject("args").getString("name"), "mark");
