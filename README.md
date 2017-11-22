@@ -1,4 +1,4 @@
-# Unirest for Java [![Build Status][travis-image]][travis-url]
+# Unirest for Java [![Build Status](https://travis-ci.org/Kong/unirest-java.svg?branch=master)](https://travis-ci.org/Kong/unirest-java)
 
 ![][unirest-logo]
 
