@@ -1,7 +1,8 @@
 /*
 The MIT License
 
-Copyright (c) 2013 Mashape (http://mashape.com)
+Copyright for portions of project Foo are held by Mashape (c) 2013 as part of Kong/unirest-java.
+All other copyright for project OpenUnirest/unirest-java are held by OpenUnirest (c) 2017.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -31,6 +32,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.http.options.Options;
 import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequest;
+import com.mashape.unirest.request.body.MultipartBody;
 import com.mashape.unirest.test.helper.GetResponse;
 import com.mashape.unirest.test.helper.JacksonObjectMapper;
 
@@ -41,8 +43,7 @@ import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -52,12 +53,23 @@ import java.util.Arrays;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.mashape.unirest.test.http.MockServer.HOST;
 import static org.junit.Assert.*;
 
 public class UnirestTest {
 
 	private CountDownLatch lock;
 	private boolean status;
+
+	@BeforeClass
+	public static void suiteSetUp(){
+		MockServer.start();
+	}
+
+	@AfterClass
+	public static void suiteTearDown(){
+		MockServer.shutdown();
+	}
 
 	@Before
 	public void setUp() {
@@ -297,7 +309,14 @@ public class UnirestTest {
 
 	@Test
 	public void testMultipartInputStreamContentType() throws JSONException, InterruptedException, ExecutionException, URISyntaxException, UnirestException, FileNotFoundException {
-		HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post").field("name", "Mark").field("file", new FileInputStream(new File(getClass().getResource("/image.jpg").toURI())), ContentType.APPLICATION_OCTET_STREAM, "image.jpg").asJson();
+		FileInputStream stream = new FileInputStream(new File(getClass().getResource("/image.jpg").toURI()));
+		MultipartBody request = Unirest.post(HOST + "/post")
+			.field("name", "Mark")
+			.field("file", stream, ContentType.APPLICATION_OCTET_STREAM, "image.jpg");
+
+		HttpResponse<JsonNode> jsonResponse = request
+			.asJson();
+
 		assertTrue(jsonResponse.getHeaders().size() > 0);
 		assertTrue(jsonResponse.getBody().toString().length() > 0);
 		assertFalse(jsonResponse.getRawBody() == null);
@@ -305,13 +324,14 @@ public class UnirestTest {
 
 		JsonNode json = jsonResponse.getBody();
 		assertFalse(json.isArray());
-		assertNotNull(json.getObject());
+		JSONObject object = json.getObject();
+		assertNotNull(object);
 		assertNotNull(json.getArray());
 		assertEquals(1, json.getArray().length());
 		assertNotNull(json.getArray().get(0));
-		assertNotNull(json.getObject().getJSONObject("files"));
+		assertNotNull(object.getJSONObject("files"));
 
-		assertTrue(json.getObject().getJSONObject("files").getString("file").contains("data:application/octet-stream"));
+		assertTrue(json.getObject().getJSONObject("files").getString("type").contains("application/octet-stream"));
 		assertEquals("Mark", json.getObject().getJSONObject("form").getString("name"));
 	}
 
@@ -592,7 +612,7 @@ public class UnirestTest {
 			newFixedThreadPool.execute(new Runnable() {
 				public void run() {
 					try {
-						Unirest.get("http://httpbin.org/get").queryString("index", counter.incrementAndGet()).asJson();
+						Unirest.get(HOST + "/get").queryString("index", counter.incrementAndGet()).asString();
 					} catch (UnirestException e) {
 						throw new RuntimeException(e);
 					}
@@ -733,9 +753,6 @@ public class UnirestTest {
 		assertEquals("John", request.getHeaders().get("NAme").get(1));
 		assertEquals("Marco", request.getHeaders().get("Name").get(0));
 		assertEquals("John", request.getHeaders().get("Name").get(1));
-
-		headers = request.asJson().getBody().getObject().getJSONObject("headers");
-		assertEquals("Marco,John", headers.get("Name"));
 	}
 
 	@Test
@@ -814,5 +831,11 @@ public class UnirestTest {
 		assertEquals("Only header \"Content-Type\" should exist", null, headers.getFirst("cOnTeNt-TyPe"));
 		assertEquals("Only header \"Content-Type\" should exist", null, headers.getFirst("content-type"));
 		assertEquals("Only header \"Content-Type\" should exist", "application/json", headers.getFirst("Content-Type"));
+	}
+
+	private static void debugApache() {
+		System.setProperty("org.apache.commons.logging.Log","org.apache.commons.logging.impl.SimpleLog");
+		System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
+		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.wire", "DEBUG");
 	}
 }
