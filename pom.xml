@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.mashape.unirest</groupId>
+	<groupId>org.openunirest.unirest</groupId>
 	<artifactId>unirest-java</artifactId>
 	<packaging>jar</packaging>
-	<version>1.4.10-SNAPSHOT</version>
+	<version>2.0.00-SNAPSHOT</version>
 	<name>unirest-java</name>
 	<description>Simplified, lightweight HTTP client library</description>
 	<url>http://unirest.io/</url>
@@ -24,19 +24,17 @@
 	</licenses>
 
 	<scm>
-		<url>https://github.com/Mashape/unirest-java</url>
-		<connection>scm:git:git@github.com:Mashape/unirest-java.git</connection>
-		<developerConnection>scm:git:git@github.com:Mashape/unirest-java.git</developerConnection>
+		<url>https://github.com/OpenUnirest/unirest-java</url>
+		<connection>scm:git:git@github.com:OpenUnirest/unirest-java.git</connection>
+		<developerConnection>scm:git:git@github.com:OpenUnirest/unirest-java.git</developerConnection>
 	</scm>
 
 	<developers>
 		<developer>
-			<id>mashape</id>
-			<name>Mashape</name>
-			<email>opensource@mashape.com</email>
-			<url>https://github.com/Mashape</url>
-			<organization>Mashape</organization>
-			<organizationUrl>https://www.mashape.com</organizationUrl>
+			<id>Ryber</id>
+			<name>Ryan Bergman</name>
+			<url>https://github.com/OpenUnirest</url>
+			<organization>OpenUnirest</organization>
 		</developer>
 	</developers>
 
