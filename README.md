@@ -38,65 +38,8 @@ Is easy as pie. Kidding. It's about as easy as doing these little steps:
 
 ### With Maven
 
-You can use Maven by including the library:
+We are working on getting this new fork into Maven Central. Hold tight
 
-```xml
-<dependency>
-    <groupId>com.mashape.unirest</groupId>
-    <artifactId>unirest-java</artifactId>
-    <version>1.4.9</version>
-</dependency>
-```
-
-There are dependencies for Unirest-Java, these should be already installed, and they are as follows:
-
-```xml
-<dependency>
-  <groupId>org.apache.httpcomponents</groupId>
-  <artifactId>httpclient</artifactId>
-  <version>4.3.6</version>
-</dependency>
-<dependency>
-  <groupId>org.apache.httpcomponents</groupId>
-  <artifactId>httpasyncclient</artifactId>
-  <version>4.0.2</version>
-</dependency>
-<dependency>
-  <groupId>org.apache.httpcomponents</groupId>
-  <artifactId>httpmime</artifactId>
-  <version>4.3.6</version>
-</dependency>
-<dependency>
-  <groupId>org.json</groupId>
-  <artifactId>json</artifactId>
-  <version>20140107</version>
-</dependency>
-```
-
-If you would like to run tests, also add the following dependency along with the others:
-
-```xml
-<dependency>
-  <groupId>junit</groupId>
-  <artifactId>junit</artifactId>
-  <version>4.11</version>
-  <scope>test</scope>
-</dependency>
-<dependency>
-  <groupId>commons-io</groupId>
-  <artifactId>commons-io</artifactId>
-  <version>2.4</version>
-  <scope>test</scope>
-</dependency>
-```
-
-### Without Maven
-
-Alternatively if you don't use Maven, you can directly include the JAR file in the classpath: http://oss.sonatype.org/content/repositories/releases/com/mashape/unirest/unirest-java/1.4.9/unirest-java-1.4.9.jar
-
-Don't forget to also install the dependencies ([`org.json`](http://www.json.org/java/), [`httpclient 4.3.6`](http://hc.apache.org/downloads.cgi), [`httpmime 4.3.6`](http://hc.apache.org/downloads.cgi), [`httpasyncclient 4.0.2`](http://hc.apache.org/downloads.cgi)) in the classpath too.
-
-There is also a way to generate a Unirest-Java JAR file that already includes the required dependencies, but you will need Maven to generate it. Follow the instructions at http://blog.mashape.com/post/69117323931/installing-unirest-java-with-the-maven-assembly-plugin
 
 ## Creating Request
 So you're probably wondering how using Unirest makes creating requests in Java easier, here is a basic POST request that will explain everything:
@@ -341,25 +284,3 @@ Unirest starts a background event loop and your Java application won't be able t
 ```java
 Unirest.shutdown();
 ```
-
-----
-
-Made with &#9829; from the [Mashape](https://www.mashape.com/) team
-
-[unirest-logo]: http://cl.ly/image/2P373Y090s2O/Image%202015-10-12%20at%209.48.06%20PM.png
-
-
-[license-url]: https://github.com/Mashape/unirest-java/blob/master/LICENSE
-[license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat
-
-[gitter-url]: https://gitter.im/Mashape/unirest-java
-[gitter-image]: https://img.shields.io/badge/Gitter-Join%20Chat-blue.svg?style=flat
-
-[travis-url]: https://travis-ci.org/Mashape/unirest-java
-[travis-image]: https://img.shields.io/travis/Mashape/unirest-java.svg?style=flat
-
-[maven-url]: http://search.maven.org/#browse%7C1262490619
-[maven-version]: https://img.shields.io/maven-central/v/com.mashape.unirest/unirest-java.svg?style=flat
-
-[versioneye-url]: https://www.versioneye.com/user/projects/54b83a12050646ca5c0001fc
-[versioneye-image]: https://www.versioneye.com/user/projects/54b83a12050646ca5c0001fc/badge.svg?style=flat
