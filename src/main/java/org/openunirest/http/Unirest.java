@@ -86,7 +86,7 @@ public class Unirest {
 	 * @param connectionTimeout The timeout until a connection with the server is established (in milliseconds). Default is 10000. Set to zero to disable the timeout.
 	 * @param socketTimeout The timeout to receive data (in milliseconds). Default is 60000. Set to zero to disable the timeout.
 	 */
-	public static void setTimeouts(long connectionTimeout, long socketTimeout) {
+	public static void setTimeouts(int connectionTimeout, int socketTimeout) {
 		Options.setOption(Option.CONNECTION_TIMEOUT, connectionTimeout);
 		Options.setOption(Option.SOCKET_TIMEOUT, socketTimeout);
 
