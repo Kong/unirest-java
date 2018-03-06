@@ -1,0 +1,329 @@
+<head>
+  <meta charset="utf-8">
+
+  <!-- Page title -->
+  <title>Unirest for Java - Simplified, lightweight HTTP Request Library</title>
+
+  <!-- Gotsta have that favicon-->
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+
+  <!-- Viewport -->
+  <meta name="viewport" content="width=480">
+
+  <!-- Stylesheet -->
+  <link href="styles/library.css" rel="stylesheet" type="text/css" data-inprogress="" />
+  <link href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.min.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="documentation"><h1>
+<a id="user-content-unirest-for-java-" class="anchor" href="#unirest-for-java-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Unirest for Java</a>
+</h1>
+
+<p><a href="https://camo.githubusercontent.com/899e266a5194998ba3da232ee9bc97c48deab283/687474703a2f2f636c2e6c792f696d6167652f32503337335930393073324f2f496d616765253230323031352d31302d31322532306174253230392e34382e3036253230504d2e706e67" target="_blank"><img src="https://camo.githubusercontent.com/899e266a5194998ba3da232ee9bc97c48deab283/687474703a2f2f636c2e6c792f696d6167652f32503337335930393073324f2f496d616765253230323031352d31302d31322532306174253230392e34382e3036253230504d2e706e67" alt="" data-canonical-src="http://cl.ly/image/2P373Y090s2O/Image%202015-10-12%20at%209.48.06%20PM.png" style="max-width:100%;"></a></p>
+
+<p><a href="https://github.com/OpenUnirest/unirest-java/">Open Unirest</a> is a lightweight Java HTTP library</p>
+
+<p>Do yourself a favor, and start making HTTP requests like this:</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-smi">Unirest</span><span class="pl-k">.</span>post(<span class="pl-s"><span class="pl-pds">"</span>http://httpbin.org/post<span class="pl-pds">"</span></span>)
+  .queryString(<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Mark<span class="pl-pds">"</span></span>)
+  .field(<span class="pl-s"><span class="pl-pds">"</span>last<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Polo<span class="pl-pds">"</span></span>)
+  .asJson()</pre></div>
+
+<p><a href="https://github.com/OpenUnirest/unirest-java/blob/master/LICENSE"><img src="https://camo.githubusercontent.com/d0e25b09a82bc4bfde9f1e048a092752eebbb4f3/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f6c6963656e73652d4d49542d626c75652e7376673f7374796c653d666c6174" alt="License" data-canonical-src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat" style="max-width:100%;"></a>  |
+<a href="http://search.maven.org/#browse%7C1262490619"><img src="https://camo.githubusercontent.com/0df5f1e8736a077a98271de201fa8ddba1d4aa3f/68747470733a2f2f696d672e736869656c64732e696f2f6d6176656e2d63656e7472616c2f762f636f6d2e6d6173686170652e756e69726573742f756e69726573742d6a6176612e7376673f7374796c653d666c6174" alt="version" data-canonical-src="https://img.shields.io/maven-central/v/com.mashape.unirest/unirest-java.svg?style=flat" style="max-width:100%;"></a>  |
+<a href="https://gitter.im/Mashape/unirest-java"><img src="https://camo.githubusercontent.com/5818ff993808659f636e910854b9aefcda215da2/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f4769747465722d4a6f696e253230436861742d626c75652e7376673f7374796c653d666c6174" alt="Gitter" data-canonical-src="https://img.shields.io/badge/Gitter-Join%20Chat-blue.svg?style=flat" style="max-width:100%;"></a></p>
+
+<h2>
+<a id="user-content-features" class="anchor" href="#features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features</h2>
+
+<ul>
+<li>Make <code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code>, <code>HEAD</code>, <code>OPTIONS</code> requests</li>
+<li>Both syncronous and asynchronous (non-blocking) requests</li>
+<li>It supports form parameters, file uploads and custom body entities</li>
+<li>Easily add route parameters without ugly string concatenations</li>
+<li>Supports gzip</li>
+<li>Supports Basic Authentication natively</li>
+<li>Customizable timeout, concurrency levels and proxy settings</li>
+<li>Customizable default headers for every request (DRY)</li>
+<li>Customizable <code>HttpClient</code> and <code>HttpAsyncClient</code> implementation</li>
+<li>Automatic JSON parsing into a native object for JSON responses</li>
+<li>Customizable binding, with mapping from response body to java Object </li>
+</ul>
+
+<h2>
+<a id="user-content-installing" class="anchor" href="#installing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installing</h2>
+
+<p>Is easy as pie. Kidding. It's about as easy as doing these little steps:</p>
+
+<h3>
+<a id="user-content-with-maven" class="anchor" href="#with-maven" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>With Maven</h3>
+
+<p>You can use Maven by including the library:</p>
+
+<div class="highlight highlight-text-xml"><pre>&lt;<span class="pl-ent">dependency</span>&gt;
+    &lt;<span class="pl-ent">groupId</span>&gt;com.mashape.unirest&lt;/<span class="pl-ent">groupId</span>&gt;
+    &lt;<span class="pl-ent">artifactId</span>&gt;unirest-java&lt;/<span class="pl-ent">artifactId</span>&gt;
+    &lt;<span class="pl-ent">version</span>&gt;1.4.9&lt;/<span class="pl-ent">version</span>&gt;
+&lt;/<span class="pl-ent">dependency</span>&gt;</pre></div>
+
+<h3>
+<a id="user-content-without-maven" class="anchor" href="#without-maven" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Without Maven</h3>
+
+<h2>
+<a id="user-content-creating-request" class="anchor" href="#creating-request" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Creating Request</h2>
+
+<p>So you're probably wondering how using Unirest makes creating requests in Java easier, here is a basic POST request that will explain everything:</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">HttpResponse&lt;<span class="pl-smi">JsonNode</span>&gt;</span> jsonResponse <span class="pl-k">=</span> <span class="pl-smi">Unirest</span><span class="pl-k">.</span>post(<span class="pl-s"><span class="pl-pds">"</span>http://httpbin.org/post<span class="pl-pds">"</span></span>)
+  .header(<span class="pl-s"><span class="pl-pds">"</span>accept<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>application/json<span class="pl-pds">"</span></span>)
+  .queryString(<span class="pl-s"><span class="pl-pds">"</span>apiKey<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>123<span class="pl-pds">"</span></span>)
+  .field(<span class="pl-s"><span class="pl-pds">"</span>parameter<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>value<span class="pl-pds">"</span></span>)
+  .field(<span class="pl-s"><span class="pl-pds">"</span>foo<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>bar<span class="pl-pds">"</span></span>)
+  .asJson();</pre></div>
+
+<p>Requests are made when <code>as[Type]()</code> is invoked, possible types include <code>Json</code>, <code>Binary</code>, <code>String</code>, <code>Object</code>.</p>
+
+<p>If the request supports and it is of type <code>HttpRequestWithBody</code>, a body it can be passed along with <code>.body(String|JsonNode|Object)</code>. For using <code>.body(Object)</code> some pre-configuration is needed (see below).</p>
+
+<p>If you already have a map of parameters or do not wish to use seperate field methods for each one there is a <code>.fields(Map&lt;String, Object&gt; fields)</code> method that will serialize each key - value to form parameters on your request.</p>
+
+<p><code>.headers(Map&lt;String, String&gt; headers)</code> is also supported in replacement of multiple header methods.</p>
+
+<h2>
+<a id="user-content-serialization" class="anchor" href="#serialization" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Serialization</h2>
+
+<p>Before an <code>asObject(Class)</code> or a <code>.body(Object)</code> invokation, is necessary to provide a custom implementation of the <code>ObjectMapper</code> interface.
+This should be done only the first time, as the instance of the ObjectMapper will be shared globally.</p>
+
+<p>For example, serializing Json from\to Object using the popular Jackson ObjectMapper takes only few lines of code.</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-c">// Only one time</span>
+<span class="pl-smi">Unirest</span><span class="pl-k">.</span>setObjectMapper(<span class="pl-k">new</span> <span class="pl-smi">ObjectMapper</span>() {
+    <span class="pl-k">private</span> <span class="pl-smi">com.fasterxml.jackson.databind<span class="pl-k">.</span>ObjectMapper</span> jacksonObjectMapper
+                <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">com.fasterxml.jackson.databind<span class="pl-k">.</span>ObjectMapper</span>();
+
+    <span class="pl-k">public</span> <span class="pl-k">&lt;<span class="pl-smi">T</span>&gt;</span> <span class="pl-smi">T</span> <span class="pl-en">readValue</span>(<span class="pl-smi">String</span> <span class="pl-v">value</span>, <span class="pl-k">Class&lt;<span class="pl-smi">T</span>&gt;</span> <span class="pl-v">valueType</span>) {
+        <span class="pl-k">try</span> {
+            <span class="pl-k">return</span> jacksonObjectMapper<span class="pl-k">.</span>readValue(value, valueType);
+        } <span class="pl-k">catch</span> (<span class="pl-smi">IOException</span> e) {
+            <span class="pl-k">throw</span> <span class="pl-k">new</span> <span class="pl-smi">RuntimeException</span>(e);
+        }
+    }
+
+    <span class="pl-k">public</span> <span class="pl-smi">String</span> <span class="pl-en">writeValue</span>(<span class="pl-smi">Object</span> <span class="pl-v">value</span>) {
+        <span class="pl-k">try</span> {
+            <span class="pl-k">return</span> jacksonObjectMapper<span class="pl-k">.</span>writeValueAsString(value);
+        } <span class="pl-k">catch</span> (<span class="pl-smi">JsonProcessingException</span> e) {
+            <span class="pl-k">throw</span> <span class="pl-k">new</span> <span class="pl-smi">RuntimeException</span>(e);
+        }
+    }
+});
+
+<span class="pl-c">// Response to Object</span>
+<span class="pl-k">HttpResponse&lt;<span class="pl-smi">Book</span>&gt;</span> bookResponse <span class="pl-k">=</span> <span class="pl-smi">Unirest</span><span class="pl-k">.</span>get(<span class="pl-s"><span class="pl-pds">"</span>http://httpbin.org/books/1<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>asObject(<span class="pl-smi">Book</span><span class="pl-k">.</span>class);
+<span class="pl-smi">Book</span> bookObject <span class="pl-k">=</span> bookResponse<span class="pl-k">.</span>getBody();
+
+<span class="pl-k">HttpResponse&lt;<span class="pl-smi">Author</span>&gt;</span> authorResponse <span class="pl-k">=</span> <span class="pl-smi">Unirest</span><span class="pl-k">.</span>get(<span class="pl-s"><span class="pl-pds">"</span>http://httpbin.org/books/{id}/author<span class="pl-pds">"</span></span>)
+    .routeParam(<span class="pl-s"><span class="pl-pds">"</span>id<span class="pl-pds">"</span></span>, bookObject<span class="pl-k">.</span>getId())
+    .asObject(<span class="pl-smi">Author</span><span class="pl-k">.</span>class);
+
+<span class="pl-smi">Author</span> authorObject <span class="pl-k">=</span> authorResponse<span class="pl-k">.</span>getBody();
+
+<span class="pl-c">// Object to Json</span>
+<span class="pl-k">HttpResponse&lt;<span class="pl-smi">JsonNode</span>&gt;</span> postResponse <span class="pl-k">=</span> <span class="pl-smi">Unirest</span><span class="pl-k">.</span>post(<span class="pl-s"><span class="pl-pds">"</span>http://httpbin.org/authors/post<span class="pl-pds">"</span></span>)
+        .header(<span class="pl-s"><span class="pl-pds">"</span>accept<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>application/json<span class="pl-pds">"</span></span>)
+        .header(<span class="pl-s"><span class="pl-pds">"</span>Content-Type<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>application/json<span class="pl-pds">"</span></span>)
+        .body(authorObject)
+        .asJson();</pre></div>
+
+<h3>
+<a id="user-content-route-parameters" class="anchor" href="#route-parameters" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Route Parameters</h3>
+
+<p>Sometimes you want to add dynamic parameters in the URL, you can easily do that by adding a placeholder in the URL, and then by setting the route parameters with the <code>routeParam</code> function, like:</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-smi">Unirest</span><span class="pl-k">.</span>get(<span class="pl-s"><span class="pl-pds">"</span>http://httpbin.org/{method}<span class="pl-pds">"</span></span>)
+  .routeParam(<span class="pl-s"><span class="pl-pds">"</span>method<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>get<span class="pl-pds">"</span></span>)
+  .queryString(<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Mark<span class="pl-pds">"</span></span>)
+  .asJson();</pre></div>
+
+<p>In the example above the final URL will be <code>http://httpbin.org/get</code> - Basically the placeholder <code>{method}</code> will be replaced with <code>get</code>.</p>
+
+<p>The placeholder's format is as easy as: <code>{custom_name}</code></p>
+
+<h2>
+<a id="user-content-asynchronous-requests" class="anchor" href="#asynchronous-requests" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Asynchronous Requests</h2>
+
+<p>Sometimes, well most of the time, you want your application to be asynchronous and not block, Unirest supports this in Java using anonymous callbacks, or direct method placement:</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">Future&lt;<span class="pl-k">HttpResponse&lt;<span class="pl-smi">JsonNode</span>&gt;</span>&gt;</span> future <span class="pl-k">=</span> <span class="pl-smi">Unirest</span><span class="pl-k">.</span>post(<span class="pl-s"><span class="pl-pds">"</span>http://httpbin.org/post<span class="pl-pds">"</span></span>)
+  .header(<span class="pl-s"><span class="pl-pds">"</span>accept<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>application/json<span class="pl-pds">"</span></span>)
+  .field(<span class="pl-s"><span class="pl-pds">"</span>param1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>value1<span class="pl-pds">"</span></span>)
+  .field(<span class="pl-s"><span class="pl-pds">"</span>param2<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>value2<span class="pl-pds">"</span></span>)
+  .asJsonAsync(<span class="pl-k">new</span> <span class="pl-k">Callback&lt;<span class="pl-smi">JsonNode</span>&gt;</span>() {
+
+    <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">failed</span>(<span class="pl-smi">UnirestException</span> <span class="pl-v">e</span>) {
+        <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(<span class="pl-s"><span class="pl-pds">"</span>The request has failed<span class="pl-pds">"</span></span>);
+    }
+
+    <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">completed</span>(<span class="pl-k">HttpResponse&lt;<span class="pl-smi">JsonNode</span>&gt;</span> <span class="pl-v">response</span>) {
+         <span class="pl-k">int</span> code <span class="pl-k">=</span> response<span class="pl-k">.</span>getStatus();
+         <span class="pl-k">Map&lt;<span class="pl-smi">String</span>, <span class="pl-smi">String</span>&gt;</span> headers <span class="pl-k">=</span> response<span class="pl-k">.</span>getHeaders();
+         <span class="pl-smi">JsonNode</span> body <span class="pl-k">=</span> response<span class="pl-k">.</span>getBody();
+         <span class="pl-smi">InputStream</span> rawBody <span class="pl-k">=</span> response<span class="pl-k">.</span>getRawBody();
+    }
+
+    <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">cancelled</span>() {
+        <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(<span class="pl-s"><span class="pl-pds">"</span>The request has been cancelled<span class="pl-pds">"</span></span>);
+    }
+
+});</pre></div>
+
+<h2>
+<a id="user-content-file-uploads" class="anchor" href="#file-uploads" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>File Uploads</h2>
+
+<p>Creating <code>multipart</code> requests with Java is trivial, simply pass along a <code>File</code> or an InputStream Object as a field:</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">HttpResponse&lt;<span class="pl-smi">JsonNode</span>&gt;</span> jsonResponse <span class="pl-k">=</span> <span class="pl-smi">Unirest</span><span class="pl-k">.</span>post(<span class="pl-s"><span class="pl-pds">"</span>http://httpbin.org/post<span class="pl-pds">"</span></span>)
+  .header(<span class="pl-s"><span class="pl-pds">"</span>accept<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>application/json<span class="pl-pds">"</span></span>)
+  .field(<span class="pl-s"><span class="pl-pds">"</span>parameter<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>value<span class="pl-pds">"</span></span>)
+  .field(<span class="pl-s"><span class="pl-pds">"</span>file<span class="pl-pds">"</span></span>, <span class="pl-k">new</span> <span class="pl-smi">File</span>(<span class="pl-s"><span class="pl-pds">"</span>/tmp/file<span class="pl-pds">"</span></span>))
+  .asJson();</pre></div>
+
+<h2>
+<a id="user-content-custom-entity-body" class="anchor" href="#custom-entity-body" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Custom Entity Body</h2>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">HttpResponse&lt;<span class="pl-smi">JsonNode</span>&gt;</span> jsonResponse <span class="pl-k">=</span> <span class="pl-smi">Unirest</span><span class="pl-k">.</span>post(<span class="pl-s"><span class="pl-pds">"</span>http://httpbin.org/post<span class="pl-pds">"</span></span>)
+  .header(<span class="pl-s"><span class="pl-pds">"</span>accept<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>application/json<span class="pl-pds">"</span></span>)
+  .body(<span class="pl-s"><span class="pl-pds">"</span>{<span class="pl-cce">\"</span>parameter<span class="pl-cce">\"</span>:<span class="pl-cce">\"</span>value<span class="pl-cce">\"</span>, <span class="pl-cce">\"</span>foo<span class="pl-cce">\"</span>:<span class="pl-cce">\"</span>bar<span class="pl-cce">\"</span>}<span class="pl-pds">"</span></span>)
+  .asJson();</pre></div>
+
+<h2>
+<a id="user-content-byte-stream-as-entity-body" class="anchor" href="#byte-stream-as-entity-body" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Byte Stream as Entity Body</h2>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">final</span> <span class="pl-smi">InputStream</span> stream <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">FileInputStream</span>(<span class="pl-k">new</span> <span class="pl-smi">File</span>(getClass()<span class="pl-k">.</span>getResource(<span class="pl-s"><span class="pl-pds">"</span>/image.jpg<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>toURI()));
+<span class="pl-k">final</span> <span class="pl-k">byte</span>[] bytes <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">byte</span>[stream<span class="pl-k">.</span>available()];
+stream<span class="pl-k">.</span>read(bytes);
+stream<span class="pl-k">.</span>close();
+<span class="pl-k">final</span> <span class="pl-k">HttpResponse&lt;<span class="pl-smi">JsonNode</span>&gt;</span> jsonResponse <span class="pl-k">=</span> <span class="pl-smi">Unirest</span><span class="pl-k">.</span>post(<span class="pl-s"><span class="pl-pds">"</span>http://httpbin.org/post<span class="pl-pds">"</span></span>)
+  .field(<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Mark<span class="pl-pds">"</span></span>)
+  .field(<span class="pl-s"><span class="pl-pds">"</span>file<span class="pl-pds">"</span></span>, bytes, <span class="pl-s"><span class="pl-pds">"</span>image.jpg<span class="pl-pds">"</span></span>)
+  .asJson();</pre></div>
+
+<h2>
+<a id="user-content-inputstream-as-entity-body" class="anchor" href="#inputstream-as-entity-body" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>InputStream as Entity Body</h2>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">HttpResponse&lt;<span class="pl-smi">JsonNode</span>&gt;</span> jsonResponse <span class="pl-k">=</span> <span class="pl-smi">Unirest</span><span class="pl-k">.</span>post(<span class="pl-s"><span class="pl-pds">"</span>http://httpbin.org/post<span class="pl-pds">"</span></span>)
+  .field(<span class="pl-s"><span class="pl-pds">"</span>name<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Mark<span class="pl-pds">"</span></span>)
+  .field(<span class="pl-s"><span class="pl-pds">"</span>file<span class="pl-pds">"</span></span>, <span class="pl-k">new</span> <span class="pl-smi">FileInputStream</span>(<span class="pl-k">new</span> <span class="pl-smi">File</span>(getClass()<span class="pl-k">.</span>getResource(<span class="pl-s"><span class="pl-pds">"</span>/image.jpg<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>toURI())), <span class="pl-smi">ContentType</span><span class="pl-c1"><span class="pl-k">.</span>APPLICATION_OCTET_STREAM</span>, <span class="pl-s"><span class="pl-pds">"</span>image.jpg<span class="pl-pds">"</span></span>)
+  .asJson();</pre></div>
+
+<h2>
+<a id="user-content-basic-authentication" class="anchor" href="#basic-authentication" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Basic Authentication</h2>
+
+<p>Authenticating the request with basic authentication can be done by calling the <code>basicAuth(username, password)</code> function:</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">HttpResponse&lt;<span class="pl-smi">JsonNode</span>&gt;</span> response <span class="pl-k">=</span> <span class="pl-smi">Unirest</span><span class="pl-k">.</span>get(<span class="pl-s"><span class="pl-pds">"</span>http://httpbin.org/headers<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>basicAuth(<span class="pl-s"><span class="pl-pds">"</span>username<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>password<span class="pl-pds">"</span></span>)<span class="pl-k">.</span>asJson();</pre></div>
+
+<h1>
+<a id="user-content-request" class="anchor" href="#request" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Request</h1>
+
+<p>The Java Unirest library follows the builder style conventions. You start building your request by creating a <code>HttpRequest</code> object using one of the following:</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-smi">GetRequest</span> request <span class="pl-k">=</span> <span class="pl-smi">Unirest</span><span class="pl-k">.</span>get(<span class="pl-smi">String</span> url);
+<span class="pl-smi">GetRequest</span> request <span class="pl-k">=</span> <span class="pl-smi">Unirest</span><span class="pl-k">.</span>head(<span class="pl-smi">String</span> url);
+<span class="pl-smi">HttpRequestWithBody</span> request <span class="pl-k">=</span> <span class="pl-smi">Unirest</span><span class="pl-k">.</span>post(<span class="pl-smi">String</span> url);
+<span class="pl-smi">HttpRequestWithBody</span> request <span class="pl-k">=</span> <span class="pl-smi">Unirest</span><span class="pl-k">.</span>put(<span class="pl-smi">String</span> url);
+<span class="pl-smi">HttpRequestWithBody</span> request <span class="pl-k">=</span> <span class="pl-smi">Unirest</span><span class="pl-k">.</span>patch(<span class="pl-smi">String</span> url);
+<span class="pl-smi">HttpRequestWithBody</span> request <span class="pl-k">=</span> <span class="pl-smi">Unirest</span><span class="pl-k">.</span>options(<span class="pl-smi">String</span> url);
+<span class="pl-smi">HttpRequestWithBody</span> request <span class="pl-k">=</span> <span class="pl-smi">Unirest</span><span class="pl-k">.</span>delete(<span class="pl-smi">String</span> url);</pre></div>
+
+<h1>
+<a id="user-content-response" class="anchor" href="#response" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Response</h1>
+
+<p>Upon recieving a response Unirest returns the result in the form of an Object, this object should always have the same keys for each language regarding to the response details.</p>
+
+<ul>
+<li>
+<code>.getStatus()</code> - HTTP Response Status Code (Example: 200)</li>
+<li>
+<code>.getStatusText()</code> - HTTP Response Status Text (Example: "OK")</li>
+<li>
+<code>.getHeaders()</code> - HTTP Response Headers</li>
+<li>
+<code>.getBody()</code> - Parsed response body where applicable, for example JSON responses are parsed to Objects / Associative Arrays.</li>
+<li>
+<code>.getRawBody()</code> - Un-parsed response body</li>
+</ul>
+
+<h1>
+<a id="user-content-advanced-configuration" class="anchor" href="#advanced-configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Advanced Configuration</h1>
+
+<p>You can set some advanced configuration to tune Unirest-Java:</p>
+
+<h3>
+<a id="user-content-custom-http-clients" class="anchor" href="#custom-http-clients" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Custom HTTP clients</h3>
+
+<p>You can explicitly set your own <code>HttpClient</code> and <code>HttpAsyncClient</code> implementations by using the following methods:</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-smi">Unirest</span><span class="pl-k">.</span>setHttpClient(httpClient);
+<span class="pl-smi">Unirest</span><span class="pl-k">.</span>setAsyncHttpClient(asyncHttpClient);</pre></div>
+
+<h3>
+<a id="user-content-timeouts" class="anchor" href="#timeouts" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Timeouts</h3>
+
+<p>You can set custom connection and socket timeout values (in <strong>milliseconds</strong>):</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-smi">Unirest</span><span class="pl-k">.</span>setTimeouts(<span class="pl-k">long</span> connectionTimeout, <span class="pl-k">long</span> socketTimeout);</pre></div>
+
+<p>By default the connection timeout (the time it takes to connect to a server) is <code>10000</code>, and the socket timeout (the time it takes to receive data) is <code>60000</code>. You can set any of these timeouts to zero to disable the timeout.</p>
+
+<h3>
+<a id="user-content-default-request-headers" class="anchor" href="#default-request-headers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Default Request Headers</h3>
+
+<p>You can set default headers that will be sent on every request:</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-smi">Unirest</span><span class="pl-k">.</span>setDefaultHeader(<span class="pl-s"><span class="pl-pds">"</span>Header1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Value1<span class="pl-pds">"</span></span>);
+<span class="pl-smi">Unirest</span><span class="pl-k">.</span>setDefaultHeader(<span class="pl-s"><span class="pl-pds">"</span>Header2<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>Value2<span class="pl-pds">"</span></span>);</pre></div>
+
+<p>You can clear the default headers anytime with:</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-smi">Unirest</span><span class="pl-k">.</span>clearDefaultHeaders();</pre></div>
+
+<h3>
+<a id="user-content-concurrency" class="anchor" href="#concurrency" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Concurrency</h3>
+
+<p>You can set custom concurrency levels if you need to tune the performance of the syncronous or asyncronous client:</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-smi">Unirest</span><span class="pl-k">.</span>setConcurrency(<span class="pl-k">int</span> maxTotal, <span class="pl-k">int</span> maxPerRoute);</pre></div>
+
+<p>By default the maxTotal (overall connection limit in the pool) is <code>200</code>, and the maxPerRoute (connection limit per target host) is <code>20</code>.</p>
+
+<h3>
+<a id="user-content-proxy" class="anchor" href="#proxy" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Proxy</h3>
+
+<p>You can set a proxy by invoking:</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-smi">Unirest</span><span class="pl-k">.</span>setProxy(<span class="pl-k">new</span> <span class="pl-smi">HttpHost</span>(<span class="pl-s"><span class="pl-pds">"</span>127.0.0.1<span class="pl-pds">"</span></span>, <span class="pl-c1">8000</span>));</pre></div>
+
+<h1>
+<a id="user-content-exiting-an-application" class="anchor" href="#exiting-an-application" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Exiting an application</h1>
+
+<p>Unirest starts a background event loop and your Java application won't be able to exit until you manually shutdown all the threads by invoking:</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-smi">Unirest</span><span class="pl-k">.</span>shutdown();</pre></div>
+
+<hr>
+
+<p>Made with ♥ from the <a href="https://www.mashape.com/">Mashape</a> team</p>
+  </div>
+  <script type="text/javascript" src="//mashape.github.io/notification-bar/embed.js" async defer></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+  <script type="text/javascript">
+  $('a img').parent().css('border-bottom', '0px')
+  </script>
+  <script type="text/javascript">
+    var analytics=analytics||[];analytics.load=function(e){var t=document.createElement("script");t.type="text/javascript",t.async=!0,t.src=("https:"===document.location.protocol?"https://":"http://")+"d2dq2ahtl5zl1z.cloudfront.NET/analytics.js/v1/"+e+"/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n);var r=function(e){return function(){analytics.push([e].concat(Array.prototype.slice.call(arguments,0)))}},i=["identify","track","trackLink","trackForm","trackClick","trackSubmit","pageview","ab","alias","ready"];for(var s=0;s<i.length;s++)analytics[i[s]]=r(i[s])}; analytics.load("xsv6p66v1y");
+  </script>
+</body>
+</html>

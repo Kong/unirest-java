@@ -1,0 +1,312 @@
+@import url('fonts.css');
+@import url('normalize.css');
+
+body, html {
+  font-family: 'Open Sans', 'Helvetica';
+  padding: 0px;
+  margin: 0px;
+}
+
+pre, code {
+  font-family: 'Source Code Pro';
+}
+
+h1 {
+  font-weight: 400;
+}
+
+h1, h2 {
+  margin: 0;
+}
+
+p {
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  hyphens: auto;
+  margin-bottom: 1.5em;
+  margin-top: 2em;
+  color: hsl(217, 18%, 65%);
+  text-align: center;
+}
+
+p a {
+  color: hsl(200, 100%, 50%);
+}
+
+p a:hover {
+  color: #97A3B6;
+  border-bottom-color: #97A3B6;
+  transition: all .3s ease-in;
+}
+
+nav {
+  font-family: 'Open Sans';
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: block;
+  padding: 20px;
+  margin: 0;
+  background: white;
+  box-shadow: 0 -1px 5px hsla(0, 0%, 0%, 0.5);
+}
+
+nav .right {
+  display: inline-block;
+  float: right;
+  padding: 0 40px;
+}
+
+nav a {
+  font-size: 14px;
+  font-weight: 600;
+  color: #97A3B6;
+  border: 0px;
+  transition: all .3s ease-in;
+  padding: 0 20px 0 0;
+  display: inline-block;
+  text-decoration: none;
+}
+
+nav a:hover {
+  color: #0D131A;
+  text-decoration: none;
+  border: 0px;
+}
+
+header {
+  margin-top: 80px;
+  margin-bottom: 60px;
+}
+
+header h1 {
+  display: block;
+  font-size: 128pt;
+  font-family: 'Titillium Web';
+  text-align: center;
+  padding: 2% 0 0;
+  line-height: 96pt;
+}
+
+header h2 {
+  display: block;
+  font-size: 28pt;
+  font-weight: 300;
+  font-family: 'Titillium Web';
+  text-align: center;
+  padding: 20px 0 0 0;
+  color: hsl(212, 10%, 49%);
+}
+
+ .button-list {
+  max-width: 860px;
+  margin: 2% auto 0;
+  display: block;
+  text-align: center;
+  padding: 0 0 10px;
+}
+
+ .button-list h4 {
+  color: white;
+  display: block;
+  font-family: 'Titillium Web';
+  font-size: 16pt;
+  font-weight: 300;
+  line-height: 64pt;
+}
+
+ .button-list .group {
+  display: block;
+  clear: both;
+}
+
+.button {
+  position: relative;
+  top: 0;
+  display: inline-block;
+  width: auto;
+  margin: 0 0px 10px;
+  padding: 0 49px 5px;
+  font-family: "Open Sans", sans-serif;
+  font-size: 14px;
+  line-height: 35px;
+  font-weight: 600;
+  color: hsl(212, 33%, 8%);
+  background-color: hsl(212, 13%, 88%);
+  border-radius: 6px;
+  -moz-border-radius: 6px;
+  -webkit-border-radius: 6px;
+  -o-border-radius: 6px;
+  -webkit-transition: all .3s ease-out;
+  -moz-transition: all .3s ease-out;
+  -o-transition: all .3s ease-out;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.button.active {
+  color: white;
+}
+
+.button.green {
+  background-color: #6F9507;
+}
+
+.button.red {
+  background-color: #E74C3C;
+}
+
+.button.blue {
+  background-color: #23AFC8;
+}
+
+.button.orange {
+  background-color: #E76F00;
+}
+
+.button.yellow {
+  background-color: #F3CF3F;
+}
+
+.button.teal {
+  background-color: #29BB9C;
+}
+
+.button.node-green {
+  background-color: #8CC84B;
+}
+
+.button.pinterest-red {
+  background-color: #CC2127;
+}
+
+.button.youtube-red {
+  background-color: #A40F09;
+}
+
+.button.twitter-blue {
+  background-color: #4AC6EC;
+}
+
+.button.forrst-green {
+  background-color: #359053;
+}
+
+.button.facebook-blue {
+  background-color: #3A5899;
+}
+
+.button:hover {
+  text-decoration: none;
+  color: white;
+}
+
+.button.hover-green:hover, .button.hover-green.active {
+  background-color: #6F9507;
+}
+
+.button.hover-red:hover, .button.hover-red.active {
+  background-color: #E74C3C;
+}
+
+.button.hover-blue:hover, .button.hover-blue.active {
+  background-color: #23AFC8;
+}
+
+.button.hover-orange:hover, .button.hover-orange.active {
+  background-color: #E76F00;
+}
+
+.button.hover-yellow:hover, .button.hover-yellow.active {
+  background-color: #F3CF3F;
+}
+
+.button.hover-teal:hover, .button.hover-teal.active {
+  background-color: #29BB9C;
+}
+
+.button.hover-node-green:hover, .button.hover-node-green.active {
+  background-color: #8CC84B;
+}
+
+.button.hover-pinterest-red:hover, .button.hover-pinterest-red.active {
+  background-color: #CC2127;
+}
+
+.button.hover-twitter-blue:hover, .button.hover-twitter-blue.active {
+  background-color: #4AC6EC;
+}
+
+.button.hover-youtube-red:hover, .button.hover-youtube-red.active {
+  background-color: #A40F09;
+}
+
+.button.hover-forrst-green:hover, .button.hover-forrst-green.active {
+  background-color: #359053;
+}
+
+.button.hover-facebook-blue:hover, .button.hover-facebook-blue.active {
+  background-color: #3A5899;
+}
+
+.button:active {
+  padding-bottom: 0;
+  box-shadow: 0 1px 5px hsla(0, 0%, 0%, 0.2) inset;
+  -moz-box-shadow: 0 1px 5px hsla(0, 0%, 0%, 0.2) inset;
+  -webkit-box-shadow: 0 1px 5px hsla(0, 0%, 0%, 0.2) inset;
+  -o-box-shadow: 0 1px 5px hsla(0, 0%, 0%, 0.2) inset;
+}
+
+.button-list .button {
+  box-sizing: border-box;
+  width: 23.8%;
+  padding: 0;
+  height: 100px;
+  margin: 2px 2px 4px;
+  text-align: center;
+  line-height: 100px;
+}
+
+.plug {
+  font-size: .9em;
+  margin: 30px auto;
+}
+
+@media (max-width: 700px) {
+   .button-list .button {
+    width: 45%;
+  }
+}
+
+@media (max-width: 640px) {
+  header h1 {
+    font-size: 96pt;
+  }
+
+  header h2 {
+    font-size: 24pt;
+  }
+}
+
+@media (max-width: 460px) {
+  nav a {
+    font-size: 12px;
+    padding: 0 5px 0 0;
+  }
+
+  header h1 {
+    font-size: 72pt;
+  }
+
+  header h2 {
+    font-size: 18pt;
+  }
+
+  header .button-list .button {
+    width: 90%;
+  }
+}
