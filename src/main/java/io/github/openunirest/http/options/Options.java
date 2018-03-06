@@ -16,8 +16,8 @@ import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
 import org.apache.http.nio.reactor.IOReactorException;
 
-import org.openunirest.http.async.utils.AsyncIdleConnectionMonitorThread;
-import org.openunirest.http.utils.SyncIdleConnectionMonitorThread;
+import io.github.openunirest.http.async.utils.AsyncIdleConnectionMonitorThread;
+import io.github.openunirest.http.utils.SyncIdleConnectionMonitorThread;
 
 public class Options {
 	public static final int MAX_TOTAL = 200;

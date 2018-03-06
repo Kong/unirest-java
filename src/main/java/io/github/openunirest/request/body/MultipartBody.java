@@ -46,9 +46,9 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.entity.mime.content.StringBody;
 
-import org.openunirest.http.utils.MapUtil;
-import org.openunirest.request.BaseRequest;
-import org.openunirest.request.HttpRequest;
+import io.github.openunirest.http.utils.MapUtil;
+import io.github.openunirest.request.BaseRequest;
+import io.github.openunirest.request.HttpRequest;
 
 public class MultipartBody extends BaseRequest implements Body {
 	private Map<String, List<Object>> parameters = new LinkedHashMap<String, List<Object>>();

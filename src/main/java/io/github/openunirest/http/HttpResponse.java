@@ -25,9 +25,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package io.github.openunirest.http;
 
-import org.openunirest.http.options.Option;
-import org.openunirest.http.options.Options;
-import org.openunirest.http.utils.ResponseUtils;
+import io.github.openunirest.http.options.Option;
+import io.github.openunirest.http.options.Options;
+import io.github.openunirest.http.utils.ResponseUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;

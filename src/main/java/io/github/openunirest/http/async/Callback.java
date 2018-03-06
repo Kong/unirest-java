@@ -25,8 +25,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package io.github.openunirest.http.async;
 
-import org.openunirest.http.HttpResponse;
-import org.openunirest.http.exceptions.UnirestException;
+import io.github.openunirest.http.HttpResponse;
+import io.github.openunirest.http.exceptions.UnirestException;
 
 public interface Callback<T> {
 

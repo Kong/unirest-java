@@ -39,10 +39,10 @@ import java.util.regex.Pattern;
 
 import io.github.openunirest.http.HttpMethod;
 import io.github.openunirest.request.body.Body;
-import org.openunirest.http.HttpMethod;
-import org.openunirest.http.utils.Base64Coder;
-import org.openunirest.http.utils.URLParamEncoder;
-import org.openunirest.request.body.Body;
+import io.github.openunirest.http.HttpMethod;
+import io.github.openunirest.http.utils.Base64Coder;
+import io.github.openunirest.http.utils.URLParamEncoder;
+import io.github.openunirest.request.body.Body;
 
 public class HttpRequest extends BaseRequest {
 

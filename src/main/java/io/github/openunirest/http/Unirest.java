@@ -27,12 +27,12 @@ package io.github.openunirest.http;
 
 import io.github.openunirest.http.async.utils.AsyncIdleConnectionMonitorThread;
 import io.github.openunirest.http.utils.SyncIdleConnectionMonitorThread;
-import org.openunirest.http.async.utils.AsyncIdleConnectionMonitorThread;
-import org.openunirest.http.options.Option;
-import org.openunirest.http.options.Options;
-import org.openunirest.http.utils.SyncIdleConnectionMonitorThread;
-import org.openunirest.request.GetRequest;
-import org.openunirest.request.HttpRequestWithBody;
+import io.github.openunirest.http.async.utils.AsyncIdleConnectionMonitorThread;
+import io.github.openunirest.http.options.Option;
+import io.github.openunirest.http.options.Options;
+import io.github.openunirest.http.utils.SyncIdleConnectionMonitorThread;
+import io.github.openunirest.request.GetRequest;
+import io.github.openunirest.request.HttpRequestWithBody;
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.CloseableHttpClient;

@@ -3,8 +3,8 @@ package io.github.openunirest.http.utils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 
-import org.openunirest.http.options.Option;
-import org.openunirest.http.options.Options;
+import io.github.openunirest.http.options.Option;
+import io.github.openunirest.http.options.Options;
 
 public class ClientFactory {
 

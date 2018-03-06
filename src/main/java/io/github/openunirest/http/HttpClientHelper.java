@@ -53,13 +53,13 @@ import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.nio.entity.NByteArrayEntity;
 
-import org.openunirest.http.async.Callback;
-import org.openunirest.http.async.utils.AsyncIdleConnectionMonitorThread;
-import org.openunirest.http.exceptions.UnirestException;
-import org.openunirest.http.options.Option;
-import org.openunirest.http.options.Options;
-import org.openunirest.http.utils.ClientFactory;
-import org.openunirest.request.HttpRequest;
+import io.github.openunirest.http.async.Callback;
+import io.github.openunirest.http.async.utils.AsyncIdleConnectionMonitorThread;
+import io.github.openunirest.http.exceptions.UnirestException;
+import io.github.openunirest.http.options.Option;
+import io.github.openunirest.http.options.Options;
+import io.github.openunirest.http.utils.ClientFactory;
+import io.github.openunirest.request.HttpRequest;
 
 public class HttpClientHelper {
 

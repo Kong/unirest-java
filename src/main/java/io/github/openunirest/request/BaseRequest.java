@@ -29,11 +29,11 @@ import io.github.openunirest.http.HttpClientHelper;
 import io.github.openunirest.http.HttpResponse;
 import io.github.openunirest.http.JsonNode;
 import io.github.openunirest.http.async.Callback;
-import org.openunirest.http.HttpClientHelper;
-import org.openunirest.http.HttpResponse;
-import org.openunirest.http.JsonNode;
-import org.openunirest.http.async.Callback;
-import org.openunirest.http.exceptions.UnirestException;
+import io.github.openunirest.http.HttpClientHelper;
+import io.github.openunirest.http.HttpResponse;
+import io.github.openunirest.http.JsonNode;
+import io.github.openunirest.http.async.Callback;
+import io.github.openunirest.http.exceptions.UnirestException;
 
 import java.io.InputStream;
 import java.util.concurrent.Future;

@@ -26,10 +26,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package io.github.openunirest.http.async;
 
 import io.github.openunirest.http.HttpClientHelper;
-import org.openunirest.http.HttpClientHelper;
-import org.openunirest.http.HttpResponse;
-import org.openunirest.http.exceptions.UnirestException;
-import org.openunirest.request.HttpRequest;
+import io.github.openunirest.http.HttpClientHelper;
+import io.github.openunirest.http.HttpResponse;
+import io.github.openunirest.http.exceptions.UnirestException;
+import io.github.openunirest.request.HttpRequest;
 
 public class RequestThread<T> extends Thread {
 

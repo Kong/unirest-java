@@ -28,7 +28,7 @@ package io.github.openunirest.request;
 import java.util.Map;
 
 import io.github.openunirest.http.HttpMethod;
-import org.openunirest.http.HttpMethod;
+import io.github.openunirest.http.HttpMethod;
 
 public class GetRequest extends HttpRequest {
 

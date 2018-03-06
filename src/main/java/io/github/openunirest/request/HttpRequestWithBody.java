@@ -32,14 +32,14 @@ import io.github.openunirest.request.body.MultipartBody;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.content.InputStreamBody;
 
-import org.openunirest.http.HttpMethod;
-import org.openunirest.http.JsonNode;
-import org.openunirest.http.ObjectMapper;
-import org.openunirest.http.options.Option;
-import org.openunirest.http.options.Options;
-import org.openunirest.request.body.MultipartBody;
-import org.openunirest.request.body.RawBody;
-import org.openunirest.request.body.RequestBodyEntity;
+import io.github.openunirest.http.HttpMethod;
+import io.github.openunirest.http.JsonNode;
+import io.github.openunirest.http.ObjectMapper;
+import io.github.openunirest.http.options.Option;
+import io.github.openunirest.http.options.Options;
+import io.github.openunirest.request.body.MultipartBody;
+import io.github.openunirest.request.body.RawBody;
+import io.github.openunirest.request.body.RequestBodyEntity;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

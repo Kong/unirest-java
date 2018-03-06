@@ -27,8 +27,8 @@ package io.github.openunirest.request.body;
 
 import io.github.openunirest.request.BaseRequest;
 import io.github.openunirest.request.HttpRequest;
-import org.openunirest.request.BaseRequest;
-import org.openunirest.request.HttpRequest;
+import io.github.openunirest.request.BaseRequest;
+import io.github.openunirest.request.HttpRequest;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 
