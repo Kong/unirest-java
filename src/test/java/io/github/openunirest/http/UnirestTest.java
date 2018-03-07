@@ -73,21 +73,8 @@ public class UnirestTest {
 		status = false;
 	}
 
-	private String findAvailableIpAddress() throws IOException {
-		for (int i = 100; i <= 255; i++) {
-			String ip = "192.168.1." + i;
-			if (!InetAddress.getByName(ip).isReachable(1000)) {
-				return ip;
-			}
-		}
-
-		throw new RuntimeException("Couldn't find an available IP address in the range of 192.168.0.100-255");
-	}
-
 	@Test
 	public void postFormReturnJson() throws JSONException, UnirestException {
-		MockServer.captureAndReturnRequest();
-
 		HttpResponse<JsonNode> jsonResponse = Unirest.post(MockServer.POSTJSON)
 				.header("accept", "application/json")
 				.field("param1", "value1")
@@ -104,8 +91,6 @@ public class UnirestTest {
 
 	@Test
 	public void canPassQueryParamsOnStringOrWithForm() throws JSONException, UnirestException {
-		MockServer.captureAndReturnRequest();
-
 		HttpResponse<JsonNode> response = Unirest.get(MockServer.GETJSON + "?name=mark")
 				.header("accept", "application/json")
 				.asJson();
@@ -123,17 +108,39 @@ public class UnirestTest {
 	}
 
 	@Test
-	public void testGetUTF8() {
-		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get").queryString("param3", "こんにちは").asJson();
+	public void multipleParams() throws JSONException, UnirestException {
+		HttpResponse<JsonNode> response = Unirest.get(MockServer.GETJSON + "?name=ringo")
+				.header("accept", "application/json")
+				.queryString("name", "paul")
+				.queryString("name", "john")
+				.asJson();
 
-		assertEquals(response.getBody().getObject().getJSONObject("args").getString("param3"), "こんにちは");
+		FormCapture json = TestUtils.read(response, FormCapture.class);
+		json.assertQuery("name", "ringo");
+		json.assertQuery("name", "paul");
+		json.assertQuery("name", "john");
+	}
+
+	@Test
+	public void testGetUTF8() {
+		HttpResponse<JsonNode> response = Unirest.get(MockServer.GETJSON)
+				.header("accept", "application/json")
+				.queryString("param3", "こんにちは")
+				.asJson();
+
+		FormCapture json = TestUtils.read(response, FormCapture.class);
+		json.assertQuery("param3", "こんにちは");
 	}
 
 	@Test
 	public void testPostUTF8() {
-		HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post").field("param3", "こんにちは").asJson();
+		HttpResponse response = Unirest.post(MockServer.POSTJSON)
+				.header("accept", "application/json")
+				.field("param3", "こんにちは")
+				.asJson();
 
-		assertEquals(response.getBody().getObject().getJSONObject("form").getString("param3"), "こんにちは");
+		FormCapture json = TestUtils.read(response, FormCapture.class);
+		json.assertQuery("param3", "こんにちは");
 	}
 
 	@Test
@@ -840,4 +847,15 @@ public class UnirestTest {
 		assertEquals("Only header \"Content-Type\" should exist", "application/json", headers.getFirst("Content-Type"));
 	}
 
+
+	private String findAvailableIpAddress() throws IOException {
+		for (int i = 100; i <= 255; i++) {
+			String ip = "192.168.1." + i;
+			if (!InetAddress.getByName(ip).isReachable(1000)) {
+				return ip;
+			}
+		}
+
+		throw new RuntimeException("Couldn't find an available IP address in the range of 192.168.0.100-255");
+	}
 }

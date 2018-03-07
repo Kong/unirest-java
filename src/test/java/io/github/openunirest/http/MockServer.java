@@ -49,14 +49,13 @@ public class MockServer {
     public static final String HOST = "http://localhost:" + PORT;
     public static final String POSTJSON = HOST + "/post";
     public static final String GETJSON = HOST + "/get";
-    private static boolean capture = false;
+
 
 	public static void setJsonAsResponse(Object o){
 		responseBody = om.writeValue(o);
 	}
 
 	public static void reset(){
-		capture = false;
 		responseBody = null;
 	}
 
@@ -65,14 +64,13 @@ public class MockServer {
 		post("/post", ContentType.APPLICATION_JSON.getMimeType(), MockServer::jsonResponse);
 		post("/post", ContentType.MULTIPART_FORM_DATA.getMimeType(), multipost);
         get("/get", ContentType.APPLICATION_JSON.getMimeType(), MockServer::jsonResponse);
-        //get("/get", (request, response) -> "Hi Momn");
 	}
 
 	private static Object jsonResponse(Request req, Response res) {
-		if(capture){
-			return om.writeValue(new FormCapture(req));
+		if(responseBody != null){
+			return responseBody;
 		}
-		return responseBody;
+		return om.writeValue(new FormCapture(req));
 	}
 
 
@@ -106,10 +104,6 @@ public class MockServer {
 
 	public static void shutdown() {
 		Spark.stop();
-	}
-
-	public static void captureAndReturnRequest() {
-		capture = true;
 	}
 
 	public static class ResponseBody {

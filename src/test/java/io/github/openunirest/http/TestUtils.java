@@ -19,7 +19,7 @@ public class TestUtils {
         }
     }
 
-    public static <T> T read(HttpResponse<JsonNode> r, Class<T> as) {
+    public static <T> T read(HttpResponse r, Class<T> as) {
         try {
             return om.readValue(r.getRawBody(), as);
         } catch (IOException e) {
