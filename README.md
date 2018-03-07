@@ -9,10 +9,14 @@ Unirest.post("http://httpbin.org/post")
   .asJson()
 ```
 
-[![License][license-image]][license-url]  |
-[![version][maven-version]][maven-url]  |
-[![Gitter][gitter-image]][gitter-url]
-
+## Install With Maven
+```
+<dependency>
+    <groupId>io.github.openunirest</groupId>
+    <artifactId>unirest-java</artifactId>
+    <version>2.0.02</version>
+</dependency>
+```
 
 ## Features
 
