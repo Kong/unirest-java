@@ -24,10 +24,13 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 
-package io.github.openunirest.test.http;
+package io.github.openunirest.http;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.entity.ContentType;
+import spark.Request;
+import spark.Response;
 import spark.Route;
 import spark.Spark;
 
@@ -36,21 +39,43 @@ import javax.servlet.http.Part;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 
 import static java.lang.System.getProperty;
 import static spark.Spark.*;
 
 public class MockServer {
-	private static final ObjectMapper om = new ObjectMapper();
+	private static final JacksonObjectMapper om = new JacksonObjectMapper();
+	private static Object responseBody;
 	public static int PORT = 4567;
 	public static String HOST = "http://localhost:" + PORT;
+	public static String POSTJSON = HOST + "/post";
+	private static boolean capture = false;
+
+	public static void setJsonAsResponse(Object o){
+		responseBody = om.writeValue(o);
+	}
+
+	public static void reset(){
+		capture = false;
+		responseBody = null;
+	}
 
 	public static void start() {
 		port(PORT);
+		post("/post", ContentType.APPLICATION_JSON.getMimeType(), MockServer::postJson);
 		post("/post", ContentType.MULTIPART_FORM_DATA.getMimeType(), multipost);
 		get("/get", (request, response) -> "Hi Momn");
 	}
+
+	private static Object postJson(Request req, Response res) {
+		if(capture){
+			return om.writeValue(new FormCapture(req));
+		}
+		return responseBody;
+	}
+
 
 	private static Route multipost = (req, res) -> {
         req.raw().setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement(getProperty("java.io.tmpdir")));
@@ -64,7 +89,7 @@ public class MockServer {
             }
         }
 
-        return om.writeValueAsString(body);
+        return om.writeValue(body);
     };
 
 	private static void buildFormPart(Part p, ResponseBody body) throws IOException {
@@ -82,6 +107,10 @@ public class MockServer {
 
 	public static void shutdown() {
 		Spark.stop();
+	}
+
+	public static void captureAndReturnRequest() {
+		capture = true;
 	}
 
 	public static class ResponseBody {

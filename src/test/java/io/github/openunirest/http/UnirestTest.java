@@ -24,24 +24,14 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package io.github.openunirest.test.http;
+package io.github.openunirest.http;
 
-import io.github.openunirest.http.Headers;
-import io.github.openunirest.http.HttpResponse;
-import io.github.openunirest.http.JsonNode;
-import io.github.openunirest.http.Unirest;
 import io.github.openunirest.http.async.Callback;
-import io.github.openunirest.request.body.MultipartBody;
-import io.github.openunirest.test.helper.GetResponse;
-import io.github.openunirest.test.helper.JacksonObjectMapper;
-import io.github.openunirest.http.async.Callback;
-import io.github.openunirest.http.exceptions.UnirestException;
 import io.github.openunirest.http.options.Options;
+import io.github.openunirest.request.body.MultipartBody;
+import io.github.openunirest.http.exceptions.UnirestException;
 import io.github.openunirest.request.GetRequest;
 import io.github.openunirest.request.HttpRequest;
-import io.github.openunirest.request.body.MultipartBody;
-import io.github.openunirest.test.helper.GetResponse;
-import io.github.openunirest.test.helper.JacksonObjectMapper;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.ContentType;
@@ -51,10 +41,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.*;
-import io.github.openunirest.http.Headers;
-import io.github.openunirest.http.HttpResponse;
-import io.github.openunirest.http.JsonNode;
-import io.github.openunirest.http.Unirest;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -82,6 +68,7 @@ public class UnirestTest {
 
 	@Before
 	public void setUp() {
+		MockServer.reset();
 		lock = new CountDownLatch(1);
 		status = false;
 	}
@@ -99,19 +86,20 @@ public class UnirestTest {
 
 	@Test
 	public void testRequests() throws JSONException, UnirestException {
-		HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post").header("accept", "application/json").field("param1", "value1").field("param2", "bye").asJson();
+		MockServer.captureAndReturnRequest();
 
-		assertTrue(jsonResponse.getHeaders().size() > 0);
-		assertTrue(jsonResponse.getBody().toString().length() > 0);
-		assertFalse(jsonResponse.getRawBody() == null);
+		HttpResponse<JsonNode> jsonResponse = Unirest.post(MockServer.POSTJSON)
+				.header("accept", "application/json")
+				.field("param1", "value1")
+				.field("param2", "bye")
+				.asJson();
+
 		assertEquals(200, jsonResponse.getStatus());
 
-		JsonNode json = jsonResponse.getBody();
-		assertFalse(json.isArray());
-		assertNotNull(json.getObject());
-		assertNotNull(json.getArray());
-		assertEquals(1, json.getArray().length());
-		assertNotNull(json.getArray().get(0));
+		FormCapture json = TestUtils.read(jsonResponse, FormCapture.class);
+		json.assertHeader("Accept", "application/json");
+		json.assertQuery("param1", "value1");
+		json.assertQuery("param2", "bye");
 	}
 
 	@Test
@@ -320,6 +308,7 @@ public class UnirestTest {
 	public void testMultipartInputStreamContentType() throws JSONException, URISyntaxException, FileNotFoundException {
 		FileInputStream stream = new FileInputStream(new File(getClass().getResource("/image.jpg").toURI()));
 		MultipartBody request = Unirest.post(MockServer.HOST + "/post")
+            .header("accept", ContentType.MULTIPART_FORM_DATA.toString())
 			.field("name", "Mark")
 			.field("file", stream, ContentType.APPLICATION_OCTET_STREAM, "image.jpg");
 
@@ -840,9 +829,4 @@ public class UnirestTest {
 		assertEquals("Only header \"Content-Type\" should exist", "application/json", headers.getFirst("Content-Type"));
 	}
 
-	private static void debugApache() {
-		System.setProperty("org.apache.commons.logging.Log","org.apache.commons.logging.impl.SimpleLog");
-		System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
-		System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.wire", "DEBUG");
-	}
 }

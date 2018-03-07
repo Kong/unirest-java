@@ -1,4 +1,4 @@
-package io.github.openunirest.test.helper;
+package io.github.openunirest.http;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.openunirest.http.ObjectMapper;
