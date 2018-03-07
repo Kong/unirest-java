@@ -85,7 +85,7 @@ public class UnirestTest {
 	}
 
 	@Test
-	public void testRequests() throws JSONException, UnirestException {
+	public void postFormReturnJson() throws JSONException, UnirestException {
 		MockServer.captureAndReturnRequest();
 
 		HttpResponse<JsonNode> jsonResponse = Unirest.post(MockServer.POSTJSON)
@@ -103,12 +103,23 @@ public class UnirestTest {
 	}
 
 	@Test
-	public void testGet() throws JSONException, UnirestException {
-		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get?name=mark").asJson();
-		assertEquals(response.getBody().getObject().getJSONObject("args").getString("name"), "mark");
+	public void canPassQueryParamsOnStringOrWithForm() throws JSONException, UnirestException {
+		MockServer.captureAndReturnRequest();
 
-		response = Unirest.get("http://httpbin.org/get").queryString("name", "mark2").asJson();
-		assertEquals(response.getBody().getObject().getJSONObject("args").getString("name"), "mark2");
+		HttpResponse<JsonNode> response = Unirest.get(MockServer.GETJSON + "?name=mark")
+				.header("accept", "application/json")
+				.asJson();
+
+		FormCapture json = TestUtils.read(response, FormCapture.class);
+		json.assertQuery("name", "mark");
+
+		response = Unirest.get(MockServer.GETJSON)
+				.header("accept", "application/json")
+				.queryString("name", "mark2")
+				.asJson();
+
+		json = TestUtils.read(response, FormCapture.class);
+		json.assertQuery("name", "mark2");
 	}
 
 	@Test

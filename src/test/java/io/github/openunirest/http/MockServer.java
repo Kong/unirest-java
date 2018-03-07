@@ -26,8 +26,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package io.github.openunirest.http;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.entity.ContentType;
 import spark.Request;
 import spark.Response;
@@ -39,7 +37,6 @@ import javax.servlet.http.Part;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Scanner;
 
 import static java.lang.System.getProperty;
@@ -47,11 +44,12 @@ import static spark.Spark.*;
 
 public class MockServer {
 	private static final JacksonObjectMapper om = new JacksonObjectMapper();
-	private static Object responseBody;
-	public static int PORT = 4567;
-	public static String HOST = "http://localhost:" + PORT;
-	public static String POSTJSON = HOST + "/post";
-	private static boolean capture = false;
+    private static Object responseBody;
+    public static final int PORT = 4567;
+    public static final String HOST = "http://localhost:" + PORT;
+    public static final String POSTJSON = HOST + "/post";
+    public static final String GETJSON = HOST + "/get";
+    private static boolean capture = false;
 
 	public static void setJsonAsResponse(Object o){
 		responseBody = om.writeValue(o);
@@ -64,12 +62,13 @@ public class MockServer {
 
 	public static void start() {
 		port(PORT);
-		post("/post", ContentType.APPLICATION_JSON.getMimeType(), MockServer::postJson);
+		post("/post", ContentType.APPLICATION_JSON.getMimeType(), MockServer::jsonResponse);
 		post("/post", ContentType.MULTIPART_FORM_DATA.getMimeType(), multipost);
-		get("/get", (request, response) -> "Hi Momn");
+        get("/get", ContentType.APPLICATION_JSON.getMimeType(), MockServer::jsonResponse);
+        //get("/get", (request, response) -> "Hi Momn");
 	}
 
-	private static Object postJson(Request req, Response res) {
+	private static Object jsonResponse(Request req, Response res) {
 		if(capture){
 			return om.writeValue(new FormCapture(req));
 		}
