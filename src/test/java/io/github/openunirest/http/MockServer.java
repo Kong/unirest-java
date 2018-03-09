@@ -47,7 +47,7 @@ public class MockServer {
     private static Object responseBody;
     public static final int PORT = 4567;
     public static final String HOST = "http://localhost:" + PORT;
-    public static final String POSTJSON = HOST + "/post";
+    public static final String POST = HOST + "/post";
     public static final String GETJSON = HOST + "/get";
 
 
@@ -75,45 +75,14 @@ public class MockServer {
 
 
 	private static Route multipost = (req, res) -> {
-        req.raw().setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement(getProperty("java.io.tmpdir")));
 
-        ResponseBody body = new ResponseBody();
-        for (Part p : req.raw().getParts()) {
-            if (p.getContentType().equals(ContentType.APPLICATION_OCTET_STREAM.getMimeType())) {
-                buildFilePart(p, body);
-            } else {
-                buildFormPart(p, body);
-            }
-        }
+        FormCapture body = new FormCapture(req);
+		body.writeFiles(req);
 
         return om.writeValue(body);
     };
 
-	private static void buildFormPart(Part p, ResponseBody body) throws IOException {
-		java.util.Scanner s = new Scanner(p.getInputStream()).useDelimiter("\\A");
-		String value = s.hasNext() ? s.next() : "";
-		body.form.put(p.getName(), value);
-	}
-
-	public static void buildFilePart(Part part, ResponseBody body){
-		body.files = new File();
-		body.files.fileName = part.getSubmittedFileName();
-		body.files.type = part.getContentType();
-		body.files.inputName = part.getName();
-	}
-
 	public static void shutdown() {
 		Spark.stop();
-	}
-
-	public static class ResponseBody {
-		public File files;
-		public Map<String,String> form = new HashMap<>();
-	}
-
-	public static class File {
-		public String fileName;
-		public String type;
-		public String inputName;
 	}
 }

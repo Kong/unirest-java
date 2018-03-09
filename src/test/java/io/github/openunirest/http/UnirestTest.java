@@ -75,7 +75,7 @@ public class UnirestTest {
 
 	@Test
 	public void postFormReturnJson() throws JSONException, UnirestException {
-		HttpResponse<JsonNode> jsonResponse = Unirest.post(MockServer.POSTJSON)
+		HttpResponse<JsonNode> jsonResponse = Unirest.post(MockServer.POST)
 				.header("accept", "application/json")
 				.field("param1", "value1")
 				.field("param2", "bye")
@@ -134,7 +134,7 @@ public class UnirestTest {
 
 	@Test
 	public void testPostUTF8() {
-		HttpResponse response = Unirest.post(MockServer.POSTJSON)
+		HttpResponse response = Unirest.post(MockServer.POST)
 				.header("accept", "application/json")
 				.field("param3", "こんにちは")
 				.asJson();
@@ -145,10 +145,15 @@ public class UnirestTest {
 
 	@Test
 	public void testPostBinaryUTF8() throws URISyntaxException {
-		HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post").field("param3", "こんにちは").field("file", new File(getClass().getResource("/test").toURI())).asJson();
+		HttpResponse<JsonNode> response = Unirest.post(MockServer.POST)
+				.header("Accept", ContentType.MULTIPART_FORM_DATA.getMimeType())
+				.field("param3", "こんにちは")
+				.field("file", new File(getClass().getResource("/test").toURI()))
+				.asJson();
 
-		assertEquals("This is a test file", response.getBody().getObject().getJSONObject("files").getString("file"));
-		assertEquals("こんにちは", response.getBody().getObject().getJSONObject("form").getString("param3"));
+		FormCapture json = TestUtils.read(response, FormCapture.class);
+		json.assertQuery("param3", "こんにちは");
+		json.getFile("test").assertBody("This is a test file");
 	}
 
 	@Test
@@ -333,22 +338,16 @@ public class UnirestTest {
 		HttpResponse<JsonNode> jsonResponse = request
 			.asJson();
 
-		assertTrue(jsonResponse.getHeaders().size() > 0);
-		assertTrue(jsonResponse.getBody().toString().length() > 0);
-		assertFalse(jsonResponse.getRawBody() == null);
 		assertEquals(200, jsonResponse.getStatus());
 
-		JsonNode json = jsonResponse.getBody();
-		assertFalse(json.isArray());
-		JSONObject object = json.getObject();
-		assertNotNull(object);
-		assertNotNull(json.getArray());
-		assertEquals(1, json.getArray().length());
-		assertNotNull(json.getArray().get(0));
-		assertNotNull(object.getJSONObject("files"));
+		FormCapture json = TestUtils.read(jsonResponse, FormCapture.class);
+		json.assertHeader("Accept", ContentType.MULTIPART_FORM_DATA.toString());
+		json.assertQuery("name", "Mark");
+		assertEquals("application/octet-stream", json.getFile("image.jpg").type);
 
-		assertTrue(json.getObject().getJSONObject("files").getString("type").contains("application/octet-stream"));
-		assertEquals("Mark", json.getObject().getJSONObject("form").getString("name"));
+
+//		assertTrue(json.getObject().getJSONObject("files").getString("type").contains("application/octet-stream"));
+//		assertEquals("Mark", json.getObject().getJSONObject("form").getString("name"));
 	}
 
 	@Test
