@@ -7,25 +7,22 @@ import spark.Request;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.Part;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
 import java.util.*;
 
 import static java.lang.System.getProperty;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public class FormCapture {
+public class RequestCapture {
     public Map<String, String> headers = new LinkedHashMap<>();
     public Map<String, File> files = new LinkedHashMap<>();
     public Map<String, Set<String>> query = new LinkedHashMap<>();
 
-    public FormCapture() {
+    public RequestCapture() {
     }
 
-    public FormCapture(Request req) {
+    public RequestCapture(Request req) {
         writeHeaders(req);
         writeQuery(req);
     }

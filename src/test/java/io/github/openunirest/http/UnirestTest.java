@@ -83,7 +83,7 @@ public class UnirestTest {
 
 		assertEquals(200, jsonResponse.getStatus());
 
-		FormCapture json = TestUtils.read(jsonResponse, FormCapture.class);
+		RequestCapture json = TestUtils.read(jsonResponse, RequestCapture.class);
 		json.assertHeader("Accept", "application/json");
 		json.assertQuery("param1", "value1");
 		json.assertQuery("param2", "bye");
@@ -95,7 +95,7 @@ public class UnirestTest {
 				.header("accept", "application/json")
 				.asJson();
 
-		FormCapture json = TestUtils.read(response, FormCapture.class);
+		RequestCapture json = TestUtils.read(response, RequestCapture.class);
 		json.assertQuery("name", "mark");
 
 		response = Unirest.get(MockServer.GETJSON)
@@ -103,7 +103,7 @@ public class UnirestTest {
 				.queryString("name", "mark2")
 				.asJson();
 
-		json = TestUtils.read(response, FormCapture.class);
+		json = TestUtils.read(response, RequestCapture.class);
 		json.assertQuery("name", "mark2");
 	}
 
@@ -115,7 +115,7 @@ public class UnirestTest {
 				.queryString("name", "john")
 				.asJson();
 
-		FormCapture json = TestUtils.read(response, FormCapture.class);
+		RequestCapture json = TestUtils.read(response, RequestCapture.class);
 		json.assertQuery("name", "ringo");
 		json.assertQuery("name", "paul");
 		json.assertQuery("name", "john");
@@ -128,7 +128,7 @@ public class UnirestTest {
 				.queryString("param3", "こんにちは")
 				.asJson();
 
-		FormCapture json = TestUtils.read(response, FormCapture.class);
+		RequestCapture json = TestUtils.read(response, RequestCapture.class);
 		json.assertQuery("param3", "こんにちは");
 	}
 
@@ -139,7 +139,7 @@ public class UnirestTest {
 				.field("param3", "こんにちは")
 				.asJson();
 
-		FormCapture json = TestUtils.read(response, FormCapture.class);
+		RequestCapture json = TestUtils.read(response, RequestCapture.class);
 		json.assertQuery("param3", "こんにちは");
 	}
 
@@ -151,7 +151,7 @@ public class UnirestTest {
 				.field("file", new File(getClass().getResource("/test").toURI()))
 				.asJson();
 
-		FormCapture json = TestUtils.read(response, FormCapture.class);
+		RequestCapture json = TestUtils.read(response, RequestCapture.class);
 		json.assertQuery("param3", "こんにちは");
 		json.getFile("test").assertBody("This is a test file");
 	}
@@ -340,7 +340,7 @@ public class UnirestTest {
 
 		assertEquals(200, jsonResponse.getStatus());
 
-		FormCapture json = TestUtils.read(jsonResponse, FormCapture.class);
+		RequestCapture json = TestUtils.read(jsonResponse, RequestCapture.class);
 		json.assertHeader("Accept", ContentType.MULTIPART_FORM_DATA.toString());
 		json.assertQuery("name", "Mark");
 		assertEquals("application/octet-stream", json.getFile("image.jpg").type);

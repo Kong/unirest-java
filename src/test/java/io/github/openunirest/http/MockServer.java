@@ -32,13 +32,6 @@ import spark.Response;
 import spark.Route;
 import spark.Spark;
 
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.http.Part;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
-
 import static java.lang.System.getProperty;
 import static spark.Spark.*;
 
@@ -70,13 +63,13 @@ public class MockServer {
 		if(responseBody != null){
 			return responseBody;
 		}
-		return om.writeValue(new FormCapture(req));
+		return om.writeValue(new RequestCapture(req));
 	}
 
 
 	private static Route multipost = (req, res) -> {
 
-        FormCapture body = new FormCapture(req);
+        RequestCapture body = new RequestCapture(req);
 		body.writeFiles(req);
 
         return om.writeValue(body);
