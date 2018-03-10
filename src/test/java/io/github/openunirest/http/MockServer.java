@@ -63,15 +63,15 @@ public class MockServer {
 		if(responseBody != null){
 			return responseBody;
 		}
-		return om.writeValue(new RequestCapture(req));
+        RequestCapture value = new RequestCapture(req);
+		value.writeBody(req);
+        return om.writeValue(value);
 	}
 
 
 	private static Route multipost = (req, res) -> {
-
         RequestCapture body = new RequestCapture(req);
-		body.writeFiles(req);
-
+		body.writeMultipart(req);
         return om.writeValue(body);
     };
 

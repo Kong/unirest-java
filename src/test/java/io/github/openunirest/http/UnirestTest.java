@@ -49,6 +49,7 @@ import java.util.Arrays;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static io.github.openunirest.http.TestUtils.read;
 import static org.junit.Assert.*;
 
 public class UnirestTest {
@@ -83,7 +84,7 @@ public class UnirestTest {
 
 		assertEquals(200, jsonResponse.getStatus());
 
-		RequestCapture json = TestUtils.read(jsonResponse, RequestCapture.class);
+		RequestCapture json = parse(jsonResponse);
 		json.assertHeader("Accept", "application/json");
 		json.assertQuery("param1", "value1");
 		json.assertQuery("param2", "bye");
@@ -95,7 +96,7 @@ public class UnirestTest {
 				.header("accept", "application/json")
 				.asJson();
 
-		RequestCapture json = TestUtils.read(response, RequestCapture.class);
+		RequestCapture json = parse(response);
 		json.assertQuery("name", "mark");
 
 		response = Unirest.get(MockServer.GETJSON)
@@ -103,7 +104,7 @@ public class UnirestTest {
 				.queryString("name", "mark2")
 				.asJson();
 
-		json = TestUtils.read(response, RequestCapture.class);
+		json = parse(response);
 		json.assertQuery("name", "mark2");
 	}
 
@@ -115,7 +116,7 @@ public class UnirestTest {
 				.queryString("name", "john")
 				.asJson();
 
-		RequestCapture json = TestUtils.read(response, RequestCapture.class);
+		RequestCapture json = parse(response);
 		json.assertQuery("name", "ringo");
 		json.assertQuery("name", "paul");
 		json.assertQuery("name", "john");
@@ -128,7 +129,7 @@ public class UnirestTest {
 				.queryString("param3", "こんにちは")
 				.asJson();
 
-		RequestCapture json = TestUtils.read(response, RequestCapture.class);
+		RequestCapture json = parse(response);
 		json.assertQuery("param3", "こんにちは");
 	}
 
@@ -139,7 +140,7 @@ public class UnirestTest {
 				.field("param3", "こんにちは")
 				.asJson();
 
-		RequestCapture json = TestUtils.read(response, RequestCapture.class);
+		RequestCapture json = parse(response);
 		json.assertQuery("param3", "こんにちは");
 	}
 
@@ -151,7 +152,7 @@ public class UnirestTest {
 				.field("file", new File(getClass().getResource("/test").toURI()))
 				.asJson();
 
-		RequestCapture json = TestUtils.read(response, RequestCapture.class);
+		RequestCapture json = parse(response);
 		json.assertQuery("param3", "こんにちは");
 		json.getFile("test").assertBody("This is a test file");
 	}
@@ -161,50 +162,63 @@ public class UnirestTest {
 		String sourceString = "'\"@こんにちは-test-123-" + Math.random();
 		byte[] sentBytes = sourceString.getBytes();
 
-		HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post").body(sentBytes).asJson();
+		HttpResponse<JsonNode> response = Unirest.post(MockServer.POST)
+				.body(sentBytes)
+				.asJson();
 
-		assertEquals(sourceString, response.getBody().getObject().getString("data"));
+		RequestCapture json = parse(response);
+		json.asserBody(sourceString);
 	}
 
 	@Test
 	public void testCustomUserAgent() throws JSONException, UnirestException {
-		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get?name=mark").header("user-agent", "hello-world").asJson();
-		assertEquals("hello-world", response.getBody().getObject().getJSONObject("headers").getString("User-Agent"));
+		HttpResponse<JsonNode> response = Unirest.get(MockServer.GETJSON)
+                .header("user-agent", "hello-world")
+                .asJson();
 
-		GetRequest getRequest = Unirest.get("http");
-		for (Object current : Arrays.asList(0, 1, 2)) {
-			getRequest.queryString("name", current);
-		}
-
+        RequestCapture json = parse(response);
+        json.assertHeader("User-Agent", "hello-world");
 	}
 
-	@Test
+    @Test
 	public void testGetMultiple() throws JSONException, UnirestException {
 		for (int i = 1; i <= 20; i++) {
-			HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get?try=" + i).asJson();
-			assertEquals(response.getBody().getObject().getJSONObject("args").getString("try"), ((Integer) i).toString());
+			HttpResponse<JsonNode> response = Unirest.get(MockServer.GETJSON + "?try=" + i).asJson();
+            parse(response).assertQuery("try", String.valueOf(i));
 		}
 	}
 
 	@Test
 	public void testGetFields() throws JSONException, UnirestException {
-		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get").queryString("name", "mark").queryString("nick", "thefosk").asJson();
-		assertEquals(response.getBody().getObject().getJSONObject("args").getString("name"), "mark");
-		assertEquals(response.getBody().getObject().getJSONObject("args").getString("nick"), "thefosk");
+		HttpResponse<JsonNode> response = Unirest.get(MockServer.GETJSON)
+                .queryString("name", "mark")
+                .queryString("nick", "thefosk")
+                .asJson();
+
+        RequestCapture parse = parse(response);
+        parse.assertQuery("name", "mark");
+		parse.assertQuery("nick", "thefosk");
 	}
 
 	@Test
 	public void testGetFields2() throws JSONException, UnirestException {
-		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get").queryString("email", "hello@hello.com").asJson();
-		assertEquals("hello@hello.com", response.getBody().getObject().getJSONObject("args").getString("email"));
+		HttpResponse<JsonNode> response = Unirest.get(MockServer.GETJSON)
+                .queryString("email", "hello@hello.com")
+                .asJson();
+
+        parse(response).assertQuery("email", "hello@hello.com");
 	}
 
 	@Test
 	public void testQueryStringEncoding() throws JSONException, UnirestException {
 		String testKey = "email2=someKey&email";
 		String testValue = "hello@hello.com";
-		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/get").queryString(testKey, testValue).asJson();
-		assertEquals(testValue, response.getBody().getObject().getJSONObject("args").getString(testKey));
+
+		HttpResponse<JsonNode> response = Unirest.get(MockServer.GETJSON)
+                .queryString(testKey, testValue)
+                .asJson();
+
+		parse(response).assertQuery(testKey, testValue);
 	}
 
 	@Test
@@ -330,6 +344,7 @@ public class UnirestTest {
 	@Test
 	public void testMultipartInputStreamContentType() throws JSONException, URISyntaxException, FileNotFoundException {
 		FileInputStream stream = new FileInputStream(new File(getClass().getResource("/image.jpg").toURI()));
+
 		MultipartBody request = Unirest.post(MockServer.HOST + "/post")
             .header("accept", ContentType.MULTIPART_FORM_DATA.toString())
 			.field("name", "Mark")
@@ -340,14 +355,10 @@ public class UnirestTest {
 
 		assertEquals(200, jsonResponse.getStatus());
 
-		RequestCapture json = TestUtils.read(jsonResponse, RequestCapture.class);
+		RequestCapture json = parse(jsonResponse);
 		json.assertHeader("Accept", ContentType.MULTIPART_FORM_DATA.toString());
 		json.assertQuery("name", "Mark");
 		assertEquals("application/octet-stream", json.getFile("image.jpg").type);
-
-
-//		assertTrue(json.getObject().getJSONObject("files").getString("type").contains("application/octet-stream"));
-//		assertEquals("Mark", json.getObject().getJSONObject("form").getString("name"));
 	}
 
 	@Test
@@ -857,4 +868,8 @@ public class UnirestTest {
 
 		throw new RuntimeException("Couldn't find an available IP address in the range of 192.168.0.100-255");
 	}
+
+    private RequestCapture parse(HttpResponse<JsonNode> response) {
+        return read(response, RequestCapture.class);
+    }
 }

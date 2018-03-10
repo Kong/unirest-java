@@ -18,6 +18,7 @@ public class RequestCapture {
     public Map<String, String> headers = new LinkedHashMap<>();
     public Map<String, File> files = new LinkedHashMap<>();
     public Map<String, Set<String>> query = new LinkedHashMap<>();
+    public String body;
 
     public RequestCapture() {
     }
@@ -27,7 +28,11 @@ public class RequestCapture {
         writeQuery(req);
     }
 
-    public void writeFiles(Request req) {
+    public void writeBody(Request req) {
+        this.body = req.body();
+    }
+
+    public void writeMultipart(Request req) {
         req.raw().setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement(getProperty("java.io.tmpdir")));
 
         try {
@@ -57,6 +62,10 @@ public class RequestCapture {
         file.body = TestUtil.toString(part.getInputStream());
 
         files.put(file.fileName, file);
+    }
+
+    public void asserBody(String s) {
+        assertEquals(s, body);
     }
 
 
