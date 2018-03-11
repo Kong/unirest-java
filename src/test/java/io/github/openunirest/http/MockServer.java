@@ -37,12 +37,14 @@ import static spark.Spark.*;
 
 public class MockServer {
 	private static final JacksonObjectMapper om = new JacksonObjectMapper();
-    private static Object responseBody;
-    public static final int PORT = 4567;
-    public static final String HOST = "http://localhost:" + PORT;
-    public static final String POST = HOST + "/post";
-    public static final String GETJSON = HOST + "/get";
-    public static final String DELETE = HOST + "/delete";
+	private static Object responseBody;
+	public static final int PORT = 4567;
+	public static final String HOST = "http://localhost:" + PORT;
+	public static final String POST = HOST + "/post";
+	public static final String GET = HOST + "/get";
+	public static final String DELETE = HOST + "/delete";
+	public static final String GZIP = HOST + "/gzip";
+	public static final String PATCH = HOST + "/patch";
 
 
 	public static void setJsonAsResponse(Object o){
@@ -56,12 +58,18 @@ public class MockServer {
 	public static void start() {
 		port(PORT);
 		delete("/delete", MockServer::jsonResponse);
-		post("/post", ContentType.APPLICATION_JSON.getMimeType(), MockServer::jsonResponse);
-		post("/post", ContentType.MULTIPART_FORM_DATA.getMimeType(), multipost);
-        get("/get", ContentType.APPLICATION_JSON.getMimeType(), MockServer::jsonResponse);
+		post("/post", MockServer::jsonResponse);
+        get("/get", MockServer::jsonResponse);
+        get("/gzip", MockServer::gzipResponse);
+        patch("/patch", MockServer::jsonResponse);
 	}
 
-    private static Object jsonResponse(Request req, Response res) {
+	private static Object gzipResponse(Request request, Response response) {
+		response.header("Content-Encoding", "gzip");
+		return jsonResponse(request, response);
+	}
+
+	private static Object jsonResponse(Request req, Response res) {
 		if(responseBody != null){
 			return responseBody;
 		}
@@ -69,13 +77,6 @@ public class MockServer {
 		value.writeBody(req);
         return om.writeValue(value);
 	}
-
-
-	private static Route multipost = (req, res) -> {
-        RequestCapture body = new RequestCapture(req);
-		body.writeMultipart(req);
-        return om.writeValue(body);
-    };
 
 	public static void shutdown() {
 		Spark.stop();
