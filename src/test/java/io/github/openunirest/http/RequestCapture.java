@@ -5,7 +5,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.entity.ContentType;
 import spark.Request;
 
 import javax.servlet.MultipartConfigElement;
@@ -21,14 +20,16 @@ import static org.junit.Assert.*;
 
 public class RequestCapture {
     public Map<String, String> headers = new LinkedHashMap<>();
-    public Map<String, File> files = new LinkedHashMap<>();
+    public List<File> files = new ArrayList<>();
     public Multimap<String, String> params = HashMultimap.create();
     public String body;
+    public String url;
 
     public RequestCapture() {
     }
 
     public RequestCapture(Request req) {
+        url = req.url();
         writeHeaders(req);
         writeQuery(req);
     }
@@ -79,36 +80,21 @@ public class RequestCapture {
         file.fileType = part.getContentType();
         file.body = TestUtil.toString(part.getInputStream());
 
-        files.put(file.fileName, file);
-    }
-
-    public void asserBody(String s) {
-        assertEquals(s, body);
-    }
-
-    public void assertNoHeader(String s) {
-        assertFalse("Should Have No Header " + s, headers.containsKey(s));
-    }
-
-
-    public static class File {
-        public String fileName;
-        public String type;
-        public String inputName;
-        public String body;
-        public String fileType;
-
-        public void assertBody(String content){
-            assertEquals(content, body);
-        }
-
-        public void assertFileType(String type){
-            assertEquals(type, this.fileType);
-        }
+        files.add(file);
     }
 
     private void writeQuery(Request req) {
         req.queryParams().forEach(q -> params.putAll(q, Sets.newHashSet(req.queryMap(q).values())));
+    }
+
+    public RequestCapture asserBody(String s) {
+        assertEquals(s, body);
+        return this;
+    }
+
+    public RequestCapture assertNoHeader(String s) {
+        assertFalse("Should Have No Header " + s, headers.containsKey(s));
+        return this;
     }
 
     private RequestCapture writeHeaders(Request req) {
@@ -127,7 +113,41 @@ public class RequestCapture {
     }
 
     public File getFile(String fileName) {
-        return Optional.ofNullable(files.get(fileName))
-                .orElseThrow(() -> new RuntimeException("No Such File! " + fileName));
+        return getFileByFileName(fileName);
+    }
+
+    private File getFileByFileName(String fileName) {
+        return files.stream()
+                .filter(f -> Objects.equals(f.fileName, fileName))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No File With Name: " + fileName));
+    }
+
+    public RequestCapture assertFileContent(String input, String content) {
+        assertEquals(content, getFileByInput(input).body);
+        return this;
+    }
+
+    private File getFileByInput(String inputName) {
+        return files.stream()
+                .filter(f -> Objects.equals(f.inputName, inputName))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No File With Input Name: " + inputName));
+    }
+
+    public static class File {
+        public String fileName;
+        public String type;
+        public String inputName;
+        public String body;
+        public String fileType;
+
+        public void assertBody(String content){
+            assertEquals(content, body);
+        }
+
+        public void assertFileType(String type){
+            assertEquals(type, this.fileType);
+        }
     }
 }
