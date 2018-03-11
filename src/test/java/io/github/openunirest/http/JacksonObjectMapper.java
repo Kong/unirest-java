@@ -1,18 +1,22 @@
 package io.github.openunirest.http;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.openunirest.http.ObjectMapper;
-import io.github.openunirest.http.ObjectMapper;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class JacksonObjectMapper implements ObjectMapper {
 
-	private com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+	private com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
+
+	public JacksonObjectMapper(){
+		om.registerModule(new GuavaModule());
+	}
 
 	public <T> T readValue(String value, Class<T> valueType) {
 		try {
-			return jacksonObjectMapper.readValue(value, valueType);
+			return om.readValue(value, valueType);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -20,9 +24,17 @@ public class JacksonObjectMapper implements ObjectMapper {
 
 	public String writeValue(Object value) {
 		try {
-			return jacksonObjectMapper.writeValueAsString(value);
+			return om.writeValueAsString(value);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}
 	}
+
+    public <T> T readValue(InputStream rawBody, Class<T> as) {
+        try {
+            return om.readValue(rawBody, as);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

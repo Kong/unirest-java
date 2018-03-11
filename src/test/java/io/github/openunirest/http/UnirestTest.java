@@ -86,8 +86,8 @@ public class UnirestTest {
 
 		RequestCapture json = parse(jsonResponse);
 		json.assertHeader("Accept", "application/json");
-		json.assertQuery("param1", "value1");
-		json.assertQuery("param2", "bye");
+		json.assertParam("param1", "value1");
+		json.assertParam("param2", "bye");
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class UnirestTest {
 				.asJson();
 
 		RequestCapture json = parse(response);
-		json.assertQuery("name", "mark");
+		json.assertParam("name", "mark");
 
 		response = Unirest.get(MockServer.GETJSON)
 				.header("accept", "application/json")
@@ -105,7 +105,7 @@ public class UnirestTest {
 				.asJson();
 
 		json = parse(response);
-		json.assertQuery("name", "mark2");
+		json.assertParam("name", "mark2");
 	}
 
 	@Test
@@ -117,9 +117,9 @@ public class UnirestTest {
 				.asJson();
 
 		RequestCapture json = parse(response);
-		json.assertQuery("name", "ringo");
-		json.assertQuery("name", "paul");
-		json.assertQuery("name", "john");
+		json.assertParam("name", "ringo");
+		json.assertParam("name", "paul");
+		json.assertParam("name", "john");
 	}
 
 	@Test
@@ -130,7 +130,7 @@ public class UnirestTest {
 				.asJson();
 
 		RequestCapture json = parse(response);
-		json.assertQuery("param3", "こんにちは");
+		json.assertParam("param3", "こんにちは");
 	}
 
 	@Test
@@ -141,7 +141,7 @@ public class UnirestTest {
 				.asJson();
 
 		RequestCapture json = parse(response);
-		json.assertQuery("param3", "こんにちは");
+		json.assertParam("param3", "こんにちは");
 	}
 
 	@Test
@@ -153,7 +153,7 @@ public class UnirestTest {
 				.asJson();
 
 		RequestCapture json = parse(response);
-		json.assertQuery("param3", "こんにちは");
+		json.assertParam("param3", "こんにちは");
 		json.getFile("test").assertBody("This is a test file");
 	}
 
@@ -184,7 +184,7 @@ public class UnirestTest {
 	public void testGetMultiple() throws JSONException, UnirestException {
 		for (int i = 1; i <= 20; i++) {
 			HttpResponse<JsonNode> response = Unirest.get(MockServer.GETJSON + "?try=" + i).asJson();
-            parse(response).assertQuery("try", String.valueOf(i));
+            parse(response).assertParam("try", String.valueOf(i));
 		}
 	}
 
@@ -196,8 +196,8 @@ public class UnirestTest {
                 .asJson();
 
         RequestCapture parse = parse(response);
-        parse.assertQuery("name", "mark");
-		parse.assertQuery("nick", "thefosk");
+        parse.assertParam("name", "mark");
+		parse.assertParam("nick", "thefosk");
 	}
 
 	@Test
@@ -206,7 +206,7 @@ public class UnirestTest {
                 .queryString("email", "hello@hello.com")
                 .asJson();
 
-        parse(response).assertQuery("email", "hello@hello.com");
+        parse(response).assertParam("email", "hello@hello.com");
 	}
 
 	@Test
@@ -218,75 +218,75 @@ public class UnirestTest {
                 .queryString(testKey, testValue)
                 .asJson();
 
-		parse(response).assertQuery(testKey, testValue);
+		parse(response).assertParam(testKey, testValue);
 	}
 
 	@Test
 	public void testDelete() throws JSONException, UnirestException {
-		HttpResponse<JsonNode> response = Unirest.delete("http://httpbin.org/delete").asJson();
+		HttpResponse<JsonNode> response = Unirest.delete(MockServer.DELETE).asJson();
 		assertEquals(200, response.getStatus());
 
-		response = Unirest.delete("http://httpbin.org/delete").field("name", "mark").asJson();
-		assertEquals("mark", response.getBody().getObject().getJSONObject("form").getString("name"));
+		response = Unirest.delete(MockServer.DELETE)
+				.field("name", "mark")
+				.field("foo","bar")
+				.asJson();
+
+		RequestCapture parse = parse(response);
+		parse.assertParam("name", "mark");
+		parse.assertParam("foo", "bar");
 	}
 
 	@Test
 	public void testDeleteBody() throws JSONException, UnirestException {
 		String body = "{\"jsonString\":{\"members\":\"members1\"}}";
-		HttpResponse<JsonNode> response = Unirest.delete("http://httpbin.org/delete").body(body).asJson();
+		HttpResponse<JsonNode> response = Unirest.delete(MockServer.DELETE)
+				.body(body)
+				.asJson();
+
 		assertEquals(200, response.getStatus());
-		assertEquals(body, response.getBody().getObject().getString("data"));
+		parse(response).asserBody(body);
 	}
 
 	@Test
 	public void testBasicAuth() throws JSONException, UnirestException {
-		HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/headers").basicAuth("user", "test").asJson();
-		assertEquals("Basic dXNlcjp0ZXN0", response.getBody().getObject().getJSONObject("headers").getString("Authorization"));
+		HttpResponse<JsonNode> response = Unirest.get(MockServer.GETJSON)
+				.basicAuth("user", "test")
+				.asJson();
+
+		parse(response).assertHeader("Authorization", "Basic dXNlcjp0ZXN0");
 	}
 
 	@Test
 	public void testAsync() throws JSONException, InterruptedException, ExecutionException {
-		Future<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.org/post").header("accept", "application/json").field("param1", "value1").field("param2", "bye").asJsonAsync();
+		Future<HttpResponse<JsonNode>> future = Unirest.post(MockServer.POST)
+				.header("accept", "application/json")
+				.field("param1", "value1")
+				.field("param2", "bye")
+				.asJsonAsync();
 
 		assertNotNull(future);
-		HttpResponse<JsonNode> jsonResponse = future.get();
 
-		assertTrue(jsonResponse.getHeaders().size() > 0);
-		assertTrue(jsonResponse.getBody().toString().length() > 0);
-		assertFalse(jsonResponse.getRawBody() == null);
-		assertEquals(200, jsonResponse.getStatus());
-
-		JsonNode json = jsonResponse.getBody();
-		assertFalse(json.isArray());
-		assertNotNull(json.getObject());
-		assertNotNull(json.getArray());
-		assertEquals(1, json.getArray().length());
-		assertNotNull(json.getArray().get(0));
+		RequestCapture req = parse(future.get());
+		req.assertParam("param1", "value1");
+		req.assertParam("param2", "bye");
 	}
 
 	@Test
 	public void testAsyncCallback() throws JSONException, InterruptedException {
-		Unirest.post("http://httpbin.org/post").header("accept", "application/json").field("param1", "value1").field("param2", "bye").asJsonAsync(new Callback<JsonNode>() {
+		Unirest.post(MockServer.POST)
+				.header("accept", "application/json")
+				.field("param1", "value1")
+				.field("param2", "bye")
+				.asJsonAsync(new Callback<JsonNode>() {
 
 			public void failed(UnirestException e) {
 				fail();
 			}
 
 			public void completed(HttpResponse<JsonNode> jsonResponse) {
-				assertTrue(jsonResponse.getHeaders().size() > 0);
-				assertTrue(jsonResponse.getBody().toString().length() > 0);
-				assertFalse(jsonResponse.getRawBody() == null);
-				assertEquals(200, jsonResponse.getStatus());
-
-				JsonNode json = jsonResponse.getBody();
-				assertFalse(json.isArray());
-				assertNotNull(json.getObject());
-				assertNotNull(json.getArray());
-				assertEquals(1, json.getArray().length());
-				assertNotNull(json.getArray().get(0));
-
-				assertEquals("value1", json.getObject().getJSONObject("form").getString("param1"));
-				assertEquals("bye", json.getObject().getJSONObject("form").getString("param2"));
+				RequestCapture req = parse(jsonResponse);
+				req.assertParam("param1", "value1");
+				req.assertParam("param2", "bye");
 
 				status = true;
 				lock.countDown();
@@ -303,7 +303,11 @@ public class UnirestTest {
 
 	@Test
 	public void testMultipart() throws JSONException, URISyntaxException, UnirestException {
-		HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post").field("name", "Mark").field("file", new File(getClass().getResource("/test").toURI())).asJson();
+		HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
+				.field("name", "Mark")
+				.field("file", new File(getClass().getResource("/test").toURI()))
+				.asJson();
+		
 		assertTrue(jsonResponse.getHeaders().size() > 0);
 		assertTrue(jsonResponse.getBody().toString().length() > 0);
 		assertFalse(jsonResponse.getRawBody() == null);
@@ -357,7 +361,7 @@ public class UnirestTest {
 
 		RequestCapture json = parse(jsonResponse);
 		json.assertHeader("Accept", ContentType.MULTIPART_FORM_DATA.toString());
-		json.assertQuery("name", "Mark");
+		json.assertParam("name", "Mark");
 		assertEquals("application/octet-stream", json.getFile("image.jpg").type);
 	}
 

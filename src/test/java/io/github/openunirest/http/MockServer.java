@@ -42,6 +42,7 @@ public class MockServer {
     public static final String HOST = "http://localhost:" + PORT;
     public static final String POST = HOST + "/post";
     public static final String GETJSON = HOST + "/get";
+    public static final String DELETE = HOST + "/delete";
 
 
 	public static void setJsonAsResponse(Object o){
@@ -54,12 +55,13 @@ public class MockServer {
 
 	public static void start() {
 		port(PORT);
+		delete("/delete", MockServer::jsonResponse);
 		post("/post", ContentType.APPLICATION_JSON.getMimeType(), MockServer::jsonResponse);
 		post("/post", ContentType.MULTIPART_FORM_DATA.getMimeType(), multipost);
         get("/get", ContentType.APPLICATION_JSON.getMimeType(), MockServer::jsonResponse);
 	}
 
-	private static Object jsonResponse(Request req, Response res) {
+    private static Object jsonResponse(Request req, Response res) {
 		if(responseBody != null){
 			return responseBody;
 		}

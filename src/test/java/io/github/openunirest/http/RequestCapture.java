@@ -1,12 +1,17 @@
 package io.github.openunirest.http;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
 import spark.Request;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.Part;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import static java.lang.System.getProperty;
@@ -17,7 +22,7 @@ import static org.junit.Assert.assertThat;
 public class RequestCapture {
     public Map<String, String> headers = new LinkedHashMap<>();
     public Map<String, File> files = new LinkedHashMap<>();
-    public Map<String, Set<String>> query = new LinkedHashMap<>();
+    public Multimap<String, String> params = HashMultimap.create();
     public String body;
 
     public RequestCapture() {
@@ -30,6 +35,14 @@ public class RequestCapture {
 
     public void writeBody(Request req) {
         this.body = req.body();
+        parseBodyToFormParams(req);
+    }
+
+    private void parseBodyToFormParams(Request req) {
+        URLEncodedUtils.parse(req.body() , Charset.forName("UTF-8"))
+                .forEach(p -> {
+                    params.put(p.getName(), p.getValue());
+                });
     }
 
     public void writeMultipart(Request req) {
@@ -51,7 +64,7 @@ public class RequestCapture {
     private void buildFormPart(Part p) throws IOException {
         java.util.Scanner s = new Scanner(p.getInputStream()).useDelimiter("\\A");
         String value = s.hasNext() ? s.next() : "";
-        query.put(p.getName(), Sets.newHashSet(value));
+        params.put(p.getName(), value);
     }
 
     public void buildFilePart(Part part) throws IOException {
@@ -81,7 +94,7 @@ public class RequestCapture {
     }
 
     private void writeQuery(Request req) {
-        req.queryParams().forEach(q -> query.computeIfAbsent(q, (w) -> Sets.newHashSet(req.queryMap(q).values())));
+        req.queryParams().forEach(q -> params.putAll(q, Sets.newHashSet(req.queryMap(q).values())));
     }
 
     private void writeHeaders(Request req) {
@@ -92,8 +105,8 @@ public class RequestCapture {
         assertEquals("Expected Header Failed", value, headers.get(key));
     }
 
-    public void assertQuery(String key, String value) {
-        assertThat("Expected Query or Form value", query.getOrDefault(key, Collections.emptySet()), hasItem(value));
+    public void assertParam(String key, String value) {
+        assertThat("Expected Query or Form value", params.get(key), hasItem(value));
     }
 
     public File getFile(String fileName) {
