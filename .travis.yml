@@ -5,3 +5,8 @@ jdk:
 
 os:
   - linux
+
+cache:
+  directories:
+  - .autoconf
+  - $HOME/.m2
