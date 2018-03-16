@@ -880,6 +880,14 @@ public class UnirestTest {
         assertTrue(status);
     }
 
+    @Test
+    public void willNotCacheBasicAuth() {
+        RequestCapture r1 = parse(Unirest.get(MockServer.GET).basicAuth("foo","bar").asJson());
+        RequestCapture r2 = parse(Unirest.get(MockServer.ALTGET).basicAuth("baz","qux").asJson());
+
+        r1.assertBasicAuth("foo", "bar");
+        r2.assertBasicAuth("baz", "qux");
+    }
 
     private String findAvailableIpAddress() throws IOException {
         for (int i = 100; i <= 255; i++) {

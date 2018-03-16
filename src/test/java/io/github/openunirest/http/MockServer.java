@@ -46,6 +46,7 @@ public class MockServer {
 	public static final String GZIP = HOST + "/gzip";
 	public static final String PATCH = HOST + "/patch";
 	public static final String INVALID_REQUEST = HOST + "/invalid";
+	public static final String ALTGET = "http://127.0.0.1:" + PORT + "/get";
 
 
 	public static void setJsonAsResponse(Object o){

@@ -135,6 +135,13 @@ public class RequestCapture {
                 .orElseThrow(() -> new RuntimeException("No File With Input Name: " + inputName));
     }
 
+    public void assertBasicAuth(String username, String password) {
+        String raw = headers.get("Authorization");
+        assertNotNull("Authorization Header Missing", raw);
+        String credentials = raw.replace("Basic ","");
+        assertEquals(username + ":" + password, new String(Base64.getDecoder().decode(credentials)));
+    }
+
     public static class File {
         public String fileName;
         public String type;
