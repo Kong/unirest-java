@@ -26,16 +26,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package io.github.openunirest.http;
 
-import org.apache.http.entity.ContentType;
 import spark.Request;
 import spark.Response;
-import spark.Route;
 import spark.Spark;
 
-import static java.lang.System.getProperty;
 import static spark.Spark.*;
 
 public class MockServer {
+
 	private static final JacksonObjectMapper om = new JacksonObjectMapper();
 	private static Object responseBody;
 	public static final int PORT = 4567;
@@ -57,7 +55,7 @@ public class MockServer {
 		responseBody = null;
 	}
 
-	public static void start() {
+	static {
 		port(PORT);
 		delete("/delete", MockServer::jsonResponse);
 		post("/post", MockServer::jsonResponse);
@@ -65,6 +63,7 @@ public class MockServer {
         get("/gzip", MockServer::gzipResponse);
         patch("/patch", MockServer::jsonResponse);
         get("/invalid", MockServer::inValid);
+        Runtime.getRuntime().addShutdownHook(new Thread(Spark::stop));
 	}
 
 	private static Object inValid(Request request, Response response) {

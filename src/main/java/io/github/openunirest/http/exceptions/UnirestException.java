@@ -12,4 +12,7 @@ public class UnirestException extends RuntimeException {
 		super(msg);
 	}
 
+	public UnirestException(Throwable ex) {
+		super(ex);
+	}
 }

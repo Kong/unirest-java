@@ -36,9 +36,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.*;
 
 import java.io.*;
@@ -267,7 +265,7 @@ public class UnirestTest extends BddTest {
                         req.assertParam("param1", "value1");
                         req.assertParam("param2", "bye");
 
-                        startCountdown();
+                        asyncSuccess();
                     }
 
                     public void cancelled() {
@@ -340,7 +338,7 @@ public class UnirestTest extends BddTest {
                                 .getFile("test")
                                 .assertFileType("application/octet-stream");
 
-                        startCountdown();
+                        asyncSuccess();
                     }
 
                     public void cancelled() {
@@ -390,7 +388,7 @@ public class UnirestTest extends BddTest {
                                 .getFile("test")
                                 .assertFileType("application/octet-stream");
 
-                        startCountdown();
+                        asyncSuccess();
                     }
 
                     public void cancelled() {
@@ -419,7 +417,7 @@ public class UnirestTest extends BddTest {
                         parse.getFile("test").assertFileType("application/octet-stream");
                         parse.getFile("test").assertBody("This is a test file");
 
-                        startCountdown();
+                        asyncSuccess();
                     }
 
                     public void cancelled() {
@@ -595,7 +593,7 @@ public class UnirestTest extends BddTest {
                                 .asserBody("{\"hello\":\"world\"}")
                                 .assertHeader("Content-Type", "application/json");
 
-                        startCountdown();
+                        asyncSuccess();
                     }
 
                     public void cancelled() {
@@ -625,7 +623,7 @@ public class UnirestTest extends BddTest {
                                 .assertParam("hello", "world")
                                 .assertHeader("Content-Type", "application/x-www-form-urlencoded");
 
-                        startCountdown();
+                        asyncSuccess();
                     }
 
                     public void cancelled() {
@@ -832,7 +830,7 @@ public class UnirestTest extends BddTest {
                         assertEquals("org.json.JSONException: A JSONArray text must start with '[' at 1 [character 2 line 1]",
                                 response.getParsingError().get().getMessage());
 
-                        startCountdown();
+                        asyncSuccess();
                     }
 
                     @Override

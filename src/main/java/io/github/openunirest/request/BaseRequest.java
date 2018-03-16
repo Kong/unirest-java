@@ -36,6 +36,7 @@ import io.github.openunirest.http.async.Callback;
 import io.github.openunirest.http.exceptions.UnirestException;
 
 import java.io.InputStream;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 public abstract class BaseRequest {
@@ -60,11 +61,11 @@ public abstract class BaseRequest {
 		return HttpClientHelper.request(httpRequest, String.class);
 	}
 
-	public Future<HttpResponse<String>> asStringAsync() {
-		return HttpClientHelper.requestAsync(httpRequest, String.class, null);
+	public CompletableFuture<HttpResponse<String>> asStringAsync() {
+		return HttpClientHelper.requestAsync(httpRequest, String.class);
 	}
 
-	public Future<HttpResponse<String>> asStringAsync(Callback<String> callback) {
+	public CompletableFuture<HttpResponse<String>> asStringAsync(Callback<String> callback) {
 		return HttpClientHelper.requestAsync(httpRequest, String.class, callback);
 	}
 
@@ -72,11 +73,11 @@ public abstract class BaseRequest {
 		return HttpClientHelper.request(httpRequest, JsonNode.class);
 	}
 
-	public Future<HttpResponse<JsonNode>> asJsonAsync() {
-		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class, null);
+	public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync() {
+		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class);
 	}
 
-	public Future<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback) {
+	public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback) {
 		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class, callback);
 	}
 
@@ -84,11 +85,11 @@ public abstract class BaseRequest {
 		return HttpClientHelper.request(httpRequest, (Class) responseClass);
 	}
 
-	public <T> Future<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass) {
-		return HttpClientHelper.requestAsync(httpRequest, (Class) responseClass, null);
+	public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass) {
+		return HttpClientHelper.requestAsync(httpRequest, (Class) responseClass);
 	}
 
-	public <T> Future<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback) {
+	public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback) {
 		return HttpClientHelper.requestAsync(httpRequest, (Class) responseClass, callback);
 	}
 
@@ -96,12 +97,11 @@ public abstract class BaseRequest {
 		return HttpClientHelper.request(httpRequest, InputStream.class);
 	}
 
-	public Future<HttpResponse<InputStream>> asBinaryAsync() {
-		return HttpClientHelper.requestAsync(httpRequest, InputStream.class, null);
+	public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync() {
+		return HttpClientHelper.requestAsync(httpRequest, InputStream.class);
 	}
 
-	public Future<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback) {
+	public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback) {
 		return HttpClientHelper.requestAsync(httpRequest, InputStream.class, callback);
 	}
-
 }

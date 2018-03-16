@@ -33,12 +33,11 @@ import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
+import io.github.openunirest.http.async.CallbackFuture;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -68,63 +67,47 @@ public class HttpClientHelper {
 	private static final String USER_AGENT_HEADER = "user-agent";
 	private static final String USER_AGENT = "unirest-java/1.3.11";
 
-	private static <T> FutureCallback<org.apache.http.HttpResponse> prepareCallback(final Class<T> responseClass, final Callback<T> callback) {
-		if (callback == null)
-			return null;
-
-		return new FutureCallback<org.apache.http.HttpResponse>() {
-
-			public void cancelled() {
-				callback.cancelled();
-			}
-
-			public void completed(org.apache.http.HttpResponse arg0) {
-				callback.completed(new HttpResponse<T>(arg0, responseClass));
-			}
-
-			public void failed(Exception arg0) {
-				callback.failed(new UnirestException(arg0));
-			}
-
-		};
+	public static <T> CompletableFuture<HttpResponse<T>> requestAsync(HttpRequest request, final Class<T> responseClass) {
+		return requestAsync(request, responseClass, new CompletableFuture<>());
 	}
 
-	public static <T> Future<HttpResponse<T>> requestAsync(HttpRequest request, final Class<T> responseClass, Callback<T> callback) {
+	public static <T> CompletableFuture<HttpResponse<T>> requestAsync(HttpRequest request, final Class<T> responseClass, Callback<T> callback) {
+		return requestAsync(request, responseClass, CallbackFuture.wrap(callback));
+	}
+
+	public static <T> CompletableFuture<HttpResponse<T>> requestAsync(HttpRequest request, final Class<T> responseClass, CompletableFuture<HttpResponse<T>> callback) {
+		Objects.requireNonNull(callback);
+
 		HttpUriRequest requestObj = prepareRequest(request, true);
 
+		asyncClient()
+				.execute(requestObj, new FutureCallback<org.apache.http.HttpResponse>() {
+					@Override
+					public void completed(org.apache.http.HttpResponse httpResponse) {
+						callback.complete(new HttpResponse<>(httpResponse, responseClass));
+					}
+
+					@Override
+					public void failed(Exception e) {
+						callback.completeExceptionally(e);
+					}
+
+					@Override
+					public void cancelled() {
+						callback.completeExceptionally(new UnirestException("canceled"));
+					}
+				});
+		return callback;
+	}
+
+	private static CloseableHttpAsyncClient asyncClient() {
 		CloseableHttpAsyncClient asyncHttpClient = ClientFactory.getAsyncHttpClient();
 		if (!asyncHttpClient.isRunning()) {
 			asyncHttpClient.start();
 			AsyncIdleConnectionMonitorThread asyncIdleConnectionMonitorThread = (AsyncIdleConnectionMonitorThread) Options.getOption(Option.ASYNC_MONITOR);
 			asyncIdleConnectionMonitorThread.start();
 		}
-
-		final Future<org.apache.http.HttpResponse> future = asyncHttpClient.execute(requestObj, prepareCallback(responseClass, callback));
-
-		return new Future<HttpResponse<T>>() {
-
-			public boolean cancel(boolean mayInterruptIfRunning) {
-				return future.cancel(mayInterruptIfRunning);
-			}
-
-			public boolean isCancelled() {
-				return future.isCancelled();
-			}
-
-			public boolean isDone() {
-				return future.isDone();
-			}
-
-			public HttpResponse<T> get() throws InterruptedException, ExecutionException {
-				org.apache.http.HttpResponse httpResponse = future.get();
-				return new HttpResponse<T>(httpResponse, responseClass);
-			}
-
-			public HttpResponse<T> get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-				org.apache.http.HttpResponse httpResponse = future.get(timeout, unit);
-				return new HttpResponse<T>(httpResponse, responseClass);
-			}
-		};
+		return asyncHttpClient;
 	}
 
 	public static <T> HttpResponse<T> request(HttpRequest request, Class<T> responseClass) throws UnirestException {

@@ -1,8 +1,6 @@
 package io.github.openunirest.http;
 
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -15,16 +13,7 @@ public class BddTest {
 
     private CountDownLatch lock;
     private boolean status;
-
-    @BeforeClass
-    public static void suiteSetUp() {
-        MockServer.start();
-    }
-
-    @AfterClass
-    public static void suiteTearDown() {
-        MockServer.shutdown();
-    }
+    private String fail;
 
     @Before
     public void setUp() {
@@ -33,13 +22,18 @@ public class BddTest {
         status = false;
     }
 
-    protected void assertAsync() throws InterruptedException {
-        lock.await(10, TimeUnit.SECONDS);
-        assertTrue(status);
+    public void assertAsync() throws InterruptedException {
+        lock.await(5, TimeUnit.SECONDS);
+        assertTrue("Expected a async call but it never responded", status);
     }
 
-    protected void startCountdown() {
+    public void asyncSuccess() {
         status = true;
+        lock.countDown();
+    }
+
+    public void asyncFail(String message) {
+        status = false;
         lock.countDown();
     }
 
