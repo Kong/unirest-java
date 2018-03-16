@@ -51,27 +51,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static io.github.openunirest.http.TestUtils.read;
 import static org.junit.Assert.*;
 
-public class UnirestTest {
-
-    private CountDownLatch lock;
-    private boolean status;
-
-    @BeforeClass
-    public static void suiteSetUp() {
-        MockServer.start();
-    }
-
-    @AfterClass
-    public static void suiteTearDown() {
-        MockServer.shutdown();
-    }
-
-    @Before
-    public void setUp() {
-        MockServer.reset();
-        lock = new CountDownLatch(1);
-        status = false;
-    }
+public class UnirestTest extends BddTest {
 
     @Test
     public void postFormReturnJson() throws JSONException, UnirestException {
@@ -287,8 +267,7 @@ public class UnirestTest {
                         req.assertParam("param1", "value1");
                         req.assertParam("param2", "bye");
 
-                        status = true;
-                        lock.countDown();
+                        startCountdown();
                     }
 
                     public void cancelled() {
@@ -296,8 +275,7 @@ public class UnirestTest {
                     }
                 });
 
-        lock.await(10, TimeUnit.SECONDS);
-        assertTrue(status);
+        assertAsync();
     }
 
     @Test
@@ -362,8 +340,7 @@ public class UnirestTest {
                                 .getFile("test")
                                 .assertFileType("application/octet-stream");
 
-                        status = true;
-                        lock.countDown();
+                        startCountdown();
                     }
 
                     public void cancelled() {
@@ -371,8 +348,7 @@ public class UnirestTest {
                     }
                 });
 
-        lock.await(10, TimeUnit.SECONDS);
-        assertTrue(status);
+        assertAsync();
     }
 
     @Test
@@ -414,8 +390,7 @@ public class UnirestTest {
                                 .getFile("test")
                                 .assertFileType("application/octet-stream");
 
-                        status = true;
-                        lock.countDown();
+                        startCountdown();
                     }
 
                     public void cancelled() {
@@ -424,8 +399,7 @@ public class UnirestTest {
 
                 });
 
-        lock.await(10, TimeUnit.SECONDS);
-        assertTrue(status);
+        assertAsync();
     }
 
     @Test
@@ -445,8 +419,7 @@ public class UnirestTest {
                         parse.getFile("test").assertFileType("application/octet-stream");
                         parse.getFile("test").assertBody("This is a test file");
 
-                        status = true;
-                        lock.countDown();
+                        startCountdown();
                     }
 
                     public void cancelled() {
@@ -455,8 +428,7 @@ public class UnirestTest {
 
                 });
 
-        lock.await(10, TimeUnit.SECONDS);
-        assertTrue(status);
+        assertAsync();
     }
 
     @Test
@@ -623,8 +595,7 @@ public class UnirestTest {
                                 .asserBody("{\"hello\":\"world\"}")
                                 .assertHeader("Content-Type", "application/json");
 
-                        status = true;
-                        lock.countDown();
+                        startCountdown();
                     }
 
                     public void cancelled() {
@@ -632,8 +603,7 @@ public class UnirestTest {
                     }
                 });
 
-        lock.await(10, TimeUnit.SECONDS);
-        assertTrue(status);
+        assertAsync();
     }
 
     @Test
@@ -655,8 +625,7 @@ public class UnirestTest {
                                 .assertParam("hello", "world")
                                 .assertHeader("Content-Type", "application/x-www-form-urlencoded");
 
-                        status = true;
-                        lock.countDown();
+                        startCountdown();
                     }
 
                     public void cancelled() {
@@ -664,9 +633,10 @@ public class UnirestTest {
                     }
                 });
 
-        lock.await(10, TimeUnit.SECONDS);
-        assertTrue(status);
+        assertAsync();
     }
+
+
 
     @Test
     public void testGetQuerystringArray() throws JSONException, UnirestException {
@@ -861,8 +831,8 @@ public class UnirestTest {
                         assertEquals("You did something bad", TestUtil.toString(response.getRawBody()));
                         assertEquals("org.json.JSONException: A JSONArray text must start with '[' at 1 [character 2 line 1]",
                                 response.getParsingError().get().getMessage());
-                        lock.countDown();
-                        status = true;
+
+                        startCountdown();
                     }
 
                     @Override
@@ -876,8 +846,7 @@ public class UnirestTest {
                     }
                 }
         );
-        lock.await(10, TimeUnit.SECONDS);
-        assertTrue(status);
+        assertAsync();
     }
 
     @Test
@@ -898,10 +867,5 @@ public class UnirestTest {
         }
 
         throw new RuntimeException("Couldn't find an available IP address in the range of 192.168.0.100-255");
-    }
-
-    private RequestCapture parse(HttpResponse<JsonNode> response) {
-        assertEquals(200, response.getStatus());
-        return read(response, RequestCapture.class);
     }
 }
