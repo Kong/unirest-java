@@ -46,6 +46,7 @@ public class Unirest {
 
 	/**
 	 * Set the HttpClient implementation to use for every synchronous request
+	 *  @param httpClient Custom httpClient implementation
 	 */
 	public static void setHttpClient(HttpClient httpClient) {
 		Options.setOption(Option.HTTPCLIENT, httpClient);
@@ -54,6 +55,7 @@ public class Unirest {
 
 	/**
 	 * Set the asynchronous AbstractHttpAsyncClient implementation to use for every asynchronous request
+	 *  @param asyncHttpClient Custom CloseableHttpAsyncClient implementation
 	 */
 	public static void setAsyncHttpClient(CloseableHttpAsyncClient asyncHttpClient) {
 		Options.setOption(Option.ASYNCHTTPCLIENT, asyncHttpClient);
@@ -62,6 +64,7 @@ public class Unirest {
 
 	/**
 	 * Set a proxy
+	 *  @param proxy Proxy settings object.
 	 */
 	public static void setProxy(HttpHost proxy) {
 		Options.setOption(Option.PROXY, proxy);
@@ -118,7 +121,9 @@ public class Unirest {
 	}
 
 	/**
-	 * Set default header
+	 * Set default header to appear on all requests
+	 *  @param name The name of the header.
+	 *  @param value The value of the header.
 	 */
 	@SuppressWarnings("unchecked")
 	public static void setDefaultHeader(String name, String value) {
@@ -132,6 +137,7 @@ public class Unirest {
 
 	/**
 	 * Close the asynchronous client and its event loop. Use this method to close all the threads and allow an application to exit.
+	 * @throws IOException Because of course it does
 	 */
 	public static void shutdown() throws IOException {
 		// Closing the Sync HTTP client
