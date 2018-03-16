@@ -80,6 +80,7 @@ public class Options {
 		CloseableHttpClient build = HttpClientBuilder.create()
 				.setDefaultRequestConfig(clientConfig)
 				.setConnectionManager(syncConnectionManager)
+				.useSystemProperties()
 				.build();
 
 		setOption(Option.HTTPCLIENT, build);
@@ -96,6 +97,7 @@ public class Options {
 		CloseableHttpAsyncClient asyncClient = HttpAsyncClientBuilder.create()
 				.setDefaultRequestConfig(clientConfig)
 				.setConnectionManager(asyncConnectionManager)
+				.useSystemProperties()
 				.build();
 
 		setOption(Option.ASYNCHTTPCLIENT, asyncClient);
