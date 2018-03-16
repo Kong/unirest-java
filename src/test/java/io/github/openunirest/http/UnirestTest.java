@@ -850,6 +850,36 @@ public class UnirestTest {
                 response.getParsingError().get().getMessage());
     }
 
+    @Test
+    public void failureToReturnValidJsonWillResultInAnEmptyNodeAsync() throws InterruptedException {
+        Unirest.get(MockServer.INVALID_REQUEST).asJsonAsync(
+                new Callback<JsonNode>() {
+                    @Override
+                    public void completed(HttpResponse<JsonNode> response) {
+                        assertEquals(400, response.getStatus());
+                        assertNull(response.getBody());
+                        assertEquals("You did something bad", TestUtil.toString(response.getRawBody()));
+                        assertEquals("org.json.JSONException: A JSONArray text must start with '[' at 1 [character 2 line 1]",
+                                response.getParsingError().get().getMessage());
+                        lock.countDown();
+                        status = true;
+                    }
+
+                    @Override
+                    public void failed(UnirestException e) {
+                        fail("The call itself didn't fail");
+                    }
+
+                    @Override
+                    public void cancelled() {
+                        fail("The call itself didn't cancel");
+                    }
+                }
+        );
+        lock.await(10, TimeUnit.SECONDS);
+        assertTrue(status);
+    }
+
 
     private String findAvailableIpAddress() throws IOException {
         for (int i = 100; i <= 255; i++) {
