@@ -839,6 +839,17 @@ public class UnirestTest {
         assertEquals("Only header \"Content-Type\" should exist", "application/json", headers.getFirst("Content-Type"));
     }
 
+    @Test
+    public void failureToReturnValidJsonWillResultInAnEmptyNode() {
+        HttpResponse<JsonNode> response = Unirest.get(MockServer.INVALID_REQUEST).asJson();
+
+        assertEquals(400, response.getStatus());
+        assertNull(response.getBody());
+        assertEquals("You did something bad", TestUtil.toString(response.getRawBody()));
+        assertEquals("org.json.JSONException: A JSONArray text must start with '[' at 1 [character 2 line 1]",
+                response.getParsingError().get().getMessage());
+    }
+
 
     private String findAvailableIpAddress() throws IOException {
         for (int i = 100; i <= 255; i++) {

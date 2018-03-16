@@ -36,8 +36,10 @@ import org.apache.http.util.EntityUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.zip.GZIPInputStream;
 
 public class HttpResponse<T> {
@@ -46,6 +48,7 @@ public class HttpResponse<T> {
 	private String statusText;
 	private Headers headers = new Headers();
 	private InputStream rawBody;
+	private Optional<RuntimeException> parsingError = Optional.empty();
 	private T body;
 
 	@SuppressWarnings("unchecked")
@@ -91,8 +94,7 @@ public class HttpResponse<T> {
 				this.rawBody = new ByteArrayInputStream(rawBody);
 
 				if (JsonNode.class.equals(responseClass)) {
-					String jsonString = new String(rawBody, charset).trim();
-					this.body = (T) new JsonNode(jsonString);
+					tryParseAsJson(charset, rawBody);
 				} else if (String.class.equals(responseClass)) {
 					this.body = (T) new String(rawBody, charset);
 				} else if (InputStream.class.equals(responseClass)) {
@@ -108,6 +110,16 @@ public class HttpResponse<T> {
 		}
 
 		EntityUtils.consumeQuietly(responseEntity);
+	}
+
+	private void tryParseAsJson(String charset, byte[] rawBody) throws UnsupportedEncodingException {
+		try {
+			String jsonString = new String(rawBody, charset).trim();
+			this.body = (T) new JsonNode(jsonString);
+		}catch (RuntimeException e){
+			this.body = null;
+			this.parsingError = Optional.of(e);
+		}
 	}
 
 	public int getStatus() {
@@ -132,5 +144,9 @@ public class HttpResponse<T> {
 
 	public T getBody() {
 		return body;
+	}
+
+	public Optional<RuntimeException> getParsingError() {
+		return parsingError;
 	}
 }

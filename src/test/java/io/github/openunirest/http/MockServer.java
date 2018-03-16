@@ -45,6 +45,7 @@ public class MockServer {
 	public static final String DELETE = HOST + "/delete";
 	public static final String GZIP = HOST + "/gzip";
 	public static final String PATCH = HOST + "/patch";
+	public static final String INVALID_REQUEST = HOST + "/invalid";
 
 
 	public static void setJsonAsResponse(Object o){
@@ -62,6 +63,12 @@ public class MockServer {
         get("/get", MockServer::jsonResponse);
         get("/gzip", MockServer::gzipResponse);
         patch("/patch", MockServer::jsonResponse);
+        get("/invalid", MockServer::inValid);
+	}
+
+	private static Object inValid(Request request, Response response) {
+		response.status(400);
+		return "You did something bad";
 	}
 
 	private static Object gzipResponse(Request request, Response response) {
