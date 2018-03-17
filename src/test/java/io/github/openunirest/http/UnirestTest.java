@@ -26,18 +26,18 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package io.github.openunirest.http;
 
-import io.github.openunirest.http.async.Callback;
-import io.github.openunirest.http.options.Options;
+import io.github.openunirest.http.async.MockCallback;
 import io.github.openunirest.http.exceptions.UnirestException;
+import io.github.openunirest.http.options.Options;
 import io.github.openunirest.request.GetRequest;
 import io.github.openunirest.request.HttpRequest;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.json.JSONException;
-import org.junit.*;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -46,7 +46,6 @@ import java.util.Arrays;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static io.github.openunirest.http.TestUtils.read;
 import static org.junit.Assert.*;
 
 public class UnirestTest extends BddTest {
@@ -254,24 +253,11 @@ public class UnirestTest extends BddTest {
                 .header("accept", "application/json")
                 .field("param1", "value1")
                 .field("param2", "bye")
-                .asJsonAsync(new Callback<JsonNode>() {
-
-                    public void failed(UnirestException e) {
-                        fail();
-                    }
-
-                    public void completed(HttpResponse<JsonNode> jsonResponse) {
-                        RequestCapture req = parse(jsonResponse);
-                        req.assertParam("param1", "value1");
-                        req.assertParam("param2", "bye");
-
-                        asyncSuccess();
-                    }
-
-                    public void cancelled() {
-                        fail();
-                    }
-                });
+                .asJsonAsync(new MockCallback<>(this, r -> {
+                    RequestCapture req = parse(r);
+                    req.assertParam("param1", "value1");
+                    req.assertParam("param2", "bye");
+                }));
 
         assertAsync();
     }
@@ -326,25 +312,11 @@ public class UnirestTest extends BddTest {
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
                 .field("file", new FileInputStream(new File(getClass().getResource("/test").toURI())), ContentType.APPLICATION_OCTET_STREAM, "test")
-                .asJsonAsync(new Callback<JsonNode>() {
-
-                    public void failed(UnirestException e) {
-                        fail();
-                    }
-
-                    public void completed(HttpResponse<JsonNode> response) {
-                        parse(response)
-                                .assertParam("name", "Mark")
-                                .getFile("test")
-                                .assertFileType("application/octet-stream");
-
-                        asyncSuccess();
-                    }
-
-                    public void cancelled() {
-                        fail();
-                    }
-                });
+                .asJsonAsync(new MockCallback<>(this, r -> parse(r)
+                        .assertParam("name", "Mark")
+                        .getFile("test")
+                        .assertFileType("application/octet-stream"))
+                );
 
         assertAsync();
     }
@@ -367,7 +339,7 @@ public class UnirestTest extends BddTest {
     }
 
     @Test
-    public void testMultipartByteContentTypeAsync() throws JSONException, InterruptedException, ExecutionException, URISyntaxException, IOException {
+    public void testMultipartByteContentTypeAsync() throws Exception {
         final InputStream stream = new FileInputStream(new File(getClass().getResource("/test").toURI()));
         final byte[] bytes = new byte[stream.available()];
         stream.read(bytes);
@@ -376,55 +348,28 @@ public class UnirestTest extends BddTest {
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
                 .field("file", bytes, "test")
-                .asJsonAsync(new Callback<JsonNode>() {
-
-                    public void failed(UnirestException e) {
-                        fail();
-                    }
-
-                    public void completed(HttpResponse<JsonNode> response) {
-                        parse(response)
+                .asJsonAsync(new MockCallback<>(this, r ->
+                        parse(r)
                                 .assertParam("name", "Mark")
                                 .getFile("test")
-                                .assertFileType("application/octet-stream");
-
-                        asyncSuccess();
-                    }
-
-                    public void cancelled() {
-                        fail();
-                    }
-
-                });
+                                .assertFileType("application/octet-stream"))
+                );
 
         assertAsync();
     }
 
     @Test
-    public void testMultipartAsync() throws JSONException, InterruptedException, ExecutionException, URISyntaxException, UnirestException {
+    public void testMultipartAsync() throws Exception {
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
                 .field("file", new File(getClass().getResource("/test").toURI()))
-                .asJsonAsync(new Callback<JsonNode>() {
-
-                    public void failed(UnirestException e) {
-                        fail();
-                    }
-
-                    public void completed(HttpResponse<JsonNode> response) {
-                        RequestCapture parse = parse(response);
-                        parse.assertParam("name", "Mark");
-                        parse.getFile("test").assertFileType("application/octet-stream");
-                        parse.getFile("test").assertBody("This is a test file");
-
-                        asyncSuccess();
-                    }
-
-                    public void cancelled() {
-                        fail();
-                    }
-
-                });
+                .asJsonAsync(new MockCallback<>(this, r ->
+                        parse(r)
+                                .assertParam("name", "Mark")
+                                .getFile("test")
+                                .assertFileType("application/octet-stream")
+                                .assertBody("This is a test file"))
+                );
 
         assertAsync();
     }
@@ -468,7 +413,7 @@ public class UnirestTest extends BddTest {
 
         jsonResponse = Unirest.get(MockServer.GET).asJson();
         parse(jsonResponse)
-            .assertNoHeader("X-Custom-Header");
+                .assertNoHeader("X-Custom-Header");
     }
 
     @Test
@@ -577,29 +522,15 @@ public class UnirestTest extends BddTest {
     }
 
     @Test
-    public void testAsyncCustomContentType() throws InterruptedException {
+    public void testAsyncCustomContentType() throws Exception {
         Unirest.post(MockServer.POST)
                 .header("accept", "application/json")
                 .header("Content-Type", "application/json")
                 .body("{\"hello\":\"world\"}")
-                .asJsonAsync(new Callback<JsonNode>() {
-
-                    public void failed(UnirestException e) {
-                        fail();
-                    }
-
-                    public void completed(HttpResponse<JsonNode> jsonResponse) {
-                        parse(jsonResponse)
+                .asJsonAsync(new MockCallback<>(this, r -> parse(r)
                                 .asserBody("{\"hello\":\"world\"}")
-                                .assertHeader("Content-Type", "application/json");
-
-                        asyncSuccess();
-                    }
-
-                    public void cancelled() {
-                        fail();
-                    }
-                });
+                                .assertHeader("Content-Type", "application/json"))
+                );
 
         assertAsync();
     }
@@ -611,29 +542,14 @@ public class UnirestTest extends BddTest {
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .field("name", "Mark")
                 .field("hello", "world")
-                .asJsonAsync(new Callback<JsonNode>() {
-
-                    public void failed(UnirestException e) {
-                        fail();
-                    }
-
-                    public void completed(HttpResponse<JsonNode> jsonResponse) {
-                        parse(jsonResponse)
+                .asJsonAsync(new MockCallback<>(this, r -> parse(r)
                                 .assertParam("name", "Mark")
                                 .assertParam("hello", "world")
-                                .assertHeader("Content-Type", "application/x-www-form-urlencoded");
-
-                        asyncSuccess();
-                    }
-
-                    public void cancelled() {
-                        fail();
-                    }
-                });
+                                .assertHeader("Content-Type", "application/x-www-form-urlencoded")
+                ));
 
         assertAsync();
     }
-
 
 
     @Test
@@ -820,37 +736,23 @@ public class UnirestTest extends BddTest {
 
     @Test
     public void failureToReturnValidJsonWillResultInAnEmptyNodeAsync() throws InterruptedException {
-        Unirest.get(MockServer.INVALID_REQUEST).asJsonAsync(
-                new Callback<JsonNode>() {
-                    @Override
-                    public void completed(HttpResponse<JsonNode> response) {
+        Unirest.get(MockServer.INVALID_REQUEST)
+                .asJsonAsync(new MockCallback<>(this, response -> {
                         assertEquals(400, response.getStatus());
                         assertNull(response.getBody());
                         assertEquals("You did something bad", TestUtil.toString(response.getRawBody()));
                         assertEquals("org.json.JSONException: A JSONArray text must start with '[' at 1 [character 2 line 1]",
                                 response.getParsingError().get().getMessage());
 
-                        asyncSuccess();
-                    }
+                    }));
 
-                    @Override
-                    public void failed(UnirestException e) {
-                        fail("The call itself didn't fail");
-                    }
-
-                    @Override
-                    public void cancelled() {
-                        fail("The call itself didn't cancel");
-                    }
-                }
-        );
         assertAsync();
     }
 
     @Test
     public void willNotCacheBasicAuth() {
-        RequestCapture r1 = parse(Unirest.get(MockServer.GET).basicAuth("foo","bar").asJson());
-        RequestCapture r2 = parse(Unirest.get(MockServer.ALTGET).basicAuth("baz","qux").asJson());
+        RequestCapture r1 = parse(Unirest.get(MockServer.GET).basicAuth("foo", "bar").asJson());
+        RequestCapture r2 = parse(Unirest.get(MockServer.ALTGET).basicAuth("baz", "qux").asJson());
 
         r1.assertBasicAuth("foo", "bar");
         r2.assertBasicAuth("baz", "qux");

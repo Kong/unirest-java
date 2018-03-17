@@ -149,12 +149,14 @@ public class RequestCapture {
         public String body;
         public String fileType;
 
-        public void assertBody(String content){
+        public File assertBody(String content){
             assertEquals(content, body);
+            return this;
         }
 
-        public void assertFileType(String type){
+        public File assertFileType(String type){
             assertEquals(type, this.fileType);
+            return this;
         }
     }
 }
