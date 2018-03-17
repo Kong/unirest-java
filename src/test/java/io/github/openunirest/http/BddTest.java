@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import static io.github.openunirest.http.TestUtils.read;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class BddTest {
@@ -27,6 +28,12 @@ public class BddTest {
         assertTrue("Expected a async call but it never responded", status);
     }
 
+    public void assertFailed(String message) throws InterruptedException {
+        lock.await(5, TimeUnit.SECONDS);
+        assertFalse("Should have failed", status);
+        assertEquals(message, fail);
+    }
+
     public void asyncSuccess() {
         status = true;
         lock.countDown();
@@ -35,6 +42,7 @@ public class BddTest {
     public void asyncFail(String message) {
         status = false;
         lock.countDown();
+        fail = message;
     }
 
     public static RequestCapture parse(HttpResponse<JsonNode> response) {
