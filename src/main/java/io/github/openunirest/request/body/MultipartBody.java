@@ -51,8 +51,8 @@ import io.github.openunirest.request.BaseRequest;
 import io.github.openunirest.request.HttpRequest;
 
 public class MultipartBody extends BaseRequest implements Body {
-	private Map<String, List<Object>> parameters = new LinkedHashMap<String, List<Object>>();
-	private Map<String, ContentType> contentTypes = new HashMap<String, ContentType>();
+	private Map<String, List<Object>> parameters = new LinkedHashMap<>();
+	private Map<String, ContentType> contentTypes = new HashMap<>();
 
 	private boolean hasFile;
 	private HttpRequest httpRequestObj;
@@ -88,12 +88,9 @@ public class MultipartBody extends BaseRequest implements Body {
 	}
 
 	public MultipartBody field(String name, Object value, boolean file, String contentType) {
-		List<Object> list = parameters.get(name);
-		if (list == null)
-			list = new LinkedList<Object>();
+		List<Object> list = parameters.computeIfAbsent(name, n -> new LinkedList<>());
 		list.add(value);
-		parameters.put(name, list);
-
+		
 		ContentType type = null;
 		if (contentType != null && contentType.length() > 0) {
 			type = ContentType.parse(contentType);
