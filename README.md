@@ -32,13 +32,6 @@ Unirest.post("http://httpbin.org/post")
 * Automatic JSON parsing into a native object for JSON responses
 * Customizable binding, with mapping from response body to java Object 
 
-## Installing
-Is easy as pie. Kidding. It's about as easy as doing these little steps:
-
-### With Maven
-
-We are working on getting this new fork into Maven Central. Hold tight
-
 
 ## Creating Request
 So you're probably wondering how using Unirest makes creating requests in Java easier, here is a basic POST request that will explain everything:
