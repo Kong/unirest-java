@@ -11,7 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class BddTest {
-
+    private JacksonObjectMapper objectMapper = new JacksonObjectMapper();
     private CountDownLatch lock;
     private boolean status;
     private String fail;
@@ -19,6 +19,7 @@ public class BddTest {
     @Before
     public void setUp() {
         MockServer.reset();
+        Unirest.setObjectMapper(objectMapper);
         lock = new CountDownLatch(1);
         status = false;
     }
