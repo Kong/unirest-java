@@ -118,7 +118,7 @@ The placeholder's format is as easy as: `{custom_name}`
 Sometimes, well most of the time, you want your application to be asynchronous and not block, Unirest supports this in Java using anonymous callbacks, or direct method placement:
 
 ```java
-Future<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.org/post")
+CompletableFuture<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.org/post")
   .header("accept", "application/json")
   .field("param1", "value1")
   .field("param2", "value2")
