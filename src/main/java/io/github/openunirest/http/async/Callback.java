@@ -32,7 +32,7 @@ public interface Callback<T> {
 
 	void completed(HttpResponse<T> response);
 
-	void failed(UnirestException e);
+	default void failed(UnirestException e){}
 
-	void cancelled();
+	default void cancelled(){}
 }

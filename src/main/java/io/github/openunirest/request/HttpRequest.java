@@ -109,10 +109,10 @@ public class HttpRequest extends BaseRequest {
 			queryString.append("?");
 		}
 		try {
-			queryString
-				.append(URLEncoder.encode(name))
-				.append("=")
-				.append(URLEncoder.encode((value == null) ? "" : value.toString(), "UTF-8"));
+			queryString.append(URLEncoder.encode(name));
+			if(value != null) {
+				queryString.append("=").append(URLEncoder.encode(value.toString(), "UTF-8"));
+			}
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
@@ -123,7 +123,7 @@ public class HttpRequest extends BaseRequest {
 	public HttpRequest queryString(Map<String, Object> parameters) {
 		if (parameters != null) {
 			for (Entry<String, Object> param : parameters.entrySet()) {
-				if (param.getValue() instanceof String || param.getValue() instanceof Number || param.getValue() instanceof Boolean) {
+				if (param.getValue() instanceof String || param.getValue() instanceof Number || param.getValue() instanceof Boolean || param.getValue() == null) {
 					queryString(param.getKey(), param.getValue());
 				} else {
 					throw new RuntimeException("Parameter \"" + param.getKey() + "\" can't be sent with a GET request because of type: " + param.getValue().getClass().getName());

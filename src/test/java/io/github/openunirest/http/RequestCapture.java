@@ -24,12 +24,14 @@ public class RequestCapture {
     public Multimap<String, String> params = HashMultimap.create();
     public String body;
     public String url;
+    public String queryString;
 
     public RequestCapture() {
     }
 
     public RequestCapture(Request req) {
         url = req.url();
+        queryString = req.queryString();
         writeHeaders(req);
         writeQuery(req);
     }
@@ -140,6 +142,10 @@ public class RequestCapture {
         assertNotNull("Authorization Header Missing", raw);
         String credentials = raw.replace("Basic ","");
         assertEquals(username + ":" + password, new String(Base64.getDecoder().decode(credentials)));
+    }
+
+    public void assertQueryString(String s) {
+        assertEquals(s, queryString);
     }
 
     public static class File {
