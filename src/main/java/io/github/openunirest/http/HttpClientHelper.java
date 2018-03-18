@@ -27,9 +27,6 @@ package io.github.openunirest.http;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -66,6 +63,7 @@ public class HttpClientHelper {
 	private static final String ACCEPT_ENCODING_HEADER = "accept-encoding";
 	private static final String USER_AGENT_HEADER = "user-agent";
 	private static final String USER_AGENT = "unirest-java/1.3.11";
+	private static final UriFormatter uriFormatter = new UriFormatter();
 
 	public static <T> CompletableFuture<HttpResponse<T>> requestAsync(HttpRequest request, final Class<T> responseClass) {
 		return requestAsync(request, responseClass, new CompletableFuture<>());
@@ -149,22 +147,7 @@ public class HttpClientHelper {
 
 		HttpRequestBase reqObj = null;
 
-		String urlToRequest = null;
-		try {
-			URL url = new URL(request.getUrl());
-			URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), URLDecoder.decode(url.getPath(), "UTF-8"), "", url.getRef());
-			urlToRequest = uri.toURL().toString();
-			if (url.getQuery() != null && !url.getQuery().trim().equals("")) {
-				if (!urlToRequest.substring(urlToRequest.length() - 1).equals("?")) {
-					urlToRequest += "?";
-				}
-				urlToRequest += url.getQuery();
-			} else if (urlToRequest.substring(urlToRequest.length() - 1).equals("?")) {
-				urlToRequest = urlToRequest.substring(0, urlToRequest.length() - 1);
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		String urlToRequest = uriFormatter.apply(request);
 
 		switch (request.getHttpMethod()) {
 		case GET:
