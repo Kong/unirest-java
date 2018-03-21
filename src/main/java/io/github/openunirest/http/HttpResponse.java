@@ -28,19 +28,14 @@ package io.github.openunirest.http;
 import io.github.openunirest.http.options.Option;
 import io.github.openunirest.http.options.Options;
 import io.github.openunirest.http.utils.ResponseUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
 import org.apache.http.util.EntityUtils;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.zip.GZIPInputStream;
 
 public class HttpResponse<T> {
 
@@ -53,39 +48,22 @@ public class HttpResponse<T> {
 
 	@SuppressWarnings("unchecked")
 	public HttpResponse(org.apache.http.HttpResponse response, Class<T> responseClass) {
-		HttpEntity responseEntity = response.getEntity();
 		ObjectMapper objectMapper = (ObjectMapper) Options.getOption(Option.OBJECT_MAPPER);
 
 		headers = new Headers(response.getAllHeaders());
-		
+
 		StatusLine statusLine = response.getStatusLine();
 		this.statusCode = statusLine.getStatusCode();
 		this.statusText = statusLine.getReasonPhrase();
 
+		HttpEntity responseEntity = response.getEntity();
 		if (responseEntity != null) {
-			String charset = "UTF-8";
-
-			Header contentType = responseEntity.getContentType();
-			if (contentType != null) {
-				String responseCharset = ResponseUtils.getCharsetFromContentType(contentType.getValue());
-				if (responseCharset != null && !responseCharset.trim().equals("")) {
-					charset = responseCharset;
-				}
-			}
+			String charset = ResponseUtils.getCharsetfromResponse(responseEntity);
 
 			try {
-				byte[] rawBody;
-				try {
-					InputStream responseInputStream = responseEntity.getContent();
-					if (ResponseUtils.isGzipped(responseEntity.getContentEncoding())) {
-						responseInputStream = new GZIPInputStream(responseEntity.getContent());
-					}
-					rawBody = ResponseUtils.getBytes(responseInputStream);
-				} catch (IOException e2) {
-					throw new RuntimeException(e2);
-				}
+				byte[] rawBody = ResponseUtils.getRawBody(responseEntity);
 				this.rawBody = new ByteArrayInputStream(rawBody);
-
+				
 				if (JsonNode.class.equals(responseClass)) {
 					tryParseAsJson(charset, rawBody);
 				} else if (String.class.equals(responseClass)) {
