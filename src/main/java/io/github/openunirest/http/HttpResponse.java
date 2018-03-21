@@ -44,9 +44,9 @@ import java.util.zip.GZIPInputStream;
 
 public class HttpResponse<T> {
 
+	private final Headers headers;
 	private int statusCode;
 	private String statusText;
-	private Headers headers = new Headers();
 	private InputStream rawBody;
 	private Optional<RuntimeException> parsingError = Optional.empty();
 	private T body;
@@ -56,15 +56,8 @@ public class HttpResponse<T> {
 		HttpEntity responseEntity = response.getEntity();
 		ObjectMapper objectMapper = (ObjectMapper) Options.getOption(Option.OBJECT_MAPPER);
 
-		Header[] allHeaders = response.getAllHeaders();
-		for (Header header : allHeaders) {
-			String headerName = header.getName();
-			List<String> list = headers.get(headerName);
-			if (list == null)
-				list = new ArrayList<String>();
-			list.add(header.getValue());
-			headers.put(headerName, list);
-		}
+		headers = new Headers(response.getAllHeaders());
+		
 		StatusLine statusLine = response.getStatusLine();
 		this.statusCode = statusLine.getStatusCode();
 		this.statusText = statusLine.getReasonPhrase();
