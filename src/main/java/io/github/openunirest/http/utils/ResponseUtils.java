@@ -74,11 +74,11 @@ public class ResponseUtils {
 
     public static byte[] getRawBody(HttpEntity responseEntity) {
         try {
-            InputStream responseInputStream = responseEntity.getContent();
+            InputStream is = responseEntity.getContent();
             if (isGzipped(responseEntity.getContentEncoding())) {
-                responseInputStream = new GZIPInputStream(responseEntity.getContent());
+                is = new GZIPInputStream(responseEntity.getContent());
             }
-            return getBytes(responseInputStream);
+            return getBytes(is);
         } catch (IOException e2) {
             throw new RuntimeException(e2);
         }

@@ -40,22 +40,30 @@ import java.util.Optional;
 public class HttpResponse<T> {
 
 	private final Headers headers;
-	private int statusCode;
-	private String statusText;
+	private final int statusCode;
+	private final String statusText;
+
 	private InputStream rawBody;
 	private Optional<RuntimeException> parsingError = Optional.empty();
 	private T body;
 
-	@SuppressWarnings("unchecked")
-	public HttpResponse(org.apache.http.HttpResponse response, Class<T> responseClass) {
-		ObjectMapper objectMapper = (ObjectMapper) Options.getOption(Option.OBJECT_MAPPER);
-
+	private HttpResponse(org.apache.http.HttpResponse response){
 		headers = new Headers(response.getAllHeaders());
-
 		StatusLine statusLine = response.getStatusLine();
 		this.statusCode = statusLine.getStatusCode();
 		this.statusText = statusLine.getReasonPhrase();
+	}
 
+	public HttpResponse(org.apache.http.HttpResponse response, BodyData<T> data){
+		this(response);
+		this.rawBody = data.getRawInput();
+		this.body = data.getTransFormedBody();
+	}
+
+	public HttpResponse(org.apache.http.HttpResponse response, Class<T> responseClass) {
+		this(response);
+
+		ObjectMapper objectMapper = (ObjectMapper) Options.getOption(Option.OBJECT_MAPPER);
 		HttpEntity responseEntity = response.getEntity();
 		if (responseEntity != null) {
 			String charset = ResponseUtils.getCharsetfromResponse(responseEntity);
