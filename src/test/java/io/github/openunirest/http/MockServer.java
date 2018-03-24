@@ -88,4 +88,8 @@ public class MockServer {
 	public static void shutdown() {
 		Spark.stop();
 	}
+
+	public static void setStringResponse(String stringResponse) {
+		MockServer.responseBody = stringResponse;
+	}
 }

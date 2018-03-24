@@ -49,4 +49,12 @@ public class TestUtil {
             assertEquals("Wrong Error Message", message, e.getMessage());
         }
     }
+
+    public static <T> T readValue(String body, Class<T> as) {
+        try {
+            return om.readValue(body, as);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
