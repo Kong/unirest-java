@@ -24,9 +24,13 @@ public class BddTest {
         status = false;
     }
 
-    public void assertAsync() throws InterruptedException {
-        lock.await(5, TimeUnit.SECONDS);
-        assertTrue("Expected a async call but it never responded", status);
+    public void assertAsync()  {
+        try {
+            lock.await(5, TimeUnit.SECONDS);
+            assertTrue("Expected a async call but it never responded", status);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void assertFailed(String message) throws InterruptedException {

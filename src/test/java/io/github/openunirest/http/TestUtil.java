@@ -18,7 +18,11 @@ public class TestUtil {
                 .lines().collect(Collectors.joining("\n"));
     }
 
-    public static <T> T readValue(InputStream i, Class<T> clss) throws IOException {
-        return om.readValue(i, clss);
+    public static <T> T readValue(InputStream i, Class<T> clss) {
+        try {
+            return om.readValue(i, clss);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
