@@ -2,6 +2,8 @@ package io.github.openunirest.http.options;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import io.github.openunirest.http.async.utils.AsyncIdleConnectionMonitorThread;
 import io.github.openunirest.http.utils.SyncIdleConnectionMonitorThread;
@@ -128,5 +130,13 @@ public class Options {
 		setOption(Option.MAX_TOTAL, MAX_TOTAL);
 		setOption(Option.MAX_PER_ROUTE, MAX_PER_ROUTE);
 		setOption(Option.SYNC_MONITOR, defaultSyncMonitor);
+	}
+
+	public static <T> Optional<T> tryGet(Option option, Class<T> as) {
+		Object o = getOption(option);
+		if(Objects.isNull(o) || !as.isAssignableFrom(o.getClass())){
+			return Optional.empty();
+		}
+		return Optional.of((T) o);
 	}
 }

@@ -1,5 +1,8 @@
 package io.github.openunirest.http.options;
 
+import io.github.openunirest.http.JacksonObjectMapper;
+import io.github.openunirest.http.ObjectMapper;
+import io.github.openunirest.http.Unirest;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -38,16 +41,26 @@ public class OptionsTest {
         assertOpDefault(Options.MAX_PER_ROUTE, Option.MAX_PER_ROUTE, 4);
     }
 
-    private void assertOpDefault(Object defValue, Option option, Object newValue) {
-        assertEquals(defValue, Options.getOption(option));
-        Options.setOption(option, newValue);
-        assertEquals(newValue, Options.getOption(option));
-    }
-
     @Test
     public void shouldReuseThreadPool() {
         int startingCount = ManagementFactory.getThreadMXBean().getThreadCount();
         IntStream.range(0,100).forEach(i -> Options.refresh());
         assertThat(ManagementFactory.getThreadMXBean().getThreadCount(), is(lessThan(startingCount + 10)));
+    }
+
+    @Test
+    public void canTryGet(){
+        assertEquals(false, Options.tryGet(Option.OBJECT_MAPPER, ObjectMapper.class).isPresent());
+        Options.setOption(Option.OBJECT_MAPPER, "foo");
+        assertEquals(false, Options.tryGet(Option.OBJECT_MAPPER, ObjectMapper.class).isPresent());
+        JacksonObjectMapper value = new JacksonObjectMapper();
+        Options.setOption(Option.OBJECT_MAPPER, value);
+        assertEquals(value, Options.tryGet(Option.OBJECT_MAPPER, ObjectMapper.class).get());
+    }
+
+    private void assertOpDefault(Object defValue, Option option, Object newValue) {
+        assertEquals(defValue, Options.getOption(option));
+        Options.setOption(option, newValue);
+        assertEquals(newValue, Options.getOption(option));
     }
 }
