@@ -15,6 +15,7 @@ import static io.github.openunirest.http.TestUtil.assertException;
 import static io.github.openunirest.http.TestUtil.toJson;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 public class ResponseBuilderTest {
@@ -97,5 +98,25 @@ public class ResponseBuilderTest {
         HttpResponse<String> r = builder.asString(response);
 
         assertEquals("I like cheese", r.getBody());
+    }
+
+    @Test
+    public void canGetJsonResponse() {
+        response.setBody("{\"foo\": \"I like cheese\"}");
+
+        HttpResponse<JsonNode> r = builder.asJson(response);
+
+        assertEquals("I like cheese", r.getBody().getObject().get("foo"));
+    }
+
+    @Test
+    public void willNotBlowUpOnError() {
+        response.setBody("I like cheese");
+
+        HttpResponse<JsonNode> r = builder.asJson(response);
+
+        assertNull(r.getBody());
+        assertEquals("org.json.JSONException: A JSONArray text must start with '[' at 1 [character 2 line 1]",
+                r.getParsingError().get().getMessage());
     }
 }

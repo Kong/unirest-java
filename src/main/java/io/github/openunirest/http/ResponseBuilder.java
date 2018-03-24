@@ -12,6 +12,10 @@ import static io.github.openunirest.http.BodyData.from;
 
 public class ResponseBuilder {
 
+    public HttpResponse<JsonNode> asJson(org.apache.http.HttpResponse response) {
+        return new HttpResponse<>(response, from(response.getEntity(), b -> toJson(b)));
+    }
+
     public HttpResponse<InputStream> asBinary(org.apache.http.HttpResponse response){
         return new HttpResponse<>(response, from(response.getEntity(), BodyData::getRawInput));
     }
@@ -37,13 +41,18 @@ public class ResponseBuilder {
         }
     }
 
+    private JsonNode toJson(BodyData<JsonNode> b) {
+        String jsonString = toString(b);
+        return new JsonNode(jsonString);
+    }
+
     private ObjectMapper getObjectMapper() {
         return Options.tryGet(Option.OBJECT_MAPPER, ObjectMapper.class)
                 .orElseThrow(() -> new UnirestException("No Object Mapper Configured. Please configure one with Unirest.setObjectMapper"));
     }
 
-
     public static class ParsingException extends RuntimeException {
+
         public ParsingException(Exception e){
             super(e);
         }

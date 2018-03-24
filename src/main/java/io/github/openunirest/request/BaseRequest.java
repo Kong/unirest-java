@@ -66,15 +66,15 @@ public abstract class BaseRequest {
 	}
 
 	public HttpResponse<JsonNode> asJson() throws UnirestException {
-		return HttpClientHelper.request(httpRequest, JsonNode.class);
+		return HttpClientHelper2.request(httpRequest, builder::asJson);
 	}
 
 	public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync() {
-		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class);
+		return HttpClientHelper2.requestAsync(httpRequest, builder::asJson);
 	}
 
 	public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback) {
-		return HttpClientHelper.requestAsync(httpRequest, JsonNode.class, callback);
+		return HttpClientHelper2.requestAsync(httpRequest, builder::asJson, callback);
 	}
 
 	public <T> HttpResponse<T> asObject(Class<? extends T> responseClass) throws UnirestException {
