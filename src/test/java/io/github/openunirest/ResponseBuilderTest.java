@@ -89,4 +89,13 @@ public class ResponseBuilderTest {
                 " at [Source: (String)\"I like cheese\"; line: 1, column: 2]",
                 foo.getParsingError().get().getMessage());
     }
+
+    @Test
+    public void canGetStringResponse() {
+        response.setBody("I like cheese");
+
+        HttpResponse<String> r = builder.asString(response);
+
+        assertEquals("I like cheese", r.getBody());
+    }
 }

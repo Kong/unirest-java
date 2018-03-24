@@ -20,10 +20,18 @@ public class ResponseBuilder {
         return new HttpResponse<>(response, from(response.getEntity(), b -> toObject(b, aClass)));
     }
 
+    public HttpResponse<String> asString(org.apache.http.HttpResponse response) {
+        return new HttpResponse<>(response, from(response.getEntity(), this::toString));
+    }
+
     private <T> T toObject(BodyData<T> b, Class<? extends T> aClass) {
+        ObjectMapper o = getObjectMapper();
+        return o.readValue(toString(b), aClass);
+    }
+
+    private String toString(BodyData b) {
         try {
-            ObjectMapper o = getObjectMapper();
-            return o.readValue(new String(b.getRawBytes(), b.getCharset()), aClass);
+            return new String(b.getRawBytes(), b.getCharset());
         } catch (UnsupportedEncodingException e) {
             throw new ParsingException(e);
         }

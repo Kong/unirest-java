@@ -125,6 +125,7 @@ public class Options {
 
 	private static void setDefaults() {
 		customClientSet = false;
+		options.clear();
 		setOption(Option.CONNECTION_TIMEOUT, CONNECTION_TIMEOUT);
 		setOption(Option.SOCKET_TIMEOUT, SOCKET_TIMEOUT);
 		setOption(Option.MAX_TOTAL, MAX_TOTAL);

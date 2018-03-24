@@ -2,7 +2,6 @@ package io.github.openunirest.http;
 
 import org.junit.Test;
 
-import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
