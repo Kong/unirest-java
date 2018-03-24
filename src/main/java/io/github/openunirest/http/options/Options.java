@@ -139,4 +139,8 @@ public class Options {
 		}
 		return Optional.of((T) o);
 	}
+
+	public static void removeOption(Option objectMapper) {
+		options.remove(objectMapper);
+	}
 }

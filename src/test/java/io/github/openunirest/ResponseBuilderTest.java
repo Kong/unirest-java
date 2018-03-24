@@ -1,8 +1,9 @@
 package io.github.openunirest;
 
-import io.github.openunirest.http.HttpResponse;
-import io.github.openunirest.http.ResponseBuilder;
-import io.github.openunirest.http.TestUtil;
+import io.github.openunirest.http.*;
+import io.github.openunirest.http.exceptions.UnirestException;
+import io.github.openunirest.http.options.Option;
+import io.github.openunirest.http.options.Options;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.message.BasicStatusLine;
 import org.junit.Before;
@@ -10,6 +11,8 @@ import org.junit.Test;
 
 import java.io.InputStream;
 
+import static io.github.openunirest.http.TestUtil.assertException;
+import static io.github.openunirest.http.TestUtil.toJson;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -21,6 +24,7 @@ public class ResponseBuilderTest {
     @Before
     public void setUp() {
         response = new MockApacheResponse();
+        Options.setOption(Option.OBJECT_MAPPER, new JacksonObjectMapper());
     }
 
     @Test
@@ -53,5 +57,36 @@ public class ResponseBuilderTest {
         HttpResponse<InputStream> r = builder.asBinary(response);
 
         assertEquals("I like cheese", TestUtil.toString(r.getBody()));
+    }
+
+    @Test
+    public void canGetObjectMappedResponse() {
+        response.setBody(toJson(new Foo("I like cheese")));
+
+        HttpResponse<Foo> r = builder.asObject(response, Foo.class);
+
+        assertEquals("I like cheese", r.getBody().bar);
+    }
+
+    @Test
+    public void willThrowErrorIfNoObjectMapperIsConfigured(){
+        Options.removeOption(Option.OBJECT_MAPPER);
+
+        response.setBody(toJson(new Foo("I like cheese")));
+
+        assertException(() -> builder.asObject(response, Foo.class),
+                UnirestException.class,
+                "No Object Mapper Configured. Please configure one with Unirest.setObjectMapper");
+    }
+
+    @Test
+    public void ifObjectMapperHasProblemParsingReturnTheError(){
+        response.setBody("I like cheese");
+
+        HttpResponse<Foo> foo = builder.asObject(response, Foo.class);
+
+        assertEquals("com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'I': was expecting 'null', 'true', 'false' or NaN\n" +
+                " at [Source: (String)\"I like cheese\"; line: 1, column: 2]",
+                foo.getParsingError().get().getMessage());
     }
 }

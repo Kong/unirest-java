@@ -58,6 +58,7 @@ public class HttpResponse<T> {
 		this(response);
 		this.rawBody = data.getRawInput();
 		this.body = data.getTransFormedBody();
+		this.parsingError = Optional.ofNullable(data.getParseEx());
 	}
 
 	public HttpResponse(org.apache.http.HttpResponse response, Class<T> responseClass) {

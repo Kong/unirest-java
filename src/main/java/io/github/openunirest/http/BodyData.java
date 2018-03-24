@@ -1,5 +1,6 @@
 package io.github.openunirest.http;
 
+import io.github.openunirest.http.exceptions.UnirestException;
 import org.apache.http.HttpEntity;
 
 import java.io.ByteArrayInputStream;
@@ -26,6 +27,7 @@ public class BodyData<T>  {
     private final byte[] rawBytes;
     private final InputStream rawInput;
     private T transFormedBody;
+    private RuntimeException parseEx;
 
     private BodyData() {
         charset = null;
@@ -55,7 +57,17 @@ public class BodyData<T>  {
         return transFormedBody;
     }
 
+    public RuntimeException getParseEx() {
+        return parseEx;
+    }
+
     private void transformBody(Function<BodyData<T>, T> transformer) {
-        this.transFormedBody = transformer.apply(this);
+        try {
+            this.transFormedBody = transformer.apply(this);
+        }catch (UnirestException e){
+            throw e;
+        }catch (RuntimeException e){
+            parseEx = e;
+        }
     }
 }
