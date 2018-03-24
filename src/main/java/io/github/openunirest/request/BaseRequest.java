@@ -25,9 +25,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package io.github.openunirest.request;
 
-import io.github.openunirest.http.HttpClientHelper;
-import io.github.openunirest.http.HttpResponse;
-import io.github.openunirest.http.JsonNode;
+import io.github.openunirest.http.*;
 import io.github.openunirest.http.async.Callback;
 import io.github.openunirest.http.HttpClientHelper;
 import io.github.openunirest.http.HttpResponse;
@@ -42,6 +40,7 @@ import java.util.concurrent.Future;
 public abstract class BaseRequest {
 
 	protected static final String UTF_8 = "UTF-8";
+	private final ResponseBuilder builder = new ResponseBuilder();
 
 	protected HttpRequest httpRequest;
 
@@ -94,7 +93,7 @@ public abstract class BaseRequest {
 	}
 
 	public HttpResponse<InputStream> asBinary() throws UnirestException {
-		return HttpClientHelper.request(httpRequest, InputStream.class);
+		return HttpClientHelper.request(httpRequest, builder::asBinary);
 	}
 
 	public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync() {

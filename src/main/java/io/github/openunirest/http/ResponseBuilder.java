@@ -6,13 +6,8 @@ import java.io.InputStream;
 import static io.github.openunirest.http.BodyData.from;
 
 public class ResponseBuilder {
-    private final org.apache.http.HttpResponse response;
 
-    public ResponseBuilder(org.apache.http.HttpResponse response) {
-        this.response = response;
-    }
-
-    public HttpResponse<InputStream> asBinary(){
+    public HttpResponse<InputStream> asBinary(org.apache.http.HttpResponse response){
         return new HttpResponse<>(response, from(response.getEntity(), BodyData::getRawInput));
     }
 

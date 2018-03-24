@@ -33,6 +33,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.*;
+import java.util.function.Function;
 
 import io.github.openunirest.http.async.CallbackFuture;
 import org.apache.http.HttpEntity;
@@ -106,6 +107,26 @@ public class HttpClientHelper {
 			asyncIdleConnectionMonitorThread.start();
 		}
 		return asyncHttpClient;
+	}
+
+	public static <T> HttpResponse<T> request(HttpRequest request,
+											  Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) throws UnirestException {
+		HttpRequestBase requestObj = prepareRequest(request, false);
+		HttpClient client = ClientFactory.getHttpClient(); // The
+		// DefaultHttpClient
+		// is thread-safe
+
+		org.apache.http.HttpResponse response;
+		try {
+			response = client.execute(requestObj);
+			HttpResponse<T> httpResponse = transformer.apply(response);
+			requestObj.releaseConnection();
+			return httpResponse;
+		} catch (Exception e) {
+			throw new UnirestException(e);
+		} finally {
+			requestObj.releaseConnection();
+		}
 	}
 
 	public static <T> HttpResponse<T> request(HttpRequest request, Class<T> responseClass) throws UnirestException {
