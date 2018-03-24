@@ -16,11 +16,11 @@ public class ResponseBuilder {
         return new HttpResponse<>(response, from(response.getEntity(), BodyData::getRawInput));
     }
 
-    public <T> HttpResponse<T> asObject(org.apache.http.HttpResponse response, Class<T> aClass) {
+    public <T> HttpResponse<T> asObject(org.apache.http.HttpResponse response, Class<? extends T> aClass) {
         return new HttpResponse<>(response, from(response.getEntity(), b -> toObject(b, aClass)));
     }
 
-    private <T> T toObject(BodyData<T> b, Class<T> aClass) {
+    private <T> T toObject(BodyData<T> b, Class<? extends T> aClass) {
         try {
             ObjectMapper o = getObjectMapper();
             return o.readValue(new String(b.getRawBytes(), b.getCharset()), aClass);

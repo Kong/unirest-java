@@ -78,15 +78,15 @@ public abstract class BaseRequest {
 	}
 
 	public <T> HttpResponse<T> asObject(Class<? extends T> responseClass) throws UnirestException {
-		return HttpClientHelper.request(httpRequest, (Class) responseClass);
+		return HttpClientHelper2.request(httpRequest, r -> builder.asObject(r, responseClass));
 	}
 
 	public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass) {
-		return HttpClientHelper.requestAsync(httpRequest, (Class) responseClass);
+		return HttpClientHelper2.requestAsync(httpRequest, r -> builder.asObject(r, responseClass));
 	}
 
 	public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback) {
-		return HttpClientHelper.requestAsync(httpRequest, (Class) responseClass, callback);
+		return HttpClientHelper2.requestAsync(httpRequest, r -> builder.asObject(r, responseClass), callback);
 	}
 
 	public HttpResponse<InputStream> asBinary() throws UnirestException {
