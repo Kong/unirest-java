@@ -27,15 +27,12 @@ package io.github.openunirest.request;
 
 import io.github.openunirest.http.*;
 import io.github.openunirest.http.async.Callback;
-import io.github.openunirest.http.HttpClientHelper;
 import io.github.openunirest.http.HttpResponse;
 import io.github.openunirest.http.JsonNode;
-import io.github.openunirest.http.async.Callback;
 import io.github.openunirest.http.exceptions.UnirestException;
 
 import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 public abstract class BaseRequest {
 
@@ -93,14 +90,14 @@ public abstract class BaseRequest {
 	}
 
 	public HttpResponse<InputStream> asBinary() throws UnirestException {
-		return HttpClientHelper.request(httpRequest, builder::asBinary);
+		return HttpClientHelper2.request(httpRequest, builder::asBinary);
 	}
 
 	public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync() {
-		return HttpClientHelper.requestAsync(httpRequest, InputStream.class);
+		return HttpClientHelper2.requestAsync(httpRequest, builder::asBinary);
 	}
 
 	public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback) {
-		return HttpClientHelper.requestAsync(httpRequest, InputStream.class, callback);
+		return HttpClientHelper2.requestAsync(httpRequest, builder::asBinary, callback);
 	}
 }

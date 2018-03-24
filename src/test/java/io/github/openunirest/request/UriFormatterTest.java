@@ -1,6 +1,8 @@
-package io.github.openunirest.http;
+package io.github.openunirest.request;
 
+import io.github.openunirest.http.HttpMethod;
 import io.github.openunirest.request.HttpRequest;
+import io.github.openunirest.request.UriFormatter;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

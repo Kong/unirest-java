@@ -23,30 +23,37 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package io.github.openunirest.http;
+package io.github.openunirest.request;
 
-import java.net.URI;
+import io.github.openunirest.http.async.Callback;
+import io.github.openunirest.request.HttpClientHelper;
+import io.github.openunirest.http.HttpResponse;
+import io.github.openunirest.http.exceptions.UnirestException;
+import io.github.openunirest.request.HttpRequest;
 
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+public class RequestThread<T> extends Thread {
 
-class HttpPatchWithBody extends HttpEntityEnclosingRequestBase {
-	public static final String METHOD_NAME = "PATCH";
+	private HttpRequest httpRequest;
+	private Class<T> responseClass;
+	private Callback<T> callback;
 
-	public String getMethod() {
-		return METHOD_NAME;
+	public RequestThread(HttpRequest httpRequest, Class<T> responseClass, Callback<T> callback) {
+		this.httpRequest = httpRequest;
+		this.responseClass = responseClass;
+		this.callback = callback;
 	}
 
-	public HttpPatchWithBody(final String uri) {
-		super();
-		setURI(URI.create(uri));
+	@Override
+	public void run() {
+		HttpResponse<T> response;
+		try {
+			response = HttpClientHelper.request(httpRequest, responseClass);
+			if (callback != null) {
+				callback.completed(response);
+			}
+		} catch (UnirestException e) {
+			callback.failed(e);
+		}
 	}
 
-	public HttpPatchWithBody(final URI uri) {
-		super();
-		setURI(uri);
-	}
-
-	public HttpPatchWithBody() {
-		super();
-	}
 }

@@ -23,37 +23,30 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package io.github.openunirest.http.async;
+package io.github.openunirest.request;
 
-import io.github.openunirest.http.HttpClientHelper;
-import io.github.openunirest.http.HttpClientHelper;
-import io.github.openunirest.http.HttpResponse;
-import io.github.openunirest.http.exceptions.UnirestException;
-import io.github.openunirest.request.HttpRequest;
+import java.net.URI;
 
-public class RequestThread<T> extends Thread {
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 
-	private HttpRequest httpRequest;
-	private Class<T> responseClass;
-	private Callback<T> callback;
+class HttpDeleteWithBody extends HttpEntityEnclosingRequestBase {
+	public static final String METHOD_NAME = "DELETE";
 
-	public RequestThread(HttpRequest httpRequest, Class<T> responseClass, Callback<T> callback) {
-		this.httpRequest = httpRequest;
-		this.responseClass = responseClass;
-		this.callback = callback;
+	public String getMethod() {
+		return METHOD_NAME;
 	}
 
-	@Override
-	public void run() {
-		HttpResponse<T> response;
-		try {
-			response = HttpClientHelper.request(httpRequest, responseClass);
-			if (callback != null) {
-				callback.completed(response);
-			}
-		} catch (UnirestException e) {
-			callback.failed(e);
-		}
+	public HttpDeleteWithBody(final String uri) {
+		super();
+		setURI(URI.create(uri));
 	}
 
+	public HttpDeleteWithBody(final URI uri) {
+		super();
+		setURI(uri);
+	}
+
+	public HttpDeleteWithBody() {
+		super();
+	}
 }

@@ -1,4 +1,4 @@
-package io.github.openunirest.http;
+package io.github.openunirest.request;
 
 import io.github.openunirest.http.exceptions.UnirestException;
 import io.github.openunirest.request.HttpRequest;

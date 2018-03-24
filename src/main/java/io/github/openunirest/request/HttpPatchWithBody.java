@@ -23,30 +23,30 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package io.github.openunirest.http;
+package io.github.openunirest.request;
 
 import java.net.URI;
 
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 
-class HttpDeleteWithBody extends HttpEntityEnclosingRequestBase {
-	public static final String METHOD_NAME = "DELETE";
+class HttpPatchWithBody extends HttpEntityEnclosingRequestBase {
+	public static final String METHOD_NAME = "PATCH";
 
 	public String getMethod() {
 		return METHOD_NAME;
 	}
 
-	public HttpDeleteWithBody(final String uri) {
+	public HttpPatchWithBody(final String uri) {
 		super();
 		setURI(URI.create(uri));
 	}
 
-	public HttpDeleteWithBody(final URI uri) {
+	public HttpPatchWithBody(final URI uri) {
 		super();
 		setURI(uri);
 	}
 
-	public HttpDeleteWithBody() {
+	public HttpPatchWithBody() {
 		super();
 	}
 }
