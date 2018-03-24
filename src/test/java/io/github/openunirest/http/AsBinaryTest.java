@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class BinaryTest extends BddTest {
+public class AsBinaryTest extends BddTest {
     @Test
     public void canGetBinaryResponse() {
         HttpResponse<InputStream> i = Unirest.get(MockServer.GET)

@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import java.util.concurrent.ExecutionException;
 
-public class ObjectMapperTest extends BddTest {
+public class AsObjectTest extends BddTest {
     @Test
     public void canGetObjectResponse() {
          Unirest.get(MockServer.GET)
