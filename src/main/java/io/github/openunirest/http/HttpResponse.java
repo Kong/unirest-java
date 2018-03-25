@@ -25,16 +25,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package io.github.openunirest.http;
 
-import io.github.openunirest.http.options.Option;
-import io.github.openunirest.http.options.Options;
-import io.github.openunirest.http.utils.ResponseUtils;
-import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
-import org.apache.http.util.EntityUtils;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Optional;
 
 public class HttpResponse<T> {
@@ -59,47 +52,6 @@ public class HttpResponse<T> {
 		this.rawBody = data.getRawInput();
 		this.body = data.getTransFormedBody();
 		this.parsingError = Optional.ofNullable(data.getParseEx());
-	}
-
-	public HttpResponse(org.apache.http.HttpResponse response, Class<T> responseClass) {
-		this(response);
-
-		ObjectMapper objectMapper = (ObjectMapper) Options.getOption(Option.OBJECT_MAPPER);
-		HttpEntity responseEntity = response.getEntity();
-		if (responseEntity != null) {
-			String charset = ResponseUtils.getCharsetfromResponse(responseEntity);
-
-			try {
-				byte[] rawBody = ResponseUtils.getRawBody(responseEntity);
-				this.rawBody = new ByteArrayInputStream(rawBody);
-				
-				if (JsonNode.class.equals(responseClass)) {
-					tryParseAsJson(charset, rawBody);
-				} else if (String.class.equals(responseClass)) {
-					this.body = (T) new String(rawBody, charset);
-				} else if (InputStream.class.equals(responseClass)) {
-					this.body = (T) this.rawBody;
-				} else if (objectMapper != null) {
-					this.body = objectMapper.readValue(new String(rawBody, charset), responseClass);
-				} else {
-					throw new Exception("Only String, JsonNode and InputStream are supported, or an ObjectMapper implementation is required.");
-				}
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
-
-		EntityUtils.consumeQuietly(responseEntity);
-	}
-
-	private void tryParseAsJson(String charset, byte[] rawBody) throws UnsupportedEncodingException {
-		try {
-			String jsonString = new String(rawBody, charset).trim();
-			this.body = (T) new JsonNode(jsonString);
-		}catch (RuntimeException e){
-			this.body = null;
-			this.parsingError = Optional.of(e);
-		}
 	}
 
 	public int getStatus() {
