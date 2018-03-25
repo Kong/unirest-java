@@ -70,7 +70,7 @@ public class Unirest {
 
 	/**
 	 * Set the ObjectMapper implementation to use for Response to Object binding
-	 * 
+	 *
 	 * @param objectMapper Custom implementation of ObjectMapper interface
 	 */
 	public static void setObjectMapper(ObjectMapper objectMapper) {
@@ -82,13 +82,26 @@ public class Unirest {
 
 	/**
 	 * Set the connection timeout and socket timeout
-	 * 
+	 *
 	 * @param connectionTimeout The timeout until a connection with the server is established (in milliseconds). Default is 10000. Set to zero to disable the timeout.
 	 * @param socketTimeout The timeout to receive data (in milliseconds). Default is 60000. Set to zero to disable the timeout.
+		* By default, use connection request timeout, same as socket timeout
 	 */
 	public static void setTimeouts(long connectionTimeout, long socketTimeout) {
+		setTimeouts(connectionTimeout,socketTimeout,socketTimeout);
+	}
+
+	/**
+		* Set the connection timeout and socket timeout
+		*
+		* @param connectionTimeout The timeout until a connection with the server is established (in milliseconds). Default is 10000. Set to zero to disable the timeout.
+		* @param socketTimeout The timeout to receive data (in milliseconds). Default is 60000. Set to zero to disable the timeout.
+		* @param connectionRequestTimeout The timeout to wait for a connection from the connection pool (in milliseconds). Default is 60000. Set to zero to disable the timeout.
+		*/
+	public static void setTimeouts(long connectionTimeout, long socketTimeout,long connectionRequestTimeout) {
 		Options.setOption(Option.CONNECTION_TIMEOUT, connectionTimeout);
 		Options.setOption(Option.SOCKET_TIMEOUT, socketTimeout);
+		Options.setOption(Option.CONNECTIONREQUEST_TIMEOUT, connectionRequestTimeout);
 
 		// Reload the client implementations
 		Options.refresh();
@@ -96,7 +109,7 @@ public class Unirest {
 
 	/**
 	 * Set the concurrency levels
-	 * 
+	 *
 	 * @param maxTotal Defines the overall connection limit for a connection pool. Default is 200.
 	 * @param maxPerRoute Defines a connection limit per one HTTP route (this can be considered a per target host limit). Default is 20.
 	 */

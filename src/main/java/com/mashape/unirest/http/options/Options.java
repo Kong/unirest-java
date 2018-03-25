@@ -20,6 +20,7 @@ public class Options {
 
 	public static final long CONNECTION_TIMEOUT = 10000;
 	private static final long SOCKET_TIMEOUT = 60000;
+	private static final long CONNECTIONREQUEST_TIMEOUT = 60000;
 	public static final int MAX_TOTAL = 200;
 	public static final int MAX_PER_ROUTE = 20;
 
@@ -55,6 +56,10 @@ public class Options {
 		if (socketTimeout == null)
 			socketTimeout = SOCKET_TIMEOUT;
 
+		Object connectionRequestTimeout = Options.getOption(Option.CONNECTIONREQUEST_TIMEOUT);
+		if (connectionRequestTimeout == null)
+			connectionRequestTimeout = CONNECTIONREQUEST_TIMEOUT;
+
 		// Load limits
 		Object maxTotal = Options.getOption(Option.MAX_TOTAL);
 		if (maxTotal == null)
@@ -67,7 +72,11 @@ public class Options {
 		HttpHost proxy = (HttpHost) Options.getOption(Option.PROXY);
 
 		// Create common default configuration
-		RequestConfig clientConfig = RequestConfig.custom().setConnectTimeout(((Long) connectionTimeout).intValue()).setSocketTimeout(((Long) socketTimeout).intValue()).setConnectionRequestTimeout(((Long) socketTimeout).intValue()).setProxy(proxy).build();
+		RequestConfig clientConfig = RequestConfig.custom().
+																																													setConnectTimeout(((Long) connectionTimeout).intValue()).
+																																													setSocketTimeout(((Long) socketTimeout).intValue()).
+																																													setConnectionRequestTimeout(((Long) connectionRequestTimeout).intValue()).
+																																													setProxy(proxy).build();
 
 		PoolingHttpClientConnectionManager syncConnectionManager = new PoolingHttpClientConnectionManager();
 		syncConnectionManager.setMaxTotal((Integer) maxTotal);
