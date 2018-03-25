@@ -25,20 +25,17 @@ public class BodyData<T>  {
     private final String charset;
 
     private final byte[] rawBytes;
-    private final InputStream rawInput;
     private T transFormedBody;
     private RuntimeException parseEx;
 
     private BodyData() {
         charset = null;
         rawBytes = null;
-        rawInput = null;
     }
 
     private BodyData(HttpEntity entity) {
         this.charset = getCharsetfromResponse(entity);
         this.rawBytes = getRawBody(entity);
-        this.rawInput = new ByteArrayInputStream(rawBytes);
     }
 
     public String getCharset() {
@@ -50,7 +47,7 @@ public class BodyData<T>  {
     }
 
     public InputStream getRawInput() {
-        return rawInput;
+        return new ByteArrayInputStream(rawBytes);
     }
 
     public T getTransFormedBody() {
