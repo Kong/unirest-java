@@ -27,8 +27,10 @@ package io.github.openunirest.http;
 
 import org.apache.http.StatusLine;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class HttpResponse<T> {
 
@@ -53,6 +55,12 @@ public class HttpResponse<T> {
 		this.body = data.getTransFormedBody();
 		this.parsingError = Optional.ofNullable(data.getParseEx());
 	}
+
+    public HttpResponse(org.apache.http.HttpResponse response, T body, InputStream is){
+        this(response);
+        this.body = body;
+        this.rawBody = is;
+    }
 
 	public int getStatus() {
 		return statusCode;
@@ -81,4 +89,12 @@ public class HttpResponse<T> {
 	public Optional<RuntimeException> getParsingError() {
 		return parsingError;
 	}
+
+	public <V> V mapBody(Function<T,V> func){
+	    return func.apply(body);
+    }
+
+    public <V> V mapRawBody(Function<InputStream, V> func) {
+	    return func.apply(rawBody);
+    }
 }

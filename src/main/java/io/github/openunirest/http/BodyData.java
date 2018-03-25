@@ -23,7 +23,6 @@ public class BodyData<T>  {
     }
 
     private final String charset;
-
     private final byte[] rawBytes;
     private T transFormedBody;
     private RuntimeException parseEx;

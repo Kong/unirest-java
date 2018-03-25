@@ -3,10 +3,7 @@ package io.github.openunirest.http;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -56,5 +53,13 @@ public class TestUtil {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static InputStream emptyInput() {
+        return new ByteArrayInputStream(new byte[]{});
+    }
+
+    public static InputStream toInputStream(String s) {
+        return new ByteArrayInputStream(s.getBytes());
     }
 }
