@@ -28,6 +28,7 @@ package io.github.openunirest.request;
 import io.github.openunirest.http.HttpMethod;
 import io.github.openunirest.http.JsonNode;
 import io.github.openunirest.http.ObjectMapper;
+import io.github.openunirest.http.exceptions.UnirestConfigException;
 import io.github.openunirest.request.body.MultipartBody;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.content.InputStreamBody;
@@ -156,7 +157,7 @@ public class HttpRequestWithBody extends HttpRequest {
 		ObjectMapper objectMapper = (ObjectMapper) Options.getOption(Option.OBJECT_MAPPER);
 
 		if (objectMapper == null) {
-			throw new RuntimeException("Serialization Impossible. Can't find an ObjectMapper implementation.");
+			throw new UnirestConfigException("Serialization Impossible. Can't find an ObjectMapper implementation.");
 		}
 
 		return body(objectMapper.writeValue(body));

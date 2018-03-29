@@ -134,19 +134,6 @@ public class UnirestTest extends BddTest {
     }
 
     @Test
-    public void testPostRawBody() {
-        String sourceString = "'\"@こんにちは-test-123-" + Math.random();
-        byte[] sentBytes = sourceString.getBytes();
-
-        HttpResponse<JsonNode> response = Unirest.post(MockServer.POST)
-                .body(sentBytes)
-                .asJson();
-
-        parse(response)
-                .asserBody(sourceString);
-    }
-
-    @Test
     public void testCustomUserAgent() throws JSONException, UnirestException {
         HttpResponse<JsonNode> response = Unirest.get(MockServer.GET)
                 .header("user-agent", "hello-world")
@@ -210,17 +197,6 @@ public class UnirestTest extends BddTest {
         RequestCapture parse = parse(response);
         parse.assertParam("name", "mark");
         parse.assertParam("foo", "bar");
-    }
-
-    @Test
-    public void testDeleteBody() throws JSONException, UnirestException {
-        String body = "{\"jsonString\":{\"members\":\"members1\"}}";
-        HttpResponse<JsonNode> response = Unirest.delete(MockServer.DELETE)
-                .body(body)
-                .asJson();
-
-        assertEquals(200, response.getStatus());
-        parse(response).asserBody(body);
     }
 
     @Test
@@ -533,20 +509,6 @@ public class UnirestTest extends BddTest {
     }
 
     @Test
-    public void testAsyncCustomContentType() throws Exception {
-        Unirest.post(MockServer.POST)
-                .header("accept", "application/json")
-                .header("Content-Type", "application/json")
-                .body("{\"hello\":\"world\"}")
-                .asJsonAsync(new MockCallback<>(this, r -> parse(r)
-                                .asserBody("{\"hello\":\"world\"}")
-                                .assertHeader("Content-Type", "application/json"))
-                );
-
-        assertAsync();
-    }
-
-    @Test
     public void testAsyncCustomContentTypeAndFormParams() throws InterruptedException {
         Unirest.post(MockServer.POST)
                 .header("accept", "application/json")
@@ -689,24 +651,6 @@ public class UnirestTest extends BddTest {
 
         assertEquals(200, getResponse.getStatus());
         assertEquals(getResponse.getBody().getUrl(), getResponseMock.getUrl());
-    }
-
-    @Test
-    public void testObjectMapperWrite() {
-        Unirest.setObjectMapper(new JacksonObjectMapper());
-
-        GetResponse postResponseMock = new GetResponse();
-        postResponseMock.setUrl(MockServer.POST);
-
-        HttpResponse<JsonNode> postResponse = Unirest.post(postResponseMock.getUrl())
-                .header("accept", "application/json")
-                .header("Content-Type", "application/json")
-                .body(postResponseMock)
-                .asJson();
-
-        assertEquals(200, postResponse.getStatus());
-        parse(postResponse)
-                .asserBody("{\"url\":\"http://localhost:4567/post\"}");
     }
 
     @Test
