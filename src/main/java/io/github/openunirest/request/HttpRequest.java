@@ -25,24 +25,16 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package io.github.openunirest.request;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import io.github.openunirest.http.HttpMethod;
-import io.github.openunirest.request.body.Body;
-import io.github.openunirest.http.HttpMethod;
-import io.github.openunirest.http.utils.Base64Coder;
 import io.github.openunirest.http.utils.URLParamEncoder;
 import io.github.openunirest.request.body.Body;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class HttpRequest extends BaseRequest {
 
@@ -71,14 +63,14 @@ public class HttpRequest extends BaseRequest {
 	}
 
 	public HttpRequest basicAuth(String username, String password) {
-		header("Authorization", "Basic " + Base64Coder.encodeString(username + ":" + password));
+		header("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
 		return this;
 	}
 
 	public HttpRequest header(String name, String value) {
 		List<String> list = this.headers.get(name.trim());
 		if (list == null) {
-			list = new ArrayList<String>();
+			list = new ArrayList<>();
 		}
 		list.add(value);
 		this.headers.put(name.trim(), list);

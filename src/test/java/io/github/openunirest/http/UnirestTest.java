@@ -225,11 +225,22 @@ public class UnirestTest extends BddTest {
 
     @Test
     public void testBasicAuth() throws JSONException, UnirestException {
-        HttpResponse<JsonNode> response = Unirest.get(MockServer.GET)
+        Unirest.get(MockServer.GET)
                 .basicAuth("user", "test")
-                .asJson();
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("Authorization", "Basic dXNlcjp0ZXN0");
+    }
 
-        parse(response).assertHeader("Authorization", "Basic dXNlcjp0ZXN0");
+    @Test
+    public void unicodeBasicAuth() throws JSONException, UnirestException {
+        Unirest.get(MockServer.GET)
+                .basicAuth("こんにちは", "こんにちは")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("Authorization", "Basic 44GT44KT44Gr44Gh44GvOuOBk+OCk+OBq+OBoeOBrw==")
+                .assertBasicAuth("こんにちは", "こんにちは");
+
     }
 
     @Test
