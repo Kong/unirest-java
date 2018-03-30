@@ -52,31 +52,25 @@ public class UnirestTest extends BddTest {
 
     @Test
     public void canPassQueryParamsOnStringOrWithForm() throws JSONException, UnirestException {
-        HttpResponse<JsonNode> response = Unirest.get(MockServer.GET + "?name=mark")
-                .header("accept", "application/json")
-                .asJson();
-
-        parse(response)
+        Unirest.get(MockServer.GET + "?name=mark")
+                .asObject(RequestCapture.class)
+                .getBody()
                 .assertParam("name", "mark");
 
-        response = Unirest.get(MockServer.GET)
-                .header("accept", "application/json")
+        Unirest.get(MockServer.GET)
                 .queryString("name", "mark2")
-                .asJson();
-
-        parse(response)
+                .asObject(RequestCapture.class)
+                .getBody()
                 .assertParam("name", "mark2");
     }
 
     @Test
     public void multipleParams() throws JSONException, UnirestException {
-        HttpResponse<JsonNode> response = Unirest.get(MockServer.GET + "?name=ringo")
-                .header("accept", "application/json")
+        Unirest.get(MockServer.GET + "?name=ringo")
                 .queryString("name", "paul")
                 .queryString("name", "john")
-                .asJson();
-
-        parse(response)
+                .asObject(RequestCapture.class)
+                .getBody()
                 .assertParam("name", "ringo")
                 .assertParam("name", "paul")
                 .assertParam("name", "john");
@@ -84,23 +78,10 @@ public class UnirestTest extends BddTest {
 
     @Test
     public void testGetUTF8() {
-        HttpResponse<JsonNode> response = Unirest.get(MockServer.GET)
-                .header("accept", "application/json")
+        Unirest.get(MockServer.GET)
                 .queryString("param3", "こんにちは")
-                .asJson();
-
-        parse(response)
-                .assertParam("param3", "こんにちは");
-    }
-
-    @Test
-    public void testCustomUserAgent() throws JSONException, UnirestException {
-        HttpResponse<JsonNode> response = Unirest.get(MockServer.GET)
-                .header("user-agent", "hello-world")
-                .asJson();
-
-        RequestCapture json = parse(response);
-        json.assertHeader("User-Agent", "hello-world");
+                .asObject(RequestCapture.class)
+                .getBody().assertParam("param3", "こんにちは");
     }
 
     @Test
@@ -160,25 +141,6 @@ public class UnirestTest extends BddTest {
     }
 
     @Test
-    public void testBasicAuth() throws JSONException, UnirestException {
-        Unirest.get(MockServer.GET)
-                .basicAuth("user", "test")
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertHeader("Authorization", "Basic dXNlcjp0ZXN0");
-    }
-
-    @Test
-    public void unicodeBasicAuth() throws JSONException, UnirestException {
-        Unirest.get(MockServer.GET)
-                .basicAuth("こんにちは", "こんにちは")
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertHeader("Authorization", "Basic 44GT44KT44Gr44Gh44GvOuOBk+OCk+OBq+OBoeOBrw==")
-                .assertBasicAuth("こんにちは", "こんにちは");
-    }
-
-    @Test
     public void testGzip() throws JSONException {
         HttpResponse<JsonNode> jsonResponse = Unirest.get(MockServer.GZIP)
                 .queryString("zipme", "up")
@@ -195,29 +157,6 @@ public class UnirestTest extends BddTest {
                 .get();
 
         parse(jsonResponse).assertParam("zipme", "up");
-    }
-
-    @Test
-    public void testDefaultHeaders() throws JSONException {
-        Unirest.setDefaultHeader("X-Custom-Header", "hello");
-        Unirest.setDefaultHeader("user-agent", "foobar");
-
-        HttpResponse<JsonNode> jsonResponse = Unirest.get(MockServer.GET).asJson();
-
-        parse(jsonResponse)
-                .assertHeader("X-Custom-Header", "hello")
-                .assertHeader("User-Agent", "foobar");
-
-        jsonResponse = Unirest.get(MockServer.GET).asJson();
-        parse(jsonResponse)
-                .assertHeader("X-Custom-Header", "hello")
-                .assertHeader("User-Agent", "foobar");
-
-        Unirest.clearDefaultHeaders();
-
-        jsonResponse = Unirest.get(MockServer.GET).asJson();
-        parse(jsonResponse)
-                .assertNoHeader("X-Custom-Header");
     }
 
     @Test
@@ -349,29 +288,6 @@ public class UnirestTest extends BddTest {
     }
 
     @Test
-    public void testCaseInsensitiveHeaders() {
-        GetRequest request = Unirest.get(MockServer.GET)
-                .header("Name", "Marco");
-
-        assertEquals(1, request.getHeaders().size());
-        assertEquals("Marco", request.getHeaders().get("name").get(0));
-        assertEquals("Marco", request.getHeaders().get("NAme").get(0));
-        assertEquals("Marco", request.getHeaders().get("Name").get(0));
-
-        parse(request.asJson())
-                .assertHeader("Name", "Marco");
-
-        request = Unirest.get(MockServer.GET).header("Name", "Marco").header("Name", "John");
-        assertEquals(1, request.getHeaders().size());
-        assertEquals("Marco", request.getHeaders().get("name").get(0));
-        assertEquals("John", request.getHeaders().get("name").get(1));
-        assertEquals("Marco", request.getHeaders().get("NAme").get(0));
-        assertEquals("John", request.getHeaders().get("NAme").get(1));
-        assertEquals("Marco", request.getHeaders().get("Name").get(0));
-        assertEquals("John", request.getHeaders().get("Name").get(1));
-    }
-
-    @Test
     public void setTimeoutsAndCustomClient() {
         try {
             Unirest.setTimeouts(1000, 2000);
@@ -414,17 +330,6 @@ public class UnirestTest extends BddTest {
 
         assertEquals(200, getResponse.getStatus());
         assertEquals(getResponse.getBody().getUrl(), getResponseMock.getUrl());
-    }
-
-    @Test
-    public void testHeaderNamesCaseSensitive() {
-        // Verify that header names are the same as server (case sensitive)
-        final Headers headers = new Headers();
-        headers.put("Content-Type", Arrays.asList("application/json"));
-
-        assertEquals("Only header \"Content-Type\" should exist", null, headers.getFirst("cOnTeNt-TyPe"));
-        assertEquals("Only header \"Content-Type\" should exist", null, headers.getFirst("content-type"));
-        assertEquals("Only header \"Content-Type\" should exist", "application/json", headers.getFirst("Content-Type"));
     }
 
     @Test
