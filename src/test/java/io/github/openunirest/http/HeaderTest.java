@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import static io.github.openunirest.http.TestUtil.mapOf;
 import static org.junit.Assert.assertEquals;
 
 public class HeaderTest extends BddTest {
@@ -25,7 +26,8 @@ public class HeaderTest extends BddTest {
                 .basicAuth("user", "test")
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertHeader("Authorization", "Basic dXNlcjp0ZXN0");
+                .assertHeader("Authorization", "Basic dXNlcjp0ZXN0")
+                .assertBasicAuth("user", "test");
     }
 
     @Test
@@ -95,4 +97,24 @@ public class HeaderTest extends BddTest {
         assertEquals("Only header \"Content-Type\" should exist", "application/json", headers.getFirst("Content-Type"));
     }
 
+    @Test
+    public void canPassHeadersAsMap() {
+        Unirest.post(MockServer.POST)
+                .headers(mapOf("one", "foo", "two", "bar", "three", null))
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("one", "foo")
+                .assertHeader("two", "bar")
+                .assertHeader("three", "");
+    }
+
+    @Test
+    public void basicAuthOnPosts() {
+        Unirest.post(MockServer.POST)
+                .basicAuth("user", "test")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("Authorization", "Basic dXNlcjp0ZXN0")
+                .assertBasicAuth("user", "test");
+    }
 }
