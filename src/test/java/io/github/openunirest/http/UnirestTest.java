@@ -51,22 +51,6 @@ import static org.junit.Assert.*;
 public class UnirestTest extends BddTest {
 
     @Test
-    public void postFormReturnJson() throws JSONException, UnirestException {
-        HttpResponse<JsonNode> jsonResponse = Unirest.post(MockServer.POST)
-                .header("accept", "application/json")
-                .field("param1", "value1")
-                .field("param2", "bye")
-                .asJson();
-
-        assertEquals(200, jsonResponse.getStatus());
-
-        parse(jsonResponse)
-                .assertHeader("Accept", "application/json")
-                .assertParam("param1", "value1")
-                .assertParam("param2", "bye");
-    }
-
-    @Test
     public void canPassQueryParamsOnStringOrWithForm() throws JSONException, UnirestException {
         HttpResponse<JsonNode> response = Unirest.get(MockServer.GET + "?name=mark")
                 .header("accept", "application/json")
@@ -107,30 +91,6 @@ public class UnirestTest extends BddTest {
 
         parse(response)
                 .assertParam("param3", "こんにちは");
-    }
-
-    @Test
-    public void testPostUTF8() {
-        HttpResponse response = Unirest.post(MockServer.POST)
-                .header("accept", "application/json")
-                .field("param3", "こんにちは")
-                .asJson();
-
-        parse(response)
-                .assertParam("param3", "こんにちは");
-    }
-
-    @Test
-    public void testPostBinaryUTF8() throws URISyntaxException {
-        HttpResponse<JsonNode> response = Unirest.post(MockServer.POST)
-                .header("Accept", ContentType.MULTIPART_FORM_DATA.getMimeType())
-                .field("param3", "こんにちは")
-                .field("file", new File(getClass().getResource("/test").toURI()))
-                .asJson();
-
-        parse(response)
-                .assertParam("param3", "こんにちは")
-                .assertFileContent("file", "This is a test file");
     }
 
     @Test
@@ -216,149 +176,6 @@ public class UnirestTest extends BddTest {
                 .getBody()
                 .assertHeader("Authorization", "Basic 44GT44KT44Gr44Gh44GvOuOBk+OCk+OBq+OBoeOBrw==")
                 .assertBasicAuth("こんにちは", "こんにちは");
-
-    }
-
-    @Test
-    public void testAsync() throws JSONException, InterruptedException, ExecutionException {
-        Future<HttpResponse<JsonNode>> future = Unirest.post(MockServer.POST)
-                .header("accept", "application/json")
-                .field("param1", "value1")
-                .field("param2", "bye")
-                .asJsonAsync();
-
-        assertNotNull(future);
-
-        RequestCapture req = parse(future.get());
-        req.assertParam("param1", "value1");
-        req.assertParam("param2", "bye");
-    }
-
-    @Test
-    public void testAsyncCallback() throws JSONException, InterruptedException {
-        Unirest.post(MockServer.POST)
-                .header("accept", "application/json")
-                .field("param1", "value1")
-                .field("param2", "bye")
-                .asJsonAsync(new MockCallback<>(this, r -> {
-                    RequestCapture req = parse(r);
-                    req.assertParam("param1", "value1");
-                    req.assertParam("param2", "bye");
-                }));
-
-        assertAsync();
-    }
-
-    @Test
-    public void testMultipart() throws JSONException, URISyntaxException, UnirestException {
-        HttpResponse<JsonNode> jsonResponse = Unirest.post(MockServer.POST)
-                .field("name", "Mark")
-                .field("file", new File(getClass().getResource("/test").toURI()))
-                .asJson();
-
-        RequestCapture res = parse(jsonResponse);
-        res.getFile("test").assertBody("This is a test file");
-        res.getFile("test").assertFileType("application/octet-stream");
-
-        res.assertParam("name", "Mark");
-    }
-
-    @Test
-    public void testMultipartContentType() throws JSONException, URISyntaxException, UnirestException {
-        HttpResponse<JsonNode> jsonResponse = Unirest.post(MockServer.POST)
-                .field("name", "Mark")
-                .field("file", new File(getClass().getResource("/image.jpg").toURI()), "image/jpeg")
-                .asJson();
-
-        RequestCapture res = parse(jsonResponse);
-        res.getFile("image.jpg").assertFileType("image/jpeg");
-        res.assertParam("name", "Mark");
-    }
-
-    @Test
-    public void testMultipartInputStreamContentType() throws JSONException, URISyntaxException, FileNotFoundException {
-        FileInputStream stream = new FileInputStream(new File(getClass().getResource("/image.jpg").toURI()));
-
-        HttpResponse<JsonNode> request = Unirest.post(MockServer.POST)
-                .header("accept", ContentType.MULTIPART_FORM_DATA.toString())
-                .field("name", "Mark")
-                .field("file", stream, ContentType.APPLICATION_OCTET_STREAM, "image.jpg")
-                .asJson();
-
-        assertEquals(200, request.getStatus());
-
-        parse(request)
-                .assertHeader("Accept", ContentType.MULTIPART_FORM_DATA.toString())
-                .assertParam("name", "Mark")
-                .getFile("image.jpg")
-                .assertFileType("application/octet-stream");
-    }
-
-    @Test
-    public void testMultipartInputStreamContentTypeAsync() throws JSONException, InterruptedException, URISyntaxException, FileNotFoundException {
-        Unirest.post(MockServer.POST)
-                .field("name", "Mark")
-                .field("file", new FileInputStream(new File(getClass().getResource("/test").toURI())), ContentType.APPLICATION_OCTET_STREAM, "test")
-                .asJsonAsync(new MockCallback<>(this, r -> parse(r)
-                        .assertParam("name", "Mark")
-                        .getFile("test")
-                        .assertFileType("application/octet-stream"))
-                );
-
-        assertAsync();
-    }
-
-    @Test
-    public void testMultipartByteContentType() throws JSONException, URISyntaxException, IOException {
-        final InputStream stream = new FileInputStream(new File(getClass().getResource("/image.jpg").toURI()));
-        final byte[] bytes = new byte[stream.available()];
-        stream.read(bytes);
-        stream.close();
-
-        HttpResponse<JsonNode> jsonResponse = Unirest.post(MockServer.POST)
-                .field("name", "Mark")
-                .field("file", bytes, "image.jpg")
-                .asJson();
-
-        RequestCapture parse = parse(jsonResponse);
-        parse.getFile("image.jpg").assertFileType("application/octet-stream");
-        parse.assertParam("name", "Mark");
-    }
-
-    @Test
-    public void testMultipartByteContentTypeAsync() throws Exception {
-        final InputStream stream = new FileInputStream(new File(getClass().getResource("/test").toURI()));
-        final byte[] bytes = new byte[stream.available()];
-        stream.read(bytes);
-        stream.close();
-
-        Unirest.post(MockServer.POST)
-                .field("name", "Mark")
-                .field("file", bytes, "test")
-                .asJsonAsync(new MockCallback<>(this, r ->
-                        parse(r)
-                                .assertParam("name", "Mark")
-                                .getFile("test")
-                                .assertFileType("application/octet-stream"))
-                );
-
-        assertAsync();
-    }
-
-    @Test
-    public void testMultipartAsync() throws Exception {
-        Unirest.post(MockServer.POST)
-                .field("name", "Mark")
-                .field("file", new File(getClass().getResource("/test").toURI()))
-                .asJsonAsync(new MockCallback<>(this, r ->
-                        parse(r)
-                                .assertParam("name", "Mark")
-                                .getFile("test")
-                                .assertFileType("application/octet-stream")
-                                .assertBody("This is a test file"))
-                );
-
-        assertAsync();
     }
 
     @Test
@@ -509,23 +326,6 @@ public class UnirestTest extends BddTest {
     }
 
     @Test
-    public void testAsyncCustomContentTypeAndFormParams() throws InterruptedException {
-        Unirest.post(MockServer.POST)
-                .header("accept", "application/json")
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .field("name", "Mark")
-                .field("hello", "world")
-                .asJsonAsync(new MockCallback<>(this, r -> parse(r)
-                                .assertParam("name", "Mark")
-                                .assertParam("hello", "world")
-                                .assertHeader("Content-Type", "application/x-www-form-urlencoded")
-                ));
-
-        assertAsync();
-    }
-
-
-    @Test
     public void testGetQuerystringArray() throws JSONException, UnirestException {
         HttpResponse<JsonNode> response = Unirest.get(MockServer.GET)
                 .queryString("name", "Mark")
@@ -538,46 +338,9 @@ public class UnirestTest extends BddTest {
     }
 
     @Test
-    public void testPostMultipleFiles() throws JSONException, URISyntaxException {
-        HttpResponse<JsonNode> response = Unirest.post(MockServer.POST)
-                .field("param3", "wot")
-                .field("file1", new File(getClass().getResource("/test").toURI()))
-                .field("file2", new File(getClass().getResource("/test").toURI()))
-                .asJson();
-
-        parse(response)
-                .assertParam("param3", "wot")
-                .assertFileContent("file1", "This is a test file")
-                .assertFileContent("file2", "This is a test file");
-    }
-
-    @Test
     public void testGetArray() throws JSONException, UnirestException {
         HttpResponse<JsonNode> response = Unirest.get(MockServer.GET)
                 .queryString("name", Arrays.asList("Mark", "Tom"))
-                .asJson();
-
-        parse(response)
-                .assertParam("name", "Mark")
-                .assertParam("name", "Tom");
-    }
-
-    @Test
-    public void testPostArray() throws JSONException, UnirestException {
-        HttpResponse<JsonNode> response = Unirest.post(MockServer.POST)
-                .field("name", "Mark")
-                .field("name", "Tom")
-                .asJson();
-
-        parse(response)
-                .assertParam("name", "Mark")
-                .assertParam("name", "Tom");
-    }
-
-    @Test
-    public void testPostCollection() throws JSONException, UnirestException {
-        HttpResponse<JsonNode> response = Unirest.post(MockServer.POST)
-                .field("name", Arrays.asList("Mark", "Tom"))
                 .asJson();
 
         parse(response)
@@ -651,20 +414,6 @@ public class UnirestTest extends BddTest {
 
         assertEquals(200, getResponse.getStatus());
         assertEquals(getResponse.getBody().getUrl(), getResponseMock.getUrl());
-    }
-
-    @Test
-    public void testPostProvidesSortedParams() throws IOException {
-        // Verify that fields are encoded into the body in sorted order.
-        HttpRequest httpRequest = Unirest.post("test")
-                .field("z", "Z")
-                .field("y", "Y")
-                .field("x", "X")
-                .getHttpRequest();
-
-        InputStream content = httpRequest.getBody().getEntity().getContent();
-        String body = IOUtils.toString(content, "UTF-8");
-        assertEquals("x=X&y=Y&z=Z", body);
     }
 
     @Test
