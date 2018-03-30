@@ -5,6 +5,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.ContentType;
 import spark.Request;
 
 import javax.servlet.MultipartConfigElement;
@@ -115,26 +116,22 @@ public class RequestCapture {
     }
 
     public File getFile(String fileName) {
-        return getFileByFileName(fileName);
-    }
-
-    private File getFileByFileName(String fileName) {
         return files.stream()
                 .filter(f -> Objects.equals(f.fileName, fileName))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No File With Name: " + fileName));
     }
 
+    public File getFileByInput(String input) {
+        return files.stream()
+                .filter(f -> Objects.equals(f.inputName, input))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No File from form: " + input));
+    }
+
     public RequestCapture assertFileContent(String input, String content) {
         assertEquals(content, getFileByInput(input).body);
         return this;
-    }
-
-    private File getFileByInput(String inputName) {
-        return files.stream()
-                .filter(f -> Objects.equals(f.inputName, inputName))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("No File With Input Name: " + inputName));
     }
 
     public void assertBasicAuth(String username, String password) {
@@ -162,6 +159,15 @@ public class RequestCapture {
 
         public File assertFileType(String type){
             assertEquals(type, this.fileType);
+            return this;
+        }
+
+        public File assertFileType(ContentType imageJpeg) {
+            return assertFileType(imageJpeg.toString());
+        }
+
+        public File assertFileName(String s) {
+            assertEquals(s, fileName);
             return this;
         }
     }

@@ -1,5 +1,6 @@
 package io.github.openunirest.http;
 
+import com.google.common.collect.ImmutableMap;
 import io.github.openunirest.http.async.MockCallback;
 import io.github.openunirest.http.exceptions.UnirestException;
 import io.github.openunirest.request.HttpRequest;
@@ -8,13 +9,12 @@ import org.apache.http.entity.ContentType;
 import org.json.JSONException;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.Map;
 
+import static com.google.common.collect.ImmutableMap.of;
 import static org.junit.Assert.assertEquals;
 
 public class FormPostingTest extends BddTest {
@@ -237,5 +237,89 @@ public class FormPostingTest extends BddTest {
         InputStream content = httpRequest.getBody().getEntity().getContent();
         String body = IOUtils.toString(content, "UTF-8");
         assertEquals("x=X&y=Y&z=Z", body);
+    }
+
+    @Test
+    public void postFileWithContentType() throws URISyntaxException {
+        File file = getImageFile();
+        Unirest.post(MockServer.POST)
+                .field("testfile", file, ContentType.IMAGE_JPEG.getMimeType())
+                .asObject(RequestCapture.class)
+                .getBody()
+                .getFile("image.jpg")
+                .assertFileType(ContentType.IMAGE_JPEG);
+    }
+
+    @Test
+    public void nullFileResultsInEmptyPost() {
+        Unirest.post(MockServer.POST)
+                .field("testfile", (Object)null, ContentType.IMAGE_JPEG.getMimeType())
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertParam("testfile", "");
+    }
+
+    @Test
+    public void postFileWithoutContentType() throws URISyntaxException {
+        File file = getImageFile();
+        Unirest.post(MockServer.POST)
+                .field("testfile", file)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .getFile("image.jpg")
+                .assertFileType("application/octet-stream");
+    }
+
+    @Test
+    public void postFieldsAsMap() throws URISyntaxException {
+        File file = getImageFile();
+
+        Unirest.post(MockServer.POST)
+                .fields(TestUtil.mapOf("big", "bird", "charlie", 42, "testfile", file, "gonzo", null))
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertParam("big", "bird")
+                .assertParam("charlie", "42")
+                .assertParam("gonzo", "")
+                .getFile("image.jpg")
+                .assertFileType("application/octet-stream");
+    }
+
+    @Test
+    public void nullMapDoesntBomb() {
+        Unirest.post(MockServer.POST)
+                .queryString("foo","bar")
+                .fields(null)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertParam("foo", "bar");
+    }
+
+    @Test
+    public void canPostInputStream() throws Exception {
+        File file = getImageFile();
+        Unirest.post(MockServer.POST)
+                .field("testfile", new FileInputStream(file), "image.jpg")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .getFileByInput("testfile")
+                .assertFileName("image.jpg")
+                .assertFileType("application/octet-stream");
+    }
+
+    @Test
+    public void canPostInputStreamWithContentType() throws Exception {
+        File file = getImageFile();
+        Unirest.post(MockServer.POST)
+                .field("testfile", new FileInputStream(file), ContentType.IMAGE_JPEG, "image.jpg")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .getFileByInput("testfile")
+                .assertFileName("image.jpg")
+                .assertFileType("image/jpeg");
+    }
+
+    private File getImageFile() throws URISyntaxException {
+        return new File(getClass().getResource("/image.jpg").toURI());
     }
 }

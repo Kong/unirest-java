@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -61,5 +63,21 @@ public class TestUtil {
 
     public static InputStream toInputStream(String s) {
         return new ByteArrayInputStream(s.getBytes());
+    }
+
+    public static <K, V> Map<K, V> mapOf(Object... keyValues) {
+        Map<K, V> map = new HashMap<>();
+
+        K key = null;
+        for (int index = 0; index < keyValues.length; index++) {
+            if (index % 2 == 0) {
+                key = (K)keyValues[index];
+            }
+            else {
+                map.put(key, (V)keyValues[index]);
+            }
+        }
+
+        return map;
     }
 }
