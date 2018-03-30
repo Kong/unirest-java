@@ -319,6 +319,17 @@ public class FormPostingTest extends BddTest {
                 .assertFileType("image/jpeg");
     }
 
+    @Test
+    public void testDelete() {
+        Unirest.delete(MockServer.DELETE)
+                .field("name", "mark")
+                .field("foo", "bar")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertParam("name", "mark")
+                .assertParam("foo", "bar");
+    }
+
     private File getImageFile() throws URISyntaxException {
         return new File(getClass().getResource("/image.jpg").toURI());
     }

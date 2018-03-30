@@ -51,115 +51,6 @@ import static org.junit.Assert.*;
 public class UnirestTest extends BddTest {
 
     @Test
-    public void canPassQueryParamsOnStringOrWithForm() throws JSONException, UnirestException {
-        Unirest.get(MockServer.GET + "?name=mark")
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertParam("name", "mark");
-
-        Unirest.get(MockServer.GET)
-                .queryString("name", "mark2")
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertParam("name", "mark2");
-    }
-
-    @Test
-    public void multipleParams() throws JSONException, UnirestException {
-        Unirest.get(MockServer.GET + "?name=ringo")
-                .queryString("name", "paul")
-                .queryString("name", "john")
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertParam("name", "ringo")
-                .assertParam("name", "paul")
-                .assertParam("name", "john");
-    }
-
-    @Test
-    public void testGetUTF8() {
-        Unirest.get(MockServer.GET)
-                .queryString("param3", "こんにちは")
-                .asObject(RequestCapture.class)
-                .getBody().assertParam("param3", "こんにちは");
-    }
-
-    @Test
-    public void testGetMultiple() throws JSONException, UnirestException {
-        for (int i = 1; i <= 20; i++) {
-            HttpResponse<JsonNode> response = Unirest.get(MockServer.GET + "?try=" + i).asJson();
-            parse(response).assertParam("try", String.valueOf(i));
-        }
-    }
-
-    @Test
-    public void testGetFields() throws JSONException, UnirestException {
-        HttpResponse<JsonNode> response = Unirest.get(MockServer.GET)
-                .queryString("name", "mark")
-                .queryString("nick", "thefosk")
-                .asJson();
-
-        RequestCapture parse = parse(response);
-        parse.assertParam("name", "mark");
-        parse.assertParam("nick", "thefosk");
-    }
-
-    @Test
-    public void testGetFields2() throws JSONException, UnirestException {
-        HttpResponse<JsonNode> response = Unirest.get(MockServer.GET)
-                .queryString("email", "hello@hello.com")
-                .asJson();
-
-        parse(response).assertParam("email", "hello@hello.com");
-    }
-
-    @Test
-    public void testQueryStringEncoding() throws JSONException, UnirestException {
-        String testKey = "email2=someKey&email";
-        String testValue = "hello@hello.com";
-
-        HttpResponse<JsonNode> response = Unirest.get(MockServer.GET)
-                .queryString(testKey, testValue)
-                .asJson();
-
-        parse(response).assertParam(testKey, testValue);
-    }
-
-    @Test
-    public void testDelete() throws JSONException, UnirestException {
-        HttpResponse<JsonNode> response = Unirest.delete(MockServer.DELETE).asJson();
-        assertEquals(200, response.getStatus());
-
-        response = Unirest.delete(MockServer.DELETE)
-                .field("name", "mark")
-                .field("foo", "bar")
-                .asJson();
-
-        RequestCapture parse = parse(response);
-        parse.assertParam("name", "mark");
-        parse.assertParam("foo", "bar");
-    }
-
-    @Test
-    public void testGzip() throws JSONException {
-        HttpResponse<JsonNode> jsonResponse = Unirest.get(MockServer.GZIP)
-                .queryString("zipme", "up")
-                .asJson();
-
-        parse(jsonResponse).assertParam("zipme", "up");
-    }
-
-    @Test
-    public void testGzipAsync() throws JSONException, InterruptedException, ExecutionException {
-        HttpResponse<JsonNode> jsonResponse = Unirest.get(MockServer.GZIP)
-                .queryString("zipme", "up")
-                .asJsonAsync()
-                .get();
-
-        parse(jsonResponse).assertParam("zipme", "up");
-    }
-
-    @Test
     public void testSetTimeouts() throws IOException {
         String address = "http://" + findAvailableIpAddress() + "/";
         long start = System.currentTimeMillis();
@@ -265,29 +156,6 @@ public class UnirestTest extends BddTest {
     }
 
     @Test
-    public void testGetQuerystringArray() throws JSONException, UnirestException {
-        HttpResponse<JsonNode> response = Unirest.get(MockServer.GET)
-                .queryString("name", "Mark")
-                .queryString("name", "Tom")
-                .asJson();
-
-        parse(response)
-                .assertParam("name", "Mark")
-                .assertParam("name", "Tom");
-    }
-
-    @Test
-    public void testGetArray() throws JSONException, UnirestException {
-        HttpResponse<JsonNode> response = Unirest.get(MockServer.GET)
-                .queryString("name", Arrays.asList("Mark", "Tom"))
-                .asJson();
-
-        parse(response)
-                .assertParam("name", "Mark")
-                .assertParam("name", "Tom");
-    }
-
-    @Test
     public void setTimeoutsAndCustomClient() {
         try {
             Unirest.setTimeouts(1000, 2000);
@@ -344,7 +212,7 @@ public class UnirestTest extends BddTest {
     }
 
     @Test
-    public void failureToReturnValidJsonWillResultInAnEmptyNodeAsync() throws InterruptedException {
+    public void failureToReturnValidJsonWillResultInAnEmptyNodeAsync() {
         Unirest.get(MockServer.INVALID_REQUEST)
                 .asJsonAsync(new MockCallback<>(this, response -> {
                         assertEquals(400, response.getStatus());
@@ -356,15 +224,6 @@ public class UnirestTest extends BddTest {
                     }));
 
         assertAsync();
-    }
-
-    @Test
-    public void willNotCacheBasicAuth() {
-        RequestCapture r1 = parse(Unirest.get(MockServer.GET).basicAuth("foo", "bar").asJson());
-        RequestCapture r2 = parse(Unirest.get(MockServer.ALTGET).basicAuth("baz", "qux").asJson());
-
-        r1.assertBasicAuth("foo", "bar");
-        r2.assertBasicAuth("baz", "qux");
     }
 
     private String findAvailableIpAddress() throws IOException {

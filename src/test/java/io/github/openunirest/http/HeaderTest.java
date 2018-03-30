@@ -117,4 +117,19 @@ public class HeaderTest extends BddTest {
                 .assertHeader("Authorization", "Basic dXNlcjp0ZXN0")
                 .assertBasicAuth("user", "test");
     }
+
+    @Test
+    public void willNotCacheBasicAuth() {
+        Unirest.get(MockServer.GET)
+                .basicAuth("foo", "bar")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertBasicAuth("foo","bar");
+
+        Unirest.get(MockServer.GET)
+                .basicAuth("baz", "qux")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertBasicAuth("baz", "qux");
+    }
 }
