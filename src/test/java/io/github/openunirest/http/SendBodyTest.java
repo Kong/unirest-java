@@ -1,6 +1,7 @@
 package io.github.openunirest.http;
 
-import io.github.openunirest.http.async.MockCallback;
+import BehaviorTests.*;
+import util.MockCallback;
 import io.github.openunirest.http.exceptions.UnirestConfigException;
 import io.github.openunirest.http.exceptions.UnirestException;
 import org.json.JSONArray;
@@ -8,7 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 
-import static io.github.openunirest.http.TestUtil.assertException;
+import static util.TestUtil.assertException;
 
 public class SendBodyTest extends BddTest {
     @Test

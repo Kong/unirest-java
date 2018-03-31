@@ -1,4 +1,4 @@
-package io.github.openunirest.http;
+package BehaviorTests;
 
 public class Foo {
     public String bar;

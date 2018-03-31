@@ -1,4 +1,4 @@
-package io.github.openunirest.http;
+package BehaviorTests;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
@@ -7,6 +7,7 @@ import com.google.common.collect.Sets;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
 import spark.Request;
+import util.TestUtil;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;

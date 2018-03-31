@@ -1,5 +1,6 @@
-package io.github.openunirest.http;
+package BehaviorTests;
 
+import io.github.openunirest.http.*;
 import io.github.openunirest.http.exceptions.UnirestException;
 import io.github.openunirest.request.GetRequest;
 import org.json.JSONException;
@@ -7,7 +8,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import static io.github.openunirest.http.TestUtil.mapOf;
+import static util.TestUtil.mapOf;
 import static org.junit.Assert.assertEquals;
 
 public class HeaderTest extends BddTest {

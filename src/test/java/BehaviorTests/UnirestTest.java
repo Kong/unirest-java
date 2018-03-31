@@ -24,25 +24,21 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package io.github.openunirest.http;
+package BehaviorTests;
 
-import io.github.openunirest.http.async.MockCallback;
+import io.github.openunirest.http.*;
+import util.MockCallback;
 import io.github.openunirest.http.exceptions.UnirestException;
 import io.github.openunirest.http.options.Options;
-import io.github.openunirest.request.GetRequest;
-import io.github.openunirest.request.HttpRequest;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
-import org.json.JSONException;
 import org.junit.Ignore;
 import org.junit.Test;
+import util.JacksonObjectMapper;
+import util.TestUtil;
 
 import java.io.*;
 import java.net.InetAddress;
-import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 

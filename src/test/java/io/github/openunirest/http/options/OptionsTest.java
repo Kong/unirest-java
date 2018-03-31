@@ -1,10 +1,8 @@
 package io.github.openunirest.http.options;
 
-import io.github.openunirest.http.JacksonObjectMapper;
+import util.JacksonObjectMapper;
 import io.github.openunirest.http.ObjectMapper;
-import io.github.openunirest.http.Unirest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.lang.management.ManagementFactory;

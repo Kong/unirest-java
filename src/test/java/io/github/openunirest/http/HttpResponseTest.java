@@ -2,8 +2,9 @@ package io.github.openunirest.http;
 
 import io.github.openunirest.MockApacheResponse;
 import org.junit.Test;
+import util.TestUtil;
 
-import static io.github.openunirest.http.TestUtil.emptyInput;
+import static util.TestUtil.emptyInput;
 import static org.junit.Assert.*;
 
 public class HttpResponseTest {

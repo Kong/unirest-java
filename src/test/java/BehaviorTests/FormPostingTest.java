@@ -1,7 +1,8 @@
-package io.github.openunirest.http;
+package BehaviorTests;
 
-import com.google.common.collect.ImmutableMap;
-import io.github.openunirest.http.async.MockCallback;
+import util.TestUtil;
+import io.github.openunirest.http.Unirest;
+import util.MockCallback;
 import io.github.openunirest.http.exceptions.UnirestException;
 import io.github.openunirest.request.HttpRequest;
 import org.apache.commons.io.IOUtils;
@@ -12,7 +13,6 @@ import org.junit.Test;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.Map;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static org.junit.Assert.assertEquals;

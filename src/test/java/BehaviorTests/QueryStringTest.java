@@ -1,5 +1,8 @@
-package io.github.openunirest.http;
+package BehaviorTests;
 
+import io.github.openunirest.http.HttpResponse;
+import io.github.openunirest.http.JsonNode;
+import io.github.openunirest.http.Unirest;
 import io.github.openunirest.http.exceptions.UnirestException;
 import org.json.JSONException;
 import org.junit.Test;

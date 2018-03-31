@@ -1,4 +1,4 @@
-package io.github.openunirest.http;
+package BehaviorTests;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

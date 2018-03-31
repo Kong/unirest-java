@@ -1,8 +1,9 @@
-package io.github.openunirest.http.async;
+package util;
 
-import io.github.openunirest.http.BddTest;
+import BehaviorTests.BddTest;
 import io.github.openunirest.http.HttpResponse;
 import io.github.openunirest.http.JsonNode;
+import io.github.openunirest.http.async.Callback;
 import io.github.openunirest.http.exceptions.UnirestException;
 
 import java.util.function.Consumer;

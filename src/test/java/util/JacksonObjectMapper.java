@@ -1,7 +1,8 @@
-package io.github.openunirest.http;
+package util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import io.github.openunirest.http.ObjectMapper;
 
 import java.io.IOException;
 import java.io.InputStream;

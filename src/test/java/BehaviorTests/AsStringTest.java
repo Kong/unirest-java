@@ -1,6 +1,8 @@
-package io.github.openunirest.http;
+package BehaviorTests;
 
+import io.github.openunirest.http.*;
 import org.junit.Test;
+import util.TestUtil;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;

@@ -1,5 +1,6 @@
 package io.github.openunirest;
 
+import BehaviorTests.Foo;
 import io.github.openunirest.http.*;
 import io.github.openunirest.http.exceptions.UnirestException;
 import io.github.openunirest.http.options.Option;
@@ -8,11 +9,13 @@ import org.apache.http.ProtocolVersion;
 import org.apache.http.message.BasicStatusLine;
 import org.junit.Before;
 import org.junit.Test;
+import util.JacksonObjectMapper;
+import util.TestUtil;
 
 import java.io.InputStream;
 
-import static io.github.openunirest.http.TestUtil.assertException;
-import static io.github.openunirest.http.TestUtil.toJson;
+import static util.TestUtil.assertException;
+import static util.TestUtil.toJson;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

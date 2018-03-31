@@ -1,12 +1,10 @@
-package io.github.openunirest.http.async;
+package BehaviorTests;
 
-import io.github.openunirest.http.BddTest;
-import io.github.openunirest.http.JsonNode;
-import io.github.openunirest.http.MockServer;
 import io.github.openunirest.http.Unirest;
+import util.NoopCallback;
 import org.junit.Test;
 
-import static io.github.openunirest.http.async.MockCallback.json;
+import static util.MockCallback.json;
 
 public class CallbackFutureTest extends BddTest {
 

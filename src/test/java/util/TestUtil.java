@@ -1,7 +1,9 @@
-package io.github.openunirest.http;
+package util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import io.github.openunirest.http.HttpResponse;
 
 import java.io.*;
 import java.util.HashMap;
@@ -12,10 +14,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public class TestUtil {
-    private static final com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
+    private static final ObjectMapper om = new ObjectMapper();
+
     static {
         om.registerModule(new GuavaModule());
     }
+
     public static String toString(InputStream is) {
         return new BufferedReader(new InputStreamReader(is))
                 .lines().collect(Collectors.joining("\n"));
@@ -79,5 +83,27 @@ public class TestUtil {
         }
 
         return map;
+    }
+
+    public static void debugApache() {
+        System.setProperty("org.apache.commons.logging.Log","org.apache.commons.logging.impl.SimpleLog");
+        System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
+        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.wire", "DEBUG");
+    }
+
+    public static <T> T read(String o, Class<T> as){
+        try {
+            return om.readValue(o, as);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> T read(HttpResponse r, Class<T> as) {
+        try {
+            return om.readValue(r.getRawBody(), as);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

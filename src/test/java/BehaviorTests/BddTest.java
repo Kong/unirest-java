@@ -1,11 +1,13 @@
-package io.github.openunirest.http;
+package BehaviorTests;
 
+import io.github.openunirest.http.*;
 import org.junit.Before;
+import util.JacksonObjectMapper;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static io.github.openunirest.http.TestUtils.read;
+import static util.TestUtil.read;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
