@@ -27,7 +27,6 @@ package io.github.openunirest.http;
 
 import org.apache.http.StatusLine;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Optional;
 import java.util.function.Function;

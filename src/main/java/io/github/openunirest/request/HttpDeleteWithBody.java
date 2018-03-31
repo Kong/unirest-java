@@ -25,11 +25,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package io.github.openunirest.request;
 
-import java.net.URI;
-
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 
-class HttpDeleteWithBody extends HttpEntityEnclosingRequestBase {
+import java.net.URI;
+
+public class HttpDeleteWithBody extends HttpEntityEnclosingRequestBase {
 	public static final String METHOD_NAME = "DELETE";
 
 	public String getMethod() {

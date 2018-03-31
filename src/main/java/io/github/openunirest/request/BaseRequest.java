@@ -25,7 +25,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package io.github.openunirest.request;
 
-import io.github.openunirest.http.*;
 import io.github.openunirest.http.async.Callback;
 import io.github.openunirest.http.HttpResponse;
 import io.github.openunirest.http.JsonNode;

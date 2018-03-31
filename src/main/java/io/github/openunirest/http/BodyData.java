@@ -11,6 +11,7 @@ import java.util.function.Function;
 import static io.github.openunirest.http.utils.ResponseUtils.getCharsetfromResponse;
 import static io.github.openunirest.http.utils.ResponseUtils.getRawBody;
 
+@Deprecated // use at your own risk
 public class BodyData<T>  {
 
     public static <T> BodyData<T> from(HttpEntity e, Function<BodyData<T>, T> transformer) {

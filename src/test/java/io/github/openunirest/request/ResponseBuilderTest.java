@@ -1,7 +1,9 @@
-package io.github.openunirest;
+package io.github.openunirest.request;
 
 import BehaviorTests.Foo;
-import io.github.openunirest.http.*;
+import io.github.openunirest.MockApacheResponse;
+import io.github.openunirest.http.HttpResponse;
+import io.github.openunirest.http.JsonNode;
 import io.github.openunirest.http.exceptions.UnirestException;
 import io.github.openunirest.http.options.Option;
 import io.github.openunirest.http.options.Options;
@@ -14,12 +16,10 @@ import util.TestUtil;
 
 import java.io.InputStream;
 
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.junit.Assert.*;
 import static util.TestUtil.assertException;
 import static util.TestUtil.toJson;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 
 public class ResponseBuilderTest {
     private final ResponseBuilder builder = new ResponseBuilder();

@@ -1,6 +1,10 @@
-package io.github.openunirest.http;
+package io.github.openunirest.request;
 
 
+import io.github.openunirest.http.BodyData;
+import io.github.openunirest.http.HttpResponse;
+import io.github.openunirest.http.JsonNode;
+import io.github.openunirest.http.ObjectMapper;
 import io.github.openunirest.http.exceptions.UnirestException;
 import io.github.openunirest.http.options.Option;
 import io.github.openunirest.http.options.Options;
@@ -10,7 +14,8 @@ import java.io.UnsupportedEncodingException;
 
 import static io.github.openunirest.http.BodyData.from;
 
-public class ResponseBuilder {
+
+class ResponseBuilder {
 
     public HttpResponse<JsonNode> asJson(org.apache.http.HttpResponse response) {
         return new HttpResponse<>(response, from(response.getEntity(), b -> toJson(b)));
