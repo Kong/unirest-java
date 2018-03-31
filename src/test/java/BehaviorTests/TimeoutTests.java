@@ -26,25 +26,25 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package BehaviorTests;
 
-import io.github.openunirest.http.*;
-import util.MockCallback;
+import io.github.openunirest.http.Unirest;
 import io.github.openunirest.http.exceptions.UnirestException;
 import io.github.openunirest.http.options.Options;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.junit.Ignore;
 import org.junit.Test;
-import util.JacksonObjectMapper;
-import util.TestUtil;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.InetAddress;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-public class UnirestTest extends BddTest {
+public class TimeoutTests extends BddTest {
 
     @Test
     public void testSetTimeouts() throws IOException {
@@ -65,55 +65,6 @@ public class UnirestTest extends BddTest {
             if (System.currentTimeMillis() - start > 2100) { // Add 100ms for code execution
                 fail();
             }
-        }
-    }
-
-    @Test
-    public void testPathParameters() {
-        HttpResponse<JsonNode> jsonResponse = Unirest.get(MockServer.HOST + "/{method}")
-                .routeParam("method", "get")
-                .queryString("name", "Mark")
-                .asJson();
-
-        parse(jsonResponse)
-                .assertParam("name", "Mark");
-    }
-
-    @Test
-    public void testQueryAndBodyParameters() {
-        HttpResponse<JsonNode> jsonResponse = Unirest.post(MockServer.HOST + "/{method}")
-                .routeParam("method", "post")
-                .queryString("name", "Mark")
-                .field("wot", "wat")
-                .asJson();
-
-        parse(jsonResponse)
-                .assertParam("name", "Mark")
-                .assertParam("wot", "wat");
-    }
-
-    @Test
-    public void testPathParameters2() {
-        HttpResponse<JsonNode> jsonResponse = Unirest.patch(MockServer.HOST + "/{method}")
-                .routeParam("method", "patch")
-                .field("name", "Mark")
-                .asJson();
-
-        parse(jsonResponse)
-                .assertParam("name", "Mark");
-    }
-
-    @Test
-    public void testMissingPathParameter() {
-        try {
-            Unirest.get(MockServer.HOST + "/{method}")
-                    .routeParam("method222", "get")
-                    .queryString("name", "Mark")
-                    .asJson();
-
-            fail();
-        } catch (RuntimeException e) {
-            assertEquals("Can't find route parameter name \"method222\"", e.getMessage());
         }
     }
 
@@ -180,46 +131,6 @@ public class UnirestTest extends BddTest {
         } catch (Exception e) {
             // Ok
         }
-    }
-
-    @Test
-    public void testObjectMapperRead() {
-        Unirest.setObjectMapper(new JacksonObjectMapper());
-
-        GetResponse getResponseMock = new GetResponse();
-        getResponseMock.setUrl(MockServer.GET);
-
-        HttpResponse<GetResponse> getResponse = Unirest.get(getResponseMock.getUrl())
-                .asObject(GetResponse.class);
-
-        assertEquals(200, getResponse.getStatus());
-        assertEquals(getResponse.getBody().getUrl(), getResponseMock.getUrl());
-    }
-
-    @Test
-    public void failureToReturnValidJsonWillResultInAnEmptyNode() {
-        HttpResponse<JsonNode> response = Unirest.get(MockServer.INVALID_REQUEST).asJson();
-
-        assertEquals(400, response.getStatus());
-        assertNull(response.getBody());
-        assertEquals("You did something bad", TestUtil.toString(response.getRawBody()));
-        assertEquals("org.json.JSONException: A JSONArray text must start with '[' at 1 [character 2 line 1]",
-                response.getParsingError().get().getMessage());
-    }
-
-    @Test
-    public void failureToReturnValidJsonWillResultInAnEmptyNodeAsync() {
-        Unirest.get(MockServer.INVALID_REQUEST)
-                .asJsonAsync(new MockCallback<>(this, response -> {
-                        assertEquals(400, response.getStatus());
-                        assertNull(response.getBody());
-                        assertEquals("You did something bad", TestUtil.toString(response.getRawBody()));
-                        assertEquals("org.json.JSONException: A JSONArray text must start with '[' at 1 [character 2 line 1]",
-                                response.getParsingError().get().getMessage());
-
-                    }));
-
-        assertAsync();
     }
 
     private String findAvailableIpAddress() throws IOException {
