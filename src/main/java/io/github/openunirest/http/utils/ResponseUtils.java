@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
+import io.github.openunirest.http.exceptions.UnirestException;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
@@ -81,7 +82,7 @@ public class ResponseUtils {
             }
             return getBytes(is);
         } catch (IOException e2) {
-            throw new RuntimeException(e2);
+            throw new UnirestException(e2);
         } finally {
             EntityUtils.consumeQuietly(responseEntity);
         }
