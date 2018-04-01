@@ -10,6 +10,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.util.EntityUtils;
 
 public class ResponseUtils {
 
@@ -81,6 +82,8 @@ public class ResponseUtils {
             return getBytes(is);
         } catch (IOException e2) {
             throw new RuntimeException(e2);
+        } finally {
+            EntityUtils.consumeQuietly(responseEntity);
         }
     }
 }
