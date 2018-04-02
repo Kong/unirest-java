@@ -64,6 +64,9 @@ public class MockServer {
         get("/gzip", MockServer::gzipResponse);
         patch("/patch", MockServer::jsonResponse);
         get("/invalid", MockServer::inValid);
+        options("/get", MockServer::jsonResponse);
+		head("/get", MockServer::jsonResponse);
+		put("/post", MockServer::jsonResponse);
         Runtime.getRuntime().addShutdownHook(new Thread(Spark::stop));
 	}
 

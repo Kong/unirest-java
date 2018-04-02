@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import io.github.openunirest.http.HttpMethod;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
 import spark.Request;
@@ -27,6 +28,7 @@ public class RequestCapture {
     public String body;
     public String url;
     public String queryString;
+    public HttpMethod method;
 
     public RequestCapture() {
     }
@@ -34,6 +36,7 @@ public class RequestCapture {
     public RequestCapture(Request req) {
         url = req.url();
         queryString = req.queryString();
+        method = HttpMethod.valueOf(req.requestMethod());
         writeHeaders(req);
         writeQuery(req);
     }
@@ -144,6 +147,10 @@ public class RequestCapture {
 
     public void assertQueryString(String s) {
         assertEquals(s, queryString);
+    }
+
+    public void asserMethod(HttpMethod get) {
+        assertEquals(get, method);
     }
 
     public static class File {
