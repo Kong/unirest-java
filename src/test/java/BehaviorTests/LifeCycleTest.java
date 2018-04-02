@@ -7,17 +7,16 @@ import io.github.openunirest.http.utils.SyncIdleConnectionMonitorThread;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 
 import static io.github.openunirest.http.options.Option.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class LifeCycleTest extends BddTest {
-    @After
+    @After @Before
     public void tearDown() throws Exception {
         Options.reset();
     }
@@ -41,7 +40,27 @@ public class LifeCycleTest extends BddTest {
         verify(connMonitor).interrupt();
         verify(asyncClient).close();
         verify(asyncMonitor).interrupt();
+    }
 
+    @Test
+    public void DoesNotBombOnNullOptions() throws IOException {
+        Options.setOption(HTTPCLIENT, null);
+        Options.setOption(SYNC_MONITOR, null);
+        Options.setOption(ASYNCHTTPCLIENT, null);
+        Options.setOption(ASYNC_MONITOR, null);
 
+        Unirest.shutdown();
+    }
+
+    @Test
+    public void willNotShutdownInactiveAsyncClient() throws IOException {
+        CloseableHttpAsyncClient asyncClient = mock(CloseableHttpAsyncClient.class);
+        when(asyncClient.isRunning()).thenReturn(false);
+
+        Options.setOption(ASYNCHTTPCLIENT, asyncClient);
+
+        Unirest.shutdown();
+
+        verify(asyncClient, never()).close();
     }
 }
