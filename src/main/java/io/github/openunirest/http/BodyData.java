@@ -48,7 +48,7 @@ public class BodyData<T>  {
 
     public InputStream getRawInput() {
         if(rawBytes == null){
-            return null;
+            return new ByteArrayInputStream(new byte[]{});
         }
         return new ByteArrayInputStream(rawBytes);
     }

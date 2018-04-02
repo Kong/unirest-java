@@ -9,7 +9,7 @@ import java.io.InputStream;
 
 import static org.junit.Assert.assertEquals;
 
-public class VerbTests extends BddTest {
+public class VerbTest extends BddTest {
     @Test
     public void get() {
         Unirest.get(MockServer.GET)
