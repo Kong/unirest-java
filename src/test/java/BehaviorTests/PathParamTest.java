@@ -1,7 +1,9 @@
 package BehaviorTests;
 
+import io.github.openunirest.http.HttpResponse;
 import io.github.openunirest.http.Unirest;
 import io.github.openunirest.http.exceptions.UnirestException;
+import io.github.openunirest.request.HttpRequest;
 import org.junit.Test;
 import util.TestUtil;
 
@@ -58,5 +60,17 @@ public class PathParamTest extends BddTest {
                                 .asBinary(),
                 UnirestException.class,
                 "java.net.URISyntaxException: Illegal character in path at index 22: http://localhost:4567/{method}?name=Mark");
+    }
+
+    @Test
+    public void illigalPathParams() {
+        String value = "/?ЊЯЯ";
+
+        Unirest.get(MockServer.PASSED_PATH_PARAM)
+                .routeParam("param", value)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertUrl("http://localhost:4567/get/%2F%3F%D0%8A%D0%AF%D0%AF/passed")
+                .assertPathParam(value);
     }
 }

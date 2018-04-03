@@ -29,6 +29,7 @@ public class RequestCapture {
     public String url;
     public String queryString;
     public HttpMethod method;
+    public String param;
 
     public RequestCapture() {
     }
@@ -39,6 +40,7 @@ public class RequestCapture {
         method = HttpMethod.valueOf(req.requestMethod());
         writeHeaders(req);
         writeQuery(req);
+        param = req.params("p");
     }
 
     public void writeBody(Request req) {
@@ -151,6 +153,16 @@ public class RequestCapture {
 
     public void asserMethod(HttpMethod get) {
         assertEquals(get, method);
+    }
+
+    public RequestCapture assertPathParam(String value) {
+        assertEquals(value, param);
+        return this;
+    }
+
+    public RequestCapture assertUrl(String s) {
+         assertEquals(s, url);
+         return this;
     }
 
     public static class File {

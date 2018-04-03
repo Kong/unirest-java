@@ -45,6 +45,7 @@ public class MockServer {
 	public static final String GZIP = HOST + "/gzip";
 	public static final String PATCH = HOST + "/patch";
 	public static final String INVALID_REQUEST = HOST + "/invalid";
+	public static final String PASSED_PATH_PARAM = GET + "/{param}/passed";
 	public static final String ALTGET = "http://127.0.0.1:" + PORT + "/get";
 
 
@@ -67,6 +68,7 @@ public class MockServer {
         options("/get", MockServer::jsonResponse);
 		head("/get", MockServer::jsonResponse);
 		put("/post", MockServer::jsonResponse);
+		get("/get/:p/passed", MockServer::jsonResponse);
         Runtime.getRuntime().addShutdownHook(new Thread(Spark::stop));
 	}
 
