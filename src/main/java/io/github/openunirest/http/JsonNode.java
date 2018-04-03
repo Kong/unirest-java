@@ -74,12 +74,9 @@ public class JsonNode {
 	@Override
 	public String toString() {
 		if (isArray()) {
-			if (jsonArray == null)
-				return null;
 			return jsonArray.toString();
+		} else {
+			return jsonObject.toString();
 		}
-		if (jsonObject == null)
-			return null;
-		return jsonObject.toString();
 	}
 }
