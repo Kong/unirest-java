@@ -63,7 +63,7 @@ public class ResponseUtils {
         return false;
     }
 
-    public static String getCharsetfromResponse(HttpEntity responseEntity) {
+    public static String getCharSet(HttpEntity responseEntity) {
         Header contentType = responseEntity.getContentType();
         if (contentType != null) {
             String responseCharset = getCharsetFromContentType(contentType.getValue());

@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static io.github.openunirest.http.utils.ResponseUtils.getCharsetfromResponse;
+import static io.github.openunirest.http.utils.ResponseUtils.getCharSet;
 import static io.github.openunirest.http.utils.ResponseUtils.getRawBody;
 
 @Deprecated // use at your own risk
@@ -34,7 +34,7 @@ public class BodyData<T>  {
     }
 
     private BodyData(HttpEntity entity) {
-        this.charset = getCharsetfromResponse(entity);
+        this.charset = getCharSet(entity);
         this.rawBytes = getRawBody(entity);
     }
 
