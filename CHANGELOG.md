@@ -1,3 +1,9 @@
+# 2.2.01
+* Fix NPE with null bodies from HEAD requests.
+
+# 2.2.01
+* Quitly consume and close InputStreams that may not be complete.
+
 # 2.2.00
 * Major refactoring of how response objects are built. This internalizes HttpClientHelper which was previously public but not needed if you were using the library in in the expected way. This refactoring sets up the library for future work to extend the number of supported formats and for greater expression in the methods for those formats.
 * Additional of functional map methods to HttpResponse so you don't have to stop the flow for further transformations.
