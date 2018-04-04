@@ -75,6 +75,10 @@ public class Options {
 
 		// Create clients
 		setOption(Option.HTTPCLIENT, HttpClientBuilder.create().setDefaultRequestConfig(clientConfig).setConnectionManager(syncConnectionManager).build());
+		SyncIdleConnectionMonitorThread prevSyncIdleConnectionMonitorThread = (SyncIdleConnectionMonitorThread) getOption(Option.SYNC_MONITOR);
+		if (prevSyncIdleConnectionMonitorThread != null && prevSyncIdleConnectionMonitorThread.isAlive()) {
+			prevSyncIdleConnectionMonitorThread.interrupt();
+		}
 		SyncIdleConnectionMonitorThread syncIdleConnectionMonitorThread = new SyncIdleConnectionMonitorThread(syncConnectionManager);
 		setOption(Option.SYNC_MONITOR, syncIdleConnectionMonitorThread);
 		syncIdleConnectionMonitorThread.start();
@@ -92,6 +96,10 @@ public class Options {
 
 		CloseableHttpAsyncClient asyncClient = HttpAsyncClientBuilder.create().setDefaultRequestConfig(clientConfig).setConnectionManager(asyncConnectionManager).build();
 		setOption(Option.ASYNCHTTPCLIENT, asyncClient);
+		AsyncIdleConnectionMonitorThread prevAsyncIdleConnectionMonitorThread = (AsyncIdleConnectionMonitorThread) getOption(Option.ASYNC_MONITOR);
+		if (prevAsyncIdleConnectionMonitorThread != null && prevAsyncIdleConnectionMonitorThread.isAlive()) {
+			prevAsyncIdleConnectionMonitorThread.interrupt();
+		}
 		setOption(Option.ASYNC_MONITOR, new AsyncIdleConnectionMonitorThread(asyncConnectionManager));
 	}
 
