@@ -1,7 +1,8 @@
 /*
 The MIT License
 
-Copyright for portions of OpenUnirest/uniresr-java are held by Mashape (c) 2013 as part of Kong/unirest-java.All other copyright for OpenUnirest/unirest-java are held by OpenUnirest (c) 2018.
+Copyright for portions of OpenUnirest/uniresr-java are held by Mashape (c) 2013 as part of Kong/unirest-java.
+All other copyright for OpenUnirest/unirest-java are held by OpenUnirest (c) 2018.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -31,10 +32,6 @@ import io.github.openunirest.request.HttpRequest;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.StringEntity;
 
-import io.github.openunirest.http.JsonNode;
-import io.github.openunirest.request.BaseRequest;
-import io.github.openunirest.request.HttpRequest;
-
 public class RequestBodyEntity extends BaseRequest implements Body {
 
 	private Object body;
@@ -43,13 +40,13 @@ public class RequestBodyEntity extends BaseRequest implements Body {
 		super(httpRequest);
 	}
 
-	public RequestBodyEntity body(String body) {
-		this.body = body;
+	public RequestBodyEntity body(String bodyAsString) {
+		this.body = bodyAsString;
 		return this;
 	}
 
-	public RequestBodyEntity body(JsonNode body) {
-		this.body = body.toString();
+	public RequestBodyEntity body(JsonNode jsonBody) {
+		this.body = jsonBody.toString();
 		return this;
 	}
 

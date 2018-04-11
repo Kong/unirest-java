@@ -1,10 +1,5 @@
 package io.github.openunirest.http.options;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
 import io.github.openunirest.http.async.utils.AsyncIdleConnectionMonitorThread;
 import io.github.openunirest.http.utils.SyncIdleConnectionMonitorThread;
 import org.apache.http.HttpHost;
@@ -18,8 +13,10 @@ import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
 import org.apache.http.nio.reactor.IOReactorException;
 
-import io.github.openunirest.http.async.utils.AsyncIdleConnectionMonitorThread;
-import io.github.openunirest.http.utils.SyncIdleConnectionMonitorThread;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 public class Options {
 	public static final int MAX_TOTAL = 200;
@@ -50,7 +47,10 @@ public class Options {
 
 	private static void validateOption(Option option) {
 		if ((option == Option.CONNECTION_TIMEOUT || option == Option.SOCKET_TIMEOUT) && customClientSet) {
-			throw new RuntimeException("You can't set custom timeouts when providing custom client implementations. Set the timeouts directly in your custom client configuration instead.");
+			throw new RuntimeException(
+					"You can't set custom timeouts when providing custom client implementations. " +
+					"Set the timeouts directly in your custom client configuration instead."
+			);
 		}
 	}
 

@@ -1,7 +1,8 @@
 /*
 The MIT License
 
-Copyright for portions of OpenUnirest/uniresr-java are held by Mashape (c) 2013 as part of Kong/unirest-java.All other copyright for OpenUnirest/unirest-java are held by OpenUnirest (c) 2018.
+Copyright for portions of OpenUnirest/uniresr-java are held by Mashape (c) 2013 as part of Kong/unirest-java.
+All other copyright for OpenUnirest/unirest-java are held by OpenUnirest (c) 2018.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -77,9 +78,9 @@ public class HttpRequest extends BaseRequest {
 		return this;
 	}
 
-	public HttpRequest headers(Map<String, String> headers) {
+	public HttpRequest headers(Map<String, String> headerMap) {
 		if (headers != null) {
-			for (Map.Entry<String, String> entry : headers.entrySet()) {
+			for (Map.Entry<String, String> entry : headerMap.entrySet()) {
 				header(entry.getKey(), entry.getValue());
 			}
 		}
@@ -118,7 +119,9 @@ public class HttpRequest extends BaseRequest {
 				if (param.getValue() instanceof String || param.getValue() instanceof Number || param.getValue() instanceof Boolean || param.getValue() == null) {
 					queryString(param.getKey(), param.getValue());
 				} else {
-					throw new RuntimeException("Parameter \"" + param.getKey() + "\" can't be sent with a GET request because of type: " + param.getValue().getClass().getName());
+					throw new RuntimeException("Parameter \"" + param.getKey() +
+							"\" can't be sent with a GET request because of type: "
+							+ param.getValue().getClass().getName());
 				}
 			}
 		}
@@ -134,8 +137,9 @@ public class HttpRequest extends BaseRequest {
 	}
 
 	public Map<String, List<String>> getHeaders() {
-		if (headers == null)
-			return new HashMap<String, List<String>>();
+		if (headers == null) {
+			return new HashMap<>();
+		}
 		return headers;
 	}
 

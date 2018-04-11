@@ -1,7 +1,6 @@
 package io.github.openunirest.http;
 
 import org.apache.http.Header;
-import org.omg.CORBA.NameValuePair;
 
 import java.util.ArrayList;
 import java.util.Collections;

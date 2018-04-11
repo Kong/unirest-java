@@ -1,7 +1,6 @@
 package io.github.openunirest.request;
 
 import io.github.openunirest.http.exceptions.UnirestException;
-import io.github.openunirest.request.HttpRequest;
 import org.apache.http.client.utils.URIBuilder;
 
 import java.net.URISyntaxException;

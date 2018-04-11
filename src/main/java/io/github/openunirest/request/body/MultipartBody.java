@@ -1,7 +1,8 @@
 /*
 The MIT License
 
-Copyright for portions of OpenUnirest/uniresr-java are held by Mashape (c) 2013 as part of Kong/unirest-java.All other copyright for OpenUnirest/unirest-java are held by OpenUnirest (c) 2018.
+Copyright for portions of OpenUnirest/uniresr-java are held by Mashape (c) 2013 as part of Kong/unirest-java.
+All other copyright for OpenUnirest/unirest-java are held by OpenUnirest (c) 2018.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -25,30 +26,20 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package io.github.openunirest.request.body;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.LinkedHashMap;
-
+import io.github.openunirest.http.utils.MapUtil;
+import io.github.openunirest.request.BaseRequest;
+import io.github.openunirest.request.HttpRequest;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.ByteArrayBody;
-import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.InputStreamBody;
-import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.entity.mime.content.*;
 
-import io.github.openunirest.http.utils.MapUtil;
-import io.github.openunirest.request.BaseRequest;
-import io.github.openunirest.request.HttpRequest;
+import java.io.File;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 
 public class MultipartBody extends BaseRequest implements Body {
 	private Map<String, List<Object>> parameters = new LinkedHashMap<>();
@@ -137,8 +128,8 @@ public class MultipartBody extends BaseRequest implements Body {
 		return this;
 	}
 
-	public MultipartBody mode(String mode) {
-		this.mode = HttpMultipartMode.valueOf(mode);
+	public MultipartBody mode(String value) {
+		this.mode = HttpMultipartMode.valueOf(value);
 		return this;
 	}
 

@@ -1,5 +1,10 @@
 package io.github.openunirest.http.utils;
 
+import io.github.openunirest.http.exceptions.UnirestException;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.util.EntityUtils;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -8,14 +13,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
-import io.github.openunirest.http.exceptions.UnirestException;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.util.EntityUtils;
-
 public class ResponseUtils {
 
-    private static final Pattern charsetPattern = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
+    private static final Pattern CHARSET_PATTERN = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
 
     /**
      * Parse out a charset from a content type header.
@@ -24,10 +24,11 @@ public class ResponseUtils {
      * @return "EUC-JP", or null if not found. Charset is trimmed and uppercased.
      */
     public static String getCharsetFromContentType(String contentType) {
-        if (contentType == null)
+        if (contentType == null) {
             return null;
+        }
 
-        Matcher m = charsetPattern.matcher(contentType);
+        Matcher m = CHARSET_PATTERN.matcher(contentType);
         if (m.find()) {
             return m.group(1).trim().toUpperCase();
         }
@@ -46,8 +47,9 @@ public class ResponseUtils {
         } else {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             buf = new byte[size];
-            while ((len = is.read(buf, 0, size)) != -1)
+            while ((len = is.read(buf, 0, size)) != -1) {
                 bos.write(buf, 0, len);
+            }
             buf = bos.toByteArray();
         }
         return buf;
