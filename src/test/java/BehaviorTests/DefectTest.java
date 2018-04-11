@@ -13,22 +13,22 @@ public class DefectTest extends BddTest {
         Unirest.get(MockServer.GET + "?a=1&b=2#some_location")
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertParam("a","1")
+                .assertParam("a", "1")
                 .assertParam("b", "2");
     }
 
     @Test
-    public void nullAndObjectValuesInMap(){
+    public void nullAndObjectValuesInMap() {
         Map<String, Object> queryParams = new HashMap<>();
         queryParams.put("foo", null);
         queryParams.put("baz", "qux");
 
         Unirest.get(MockServer.GET)
-                    .queryString(queryParams)
-                    .asObject(RequestCapture.class)
-                    .getBody()
-                    .assertParam("foo", "")
-                    .assertParam("baz", "qux")
-                    .assertQueryString("foo&baz=qux");
+                .queryString(queryParams)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertParam("foo", "")
+                .assertParam("baz", "qux")
+                .assertQueryString("foo&baz=qux");
     }
 }

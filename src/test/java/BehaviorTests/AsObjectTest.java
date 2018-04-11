@@ -3,8 +3,6 @@ package BehaviorTests;
 import io.github.openunirest.http.Unirest;
 import org.junit.Test;
 
-import java.util.concurrent.ExecutionException;
-
 public class AsObjectTest extends BddTest {
     @Test
     public void canGetObjectResponse() {
@@ -16,7 +14,7 @@ public class AsObjectTest extends BddTest {
     }
 
     @Test
-    public void canGetObjectResponseAsync() throws ExecutionException, InterruptedException {
+    public void canGetObjectResponseAsync() throws Exception {
         Unirest.get(MockServer.GET)
                 .queryString("foo", "bar")
                 .asObjectAsync(RequestCapture.class)

@@ -1,20 +1,19 @@
 package BehaviorTests;
 
-import util.TestUtil;
 import io.github.openunirest.http.Unirest;
-import util.MockCallback;
-import io.github.openunirest.http.exceptions.UnirestException;
 import io.github.openunirest.request.HttpRequest;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.ContentType;
-import org.json.JSONException;
 import org.junit.Test;
+import util.MockCallback;
+import util.TestUtil;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 
-import static com.google.common.collect.ImmutableMap.of;
 import static org.junit.Assert.assertEquals;
 
 public class FormPostingTest extends BddTest {
@@ -170,7 +169,7 @@ public class FormPostingTest extends BddTest {
     }
 
     @Test
-    public void testPostMultipleFiles() throws JSONException, URISyntaxException {
+    public void testPostMultipleFiles()throws Exception {
         Unirest.post(MockServer.POST)
                 .field("param3", "wot")
                 .field("file1", new File(getClass().getResource("/test").toURI()))
@@ -183,7 +182,7 @@ public class FormPostingTest extends BddTest {
     }
 
     @Test
-    public void testPostArray() throws JSONException, UnirestException {
+    public void testPostArray() {
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
                 .field("name", "Tom")
@@ -204,7 +203,7 @@ public class FormPostingTest extends BddTest {
     }
 
     @Test
-    public void testPostBinaryUTF8() throws URISyntaxException {
+    public void testPostBinaryUTF8() throws Exception {
         Unirest.post(MockServer.POST)
                 .header("Accept", ContentType.MULTIPART_FORM_DATA.getMimeType())
                 .field("param3", "こんにちは")
@@ -216,7 +215,7 @@ public class FormPostingTest extends BddTest {
     }
 
     @Test
-    public void testPostCollection() throws JSONException, UnirestException {
+    public void testPostCollection() {
         Unirest.post(MockServer.POST)
                 .field("name", Arrays.asList("Mark", "Tom"))
                 .asObject(RequestCapture.class)
@@ -226,7 +225,7 @@ public class FormPostingTest extends BddTest {
     }
 
     @Test
-    public void testPostProvidesSortedParams() throws IOException {
+    public void testPostProvidesSortedParams() throws Exception {
         // Verify that fields are encoded into the body in sorted order.
         HttpRequest httpRequest = Unirest.post("test")
                 .field("z", "Z")
@@ -240,7 +239,7 @@ public class FormPostingTest extends BddTest {
     }
 
     @Test
-    public void postFileWithContentType() throws URISyntaxException {
+    public void postFileWithContentType() throws Exception {
         File file = getImageFile();
         Unirest.post(MockServer.POST)
                 .field("testfile", file, ContentType.IMAGE_JPEG.getMimeType())

@@ -1,19 +1,20 @@
 package BehaviorTests;
 
-import io.github.openunirest.http.*;
-import io.github.openunirest.http.exceptions.UnirestException;
+import io.github.openunirest.http.Headers;
+import io.github.openunirest.http.HttpResponse;
+import io.github.openunirest.http.JsonNode;
+import io.github.openunirest.http.Unirest;
 import io.github.openunirest.request.GetRequest;
-import org.json.JSONException;
 import org.junit.Test;
 
 import java.util.Arrays;
 
-import static util.TestUtil.mapOf;
 import static org.junit.Assert.assertEquals;
+import static util.TestUtil.mapOf;
 
 public class HeaderTest extends BddTest {
     @Test
-    public void testCustomUserAgent() throws JSONException, UnirestException {
+    public void testCustomUserAgent() {
         Unirest.get(MockServer.GET)
                 .header("user-agent", "hello-world")
                 .asObject(RequestCapture.class)
@@ -22,7 +23,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void testBasicAuth() throws JSONException, UnirestException {
+    public void testBasicAuth() {
         Unirest.get(MockServer.GET)
                 .basicAuth("user", "test")
                 .asObject(RequestCapture.class)
@@ -32,7 +33,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void unicodeBasicAuth() throws JSONException, UnirestException {
+    public void unicodeBasicAuth() {
         Unirest.get(MockServer.GET)
                 .basicAuth("こんにちは", "こんにちは")
                 .asObject(RequestCapture.class)
@@ -42,7 +43,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void testDefaultHeaders() throws JSONException {
+    public void testDefaultHeaders() {
         Unirest.setDefaultHeader("X-Custom-Header", "hello");
         Unirest.setDefaultHeader("user-agent", "foobar");
 
@@ -125,7 +126,7 @@ public class HeaderTest extends BddTest {
                 .basicAuth("foo", "bar")
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertBasicAuth("foo","bar");
+                .assertBasicAuth("foo", "bar");
 
         Unirest.get(MockServer.GET)
                 .basicAuth("baz", "qux")

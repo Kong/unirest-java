@@ -1,12 +1,13 @@
 package BehaviorTests;
 
-import io.github.openunirest.http.*;
+import io.github.openunirest.http.HttpResponse;
+import io.github.openunirest.http.JsonNode;
+import io.github.openunirest.http.Unirest;
 import org.junit.Test;
 import util.MockCallback;
 import util.TestUtil;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -22,7 +23,7 @@ public class AsJsonTest extends BddTest {
     }
 
     @Test
-    public void canGetBinaryResponseAsync() throws ExecutionException, InterruptedException {
+    public void canGetBinaryResponseAsync() throws Exception {
         CompletableFuture<HttpResponse<JsonNode>> r = Unirest.get(MockServer.GET)
                 .queryString("foo", "bar")
                 .asJsonAsync();

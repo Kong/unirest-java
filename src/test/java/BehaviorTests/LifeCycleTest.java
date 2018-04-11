@@ -16,8 +16,9 @@ import static io.github.openunirest.http.options.Option.*;
 import static org.mockito.Mockito.*;
 
 public class LifeCycleTest extends BddTest {
-    @After @Before
-    public void tearDown() throws Exception {
+    @After
+    @Before
+    public void tearDown() {
         Options.reset();
     }
 

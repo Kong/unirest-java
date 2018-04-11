@@ -1,14 +1,11 @@
 package BehaviorTests;
 
 import io.github.openunirest.http.Unirest;
-import org.json.JSONException;
 import org.junit.Test;
-
-import java.util.concurrent.ExecutionException;
 
 public class GZipTest extends BddTest {
     @Test
-    public void testGzip() throws JSONException {
+    public void testGzip() {
         Unirest.get(MockServer.GZIP)
                 .queryString("zipme", "up")
                 .asObject(RequestCapture.class)
@@ -17,7 +14,7 @@ public class GZipTest extends BddTest {
     }
 
     @Test
-    public void testGzipAsync() throws JSONException, InterruptedException, ExecutionException {
+    public void testGzipAsync() throws Exception {
         Unirest.get(MockServer.GZIP)
                 .queryString("zipme", "up")
                 .asObjectAsync(RequestCapture.class)

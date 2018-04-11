@@ -3,15 +3,13 @@ package BehaviorTests;
 import io.github.openunirest.http.HttpResponse;
 import io.github.openunirest.http.JsonNode;
 import io.github.openunirest.http.Unirest;
-import io.github.openunirest.http.exceptions.UnirestException;
-import org.json.JSONException;
 import org.junit.Test;
 
 import java.util.Arrays;
 
 public class QueryStringTest extends BddTest {
     @Test
-    public void testGetQueryStrings() throws JSONException, UnirestException {
+    public void testGetQueryStrings() {
        Unirest.get(MockServer.GET)
                 .queryString("name", "mark")
                 .queryString("nick", "thefosk")
@@ -36,7 +34,7 @@ public class QueryStringTest extends BddTest {
     }
 
     @Test
-    public void multipleParams() throws JSONException, UnirestException {
+    public void multipleParams() {
         Unirest.get(MockServer.GET + "?name=ringo")
                 .queryString("name", "paul")
                 .queryString("name", "john")
@@ -57,7 +55,7 @@ public class QueryStringTest extends BddTest {
     }
 
     @Test
-    public void testGetMultiple() throws JSONException, UnirestException {
+    public void testGetMultiple() {
         for (int i = 1; i <= 20; i++) {
             HttpResponse<JsonNode> response = Unirest.get(MockServer.GET + "?try=" + i).asJson();
             parse(response).assertParam("try", String.valueOf(i));
@@ -65,7 +63,7 @@ public class QueryStringTest extends BddTest {
     }
 
     @Test
-    public void testQueryStringEncoding() throws JSONException, UnirestException {
+    public void testQueryStringEncoding() {
         String testKey = "email2=someKey&email";
         String testValue = "hello@hello.com";
 
@@ -77,7 +75,7 @@ public class QueryStringTest extends BddTest {
     }
 
     @Test
-    public void testGetQuerystringArray() throws JSONException, UnirestException {
+    public void testGetQuerystringArray() {
         Unirest.get(MockServer.GET)
                 .queryString("name", "Mark")
                 .queryString("name", "Tom")
@@ -88,7 +86,7 @@ public class QueryStringTest extends BddTest {
     }
 
     @Test
-    public void testGetArray() throws JSONException, UnirestException {
+    public void testGetArray() {
         Unirest.get(MockServer.GET)
                 .queryString("name", Arrays.asList("Mark", "Tom"))
                 .asObject(RequestCapture.class)

@@ -57,5 +57,4 @@ public class VerbTest extends BddTest {
                 .getBody()
                 .asserMethod(HttpMethod.OPTIONS);
     }
-
 }

@@ -36,7 +36,7 @@ public class CallbackFutureTest extends BddTest {
 
     @Test(timeout = 5000)
     public void onFailure() throws Exception {
-       Unirest.get("http://localhost:0000")
+        Unirest.get("http://localhost:0000")
                 .asJsonAsync(json(this))
                 .isCompletedExceptionally();
 

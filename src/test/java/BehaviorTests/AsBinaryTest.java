@@ -1,12 +1,12 @@
 package BehaviorTests;
 
-import io.github.openunirest.http.*;
+import io.github.openunirest.http.HttpResponse;
+import io.github.openunirest.http.Unirest;
 import org.junit.Test;
 import util.TestUtil;
 
 import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public class AsBinaryTest extends BddTest {
     @Test
@@ -20,7 +20,7 @@ public class AsBinaryTest extends BddTest {
     }
 
     @Test
-    public void canGetBinaryResponseAsync() throws ExecutionException, InterruptedException {
+    public void canGetBinaryResponseAsync() throws Exception {
         CompletableFuture<HttpResponse<InputStream>> r = Unirest.get(MockServer.GET)
                 .queryString("foo", "bar")
                 .asBinaryAsync();

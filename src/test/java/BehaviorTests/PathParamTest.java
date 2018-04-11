@@ -1,9 +1,7 @@
 package BehaviorTests;
 
-import io.github.openunirest.http.HttpResponse;
 import io.github.openunirest.http.Unirest;
 import io.github.openunirest.http.exceptions.UnirestException;
-import io.github.openunirest.request.HttpRequest;
 import org.junit.Test;
 import util.TestUtil;
 
