@@ -4,7 +4,7 @@ import org.apache.http.conn.HttpClientConnectionManager;
 
 import java.util.concurrent.TimeUnit;
 
-public class SyncIdleConnectionMonitorThread extends Thread {
+public class SyncIdleConnectionMonitorThread extends Thread implements ConnectionMonitorThread {
 
 	private final HttpClientConnectionManager connMgr;
 	private boolean shutdown;
@@ -30,6 +30,7 @@ public class SyncIdleConnectionMonitorThread extends Thread {
 
 					if (shutdown) {
 						Thread.currentThread().interrupt();
+						break;
 					}
 				}
 			}

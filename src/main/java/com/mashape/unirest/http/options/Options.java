@@ -1,6 +1,7 @@
 package com.mashape.unirest.http.options;
 
 import com.mashape.unirest.http.async.utils.AsyncIdleConnectionMonitorThread;
+import com.mashape.unirest.http.utils.ConnectionMonitorThread;
 import com.mashape.unirest.http.utils.SyncIdleConnectionMonitorThread;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
@@ -82,13 +83,8 @@ public class Options {
 			.setConnectionManager(syncConnectionManager)
 			.build());
 
-		Object previousSyncIdleConnectionMonitorThread = getOption(Option.SYNC_MONITOR);
 		SyncIdleConnectionMonitorThread syncIdleConnectionMonitorThread = new SyncIdleConnectionMonitorThread(syncConnectionManager);
-		setOption(Option.SYNC_MONITOR, syncIdleConnectionMonitorThread);
-		syncIdleConnectionMonitorThread.start();
-		if (previousSyncIdleConnectionMonitorThread instanceof SyncIdleConnectionMonitorThread) { // Shutdown current SyncIdleConnectionMonitorThread if it existed
-			((SyncIdleConnectionMonitorThread) previousSyncIdleConnectionMonitorThread).shutdown();
-		}
+		handleMonitorThreadOption(syncIdleConnectionMonitorThread, Option.SYNC_MONITOR, SyncIdleConnectionMonitorThread.class);
 
 		DefaultConnectingIOReactor ioreactor;
 		PoolingNHttpClientConnectionManager asyncConnectionManager;
@@ -106,7 +102,19 @@ public class Options {
 			.setConnectionManager(asyncConnectionManager)
 			.build();
 		setOption(Option.ASYNCHTTPCLIENT, asyncClient);
-		setOption(Option.ASYNC_MONITOR, new AsyncIdleConnectionMonitorThread(asyncConnectionManager));
+
+		AsyncIdleConnectionMonitorThread asyncIdleConnectionMonitorThread = new AsyncIdleConnectionMonitorThread(asyncConnectionManager);
+		handleMonitorThreadOption(asyncIdleConnectionMonitorThread, Option.ASYNC_MONITOR, AsyncIdleConnectionMonitorThread.class);
+	}
+
+	private static void handleMonitorThreadOption(Thread newMonitorThread, Option option, Class clazz) {
+
+		Object previousSyncIdleConnectionMonitorThread = getOption(option);
+		setOption(option, newMonitorThread);
+		newMonitorThread.start();
+		if (clazz.isInstance(previousSyncIdleConnectionMonitorThread)) { // Shutdown current monitorThread of the same class type if it existed
+			((ConnectionMonitorThread) previousSyncIdleConnectionMonitorThread).shutdown();
+		}
 	}
 
 }
