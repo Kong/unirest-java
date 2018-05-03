@@ -70,7 +70,7 @@ public class Unirest {
 
 	/**
 	 * Set the ObjectMapper implementation to use for Response to Object binding
-	 * 
+	 *
 	 * @param objectMapper Custom implementation of ObjectMapper interface
 	 */
 	public static void setObjectMapper(ObjectMapper objectMapper) {
@@ -82,7 +82,7 @@ public class Unirest {
 
 	/**
 	 * Set the connection timeout and socket timeout
-	 * 
+	 *
 	 * @param connectionTimeout The timeout until a connection with the server is established (in milliseconds). Default is 10000. Set to zero to disable the timeout.
 	 * @param socketTimeout The timeout to receive data (in milliseconds). Default is 60000. Set to zero to disable the timeout.
 	 */
@@ -96,7 +96,7 @@ public class Unirest {
 
 	/**
 	 * Set the concurrency levels
-	 * 
+	 *
 	 * @param maxTotal Defines the overall connection limit for a connection pool. Default is 200.
 	 * @param maxPerRoute Defines a connection limit per one HTTP route (this can be considered a per target host limit). Default is 20.
 	 */

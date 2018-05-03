@@ -25,9 +25,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.request;
 
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.content.InputStreamBody;
-
 import com.mashape.unirest.http.HttpMethod;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.ObjectMapper;
@@ -36,7 +33,8 @@ import com.mashape.unirest.http.options.Options;
 import com.mashape.unirest.request.body.MultipartBody;
 import com.mashape.unirest.request.body.RawBody;
 import com.mashape.unirest.request.body.RequestBodyEntity;
-
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.content.InputStreamBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

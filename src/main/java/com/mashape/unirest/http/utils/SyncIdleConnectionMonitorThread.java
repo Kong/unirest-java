@@ -1,17 +1,19 @@
 package com.mashape.unirest.http.utils;
 
-import java.util.concurrent.TimeUnit;
-
 import org.apache.http.conn.HttpClientConnectionManager;
+
+import java.util.concurrent.TimeUnit;
 
 public class SyncIdleConnectionMonitorThread extends Thread {
 
 	private final HttpClientConnectionManager connMgr;
+	private boolean shutdown;
 
 	public SyncIdleConnectionMonitorThread(HttpClientConnectionManager connMgr) {
 		super();
 		super.setDaemon(true);
 		this.connMgr = connMgr;
+		this.shutdown = false;
 	}
 
 	@Override
@@ -25,6 +27,10 @@ public class SyncIdleConnectionMonitorThread extends Thread {
 					// Optionally, close connections
 					// that have been idle longer than 30 sec
 					connMgr.closeIdleConnections(30, TimeUnit.SECONDS);
+
+					if (shutdown) {
+						Thread.currentThread().interrupt();
+					}
 				}
 			}
 		} catch (InterruptedException ex) {
@@ -32,4 +38,7 @@ public class SyncIdleConnectionMonitorThread extends Thread {
 		}
 	}
 
+	public void shutdown() {
+		this.shutdown = true;
+	}
 }

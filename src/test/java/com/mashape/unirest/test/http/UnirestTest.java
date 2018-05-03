@@ -25,7 +25,10 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package com.mashape.unirest.test.http;
 
-import com.mashape.unirest.http.*;
+import com.mashape.unirest.http.Headers;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.http.options.Options;
@@ -33,7 +36,6 @@ import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.test.helper.GetResponse;
 import com.mashape.unirest.test.helper.JacksonObjectMapper;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -47,7 +49,6 @@ import org.junit.Test;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -65,7 +66,7 @@ public class UnirestTest {
 		status = false;
 	}
 
-	private String findAvailableIpAddress() throws UnknownHostException, IOException {
+	private String findAvailableIpAddress() throws IOException {
 		for (int i = 100; i <= 255; i++) {
 			String ip = "192.168.1." + i;
 			if (!InetAddress.getByName(ip).isReachable(1000)) {
@@ -125,7 +126,7 @@ public class UnirestTest {
 	}
 
 	@Test
-	public void testPostRawBody() throws UnirestException, URISyntaxException, IOException {
+	public void testPostRawBody() throws UnirestException {
 		String sourceString = "'\"@こんにちは-test-123-" + Math.random();
 		byte[] sentBytes = sourceString.getBytes();
 
@@ -219,7 +220,7 @@ public class UnirestTest {
 	}
 
 	@Test
-	public void testAsyncCallback() throws JSONException, InterruptedException, ExecutionException {
+	public void testAsyncCallback() throws JSONException, InterruptedException {
 		Unirest.post("http://httpbin.org/post").header("accept", "application/json").field("param1", "value1").field("param2", "bye").asJsonAsync(new Callback<JsonNode>() {
 
 			public void failed(UnirestException e) {
@@ -256,7 +257,7 @@ public class UnirestTest {
 	}
 
 	@Test
-	public void testMultipart() throws JSONException, InterruptedException, ExecutionException, URISyntaxException, UnirestException {
+	public void testMultipart() throws JSONException, URISyntaxException, UnirestException {
 		HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post").field("name", "Mark").field("file", new File(getClass().getResource("/test").toURI())).asJson();
 		assertTrue(jsonResponse.getHeaders().size() > 0);
 		assertTrue(jsonResponse.getBody().toString().length() > 0);
@@ -276,7 +277,7 @@ public class UnirestTest {
 	}
 
 	@Test
-	public void testMultipartContentType() throws JSONException, InterruptedException, ExecutionException, URISyntaxException, UnirestException {
+	public void testMultipartContentType() throws JSONException, URISyntaxException, UnirestException {
 		HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post").field("name", "Mark").field("file", new File(getClass().getResource("/image.jpg").toURI()), "image/jpeg").asJson();
 		assertTrue(jsonResponse.getHeaders().size() > 0);
 		assertTrue(jsonResponse.getBody().toString().length() > 0);
@@ -296,8 +297,11 @@ public class UnirestTest {
 	}
 
 	@Test
-	public void testMultipartInputStreamContentType() throws JSONException, InterruptedException, ExecutionException, URISyntaxException, UnirestException, FileNotFoundException {
-		HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post").field("name", "Mark").field("file", new FileInputStream(new File(getClass().getResource("/image.jpg").toURI())), ContentType.APPLICATION_OCTET_STREAM, "image.jpg").asJson();
+	public void testMultipartInputStreamContentType() throws JSONException, URISyntaxException, UnirestException, FileNotFoundException {
+		HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
+			.field("name", "Mark")
+			.field("file", new FileInputStream(new File(getClass().getResource("/image.jpg").toURI())), ContentType.APPLICATION_OCTET_STREAM, "image.jpg")
+			.asJson();
 		assertTrue(jsonResponse.getHeaders().size() > 0);
 		assertTrue(jsonResponse.getBody().toString().length() > 0);
 		assertFalse(jsonResponse.getRawBody() == null);
@@ -316,8 +320,11 @@ public class UnirestTest {
 	}
 
 	@Test
-	public void testMultipartInputStreamContentTypeAsync() throws JSONException, InterruptedException, ExecutionException, URISyntaxException, UnirestException, FileNotFoundException {
-		Unirest.post("http://httpbin.org/post").field("name", "Mark").field("file", new FileInputStream(new File(getClass().getResource("/test").toURI())), ContentType.APPLICATION_OCTET_STREAM, "test").asJsonAsync(new Callback<JsonNode>() {
+	public void testMultipartInputStreamContentTypeAsync() throws JSONException, InterruptedException, URISyntaxException, FileNotFoundException {
+		Unirest.post("http://httpbin.org/post")
+			.field("name", "Mark")
+			.field("file", new FileInputStream(new File(getClass().getResource("/test").toURI())), ContentType.APPLICATION_OCTET_STREAM, "test")
+			.asJsonAsync(new Callback<JsonNode>() {
 
 			public void failed(UnirestException e) {
 				fail();
@@ -512,7 +519,7 @@ public class UnirestTest {
 	}
 
 	@Test
-	public void testSetTimeouts() throws UnknownHostException, IOException {
+	public void testSetTimeouts() throws IOException {
 		String address = "http://" + findAvailableIpAddress() + "/";
 		long start = System.currentTimeMillis();
 		try {

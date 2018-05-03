@@ -1,5 +1,7 @@
 package com.mashape.unirest.http.utils;
 
+import org.apache.http.Header;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -7,15 +9,13 @@ import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.Header;
-
 public class ResponseUtils {
 
 	private static final Pattern charsetPattern = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
 
 	/**
 	 * Parse out a charset from a content type header.
-	 * 
+	 *
 	 * @param contentType e.g. "text/html; charset=EUC-JP"
 	 * @return "EUC-JP", or null if not found. Charset is trimmed and uppercased.
 	 */

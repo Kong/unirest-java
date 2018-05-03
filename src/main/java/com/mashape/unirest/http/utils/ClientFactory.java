@@ -1,10 +1,9 @@
 package com.mashape.unirest.http.utils;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-
 import com.mashape.unirest.http.options.Option;
 import com.mashape.unirest.http.options.Options;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 
 public class ClientFactory {
 

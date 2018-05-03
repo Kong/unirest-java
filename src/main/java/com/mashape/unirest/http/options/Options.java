@@ -1,8 +1,7 @@
 package com.mashape.unirest.http.options;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.mashape.unirest.http.async.utils.AsyncIdleConnectionMonitorThread;
+import com.mashape.unirest.http.utils.SyncIdleConnectionMonitorThread;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -13,8 +12,8 @@ import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
 import org.apache.http.nio.reactor.IOReactorException;
 
-import com.mashape.unirest.http.async.utils.AsyncIdleConnectionMonitorThread;
-import com.mashape.unirest.http.utils.SyncIdleConnectionMonitorThread;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Options {
 
@@ -67,17 +66,29 @@ public class Options {
 		HttpHost proxy = (HttpHost) Options.getOption(Option.PROXY);
 
 		// Create common default configuration
-		RequestConfig clientConfig = RequestConfig.custom().setConnectTimeout(((Long) connectionTimeout).intValue()).setSocketTimeout(((Long) socketTimeout).intValue()).setConnectionRequestTimeout(((Long) socketTimeout).intValue()).setProxy(proxy).build();
+		RequestConfig clientConfig = RequestConfig.custom()
+			.setConnectTimeout(((Long) connectionTimeout).intValue())
+			.setSocketTimeout(((Long) socketTimeout).intValue())
+			.setConnectionRequestTimeout(((Long) socketTimeout).intValue())
+			.setProxy(proxy).build();
 
 		PoolingHttpClientConnectionManager syncConnectionManager = new PoolingHttpClientConnectionManager();
 		syncConnectionManager.setMaxTotal((Integer) maxTotal);
 		syncConnectionManager.setDefaultMaxPerRoute((Integer) maxPerRoute);
 
 		// Create clients
-		setOption(Option.HTTPCLIENT, HttpClientBuilder.create().setDefaultRequestConfig(clientConfig).setConnectionManager(syncConnectionManager).build());
+		setOption(Option.HTTPCLIENT, HttpClientBuilder.create()
+			.setDefaultRequestConfig(clientConfig)
+			.setConnectionManager(syncConnectionManager)
+			.build());
+
+		Object previousSyncIdleConnectionMonitorThread = getOption(Option.SYNC_MONITOR);
 		SyncIdleConnectionMonitorThread syncIdleConnectionMonitorThread = new SyncIdleConnectionMonitorThread(syncConnectionManager);
 		setOption(Option.SYNC_MONITOR, syncIdleConnectionMonitorThread);
 		syncIdleConnectionMonitorThread.start();
+		if (previousSyncIdleConnectionMonitorThread instanceof SyncIdleConnectionMonitorThread) { // Shutdown current SyncIdleConnectionMonitorThread if it existed
+			((SyncIdleConnectionMonitorThread) previousSyncIdleConnectionMonitorThread).shutdown();
+		}
 
 		DefaultConnectingIOReactor ioreactor;
 		PoolingNHttpClientConnectionManager asyncConnectionManager;
@@ -90,7 +101,10 @@ public class Options {
 			throw new RuntimeException(e);
 		}
 
-		CloseableHttpAsyncClient asyncClient = HttpAsyncClientBuilder.create().setDefaultRequestConfig(clientConfig).setConnectionManager(asyncConnectionManager).build();
+		CloseableHttpAsyncClient asyncClient = HttpAsyncClientBuilder.create()
+			.setDefaultRequestConfig(clientConfig)
+			.setConnectionManager(asyncConnectionManager)
+			.build();
 		setOption(Option.ASYNCHTTPCLIENT, asyncClient);
 		setOption(Option.ASYNC_MONITOR, new AsyncIdleConnectionMonitorThread(asyncConnectionManager));
 	}
