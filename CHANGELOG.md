@@ -1,5 +1,6 @@
 ## 2.2.03
 * Expose the ```Options.init()``` method to restore the system to a fresh start after a shutdown.
+* ```Unirest.shutdown()``` no longer throws a checked exception
 
 ## 2.2.02
 * Fix NPE with null bodies from HEAD requests.
