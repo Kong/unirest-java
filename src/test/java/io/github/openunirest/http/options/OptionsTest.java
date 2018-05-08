@@ -16,7 +16,7 @@ public class OptionsTest {
 
     @Before
     public void before(){
-        Options.reset();
+        Options.init();
     }
 
     @Test

@@ -1,5 +1,6 @@
 package io.github.openunirest.http.options;
 
+import io.github.openunirest.http.Unirest;
 import io.github.openunirest.http.async.utils.AsyncIdleConnectionMonitorThread;
 import io.github.openunirest.http.utils.SyncIdleConnectionMonitorThread;
 import org.apache.http.HttpHost;
@@ -29,7 +30,7 @@ public class Options {
 	private static PoolingHttpClientConnectionManager syncConnectionManager;
 
 	static {
-		init();
+		createMonitors();
 		setDefaults();
 		refresh();
 	}
@@ -62,7 +63,7 @@ public class Options {
 		return (T)options.computeIfAbsent(option, o -> defaultValue);
 	}
 
-	private static void init() {
+	private static void createMonitors() {
 		syncConnectionManager = new PoolingHttpClientConnectionManager();
 		defaultSyncMonitor = new SyncIdleConnectionMonitorThread(syncConnectionManager);
 		defaultSyncMonitor.start();
@@ -118,9 +119,11 @@ public class Options {
 				.build();
 	}
 
-	public static void reset() {
+	public static void init() {
+		Unirest.shutdown();
+		createMonitors();
 		setDefaults();
-
+		refresh();
 	}
 
 	private static void setDefaults() {
