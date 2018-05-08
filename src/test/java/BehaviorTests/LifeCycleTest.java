@@ -19,7 +19,7 @@ public class LifeCycleTest extends BddTest {
     @After
     @Before
     public void tearDown() {
-        Options.reset();
+        Options.init();
     }
 
     @Test
