@@ -14,14 +14,14 @@ Unirest.post("http://httpbin.org/post")
 <dependency>
     <groupId>io.github.openunirest</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>2.2.02</version>
+    <version>2.2.03</version>
 </dependency>
 ```
 
 ## Features
 
 * Make `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS` requests
-* Both syncronous and asynchronous (non-blocking) requests
+* Both synchronous and asynchronous (non-blocking) requests
 * It supports form parameters, file uploads and custom body entities
 * Easily add route parameters without ugly string concatenations
 * Supports gzip
@@ -213,6 +213,7 @@ Upon recieving a response Unirest returns the result in the form of an Object, t
 - `.getHeaders()` - HTTP Response Headers
 - `.getBody()` - Parsed response body where applicable, for example JSON responses are parsed to Objects / Associative Arrays.
 - `.getRawBody()` - Un-parsed response body
+- `.getParsingError()` - Optional RuntimeException containing the error that was thrown when parsing the response body
 
 # Advanced Configuration
 
@@ -277,5 +278,6 @@ Unirest starts a background event loop and your Java application won't be able t
 Unirest.shutdown();
 ```
 
+Once shutdown, you can call `Options.init()` to re-initialize Unirest.
 
 
