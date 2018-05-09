@@ -26,20 +26,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package io.github.openunirest.http;
 
-import io.github.openunirest.http.async.utils.AsyncIdleConnectionMonitorThread;
-import io.github.openunirest.http.exceptions.UnirestException;
 import io.github.openunirest.http.options.Option;
 import io.github.openunirest.http.options.Options;
-import io.github.openunirest.http.utils.SyncIdleConnectionMonitorThread;
 import io.github.openunirest.request.GetRequest;
 import io.github.openunirest.request.HttpRequestWithBody;
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -145,30 +139,7 @@ public class Unirest {
      *
      */
     public static void shutdown() {
-        Options.tryGet(Option.HTTPCLIENT,
-                CloseableHttpClient.class)
-                .ifPresent(Unirest::closeIt);
-
-        Options.tryGet(Option.SYNC_MONITOR,
-                SyncIdleConnectionMonitorThread.class)
-                .ifPresent(Thread::interrupt);
-
-        Options.tryGet(Option.ASYNCHTTPCLIENT,
-                CloseableHttpAsyncClient.class)
-                .filter(CloseableHttpAsyncClient::isRunning)
-                .ifPresent(Unirest::closeIt);
-
-        Options.tryGet(Option.ASYNC_MONITOR,
-                AsyncIdleConnectionMonitorThread.class)
-                .ifPresent(Thread::interrupt);
-    }
-
-    private static void closeIt(Closeable c) {
-        try {
-            c.close();
-        }catch (IOException e){
-            throw new UnirestException(e);
-        }
+       Options.shutDown();
     }
 
     public static GetRequest get(String url) {
@@ -199,4 +170,7 @@ public class Unirest {
         return new HttpRequestWithBody(HttpMethod.PUT, url);
     }
 
+    public static boolean isRunning() {
+        return Options.isRunning();
+    }
 }

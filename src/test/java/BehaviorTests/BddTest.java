@@ -1,6 +1,7 @@
 package BehaviorTests;
 
 import io.github.openunirest.http.*;
+import io.github.openunirest.http.options.Options;
 import org.junit.Before;
 import util.JacksonObjectMapper;
 
@@ -21,6 +22,7 @@ public class BddTest {
     @Before
     public void setUp() {
         MockServer.reset();
+        Options.init();
         Unirest.setObjectMapper(objectMapper);
         lock = new CountDownLatch(1);
         status = false;

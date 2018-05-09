@@ -1,7 +1,7 @@
 package io.github.openunirest.http.options;
 
-import io.github.openunirest.http.Unirest;
 import io.github.openunirest.http.async.utils.AsyncIdleConnectionMonitorThread;
+import io.github.openunirest.http.exceptions.UnirestException;
 import io.github.openunirest.http.utils.SyncIdleConnectionMonitorThread;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
@@ -14,6 +14,8 @@ import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
 import org.apache.http.nio.reactor.IOReactorException;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -28,13 +30,7 @@ public class Options {
 	private static Map<Option, Object> options = new HashMap<>();
 	private static boolean customClientSet = false;
 	private static PoolingHttpClientConnectionManager syncConnectionManager;
-
-	static {
-		createMonitors();
-		setDefaults();
-		refresh();
-	}
-
+	private static boolean isRunning = true;
 	private static SyncIdleConnectionMonitorThread defaultSyncMonitor;
 
 	public static void customClientSet() {
@@ -56,10 +52,18 @@ public class Options {
 	}
 
 	public static Object getOption(Option option) {
+		warmUp();
 		return options.get(option);
 	}
 
+	private static void warmUp() {
+		if(!isRunning()){
+			init();
+		}
+	}
+
 	private static <T> T getOptionOrDefault(Option option, T defaultValue){
+		warmUp();
 		return (T)options.computeIfAbsent(option, o -> defaultValue);
 	}
 
@@ -68,6 +72,7 @@ public class Options {
 		defaultSyncMonitor = new SyncIdleConnectionMonitorThread(syncConnectionManager);
 		defaultSyncMonitor.start();
 		setOption(Option.SYNC_MONITOR, defaultSyncMonitor);
+		isRunning = true;
 	}
 
 
@@ -120,7 +125,6 @@ public class Options {
 	}
 
 	public static void init() {
-		Unirest.shutdown();
 		createMonitors();
 		setDefaults();
 		refresh();
@@ -146,5 +150,38 @@ public class Options {
 
 	public static void removeOption(Option objectMapper) {
 		options.remove(objectMapper);
+	}
+
+	public static boolean isRunning() {
+		return isRunning;
+	}
+
+	public static void shutDown() {
+		tryGet(Option.HTTPCLIENT,
+				CloseableHttpClient.class)
+				.ifPresent(Options::closeIt);
+
+		tryGet(Option.SYNC_MONITOR,
+				SyncIdleConnectionMonitorThread.class)
+				.ifPresent(Thread::interrupt);
+
+		tryGet(Option.ASYNCHTTPCLIENT,
+				CloseableHttpAsyncClient.class)
+				.filter(CloseableHttpAsyncClient::isRunning)
+				.ifPresent(Options::closeIt);
+
+		tryGet(Option.ASYNC_MONITOR,
+				AsyncIdleConnectionMonitorThread.class)
+				.ifPresent(Thread::interrupt);
+		
+		isRunning = false;
+	}
+
+	public static void closeIt(Closeable c) {
+		try {
+			c.close();
+		}catch (IOException e){
+			throw new UnirestException(e);
+		}
 	}
 }

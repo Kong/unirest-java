@@ -6,21 +6,16 @@ import io.github.openunirest.http.options.Options;
 import io.github.openunirest.http.utils.SyncIdleConnectionMonitorThread;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 
 import static io.github.openunirest.http.options.Option.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class LifeCycleTest extends BddTest {
-    @After
-    @Before
-    public void tearDown() {
-        Options.init();
-    }
 
     @Test
     public void testShutdown() throws IOException {
@@ -63,5 +58,26 @@ public class LifeCycleTest extends BddTest {
         Unirest.shutdown();
 
         verify(asyncClient, never()).close();
+    }
+
+    @Test
+    public void canDetectIfSystemIsRunning() {
+        Unirest.get(MockServer.GET).asBinary();
+        assertTrue(Unirest.isRunning());
+
+        Unirest.shutdown();
+        assertFalse(Unirest.isRunning());
+
+        Options.init();
+        assertTrue(Unirest.isRunning());
+    }
+
+    @Test
+    public void willReinitIfLibraryIsUsedAfterShutdown() {
+        Unirest.shutdown();
+        assertFalse(Unirest.isRunning());
+
+        Unirest.get(MockServer.GET).asBinary();
+        assertTrue(Unirest.isRunning());
     }
 }
