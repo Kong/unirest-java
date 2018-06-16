@@ -32,11 +32,13 @@ import io.github.openunirest.http.JsonNode;
 import io.github.openunirest.http.exceptions.UnirestException;
 
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class BaseRequest {
 
-	protected static final String UTF_8 = "UTF-8";
+	protected static final Charset UTF_8 = StandardCharsets.UTF_8;
 	private final ResponseBuilder builder = new ResponseBuilder();
 
 	protected HttpRequest httpRequest;

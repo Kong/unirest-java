@@ -38,7 +38,6 @@ import org.apache.http.entity.mime.content.*;
 
 import java.io.File;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 public class MultipartBody extends BaseRequest implements Body {
@@ -157,11 +156,7 @@ public class MultipartBody extends BaseRequest implements Body {
 			}
 			return builder.build();
 		} else {
-			try {
-				return new UrlEncodedFormEntity(MapUtil.getList(parameters), UTF_8);
-			} catch (UnsupportedEncodingException e) {
-				throw new RuntimeException(e);
-			}
+			return new UrlEncodedFormEntity(MapUtil.getList(parameters), UTF_8);
 		}
 	}
 
