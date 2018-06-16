@@ -4,6 +4,7 @@ import io.github.openunirest.http.async.utils.AsyncIdleConnectionMonitorThread;
 import io.github.openunirest.http.exceptions.UnirestException;
 import io.github.openunirest.http.utils.SyncIdleConnectionMonitorThread;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -16,10 +17,7 @@ import org.apache.http.nio.reactor.IOReactorException;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class Options {
 	public static final int MAX_TOTAL = 200;
@@ -27,11 +25,12 @@ public class Options {
 	public static final int CONNECTION_TIMEOUT = 10000;
 	public static final int SOCKET_TIMEOUT = 60000;
 
-	private static Map<Option, Object> options = new HashMap<>();
 	private static boolean customClientSet = false;
-	private static PoolingHttpClientConnectionManager syncConnectionManager;
 	private static boolean isRunning = true;
+	private static Map<Option, Object> options = new HashMap<>();
+	private static PoolingHttpClientConnectionManager syncConnectionManager;
 	private static SyncIdleConnectionMonitorThread defaultSyncMonitor;
+	private static List<HttpRequestInterceptor> interceptors = new ArrayList<>();
 
 	public static void customClientSet() {
 		customClientSet = true;
@@ -77,6 +76,9 @@ public class Options {
 
 
 	public static void refresh() {
+		if(syncConnectionManager == null){
+			createMonitors();
+		}
 		RequestConfig clientConfig = getRequestConfig();
 
 		Integer maxTotal = getOptionOrDefault(Option.MAX_TOTAL, MAX_TOTAL);
@@ -84,14 +86,7 @@ public class Options {
 		syncConnectionManager.setMaxTotal(maxTotal);
 		syncConnectionManager.setDefaultMaxPerRoute(maxPerRoute);
 
-		// Create clients
-		CloseableHttpClient build = HttpClientBuilder.create()
-				.setDefaultRequestConfig(clientConfig)
-				.setConnectionManager(syncConnectionManager)
-				.useSystemProperties()
-				.build();
-
-		setOption(Option.HTTPCLIENT, build);
+		buildHttpClient(clientConfig);
 
 		PoolingNHttpClientConnectionManager asyncConnectionManager;
 		try {
@@ -102,14 +97,31 @@ public class Options {
 			throw new RuntimeException(e);
 		}
 
-		CloseableHttpAsyncClient asyncClient = HttpAsyncClientBuilder.create()
-				.setDefaultRequestConfig(clientConfig)
-				.setConnectionManager(asyncConnectionManager)
-				.useSystemProperties()
-				.build();
+		CloseableHttpAsyncClient asyncClient = buildAsyncClient(clientConfig, asyncConnectionManager);
 
 		setOption(Option.ASYNCHTTPCLIENT, asyncClient);
 		setOption(Option.ASYNC_MONITOR, new AsyncIdleConnectionMonitorThread(asyncConnectionManager));
+	}
+
+	private static CloseableHttpAsyncClient buildAsyncClient(RequestConfig clientConfig, PoolingNHttpClientConnectionManager asyncConnectionManager) {
+		HttpAsyncClientBuilder asyncBuilder = HttpAsyncClientBuilder.create()
+				.setDefaultRequestConfig(clientConfig)
+				.setConnectionManager(asyncConnectionManager)
+				.useSystemProperties();
+		interceptors.stream().forEach(i -> asyncBuilder.addInterceptorFirst(i));
+		return asyncBuilder.build();
+	}
+
+	private static void buildHttpClient(RequestConfig clientConfig) {
+		// Create clients
+		HttpClientBuilder httpClientBuilder = HttpClientBuilder.create()
+				.setDefaultRequestConfig(clientConfig)
+				.setConnectionManager(syncConnectionManager)
+				.useSystemProperties();
+		interceptors.stream().forEach(i -> httpClientBuilder.addInterceptorFirst(i));
+		CloseableHttpClient build = httpClientBuilder.build();
+
+		setOption(Option.HTTPCLIENT, build);
 	}
 
 	private static RequestConfig getRequestConfig() {
@@ -138,6 +150,7 @@ public class Options {
 		setOption(Option.MAX_TOTAL, MAX_TOTAL);
 		setOption(Option.MAX_PER_ROUTE, MAX_PER_ROUTE);
 		setOption(Option.SYNC_MONITOR, defaultSyncMonitor);
+		interceptors.clear();
 	}
 
 	public static <T> Optional<T> tryGet(Option option, Class<T> as) {
@@ -183,5 +196,10 @@ public class Options {
 		}catch (IOException e){
 			throw new UnirestException(e);
 		}
+	}
+
+	public static void addInterceptor(HttpRequestInterceptor interceptor) {
+		interceptors.add(interceptor);
+		refresh();
 	}
 }
