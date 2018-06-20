@@ -35,146 +35,118 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.*;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.InputStreamBody;
 
 import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.List;
 
 public class MultipartBody extends BaseRequest implements Body {
-	private Multimap<String, FormPart> parameters = new Multimap<>();
+    private Multimap<String, FormPart> parameters = new Multimap<>();
 
-	public static final class FormPart {
-		private final Object o;
-		private final ContentType contentType;
+    private boolean hasFile;
+    private HttpRequest httpRequestObj;
+    private HttpMultipartMode mode;
 
-		public FormPart(Object o, ContentType contentType){
-			this.o = o;
-			this.contentType = contentType;
-		}
+    public MultipartBody(HttpRequest httpRequest) {
+        super(httpRequest);
+        this.httpRequestObj = httpRequest;
+    }
 
-		public Object getValue() {
-			return o;
-		}
+    public MultipartBody field(String name, String value) {
+        return field(name, value, false, null);
+    }
 
-		public ContentType getContentType() {
-			return contentType;
-		}
-	}
+    public MultipartBody field(String name, String value, String contentType) {
+        return field(name, value, false, contentType);
+    }
 
-	private boolean hasFile;
-	private HttpRequest httpRequestObj;
-	private HttpMultipartMode mode;
+    public MultipartBody field(String name, Collection<?> collection) {
+        for (Object current : collection) {
+            boolean isFile = current instanceof File;
+            field(name, current, isFile, null);
+        }
+        return this;
+    }
 
-	public MultipartBody(HttpRequest httpRequest) {
-		super(httpRequest);
-		this.httpRequestObj = httpRequest;
-	}
+    public MultipartBody field(String name, Object value) {
+        return field(name, value, false, null);
+    }
 
-	public MultipartBody field(String name, String value) {
-		return field(name, value, false, null);
-	}
+    public MultipartBody field(String name, Object value, boolean file) {
+        return field(name, value, file, null);
+    }
 
-	public MultipartBody field(String name, String value, String contentType) {
-		return field(name, value, false, contentType);
-	}
+    public MultipartBody field(String name, Object value, boolean file, String contentType) {
 
-	public MultipartBody field(String name, Collection<?> collection) {
-		for (Object current : collection) {
-			boolean isFile = current instanceof File;
-			field(name, current, isFile, null);
-		}
-		return this;
-	}
+        ContentType type = null;
+        if (contentType != null && contentType.length() > 0) {
+            type = ContentType.parse(contentType);
+        } else if (file) {
+            type = ContentType.APPLICATION_OCTET_STREAM;
+        } else {
+            type = ContentType.APPLICATION_FORM_URLENCODED.withCharset(UTF_8);
+        }
 
-	public MultipartBody field(String name, Object value) {
-		return field(name, value, false, null);
-	}
+        parameters.add(name, new FormPart(value, type));
 
-	public MultipartBody field(String name, Object value, boolean file) {
-		return field(name, value, file, null);
-	}
+        if (!hasFile && file) {
+            hasFile = true;
+        }
 
-	public MultipartBody field(String name, Object value, boolean file, String contentType) {
+        return this;
+    }
 
-		ContentType type = null;
-		if (contentType != null && contentType.length() > 0) {
-			type = ContentType.parse(contentType);
-		} else if (file) {
-			type = ContentType.APPLICATION_OCTET_STREAM;
-		} else {
-			type = ContentType.APPLICATION_FORM_URLENCODED.withCharset(UTF_8);
-		}
+    public MultipartBody field(String name, File file) {
+        return field(name, file, true, null);
+    }
 
-		parameters.add(name, new FormPart(value, type));
+    public MultipartBody field(String name, File file, String contentType) {
+        return field(name, file, true, contentType);
+    }
 
-		if (!hasFile && file) {
-			hasFile = true;
-		}
+    public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
+        return field(name, new InputStreamBody(stream, contentType, fileName), true, contentType.getMimeType());
+    }
 
-		return this;
-	}
+    public MultipartBody field(String name, InputStream stream, String fileName) {
+        return field(name, new InputStreamBody(stream, ContentType.APPLICATION_OCTET_STREAM, fileName), true, ContentType.APPLICATION_OCTET_STREAM.getMimeType());
+    }
 
-	public MultipartBody field(String name, File file) {
-		return field(name, file, true, null);
-	}
+    public MultipartBody field(String name, byte[] bytes, ContentType contentType, String fileName) {
+        return field(name, new ByteArrayBody(bytes, contentType, fileName), true, contentType.getMimeType());
+    }
 
-	public MultipartBody field(String name, File file, String contentType) {
-		return field(name, file, true, contentType);
-	}
+    public MultipartBody field(String name, byte[] bytes, String fileName) {
+        return field(name, new ByteArrayBody(bytes, ContentType.APPLICATION_OCTET_STREAM, fileName), true, ContentType.APPLICATION_OCTET_STREAM.getMimeType());
+    }
 
-	public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
-		return field(name, new InputStreamBody(stream, contentType, fileName), true, contentType.getMimeType());
-	}
+    public MultipartBody basicAuth(String username, String password) {
+        httpRequestObj.basicAuth(username, password);
+        return this;
+    }
 
-	public MultipartBody field(String name, InputStream stream, String fileName) {
-		return field(name, new InputStreamBody(stream, ContentType.APPLICATION_OCTET_STREAM, fileName), true, ContentType.APPLICATION_OCTET_STREAM.getMimeType());
-	}
+    public MultipartBody mode(String value) {
+        this.mode = HttpMultipartMode.valueOf(value);
+        return this;
+    }
 
-	public MultipartBody field(String name, byte[] bytes, ContentType contentType, String fileName) {
-		return field(name, new ByteArrayBody(bytes, contentType, fileName), true, contentType.getMimeType());
-	}
-
-	public MultipartBody field(String name, byte[] bytes, String fileName) {
-		return field(name, new ByteArrayBody(bytes, ContentType.APPLICATION_OCTET_STREAM, fileName), true, ContentType.APPLICATION_OCTET_STREAM.getMimeType());
-	}
-
-	public MultipartBody basicAuth(String username, String password) {
-		httpRequestObj.basicAuth(username, password);
-		return this;
-	}
-
-	public MultipartBody mode(String value) {
-		this.mode = HttpMultipartMode.valueOf(value);
-		return this;
-	}
-
-	public HttpEntity getEntity() {
-		if (hasFile) {
-			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-			if (mode != null) {
-				builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-			}
-			for (String key : parameters.keySet()) {
-				List<FormPart> value = parameters.get(key);
-				for (FormPart cur : value) {
-					if (cur.getValue() instanceof File) {
-						File file = (File) cur.getValue();
-						builder.addPart(key, new FileBody(file, cur.getContentType(), file.getName()));
-					} else if (cur.getValue() instanceof InputStreamBody) {
-						builder.addPart(key, (ContentBody) cur.getValue());
-					} else if (cur.getValue() instanceof ByteArrayBody) {
-						builder.addPart(key, (ContentBody) cur.getValue());
-					} else {
-						builder.addPart(key, new StringBody(cur.getValue().toString(), cur.getContentType()));
-					}
-				}
-			}
-			return builder.build();
-		} else {
-			return new UrlEncodedFormEntity(MapUtil.getList(parameters), UTF_8);
-		}
-	}
+    public HttpEntity getEntity() {
+        if (hasFile) {
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+            if (mode != null) {
+                builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+            }
+            for (String key : parameters.keySet()) {
+                for (FormPart cur : parameters.get(key)) {
+                    builder.addPart(key, cur.toApachePart());
+                }
+            }
+            return builder.build();
+        } else {
+            return new UrlEncodedFormEntity(MapUtil.getList(parameters), UTF_8);
+        }
+    }
 
 }
