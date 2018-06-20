@@ -26,6 +26,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package io.github.openunirest.http.utils;
 
+import io.github.openunirest.request.body.MultipartBody;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -35,21 +36,18 @@ import java.util.Map.Entry;
 
 public class MapUtil {
 
-	public static List<NameValuePair> getList(Multimap<String, Object> parameters) {
-		List<NameValuePair> result = new ArrayList<>();
-		if (parameters != null) {
-			for (Entry<String, List<Object>> entry : parameters.entrySet()) {
-				List<Object> entryValue = entry.getValue();
-				if (entryValue != null) {
-					for (Object cur : entryValue) {
-						if (cur != null) {
-							result.add(new BasicNameValuePair(entry.getKey(), cur.toString()));
-						}
-					}
-				}
-			}
-		}
-		return result;
-	}
+    public static List<NameValuePair> getList(Multimap<String, MultipartBody.FormPart> parameters) {
+        List<NameValuePair> result = new ArrayList<>();
+        if (parameters != null) {
+            for (Entry<String, List<MultipartBody.FormPart>> entry : parameters.entrySet()) {
+                for (MultipartBody.FormPart cur : entry.getValue()) {
+                    if (cur != null) {
+                        result.add(new BasicNameValuePair(entry.getKey(), cur.getValue().toString()));
+                    }
+                }
+            }
+        }
+        return result;
+    }
 
 }

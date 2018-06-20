@@ -39,11 +39,29 @@ import org.apache.http.entity.mime.content.*;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 
 public class MultipartBody extends BaseRequest implements Body {
-	private Multimap<String, Object> parameters = new Multimap<>();
-	private Map<String, ContentType> contentTypes = new HashMap<>();
+	private Multimap<String, FormPart> parameters = new Multimap<>();
+
+	public static final class FormPart {
+		private final Object o;
+		private final ContentType contentType;
+
+		public FormPart(Object o, ContentType contentType){
+			this.o = o;
+			this.contentType = contentType;
+		}
+
+		public Object getValue() {
+			return o;
+		}
+
+		public ContentType getContentType() {
+			return contentType;
+		}
+	}
 
 	private boolean hasFile;
 	private HttpRequest httpRequestObj;
@@ -79,8 +97,7 @@ public class MultipartBody extends BaseRequest implements Body {
 	}
 
 	public MultipartBody field(String name, Object value, boolean file, String contentType) {
-		parameters.add(name, value);
-		
+
 		ContentType type = null;
 		if (contentType != null && contentType.length() > 0) {
 			type = ContentType.parse(contentType);
@@ -89,7 +106,8 @@ public class MultipartBody extends BaseRequest implements Body {
 		} else {
 			type = ContentType.APPLICATION_FORM_URLENCODED.withCharset(UTF_8);
 		}
-		contentTypes.put(name, type);
+
+		parameters.add(name, new FormPart(value, type));
 
 		if (!hasFile && file) {
 			hasFile = true;
@@ -139,18 +157,17 @@ public class MultipartBody extends BaseRequest implements Body {
 				builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 			}
 			for (String key : parameters.keySet()) {
-				List<Object> value = parameters.get(key);
-				ContentType contentType = contentTypes.get(key);
-				for (Object cur : value) {
-					if (cur instanceof File) {
-						File file = (File) cur;
-						builder.addPart(key, new FileBody(file, contentType, file.getName()));
-					} else if (cur instanceof InputStreamBody) {
-						builder.addPart(key, (ContentBody) cur);
-					} else if (cur instanceof ByteArrayBody) {
-						builder.addPart(key, (ContentBody) cur);
+				List<FormPart> value = parameters.get(key);
+				for (FormPart cur : value) {
+					if (cur.getValue() instanceof File) {
+						File file = (File) cur.getValue();
+						builder.addPart(key, new FileBody(file, cur.getContentType(), file.getName()));
+					} else if (cur.getValue() instanceof InputStreamBody) {
+						builder.addPart(key, (ContentBody) cur.getValue());
+					} else if (cur.getValue() instanceof ByteArrayBody) {
+						builder.addPart(key, (ContentBody) cur.getValue());
 					} else {
-						builder.addPart(key, new StringBody(cur.toString(), contentType));
+						builder.addPart(key, new StringBody(cur.getValue().toString(), cur.getContentType()));
 					}
 				}
 			}
