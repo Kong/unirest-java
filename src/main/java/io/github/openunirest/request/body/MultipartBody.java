@@ -72,15 +72,7 @@ public class MultipartBody extends BaseRequest implements Body {
         return this;
     }
 
-    public MultipartBody field(String name, Object value) {
-        return field(name, value, false, null);
-    }
-
-    public MultipartBody field(String name, Object value, boolean file) {
-        return field(name, value, file, null);
-    }
-
-    public MultipartBody field(String name, Object value, boolean file, String contentType) {
+    private MultipartBody field(String name, Object value, boolean file, String contentType) {
         ContentType type = null;
         if (contentType != null && contentType.length() > 0) {
             type = ContentType.parse(contentType);
@@ -90,14 +82,28 @@ public class MultipartBody extends BaseRequest implements Body {
             type = ContentType.APPLICATION_FORM_URLENCODED.withCharset(UTF_8);
         }
 
-        parameters.add(new FormPart(name, value, type));
-        Collections.sort(parameters);
+        addPart(name, value, type);
 
+        toggleFile(file);
+
+        return this;
+    }
+
+    public MultipartBody field(String name, Object value, ContentType contentType) {
+        addPart(name, value, contentType);
+        toggleFile(true);
+        return this;
+    }
+
+    private void toggleFile(boolean file) {
         if (!hasFile && file) {
             hasFile = true;
         }
+    }
 
-        return this;
+    private void addPart(String name, Object value, ContentType type) {
+        parameters.add(new FormPart(name, value, type));
+        Collections.sort(parameters);
     }
 
     public MultipartBody field(String name, File file) {

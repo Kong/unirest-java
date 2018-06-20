@@ -127,7 +127,7 @@ public class HttpRequestWithBody extends HttpRequest {
 
 	public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
 		InputStreamBody inputStreamBody = new InputStreamBody(stream, contentType, fileName);
-		MultipartBody body = new MultipartBody(this).field(name, inputStreamBody, true, contentType.toString());
+		MultipartBody body = new MultipartBody(this).field(name, inputStreamBody, contentType);
 		this.body = body;
 		return body;
 	}
