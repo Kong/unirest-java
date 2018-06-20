@@ -27,6 +27,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package io.github.openunirest.request.body;
 
 import io.github.openunirest.http.utils.MapUtil;
+import io.github.openunirest.http.utils.Multimap;
 import io.github.openunirest.request.BaseRequest;
 import io.github.openunirest.request.HttpRequest;
 import org.apache.http.HttpEntity;
@@ -41,7 +42,7 @@ import java.io.InputStream;
 import java.util.*;
 
 public class MultipartBody extends BaseRequest implements Body {
-	private Map<String, List<Object>> parameters = new LinkedHashMap<>();
+	private Multimap<String, Object> parameters = new Multimap<>();
 	private Map<String, ContentType> contentTypes = new HashMap<>();
 
 	private boolean hasFile;
@@ -78,8 +79,7 @@ public class MultipartBody extends BaseRequest implements Body {
 	}
 
 	public MultipartBody field(String name, Object value, boolean file, String contentType) {
-		List<Object> list = parameters.computeIfAbsent(name, n -> new LinkedList<>());
-		list.add(value);
+		parameters.add(name, value);
 		
 		ContentType type = null;
 		if (contentType != null && contentType.length() > 0) {

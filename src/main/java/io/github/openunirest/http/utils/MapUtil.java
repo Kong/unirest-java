@@ -31,17 +31,14 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 public class MapUtil {
 
-	public static List<NameValuePair> getList(Map<String, List<Object>> parameters) {
-		List<NameValuePair> result = new ArrayList<NameValuePair>();
+	public static List<NameValuePair> getList(Multimap<String, Object> parameters) {
+		List<NameValuePair> result = new ArrayList<>();
 		if (parameters != null) {
-			TreeMap<String, List<Object>> sortedParameters = new TreeMap<String, List<Object>>(parameters);
-			for (Entry<String, List<Object>> entry : sortedParameters.entrySet()) {
+			for (Entry<String, List<Object>> entry : parameters.entrySet()) {
 				List<Object> entryValue = entry.getValue();
 				if (entryValue != null) {
 					for (Object cur : entryValue) {
