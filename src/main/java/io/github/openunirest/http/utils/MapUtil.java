@@ -31,17 +31,15 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map.Entry;
 
 public class MapUtil {
 
-    public static List<NameValuePair> getList(Multimap<String, FormPart> parameters) {
+    public static List<NameValuePair> getList(Collection<FormPart> parameters) {
         List<NameValuePair> result = new ArrayList<>();
-        for (Entry<String, List<FormPart>> entry : parameters.entrySet()) {
-            for (FormPart cur : entry.getValue()) {
-                    result.add(new BasicNameValuePair(entry.getKey(), cur.getValue().toString()));
-            }
+        for (FormPart entry : parameters) {
+            result.add(new BasicNameValuePair(entry.getName(), entry.getValue().toString()));
         }
         return result;
     }

@@ -5,17 +5,19 @@ import org.apache.http.entity.mime.content.*;
 
 import java.io.File;
 
-public final class FormPart {
-    private final Object o;
+public final class FormPart implements Comparable {
+    private final String name;
+    private final Object value;
     private final ContentType contentType;
 
-    public FormPart(Object o, ContentType contentType) {
-        this.o = o;
+    public FormPart(String name, Object value, ContentType contentType) {
+        this.name = name;
+        this.value = value;
         this.contentType = contentType;
     }
 
     public Object getValue() {
-        return o;
+        return value;
     }
 
     public ContentType getContentType() {
@@ -23,15 +25,27 @@ public final class FormPart {
     }
 
     public ContentBody toApachePart() {
-        if (o instanceof File) {
-            File file = (File) o;
+        if (value instanceof File) {
+            File file = (File) value;
             return new FileBody(file, contentType, file.getName());
-        } else if (o instanceof InputStreamBody) {
-            return (ContentBody) o;
-        } else if (o instanceof ByteArrayBody) {
-            return (ContentBody) o;
+        } else if (value instanceof InputStreamBody) {
+            return (ContentBody) value;
+        } else if (value instanceof ByteArrayBody) {
+            return (ContentBody) value;
         } else {
-            return new StringBody(o.toString(), contentType);
+            return new StringBody(value.toString(), contentType);
         }
+    }
+
+    public String getName() {
+        return name == null ? "" : name;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if(o instanceof FormPart){
+            return getName().compareTo(((FormPart)o).getName());
+        }
+        return 0;
     }
 }

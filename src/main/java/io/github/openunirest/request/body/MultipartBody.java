@@ -27,7 +27,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package io.github.openunirest.request.body;
 
 import io.github.openunirest.http.utils.MapUtil;
-import io.github.openunirest.http.utils.Multimap;
 import io.github.openunirest.request.BaseRequest;
 import io.github.openunirest.request.HttpRequest;
 import org.apache.http.HttpEntity;
@@ -40,10 +39,13 @@ import org.apache.http.entity.mime.content.InputStreamBody;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class MultipartBody extends BaseRequest implements Body {
-    private Multimap<String, FormPart> parameters = new Multimap<>();
+    private List<FormPart> parameters = new ArrayList<>();
 
     private boolean hasFile;
     private HttpRequest httpRequestObj;
@@ -79,7 +81,6 @@ public class MultipartBody extends BaseRequest implements Body {
     }
 
     public MultipartBody field(String name, Object value, boolean file, String contentType) {
-
         ContentType type = null;
         if (contentType != null && contentType.length() > 0) {
             type = ContentType.parse(contentType);
@@ -89,7 +90,8 @@ public class MultipartBody extends BaseRequest implements Body {
             type = ContentType.APPLICATION_FORM_URLENCODED.withCharset(UTF_8);
         }
 
-        parameters.add(name, new FormPart(value, type));
+        parameters.add(new FormPart(name, value, type));
+        Collections.sort(parameters);
 
         if (!hasFile && file) {
             hasFile = true;
@@ -138,10 +140,8 @@ public class MultipartBody extends BaseRequest implements Body {
             if (mode != null) {
                 builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
             }
-            for (String key : parameters.keySet()) {
-                for (FormPart cur : parameters.get(key)) {
-                    builder.addPart(key, cur.toApachePart());
-                }
+            for (FormPart key : parameters) {
+                builder.addPart(key.getName(), key.toApachePart());
             }
             return builder.build();
         } else {
