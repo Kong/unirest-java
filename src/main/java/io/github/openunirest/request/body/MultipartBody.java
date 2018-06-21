@@ -46,6 +46,7 @@ import java.util.List;
 
 public class MultipartBody extends BaseRequest implements Body {
     private final ContentType defaultType = ContentType.APPLICATION_FORM_URLENCODED.withCharset(UTF_8);
+    private final ContentType defaultFileType = ContentType.APPLICATION_OCTET_STREAM;
     private List<FormPart> parameters = new ArrayList<>();
 
     private boolean hasFile;
@@ -88,7 +89,7 @@ public class MultipartBody extends BaseRequest implements Body {
         if (contentType != null && contentType.length() > 0) {
             type = ContentType.parse(contentType);
         } else if (file) {
-            type = ContentType.APPLICATION_OCTET_STREAM;
+            type = defaultFileType;
         } else {
             type = defaultType;
         }
@@ -118,11 +119,23 @@ public class MultipartBody extends BaseRequest implements Body {
     }
 
     public MultipartBody field(String name, File file) {
-        return field(name, file, true, null);
+        addPart(name, file, defaultFileType);
+        toggleFile(true);
+        return this;
     }
 
     public MultipartBody field(String name, File file, String contentType) {
-        return field(name, file, true, contentType);
+        addPart(name, file, tryParseFileType(contentType));
+        toggleFile(true);
+        return this;
+    }
+
+    private ContentType tryParseFileType(String contentType) {
+        if (contentType != null && contentType.length() > 0) {
+            return ContentType.parse(contentType);
+        } else {
+            return defaultFileType;
+        }
     }
 
     public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
