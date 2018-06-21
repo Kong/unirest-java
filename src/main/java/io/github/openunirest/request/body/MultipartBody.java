@@ -45,6 +45,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class MultipartBody extends BaseRequest implements Body {
+    private final ContentType defaultType = ContentType.APPLICATION_FORM_URLENCODED.withCharset(UTF_8);
     private List<FormPart> parameters = new ArrayList<>();
 
     private boolean hasFile;
@@ -57,11 +58,21 @@ public class MultipartBody extends BaseRequest implements Body {
     }
 
     public MultipartBody field(String name, String value) {
-        return field(name, value, false, null);
+        addPart(name, value, defaultType);
+        return this;
     }
 
     public MultipartBody field(String name, String value, String contentType) {
-        return field(name, value, false, contentType);
+        addPart(name, value, tryParse(contentType));
+        return this;
+    }
+
+    private ContentType tryParse(String contentType) {
+        if (contentType != null && contentType.length() > 0) {
+            return ContentType.parse(contentType);
+        } else {
+            return defaultType;
+        }
     }
 
     public MultipartBody field(String name, Collection<?> collection) {
@@ -79,7 +90,7 @@ public class MultipartBody extends BaseRequest implements Body {
         } else if (file) {
             type = ContentType.APPLICATION_OCTET_STREAM;
         } else {
-            type = ContentType.APPLICATION_FORM_URLENCODED.withCharset(UTF_8);
+            type = defaultType;
         }
 
         addPart(name, value, type);
