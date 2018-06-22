@@ -79,25 +79,13 @@ public class MultipartBody extends BaseRequest implements Body {
     public MultipartBody field(String name, Collection<?> collection) {
         for (Object current : collection) {
             boolean isFile = current instanceof File;
-            field(name, current, isFile, null);
+            if(isFile){
+                addPart(name, current, defaultFileType);
+                toggleFile(true);
+            } else {
+                addPart(name, current, defaultType);
+            }
         }
-        return this;
-    }
-
-    private MultipartBody field(String name, Object value, boolean file, String contentType) {
-        ContentType type = null;
-        if (contentType != null && contentType.length() > 0) {
-            type = ContentType.parse(contentType);
-        } else if (file) {
-            type = defaultFileType;
-        } else {
-            type = defaultType;
-        }
-
-        addPart(name, value, type);
-
-        toggleFile(file);
-
         return this;
     }
 
