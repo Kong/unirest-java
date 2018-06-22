@@ -145,15 +145,21 @@ public class MultipartBody extends BaseRequest implements Body {
     }
 
     public MultipartBody field(String name, InputStream stream, String fileName) {
-        return field(name, new InputStreamBody(stream, ContentType.APPLICATION_OCTET_STREAM, fileName), true, ContentType.APPLICATION_OCTET_STREAM.getMimeType());
+        addPart(name, new InputStreamBody(stream, ContentType.APPLICATION_OCTET_STREAM, fileName), ContentType.APPLICATION_OCTET_STREAM);
+        toggleFile(true);
+        return this;
     }
 
     public MultipartBody field(String name, byte[] bytes, ContentType contentType, String fileName) {
-        return field(name, new ByteArrayBody(bytes, contentType, fileName), true, contentType.getMimeType());
+        addPart(name, new ByteArrayBody(bytes, contentType, fileName), contentType);
+        toggleFile(true);
+        return this;
     }
 
     public MultipartBody field(String name, byte[] bytes, String fileName) {
-        return field(name, new ByteArrayBody(bytes, ContentType.APPLICATION_OCTET_STREAM, fileName), true, ContentType.APPLICATION_OCTET_STREAM.getMimeType());
+        addPart(name, new ByteArrayBody(bytes, ContentType.APPLICATION_OCTET_STREAM, fileName), ContentType.APPLICATION_OCTET_STREAM);
+        toggleFile(true);
+        return this;
     }
 
     public MultipartBody basicAuth(String username, String password) {
