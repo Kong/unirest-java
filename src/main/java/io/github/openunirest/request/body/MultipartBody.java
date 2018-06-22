@@ -139,7 +139,9 @@ public class MultipartBody extends BaseRequest implements Body {
     }
 
     public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
-        return field(name, new InputStreamBody(stream, contentType, fileName), true, contentType.getMimeType());
+        addPart(name, new InputStreamBody(stream, contentType, fileName), contentType);
+        toggleFile(true);
+        return this;
     }
 
     public MultipartBody field(String name, InputStream stream, String fileName) {
