@@ -128,7 +128,7 @@ public class MultipartBody extends BaseRequest implements Body {
             if (mode != null) {
                 builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
             }
-            for (FormPart key: parameters) {
+            for (FormPart key : parameters) {
                 builder.addPart(key.getName(), key.toApachePart());
             }
             return builder.build();

@@ -1,13 +1,12 @@
-package io.github.openunirest.http;
+package BehaviorTests;
 
-import BehaviorTests.*;
-import util.MockCallback;
+import io.github.openunirest.http.JsonNode;
+import io.github.openunirest.http.Unirest;
 import io.github.openunirest.http.exceptions.UnirestConfigException;
-import io.github.openunirest.http.exceptions.UnirestException;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
+import util.MockCallback;
 
 import static util.TestUtil.assertException;
 
@@ -54,7 +53,7 @@ public class SendBodyTest extends BddTest {
     }
 
     @Test
-    public void testDeleteBody() throws JSONException, UnirestException {
+    public void testDeleteBody() {
         String body = "{\"jsonString\":{\"members\":\"members1\"}}";
         Unirest.delete(MockServer.DELETE)
                 .body(body)
@@ -64,7 +63,7 @@ public class SendBodyTest extends BddTest {
     }
 
     @Test
-    public void postBodyAsJson() throws JSONException, UnirestException {
+    public void postBodyAsJson() {
         JSONObject body = new JSONObject();
         body.put("krusty","krab");
 
@@ -76,7 +75,7 @@ public class SendBodyTest extends BddTest {
     }
 
     @Test
-    public void postBodyAsJsonArray() throws JSONException, UnirestException {
+    public void postBodyAsJsonArray() {
         JSONArray body = new JSONArray();
         body.put(0, "krusty");
         body.put(1, "krab");
@@ -89,7 +88,7 @@ public class SendBodyTest extends BddTest {
     }
 
     @Test
-    public void postBodyAsJsonNode() throws JSONException, UnirestException {
+    public void postBodyAsJsonNode() {
         JsonNode body = new JsonNode("{\"krusty\":\"krab\"}");
 
         Unirest.post(MockServer.POST)

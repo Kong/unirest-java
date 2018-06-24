@@ -89,22 +89,22 @@ public class HttpRequestWithBody extends HttpRequest {
 		return body;
 	}
 
-	public MultipartBody field(String name, Object value) {
-		return field(name, value, null);
-	}
-
 	public MultipartBody field(String name, File file) {
 		return field(name, file, null);
 	}
 
-	public MultipartBody field(String name, Object value, String contentType) {
-		MultipartBody body = new MultipartBody(this).field(name, (value == null) ? "" : value.toString(), contentType);
+	public MultipartBody field(String name, File file, String contentType) {
+		MultipartBody body = new MultipartBody(this).field(name, file, contentType);
 		this.body = body;
 		return body;
 	}
 
-	public MultipartBody field(String name, File file, String contentType) {
-		MultipartBody body = new MultipartBody(this).field(name, file, contentType);
+	public MultipartBody field(String name, Object value) {
+		return field(name, value, null);
+	}
+
+	public MultipartBody field(String name, Object value, String contentType) {
+		MultipartBody body = new MultipartBody(this).field(name, (value == null) ? "" : value.toString(), contentType);
 		this.body = body;
 		return body;
 	}
