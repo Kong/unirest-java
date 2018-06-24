@@ -36,7 +36,6 @@ import io.github.openunirest.request.body.MultipartBody;
 import io.github.openunirest.request.body.RawBody;
 import io.github.openunirest.request.body.RequestBodyEntity;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.content.InputStreamBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -126,8 +125,7 @@ public class HttpRequestWithBody extends HttpRequest {
 	}
 
 	public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
-		InputStreamBody inputStreamBody = new InputStreamBody(stream, contentType, fileName);
-		MultipartBody body = new MultipartBody(this).field(name, inputStreamBody, contentType);
+		MultipartBody body = new MultipartBody(this).field(name, stream, contentType, fileName);
 		this.body = body;
 		return body;
 	}

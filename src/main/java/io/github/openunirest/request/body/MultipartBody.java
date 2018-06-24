@@ -45,11 +45,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class MultipartBody extends BaseRequest implements Body {
-    private final ContentType defaultType = ContentType.APPLICATION_FORM_URLENCODED.withCharset(UTF_8);
-    private final ContentType defaultFileType = ContentType.APPLICATION_OCTET_STREAM;
     private List<FormPart> parameters = new ArrayList<>();
 
-    private boolean hasFile;
     private HttpRequest httpRequestObj;
     private HttpMultipartMode mode;
 
@@ -59,7 +56,7 @@ public class MultipartBody extends BaseRequest implements Body {
     }
 
     public MultipartBody field(String name, String value) {
-        addPart(name, value, defaultType);
+        addPart(name, value);
         return this;
     }
 
@@ -68,85 +65,50 @@ public class MultipartBody extends BaseRequest implements Body {
         return this;
     }
 
-    private ContentType tryParse(String contentType) {
-        if (contentType != null && contentType.length() > 0) {
-            return ContentType.parse(contentType);
-        } else {
-            return defaultType;
-        }
-    }
-
     public MultipartBody field(String name, Collection<?> collection) {
-        for (Object current : collection) {
-            boolean isFile = current instanceof File;
-            if(isFile){
-                addPart(name, current, defaultFileType);
-                toggleFile(true);
-            } else {
-                addPart(name, current, defaultType);
-            }
+        for (Object current: collection) {
+            addPart(name, current, null);
         }
         return this;
     }
 
-    public MultipartBody field(String name, Object value, ContentType contentType) {
-        addPart(name, value, contentType);
-        toggleFile(true);
+    public MultipartBody field(String name, InputStream value, ContentType contentType) {
+        addPart(name, new InputStreamBody(value, contentType), contentType);
         return this;
-    }
-
-    private void toggleFile(boolean file) {
-        if (!hasFile && file) {
-            hasFile = true;
-        }
-    }
-
-    private void addPart(String name, Object value, ContentType type) {
-        parameters.add(new FormPart(name, value, type));
-        Collections.sort(parameters);
     }
 
     public MultipartBody field(String name, File file) {
-        addPart(name, file, defaultFileType);
-        toggleFile(true);
+        addPart(name, file);
         return this;
     }
 
     public MultipartBody field(String name, File file, String contentType) {
-        addPart(name, file, tryParseFileType(contentType));
-        toggleFile(true);
-        return this;
-    }
+        addPart(name, file, tryParse(contentType));
 
-    private ContentType tryParseFileType(String contentType) {
-        if (contentType != null && contentType.length() > 0) {
-            return ContentType.parse(contentType);
-        } else {
-            return defaultFileType;
-        }
+        return this;
     }
 
     public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
         addPart(name, new InputStreamBody(stream, contentType, fileName), contentType);
-        toggleFile(true);
+
         return this;
     }
 
     public MultipartBody field(String name, InputStream stream, String fileName) {
         addPart(name, new InputStreamBody(stream, ContentType.APPLICATION_OCTET_STREAM, fileName), ContentType.APPLICATION_OCTET_STREAM);
-        toggleFile(true);
+
         return this;
     }
 
     public MultipartBody field(String name, byte[] bytes, ContentType contentType, String fileName) {
         addPart(name, new ByteArrayBody(bytes, contentType, fileName), contentType);
-        toggleFile(true);
+
         return this;
     }
 
     public MultipartBody field(String name, byte[] bytes, String fileName) {
         addPart(name, new ByteArrayBody(bytes, ContentType.APPLICATION_OCTET_STREAM, fileName), ContentType.APPLICATION_OCTET_STREAM);
-        toggleFile(true);
+
         return this;
     }
 
@@ -161,12 +123,12 @@ public class MultipartBody extends BaseRequest implements Body {
     }
 
     public HttpEntity getEntity() {
-        if (hasFile) {
+        if (parameters.stream().anyMatch(FormPart::isFile)) {
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             if (mode != null) {
                 builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
             }
-            for (FormPart key : parameters) {
+            for (FormPart key: parameters) {
                 builder.addPart(key.getName(), key.toApachePart());
             }
             return builder.build();
@@ -175,4 +137,20 @@ public class MultipartBody extends BaseRequest implements Body {
         }
     }
 
+    private void addPart(String name, Object value, ContentType type) {
+        parameters.add(new FormPart(name, value, type));
+        Collections.sort(parameters);
+    }
+
+    private void addPart(String name, Object value) {
+        addPart(name, value, null);
+    }
+
+    private ContentType tryParse(String contentType) {
+        if (contentType != null && contentType.length() > 0) {
+            return ContentType.parse(contentType);
+        } else {
+            return null;
+        }
+    }
 }
