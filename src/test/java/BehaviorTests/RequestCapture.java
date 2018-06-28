@@ -18,6 +18,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 import static java.lang.System.getProperty;
+import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.*;
 
@@ -30,6 +31,7 @@ public class RequestCapture {
     public String queryString;
     public HttpMethod method;
     public String param;
+    public String contentType;
 
     public RequestCapture() {
     }
@@ -41,6 +43,7 @@ public class RequestCapture {
         writeHeaders(req);
         writeQuery(req);
         param = req.params("p");
+        contentType = req.contentType();
     }
 
     public void writeBody(Request req) {
@@ -163,6 +166,10 @@ public class RequestCapture {
     public RequestCapture assertUrl(String s) {
          assertEquals(s, url);
          return this;
+    }
+
+    public void assertCharset(Charset charset) {
+        assertThat(contentType, endsWith(charset.toString()));
     }
 
     public static class File {

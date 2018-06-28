@@ -41,11 +41,15 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
 public class HttpRequestWithBody extends HttpRequest {
+
+	private Charset charSet = StandardCharsets.UTF_8;
 
 	public HttpRequestWithBody(HttpMethod method, String url) {
 		super(method, url);
@@ -104,7 +108,7 @@ public class HttpRequestWithBody extends HttpRequest {
 	}
 
 	public MultipartBody field(String name, Object value, String contentType) {
-		MultipartBody body = new MultipartBody(this).field(name, (value == null) ? "" : value.toString(), contentType);
+		MultipartBody body = new MultipartBody(this).field(name, nullToEmpty(value), contentType);
 		this.body = body;
 		return body;
 	}
@@ -116,12 +120,19 @@ public class HttpRequestWithBody extends HttpRequest {
 				if (param.getValue() instanceof File) {
 					body.field(param.getKey(), (File) param.getValue());
 				} else {
-					body.field(param.getKey(), (param.getValue() == null) ? "" : param.getValue().toString());
+					body.field(param.getKey(), nullToEmpty(param.getValue()));
 				}
 			}
 		}
 		this.body = body;
 		return body;
+	}
+
+	private String nullToEmpty(Object v) {
+		if(v == null){
+			return "";
+		}
+		return v.toString();
 	}
 
 	public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
@@ -134,6 +145,11 @@ public class HttpRequestWithBody extends HttpRequest {
 		MultipartBody body = field(name, stream, ContentType.APPLICATION_OCTET_STREAM, fileName);
 		this.body = body;
 		return body;
+	}
+
+	public HttpRequestWithBody charset(Charset charset) {
+		this.charSet = charset;
+		return this;
 	}
 
 	public RequestBodyEntity body(JsonNode body) {
@@ -180,5 +196,13 @@ public class HttpRequestWithBody extends HttpRequest {
 	 */
 	public RequestBodyEntity body(JSONArray body) {
 		return body(body.toString());
+	}
+
+	public Charset getCharset() {
+		return charSet;
+	}
+
+	void setCharset(Charset charset) {
+		this.charSet = charset;
 	}
 }

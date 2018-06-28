@@ -28,16 +28,20 @@ package io.github.openunirest.request.body;
 
 import io.github.openunirest.http.JsonNode;
 import io.github.openunirest.request.BaseRequest;
-import io.github.openunirest.request.HttpRequest;
+import io.github.openunirest.request.HttpRequestWithBody;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.StringEntity;
 
+import java.nio.charset.Charset;
+
 public class RequestBodyEntity extends BaseRequest implements Body {
 
+	private final HttpRequestWithBody request;
 	private Object body;
 
-	public RequestBodyEntity(HttpRequest httpRequest) {
+	public RequestBodyEntity(HttpRequestWithBody httpRequest) {
 		super(httpRequest);
+		request = httpRequest;
 	}
 
 	public RequestBodyEntity body(String bodyAsString) {
@@ -55,7 +59,11 @@ public class RequestBodyEntity extends BaseRequest implements Body {
 	}
 
 	public HttpEntity getEntity() {
-		return new StringEntity(body.toString(), UTF_8);
+		return new StringEntity(body.toString(), request.getCharset());
 	}
 
+	public RequestBodyEntity charset(Charset charset) {
+		request.charset(charset);
+		return this;
+	}
 }

@@ -28,7 +28,7 @@ package io.github.openunirest.request.body;
 
 import io.github.openunirest.http.utils.MapUtil;
 import io.github.openunirest.request.BaseRequest;
-import io.github.openunirest.request.HttpRequest;
+import io.github.openunirest.request.HttpRequestWithBody;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.ContentType;
@@ -39,6 +39,7 @@ import org.apache.http.entity.mime.content.InputStreamBody;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,10 +48,10 @@ import java.util.List;
 public class MultipartBody extends BaseRequest implements Body {
     private List<FormPart> parameters = new ArrayList<>();
 
-    private HttpRequest httpRequestObj;
+    private HttpRequestWithBody httpRequestObj;
     private HttpMultipartMode mode;
 
-    public MultipartBody(HttpRequest httpRequest) {
+    public MultipartBody(HttpRequestWithBody httpRequest) {
         super(httpRequest);
         this.httpRequestObj = httpRequest;
     }
@@ -112,6 +113,11 @@ public class MultipartBody extends BaseRequest implements Body {
         return this;
     }
 
+    public MultipartBody charset(Charset charset) {
+        httpRequestObj.charset(charset);
+        return this;
+    }
+
     public MultipartBody basicAuth(String username, String password) {
         httpRequestObj.basicAuth(username, password);
         return this;
@@ -133,7 +139,7 @@ public class MultipartBody extends BaseRequest implements Body {
             }
             return builder.build();
         } else {
-            return new UrlEncodedFormEntity(MapUtil.getList(parameters), UTF_8);
+            return new UrlEncodedFormEntity(MapUtil.getList(parameters), httpRequestObj.getCharset());
         }
     }
 

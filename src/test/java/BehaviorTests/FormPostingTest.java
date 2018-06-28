@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
@@ -327,6 +328,50 @@ public class FormPostingTest extends BddTest {
                 .getBody()
                 .assertParam("name", "mark")
                 .assertParam("foo", "bar");
+    }
+
+    @Test
+    public void testChangingEncodingToForms(){
+        Unirest.post(MockServer.POST)
+                .charset(StandardCharsets.US_ASCII)
+                .field("foo", "bar")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertParam("foo", "bar")
+                .assertCharset(StandardCharsets.US_ASCII);
+    }
+
+    @Test
+    public void testChangingEncodingAfterMovingToForm(){
+        Unirest.post(MockServer.POST)
+                .field("foo", "bar")
+                .charset(StandardCharsets.US_ASCII)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertParam("foo", "bar")
+                .assertCharset(StandardCharsets.US_ASCII);
+    }
+
+    @Test
+    public void canSetCharsetOfBody(){
+        Unirest.post(MockServer.POST)
+                .charset(StandardCharsets.US_ASCII)
+                .body("foo")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .asserBody("foo")
+                .assertCharset(StandardCharsets.US_ASCII);
+    }
+
+    @Test
+    public void canSetCharsetOfBodyAfterMovingToBody(){
+        Unirest.post(MockServer.POST)
+                .body("foo")
+                .charset(StandardCharsets.US_ASCII)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .asserBody("foo")
+                .assertCharset(StandardCharsets.US_ASCII);
     }
 
     private File getImageFile() throws URISyntaxException {

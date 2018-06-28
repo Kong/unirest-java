@@ -144,7 +144,7 @@
             <property name="max" value="35"/>
         </module>
         <module name="MethodCount">
-            <property name="maxPublic" value="20"/>
+            <property name="maxPublic" value="25"/>
         </module>
         <module name="ParameterNumber">
             <property name="max" value="5"/>
