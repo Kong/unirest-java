@@ -1,6 +1,7 @@
 ## 2.2.04
 * Add ```.charset(Charset charset)``` to POSTS (both form and body)
 * Clean up some ambiguous methods in form posting. This may be a breaking change for a very small number of users. There are better methods for handling these cases.
+* Added the ability to add HttpRequestInterceptors to the client. Though ```  Options.addInterceptor(new TestInterceptor()); ```
 
 ## 2.2.03
 * Expose the ```Options.init()``` method to restore the system to a fresh start after a shutdown.

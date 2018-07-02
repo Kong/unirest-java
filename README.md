@@ -14,7 +14,7 @@ Unirest.post("http://httpbin.org/post")
 <dependency>
     <groupId>io.github.openunirest</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>2.3.03</version>
+    <version>2.3.04</version>
 </dependency>
 ```
 
