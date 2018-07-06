@@ -35,10 +35,11 @@ import static spark.Spark.*;
 
 public class MockServer {
 
-	private static final JacksonObjectMapper om = new JacksonObjectMapper();
+    private static final JacksonObjectMapper om = new JacksonObjectMapper();
 	private static Object responseBody;
 	public static final int PORT = 4567;
 	public static final String HOST = "http://localhost:" + PORT;
+	public static final String REDIRECT = HOST + "/redirect";
 	public static final String POST = HOST + "/post";
 	public static final String GET = HOST + "/get";
 	public static final String DELETE = HOST + "/delete";
@@ -63,6 +64,7 @@ public class MockServer {
 		post("/post", MockServer::jsonResponse);
         get("/get", MockServer::jsonResponse);
         get("/gzip", MockServer::gzipResponse);
+        get("/redirect", MockServer::redirect);
         patch("/patch", MockServer::jsonResponse);
         get("/invalid", MockServer::inValid);
         options("/get", MockServer::jsonResponse);
@@ -70,6 +72,11 @@ public class MockServer {
 		put("/post", MockServer::jsonResponse);
 		get("/get/:p/passed", MockServer::jsonResponse);
         Runtime.getRuntime().addShutdownHook(new Thread(Spark::stop));
+	}
+
+	private static Object redirect(Request request, Response response) {
+		response.redirect("/get", 301);
+		return null;
 	}
 
 	private static Object inValid(Request request, Response response) {

@@ -19,6 +19,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.*;
 
+import static io.github.openunirest.http.options.Option.FOLLOW_REDIRECTS;
+
 public class Options {
 	public static final int MAX_TOTAL = 200;
 	public static final int MAX_PER_ROUTE = 20;
@@ -104,24 +106,31 @@ public class Options {
 	}
 
 	private static CloseableHttpAsyncClient buildAsyncClient(RequestConfig clientConfig, PoolingNHttpClientConnectionManager asyncConnectionManager) {
-		HttpAsyncClientBuilder asyncBuilder = HttpAsyncClientBuilder.create()
+		HttpAsyncClientBuilder ab = HttpAsyncClientBuilder.create()
 				.setDefaultRequestConfig(clientConfig)
 				.setConnectionManager(asyncConnectionManager)
 				.useSystemProperties();
-		interceptors.stream().forEach(i -> asyncBuilder.addInterceptorFirst(i));
-		return asyncBuilder.build();
+		interceptors.stream().forEach(i -> ab.addInterceptorFirst(i));
+		return ab.build();
 	}
 
 	private static void buildHttpClient(RequestConfig clientConfig) {
 		// Create clients
-		HttpClientBuilder httpClientBuilder = HttpClientBuilder.create()
+		HttpClientBuilder cb = HttpClientBuilder.create()
 				.setDefaultRequestConfig(clientConfig)
 				.setConnectionManager(syncConnectionManager)
 				.useSystemProperties();
-		interceptors.stream().forEach(i -> httpClientBuilder.addInterceptorFirst(i));
-		CloseableHttpClient build = httpClientBuilder.build();
+		disableRedirects(cb);
+		interceptors.stream().forEach(i -> cb.addInterceptorFirst(i));
+		CloseableHttpClient build = cb.build();
 
 		setOption(Option.HTTPCLIENT, build);
+	}
+
+	private static void disableRedirects(HttpClientBuilder cb) {
+		if(!(Boolean)options.getOrDefault(FOLLOW_REDIRECTS, true)){
+			cb.disableRedirectHandling();
+		}
 	}
 
 	private static RequestConfig getRequestConfig() {
@@ -200,6 +209,11 @@ public class Options {
 
 	public static void addInterceptor(HttpRequestInterceptor interceptor) {
 		interceptors.add(interceptor);
+		refresh();
+	}
+
+	public static void followRedirects(boolean enable) {
+		options.put(FOLLOW_REDIRECTS, enable);
 		refresh();
 	}
 }
