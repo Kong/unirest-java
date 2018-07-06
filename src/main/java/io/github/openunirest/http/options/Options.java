@@ -110,6 +110,9 @@ public class Options {
 				.setDefaultRequestConfig(clientConfig)
 				.setConnectionManager(asyncConnectionManager)
 				.useSystemProperties();
+		if(shouldDisableRedirects()){
+			ab.setRedirectStrategy(new NoRedirects());
+		}
 		interceptors.stream().forEach(i -> ab.addInterceptorFirst(i));
 		return ab.build();
 	}
@@ -120,17 +123,17 @@ public class Options {
 				.setDefaultRequestConfig(clientConfig)
 				.setConnectionManager(syncConnectionManager)
 				.useSystemProperties();
-		disableRedirects(cb);
+		if(shouldDisableRedirects()){
+			cb.disableRedirectHandling();
+		}
 		interceptors.stream().forEach(i -> cb.addInterceptorFirst(i));
 		CloseableHttpClient build = cb.build();
 
 		setOption(Option.HTTPCLIENT, build);
 	}
 
-	private static void disableRedirects(HttpClientBuilder cb) {
-		if(!(Boolean)options.getOrDefault(FOLLOW_REDIRECTS, true)){
-			cb.disableRedirectHandling();
-		}
+	private static boolean shouldDisableRedirects() {
+		return !(Boolean)options.getOrDefault(FOLLOW_REDIRECTS, true);
 	}
 
 	private static RequestConfig getRequestConfig() {
