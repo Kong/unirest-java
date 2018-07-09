@@ -4,7 +4,7 @@
 	<groupId>io.github.openunirest</groupId>
 	<artifactId>unirest-java</artifactId>
 	<packaging>jar</packaging>
-	<version>2.2.06-SNAPSHOT</version>
+	<version>2.2.06</version>
 	<name>unirest-java</name>
 	<description>Simplified, lightweight HTTP client library</description>
 	<url>http://github.com/OpenUnirest/</url>
@@ -21,7 +21,7 @@
 		<url>https://github.com/OpenUnirest/unirest-java</url>
 		<connection>scm:git:git@github.com:OpenUnirest/unirest-java.git</connection>
 		<developerConnection>scm:git:git@github.com:OpenUnirest/unirest-java.git</developerConnection>
-	  <tag>HEAD</tag>
+	  <tag>v2.2.06</tag>
   </scm>
 
 	<developers>
