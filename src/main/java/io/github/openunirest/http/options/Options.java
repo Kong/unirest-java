@@ -28,7 +28,7 @@ public class Options {
 	public static final int SOCKET_TIMEOUT = 60000;
 
 	private static boolean customClientSet = false;
-	private static boolean isRunning = true;
+	private static boolean isRunning = false;
 	private static Map<Option, Object> options = new HashMap<>();
 	private static PoolingHttpClientConnectionManager syncConnectionManager;
 	private static SyncIdleConnectionMonitorThread defaultSyncMonitor;
