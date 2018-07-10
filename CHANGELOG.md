@@ -1,3 +1,9 @@
+## 2.2.07
+* Fix init error
+
+## 2.2.06
+* added ability to turn off redirect following with ```Options.followRedirects(boolean enable)``` (default is true)
+
 ## 2.2.04
 * Add ```.charset(Charset charset)``` to POSTS (both form and body)
 * Clean up some ambiguous methods in form posting. This may be a breaking change for a very small number of users. There are better methods for handling these cases.
