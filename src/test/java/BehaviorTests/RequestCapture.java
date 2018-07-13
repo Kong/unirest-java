@@ -145,9 +145,7 @@ public class RequestCapture {
 
     public void assertBasicAuth(String username, String password) {
         String raw = headers.get("Authorization");
-        assertNotNull("Authorization Header Missing", raw);
-        String credentials = raw.replace("Basic ","");
-        assertEquals(username + ":" + password, new String(Base64.getDecoder().decode(credentials)));
+        TestUtil.assertBasicAuth(raw, username, password);
     }
 
     public void assertQueryString(String s) {

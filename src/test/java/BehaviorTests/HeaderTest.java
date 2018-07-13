@@ -5,11 +5,13 @@ import io.github.openunirest.http.HttpResponse;
 import io.github.openunirest.http.JsonNode;
 import io.github.openunirest.http.Unirest;
 import io.github.openunirest.request.GetRequest;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
+import static util.TestUtil.assertBasicAuth;
 import static util.TestUtil.mapOf;
 
 public class HeaderTest extends BddTest {
@@ -173,5 +175,22 @@ public class HeaderTest extends BddTest {
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertBasicAuth("user2", "pass2");
+    }
+
+    @Test @Ignore
+    public void doesNotCacheAuthAcrossDomains(){
+        Unirest.get(MockServer.GET)
+                .basicAuth("user1","pass1")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertBasicAuth("user1","pass1");
+
+        JsonNode bin = Unirest.post("http://httpbin.org/post")
+                .basicAuth("user2", "pass2")
+                .asJson()
+                .getBody();
+
+        String header = bin.getObject().getJSONObject("headers").getString("Authorization");
+        assertBasicAuth(header, "user2", "pass2");
     }
 }

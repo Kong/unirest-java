@@ -6,11 +6,13 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import io.github.openunirest.http.HttpResponse;
 
 import java.io.*;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 public class TestUtil {
@@ -105,5 +107,11 @@ public class TestUtil {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void assertBasicAuth(String raw, String username, String password) {
+        assertNotNull("Authorization Header Missing", raw);
+        String credentials = raw.replace("Basic ","");
+        assertEquals(username + ":" + password, new String(Base64.getDecoder().decode(credentials)));
     }
 }
