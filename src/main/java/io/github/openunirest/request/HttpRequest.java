@@ -41,7 +41,7 @@ public class HttpRequest extends BaseRequest {
 
 	private HttpMethod httpMethod;
 	protected String url;
-	Map<String, List<String>> headers = new TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER);
+	Map<String, List<String>> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	protected Body body;
 
 	public HttpRequest(HttpMethod method, String url) {

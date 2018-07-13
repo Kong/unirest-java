@@ -123,15 +123,40 @@ public class HeaderTest extends BddTest {
     @Test
     public void willNotCacheBasicAuth() {
         Unirest.get(MockServer.GET)
-                .basicAuth("foo", "bar")
+                .basicAuth("george","guitar")
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertBasicAuth("foo", "bar");
+                .assertBasicAuth("george","guitar");
 
         Unirest.get(MockServer.GET)
-                .basicAuth("baz", "qux")
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertBasicAuth("baz", "qux");
+                .assertNoHeader("Authorization");
+
+        Unirest.get(MockServer.GET)
+                .basicAuth("ringo","drums")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertBasicAuth("ringo","drums");
+    }
+
+    @Test
+    public void willNotCacheHeadersAccrossRequests() {
+        Unirest.get(MockServer.GET)
+                .header("foo", "bar")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("foo", "bar");
+
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertNoHeader("foo");
+
+        Unirest.get(MockServer.GET)
+                .header("baz", "qux")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("baz", "qux");
     }
 }
