@@ -159,4 +159,19 @@ public class HeaderTest extends BddTest {
                 .getBody()
                 .assertHeader("baz", "qux");
     }
+
+    @Test
+    public void doesNotCacheAcrossTypes(){
+        Unirest.get(MockServer.GET)
+                .basicAuth("user1","pass1")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertBasicAuth("user1","pass1");
+
+        Unirest.post(MockServer.POST)
+                .basicAuth("user2", "pass2")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertBasicAuth("user2", "pass2");
+    }
 }
