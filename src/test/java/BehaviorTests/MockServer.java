@@ -90,6 +90,7 @@ public class MockServer {
 	}
 
 	private static Object jsonResponse(Request req, Response res) {
+		res.cookie("JSESSIONID", "ABC123");
 		if(responseBody != null){
 			return responseBody;
 		}

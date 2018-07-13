@@ -19,6 +19,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.*;
 
+import static io.github.openunirest.http.options.Option.COOKIE_MANAGEMENT;
 import static io.github.openunirest.http.options.Option.FOLLOW_REDIRECTS;
 
 public class Options {
@@ -113,6 +114,9 @@ public class Options {
 		if(shouldDisableRedirects()){
 			ab.setRedirectStrategy(new NoRedirects());
 		}
+		if(shouldDisableCookieManagement()){
+			ab.disableCookieManagement();
+		}
 		interceptors.stream().forEach(i -> ab.addInterceptorFirst(i));
 		return ab.build();
 	}
@@ -126,10 +130,17 @@ public class Options {
 		if(shouldDisableRedirects()){
 			cb.disableRedirectHandling();
 		}
+		if(shouldDisableCookieManagement()){
+			cb.disableCookieManagement();
+		}
 		interceptors.stream().forEach(i -> cb.addInterceptorFirst(i));
 		CloseableHttpClient build = cb.build();
 
 		setOption(Option.HTTPCLIENT, build);
+	}
+
+	private static boolean shouldDisableCookieManagement() {
+		return !(Boolean)options.getOrDefault(COOKIE_MANAGEMENT, true);
 	}
 
 	private static boolean shouldDisableRedirects() {
@@ -217,6 +228,11 @@ public class Options {
 
 	public static void followRedirects(boolean enable) {
 		options.put(FOLLOW_REDIRECTS, enable);
+		refresh();
+	}
+
+	public static void enableCookieManagement(boolean enable){
+		options.put(COOKIE_MANAGEMENT, enable);
 		refresh();
 	}
 }
