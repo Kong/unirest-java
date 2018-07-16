@@ -1,3 +1,7 @@
+#2.2.08
+* add an option to disable cookie management with ```Options.enableCookieManagement(false)```. 
+   * In the future ignoring cookies will be the default.
+
 ## 2.2.07
 * Fix init error
 
