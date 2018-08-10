@@ -94,7 +94,7 @@ If you would like to run tests, also add the following dependency along with the
 
 Alternatively if you don't use Maven, you can directly include the JAR file in the classpath: http://oss.sonatype.org/content/repositories/releases/com/mashape/unirest/unirest-java/1.4.9/unirest-java-1.4.9.jar
 
-Don't forget to also install the dependencies ([`org.json`](http://www.json.org/java/), [`httpclient 4.3.6`](http://hc.apache.org/downloads.cgi), [`httpmime 4.3.6`](http://hc.apache.org/downloads.cgi), [`httpasyncclient 4.0.2`](http://hc.apache.org/downloads.cgi)) in the classpath too.
+Don't forget to also install the dependencies ([`org.json`](http://www.json.org/), [`httpclient 4.3.6`](http://hc.apache.org/downloads.cgi), [`httpmime 4.3.6`](http://hc.apache.org/downloads.cgi), [`httpasyncclient 4.0.2`](http://hc.apache.org/downloads.cgi)) in the classpath too.
 
 There is also a way to generate a Unirest-Java JAR file that already includes the required dependencies, but you will need Maven to generate it. Follow the instructions at http://blog.mashape.com/post/69117323931/installing-unirest-java-with-the-maven-assembly-plugin
 
