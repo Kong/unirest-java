@@ -1,13 +1,14 @@
 # Unirest for Java [![Build Status](https://travis-ci.org/OpenUnirest/unirest-java.svg?branch=master)](https://travis-ci.org/OpenUnirest/unirest-java)
 
-Do yourself a favor, and start making HTTP requests like this:
+## About This Repository
+This repo is an updated, maintained, and independenct fork of the original Mashape/Kong Unirest-Java project. That project is no longer being maintained so this project was set up to keep it alive.
 
-```java
-Unirest.post("http://httpbin.org/post")
-  .queryString("name", "Mark")
-  .field("last", "Polo")
-  .asJson()
-```
+There are several such forks in the world. The guiding principals of this project is:
+   * ***Maintain backwards compatibity whenever possible with the original project***: Other than a namespace change your code should work exactly like it did before for the vast majority of use cases.
+   * ***Security Patches are a Top Priority!***
+   * ***Move the project forward into modern Java***: This project does require Java 8 as a minimum.
+
+
 
 ## Install With [Maven](https://mvnrepository.com/artifact/io.github.openunirest/unirest-java)
 ```
