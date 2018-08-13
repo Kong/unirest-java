@@ -31,6 +31,9 @@ import spark.Request;
 import spark.Response;
 import spark.Spark;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import static spark.Spark.*;
 
 public class MockServer {
@@ -72,6 +75,11 @@ public class MockServer {
 		put("/post", MockServer::jsonResponse);
 		get("/get/:p/passed", MockServer::jsonResponse);
         Runtime.getRuntime().addShutdownHook(new Thread(Spark::stop));
+		try {
+			new CountDownLatch(1).await(2, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static Object redirect(Request request, Response response) {
