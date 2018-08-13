@@ -78,12 +78,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.1.0</version>
 				<configuration>
-					<archive>
-						<manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
-					</archive>
-				</configuration>
-			</plugin>
+					<manifestEntries>
+						<Built-By>Unirest</Built-By>
+					</manifestEntries>
+			</configuration>
+		</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
