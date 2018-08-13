@@ -1,5 +1,8 @@
-#2.2.08
-* add an option to disable cookie management with ```Options.enableCookieManagement(false)```. 
+## 2.2.09
+* Update Apache dependencies https://archive.apache.org/dist/httpcomponents/httpclient/RELEASE_NOTES-4.5.x.txt
+
+## 2.2.08
+   * add an option to disable cookie management with ```Options.enableCookieManagement(false)```.
    * In the future ignoring cookies will be the default.
 
 ## 2.2.07
