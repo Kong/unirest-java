@@ -15,7 +15,7 @@ There are several such forks in the world. The guiding principals of this projec
 <dependency>
     <groupId>io.github.openunirest</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>2.2.08</version>
+    <version>2.2.10</version>
 </dependency>
 ```
 

@@ -1,4 +1,4 @@
-## 2.2.09
+## 2.2.10
 * Update Apache dependencies https://archive.apache.org/dist/httpcomponents/httpclient/RELEASE_NOTES-4.5.x.txt
 
 ## 2.2.08
