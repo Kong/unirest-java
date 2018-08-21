@@ -1,5 +1,8 @@
 package io.github.openunirest.http.options;
 
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.junit.After;
 import util.JacksonObjectMapper;
 import io.github.openunirest.http.ObjectMapper;
 import org.junit.Before;
@@ -8,20 +11,22 @@ import org.junit.Test;
 import java.lang.management.ManagementFactory;
 import java.util.stream.IntStream;
 
+import static io.github.openunirest.http.options.Option.CONNECTION_TIMEOUT;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 public class OptionsTest {
 
-    @Before
+    @Before @After
     public void before(){
-        Options.init();
+        Options.shutDown(true);
     }
 
     @Test
     public void shouldKeepConnectionTimeOutDefault(){
-        assertOpDefault(Options.CONNECTION_TIMEOUT, Option.CONNECTION_TIMEOUT, 4L);
+        assertOpDefault(Options.CONNECTION_TIMEOUT, CONNECTION_TIMEOUT, 4L);
     }
 
     @Test
@@ -54,6 +59,21 @@ public class OptionsTest {
         JacksonObjectMapper value = new JacksonObjectMapper();
         Options.setOption(Option.OBJECT_MAPPER, value);
         assertEquals(value, Options.tryGet(Option.OBJECT_MAPPER, ObjectMapper.class).get());
+    }
+
+    @Test
+    public void canSaveSomeOptions(){
+        HttpRequestInterceptor i = mock(HttpRequestInterceptor.class);
+        CloseableHttpAsyncClient c = mock(CloseableHttpAsyncClient.class);
+        Options.addInterceptor(i);
+        Options.setOption(Option.ASYNCHTTPCLIENT, c);
+        Options.setOption(CONNECTION_TIMEOUT, 4000);
+
+        Options.shutDown(false);
+
+        assertNotEquals(c, Options.getOption(Option.ASYNCHTTPCLIENT));
+        assertEquals(i, Options.getInterceptors().get(0));
+        assertEquals(4000, Options.getOption(CONNECTION_TIMEOUT));
     }
 
     private void assertOpDefault(Object defValue, Option option, Object newValue) {

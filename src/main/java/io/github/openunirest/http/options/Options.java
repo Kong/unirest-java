@@ -39,6 +39,11 @@ public class Options {
 		customClientSet = true;
 	}
 
+	private static void setIfAbsent(Option option, Object value) {
+		validateOption(option);
+		options.putIfAbsent(option, value);
+	}
+
 	public static void setOption(Option option, Object value) {
 		validateOption(option);
 		options.put(option, value);
@@ -167,13 +172,11 @@ public class Options {
 
 	private static void setDefaults() {
 		customClientSet = false;
-		options.clear();
-		setOption(Option.CONNECTION_TIMEOUT, CONNECTION_TIMEOUT);
-		setOption(Option.SOCKET_TIMEOUT, SOCKET_TIMEOUT);
-		setOption(Option.MAX_TOTAL, MAX_TOTAL);
-		setOption(Option.MAX_PER_ROUTE, MAX_PER_ROUTE);
-		setOption(Option.SYNC_MONITOR, defaultSyncMonitor);
-		interceptors.clear();
+		setIfAbsent(Option.CONNECTION_TIMEOUT, CONNECTION_TIMEOUT);
+		setIfAbsent(Option.SOCKET_TIMEOUT, SOCKET_TIMEOUT);
+		setIfAbsent(Option.MAX_TOTAL, MAX_TOTAL);
+		setIfAbsent(Option.MAX_PER_ROUTE, MAX_PER_ROUTE);
+		setIfAbsent(Option.SYNC_MONITOR, defaultSyncMonitor);
 	}
 
 	public static <T> Optional<T> tryGet(Option option, Class<T> as) {
@@ -192,24 +195,36 @@ public class Options {
 		return isRunning;
 	}
 
-	public static void shutDown() {
+	public static void shutDown(){
+		shutDown(true);
+	}
+
+	public static void shutDown(boolean clearOptions) {
 		tryGet(Option.HTTPCLIENT,
 				CloseableHttpClient.class)
 				.ifPresent(Options::closeIt);
+		options.remove(Option.HTTPCLIENT);
 
 		tryGet(Option.SYNC_MONITOR,
 				SyncIdleConnectionMonitorThread.class)
 				.ifPresent(Thread::interrupt);
+		options.remove(Option.SYNC_MONITOR);
 
 		tryGet(Option.ASYNCHTTPCLIENT,
 				CloseableHttpAsyncClient.class)
 				.filter(CloseableHttpAsyncClient::isRunning)
 				.ifPresent(Options::closeIt);
+		options.remove(Option.ASYNCHTTPCLIENT);
 
 		tryGet(Option.ASYNC_MONITOR,
 				AsyncIdleConnectionMonitorThread.class)
 				.ifPresent(Thread::interrupt);
-		
+		options.remove(Option.ASYNC_MONITOR);
+
+		if(clearOptions){
+			options.clear();
+			interceptors.clear();
+		}
 		isRunning = false;
 	}
 
@@ -234,5 +249,9 @@ public class Options {
 	public static void enableCookieManagement(boolean enable){
 		options.put(COOKIE_MANAGEMENT, enable);
 		refresh();
+	}
+
+	public static List<HttpRequestInterceptor> getInterceptors() {
+		return interceptors;
 	}
 }

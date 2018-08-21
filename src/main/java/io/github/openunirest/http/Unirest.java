@@ -136,10 +136,18 @@ public class Unirest {
 
     /**
      * Close the asynchronous client and its event loop. Use this method to close all the threads and allow an application to exit.
-     *
+     * This will also clear any options returning Unirest to a default state
      */
     public static void shutdown() {
-       Options.shutDown();
+       shutdown(true);
+    }
+
+    /**
+     * Close the asynchronous client and its event loop. Use this method to close all the threads and allow an application to exit.
+     * @param clearOptions  indicates if options should be cleared. Note that the HttpClient, AsyncClient and thread monitors will not be retained after shutdown.
+     */
+    public static void shutdown(boolean clearOptions) {
+        Options.shutDown(clearOptions);
     }
 
     public static GetRequest get(String url) {
