@@ -5,6 +5,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import io.github.openunirest.http.HttpMethod;
+import io.github.openunirest.http.HttpResponse;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
 import spark.Request;
@@ -16,6 +17,7 @@ import javax.servlet.http.Part;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.lang.System.getProperty;
 import static org.hamcrest.CoreMatchers.endsWith;
@@ -128,7 +130,8 @@ public class RequestCapture {
         return files.stream()
                 .filter(f -> Objects.equals(f.fileName, fileName))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("No File With Name: " + fileName));
+                .orElseThrow(() -> new RuntimeException("\nNo File With Name: " + fileName + "\n"
+                + "Found: " + files.stream().map(f -> f.fileName).collect(Collectors.joining(" "))));
     }
 
     public File getFileByInput(String input) {

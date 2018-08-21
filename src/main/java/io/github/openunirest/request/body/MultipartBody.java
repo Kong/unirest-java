@@ -49,7 +49,7 @@ public class MultipartBody extends BaseRequest implements Body {
     private List<FormPart> parameters = new ArrayList<>();
 
     private HttpRequestWithBody httpRequestObj;
-    private HttpMultipartMode mode;
+    private HttpMultipartMode mode = HttpMultipartMode.BROWSER_COMPATIBLE;
 
     public MultipartBody(HttpRequestWithBody httpRequest) {
         super(httpRequest);
@@ -128,12 +128,16 @@ public class MultipartBody extends BaseRequest implements Body {
         return this;
     }
 
+    public MultipartBody mode(HttpMultipartMode value) {
+        this.mode = value;
+        return this;
+    }
+
     public HttpEntity getEntity() {
         if (parameters.stream().anyMatch(FormPart::isFile)) {
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            if (mode != null) {
-                builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-            }
+            builder.setCharset(httpRequestObj.getCharset());
+            builder.setMode(mode);
             for (FormPart key : parameters) {
                 builder.addPart(key.getName(), key.toApachePart());
             }

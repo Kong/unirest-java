@@ -4,10 +4,12 @@ import io.github.openunirest.http.Unirest;
 import io.github.openunirest.request.HttpRequest;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.HttpMultipartMode;
 import org.junit.Test;
 import util.MockCallback;
 import util.TestUtil;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -373,6 +375,34 @@ public class FormPostingTest extends BddTest {
                 .asserBody("foo")
                 .assertCharset(StandardCharsets.US_ASCII);
     }
+
+    @Test
+    public void utf8FileNames() {
+        InputStream fileData = new ByteArrayInputStream(new byte[] {'t', 'e', 's', 't'});
+        final String filename = "fileäöü.pöf";
+
+        Unirest.post(MockServer.POST)
+                .field("file", fileData, filename)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .getFile(filename)
+                .assertFileName(filename);
+    }
+
+    @Test
+    public void canSetModeToStrictForLegacySupport() {
+        InputStream fileData = new ByteArrayInputStream(new byte[] {'t', 'e', 's', 't'});
+        final String filename = "fileäöü.pöf";
+
+        Unirest.post(MockServer.POST)
+                .field("file", fileData, filename)
+                .mode(HttpMultipartMode.STRICT)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .getFile("file???.p?f")
+                .assertFileName("file???.p?f");
+    }
+
 
     private File getImageFile() throws URISyntaxException {
         return new File(getClass().getResource("/image.jpg").toURI());
