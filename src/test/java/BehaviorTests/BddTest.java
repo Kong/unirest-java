@@ -3,7 +3,6 @@ package BehaviorTests;
 import io.github.openunirest.http.*;
 import io.github.openunirest.http.options.Options;
 import org.junit.Before;
-import util.JacksonObjectMapper;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;

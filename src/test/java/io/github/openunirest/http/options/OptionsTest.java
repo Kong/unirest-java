@@ -1,9 +1,9 @@
 package io.github.openunirest.http.options;
 
+import io.github.openunirest.http.JacksonObjectMapper;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.junit.After;
-import util.JacksonObjectMapper;
 import io.github.openunirest.http.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;

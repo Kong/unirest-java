@@ -3,6 +3,7 @@ package io.github.openunirest.request;
 import BehaviorTests.Foo;
 import io.github.openunirest.MockApacheResponse;
 import io.github.openunirest.http.HttpResponse;
+import io.github.openunirest.http.JacksonObjectMapper;
 import io.github.openunirest.http.JsonNode;
 import io.github.openunirest.http.exceptions.UnirestException;
 import io.github.openunirest.http.options.Option;
@@ -11,7 +12,6 @@ import org.apache.http.ProtocolVersion;
 import org.apache.http.message.BasicStatusLine;
 import org.junit.Before;
 import org.junit.Test;
-import util.JacksonObjectMapper;
 import util.TestUtil;
 
 import java.io.InputStream;

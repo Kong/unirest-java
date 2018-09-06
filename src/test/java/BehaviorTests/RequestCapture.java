@@ -4,8 +4,10 @@ import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import io.github.openunirest.http.HttpMethod;
-import io.github.openunirest.http.HttpResponse;
+import io.github.openunirest.http.*;
+import io.github.openunirest.request.JsonPatch;
+import io.github.openunirest.request.JsonPatchItem;
+import io.github.openunirest.request.JsonPatchOperation;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
 import spark.Request;
@@ -19,6 +21,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.github.openunirest.request.JsonPatchRequest.CONTENT_TYPE;
 import static java.lang.System.getProperty;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -34,6 +37,7 @@ public class RequestCapture {
     public HttpMethod method;
     public String param;
     public String contentType;
+    public JsonPatch jsonPatches;
 
     public RequestCapture() {
     }
@@ -49,8 +53,14 @@ public class RequestCapture {
     }
 
     public void writeBody(Request req) {
-        //parseBodyToFormParams(req);
-        writeMultipart(req);
+        if(Strings.nullToEmpty(req.contentType()).equals(CONTENT_TYPE)){
+            String body = req.body();
+            jsonPatches = new JsonPatch(body);
+            this.body = jsonPatches.toString();
+        } else {
+            //parseBodyToFormParams(req);
+            writeMultipart(req);
+        }
     }
 
     private void parseBodyToFormParams() {
@@ -131,7 +141,7 @@ public class RequestCapture {
                 .filter(f -> Objects.equals(f.fileName, fileName))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("\nNo File With Name: " + fileName + "\n"
-                + "Found: " + files.stream().map(f -> f.fileName).collect(Collectors.joining(" "))));
+                        + "Found: " + files.stream().map(f -> f.fileName).collect(Collectors.joining(" "))));
     }
 
     public File getFileByInput(String input) {
@@ -165,12 +175,22 @@ public class RequestCapture {
     }
 
     public RequestCapture assertUrl(String s) {
-         assertEquals(s, url);
-         return this;
+        assertEquals(s, url);
+        return this;
     }
 
     public void assertCharset(Charset charset) {
         assertThat(contentType, endsWith(charset.toString()));
+    }
+
+    public RequestCapture assertJsonPatch(JsonPatchOperation op, String path, Object value) {
+        assertNotNull("Asserting JSONPatch but no patch object present", jsonPatches);
+        assertThat(jsonPatches.getOperations(), hasItem(new JsonPatchItem(op, path, value)));
+        return this;
+    }
+
+    public void setPatch(JsonPatch patch) {
+        this.jsonPatches = patch;
     }
 
     public static class File {

@@ -30,6 +30,7 @@ import io.github.openunirest.http.options.Option;
 import io.github.openunirest.http.options.Options;
 import io.github.openunirest.request.GetRequest;
 import io.github.openunirest.request.HttpRequestWithBody;
+import io.github.openunirest.request.JsonPatchRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
@@ -176,6 +177,10 @@ public class Unirest {
 
     public static HttpRequestWithBody put(String url) {
         return new HttpRequestWithBody(HttpMethod.PUT, url);
+    }
+
+    public static JsonPatchRequest jsonPatch(String url) {
+        return new JsonPatchRequest(url);
     }
 
     public static boolean isRunning() {

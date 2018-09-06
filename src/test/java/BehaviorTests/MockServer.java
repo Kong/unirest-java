@@ -26,7 +26,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package BehaviorTests;
 
-import util.JacksonObjectMapper;
+import io.github.openunirest.http.JacksonObjectMapper;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
