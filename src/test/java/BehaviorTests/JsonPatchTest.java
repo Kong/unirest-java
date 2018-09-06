@@ -109,7 +109,7 @@ public class JsonPatchTest extends BddTest {
 
     @Test
     public void allTogetherNow() {
-        Unirest.jsonPatch(MockServer.PATCH)
+        Unirest.jsonPatch("http://localhost/thing")
                 .add("/fruits/-", "Apple")
                 .remove("/bugs")
                 .replace("/lastname", "Flintstone")

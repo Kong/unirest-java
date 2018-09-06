@@ -40,12 +40,12 @@ There are several such forks in the world. The guiding principals of this projec
 So you're probably wondering how using Unirest makes creating requests in Java easier, here is a basic POST request that will explain everything:
 
 ```java
-HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
-  .header("accept", "application/json")
-  .queryString("apiKey", "123")
-  .field("parameter", "value")
-  .field("foo", "bar")
-  .asJson();
+HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post")
+      .header("accept", "application/json")
+      .queryString("apiKey", "123")
+      .field("parameter", "value")
+      .field("foo", "bar")
+      .asJson();
 ```
 
 Requests are made when `as[Type]()` is invoked, possible types include `Json`, `Binary`, `String`, `Object`.
@@ -81,7 +81,7 @@ will send a request with a body of
 
 ```
 
-## Serialization
+## Advanced Object Mapping with Jackson, GSON, JAX-B or others
 Before an `asObject(Class)` or a `.body(Object)` invokation, is necessary to provide a custom implementation of the `ObjectMapper` interface.
 This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
 
@@ -111,25 +111,24 @@ Unirest.setObjectMapper(new ObjectMapper() {
 });
 
 // Response to Object
-HttpResponse<Book> bookResponse = Unirest.get("http://httpbin.org/books/1").asObject(Book.class);
-Book bookObject = bookResponse.getBody();
+Book book = Unirest.get("http://httpbin.org/books/1")
+                   .asObject(Book.class)
+                   .getBody();
 
-HttpResponse<Author> authorResponse = Unirest.get("http://httpbin.org/books/{id}/author")
-    .routeParam("id", bookObject.getId())
-    .asObject(Author.class);
-    
-Author authorObject = authorResponse.getBody();
+Author author = Unirest.get("http://httpbin.org/books/{id}/author")
+                       .routeParam("id", bookObject.getId())
+                       .asObject(Author.class)
+                       .getBody();
 
-// Object to Json
-HttpResponse<JsonNode> postResponse = Unirest.post("http://httpbin.org/authors/post")
+// Sending a JSON object
+Unirest.post("http://httpbin.org/authors/post")
         .header("accept", "application/json")
         .header("Content-Type", "application/json")
-        .body(authorObject)
+        .body(author)
         .asJson();
 ```
 
 ### Route Parameters
-
 Sometimes you want to add dynamic parameters in the URL, you can easily do that by adding a placeholder in the URL, and then by setting the route parameters with the `routeParam` function, like:
 
 ```java
@@ -150,24 +149,12 @@ CompletableFuture<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.
   .header("accept", "application/json")
   .field("param1", "value1")
   .field("param2", "value2")
-  .asJsonAsync(new Callback<JsonNode>() {
-
-	public void failed(UnirestException e) {
-		System.out.println("The request has failed");
-	}
-
-	public void completed(HttpResponse<JsonNode> response) {
-		 int code = response.getStatus();
-	     Map<String, String> headers = response.getHeaders();
-	     JsonNode body = response.getBody();
-	     InputStream rawBody = response.getRawBody();
-	}
-
-	public void cancelled() {
-		System.out.println("The request has been cancelled");
-	}
-
-});
+  .asJsonAsync(response -> {
+        int code = response.getStatus();
+        Map<String, String> headers = response.getHeaders();
+        JsonNode body = response.getBody();
+        InputStream rawBody = response.getRawBody();
+    });
 ```
 
 ## File Uploads
@@ -215,33 +202,10 @@ HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
 ## Basic Authentication
 Authenticating the request with basic authentication can be done by calling the `basicAuth(username, password)` function:
 ```java
-HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/headers").basicAuth("username", "password").asJson();
+ Unirest.get("http://httpbin.org/headers")
+        .basicAuth("username", "password")
+        .asJson();
 ```
-
-# Request
-
-The Java Unirest library follows the builder style conventions. You start building your request by creating a `HttpRequest` object using one of the following:
-
-```java
-GetRequest request = Unirest.get(String url);
-GetRequest request = Unirest.head(String url);
-HttpRequestWithBody request = Unirest.post(String url);
-HttpRequestWithBody request = Unirest.put(String url);
-HttpRequestWithBody request = Unirest.patch(String url);
-HttpRequestWithBody request = Unirest.options(String url);
-HttpRequestWithBody request = Unirest.delete(String url);
-```
-
-# Response
-
-Upon recieving a response Unirest returns the result in the form of an Object, this object should always have the same keys for each language regarding to the response details.
-
-- `.getStatus()` - HTTP Response Status Code (Example: 200)
-- `.getStatusText()` - HTTP Response Status Text (Example: "OK")
-- `.getHeaders()` - HTTP Response Headers
-- `.getBody()` - Parsed response body where applicable, for example JSON responses are parsed to Objects / Associative Arrays.
-- `.getRawBody()` - Un-parsed response body
-- `.getParsingError()` - Optional RuntimeException containing the error that was thrown when parsing the response body
 
 # Advanced Configuration
 
