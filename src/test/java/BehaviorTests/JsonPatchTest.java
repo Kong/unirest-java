@@ -112,17 +112,16 @@ public class JsonPatchTest extends BddTest {
         Unirest.jsonPatch(MockServer.PATCH)
                 .add("/fruits/-", "Apple")
                 .remove("/bugs")
-                .replace("/lastname", "Flintsone")
+                .replace("/lastname", "Flintstone")
                 .test("/firstname", "Fred")
                 .move("/old/location", "/new/location")
                 .copy("/original/location", "/new/location")
                 .asJson();
-
-        /* This produces
+        /* resulting body
           [
               {"op":"add","path":"/fruits/-","value":"Apple"},
               {"op":"remove","path":"/bugs"},
-              {"op":"replace","path":"/lastname","value":"Flintsone"},
+              {"op":"replace","path":"/lastname","value":"Flintstone"},
               {"op":"test","path":"/firstname","value":"Fred"},
               {"op":"move","path":"/new/location","from":"/old/location"},
               {"op":"copy","path":"/new/location","from":"/original/location"}

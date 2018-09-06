@@ -17,7 +17,7 @@ There are several such forks in the world. The guiding principals of this projec
 <dependency>
     <groupId>io.github.openunirest</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>2.2.12</version>
+    <version>2.3.00</version>
 </dependency>
 ```
 
@@ -62,7 +62,7 @@ Unirest has full native support for JSON Patch requests
      Unirest.jsonPatch(MockServer.PATCH)
             .add("/fruits/-", "Apple")
             .remove("/bugs")
-            .replace("/lastname", "Flintsone")
+            .replace("/lastname", "Flintstone")
             .test("/firstname", "Fred")
             .move("/old/location", "/new/location")
             .copy("/original/location", "/new/location")
@@ -73,7 +73,7 @@ will send a request with a body of
   [
      {"op":"add","path":"/fruits/-","value":"Apple"},
      {"op":"remove","path":"/bugs"},
-     {"op":"replace","path":"/lastname","value":"Flintsone"},
+     {"op":"replace","path":"/lastname","value":"Flintstone"},
      {"op":"test","path":"/firstname","value":"Fred"},
      {"op":"move","path":"/new/location","from":"/old/location"},
      {"op":"copy","path":"/new/location","from":"/original/location"}
