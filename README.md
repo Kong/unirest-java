@@ -56,6 +56,31 @@ If you already have a map of parameters or do not wish to use seperate field met
 
 `.headers(Map<String, String> headers)` is also supported in replacement of multiple header methods.
 
+## JSON Patch Requests
+Unirest has full native support for JSON Patch requests
+```java
+     Unirest.jsonPatch(MockServer.PATCH)
+            .add("/fruits/-", "Apple")
+            .remove("/bugs")
+            .replace("/lastname", "Flintsone")
+            .test("/firstname", "Fred")
+            .move("/old/location", "/new/location")
+            .copy("/original/location", "/new/location")
+            .asJson();
+```
+will send a request with a body of
+```json
+  [
+     {"op":"add","path":"/fruits/-","value":"Apple"},
+     {"op":"remove","path":"/bugs"},
+     {"op":"replace","path":"/lastname","value":"Flintsone"},
+     {"op":"test","path":"/firstname","value":"Fred"},
+     {"op":"move","path":"/new/location","from":"/old/location"},
+     {"op":"copy","path":"/new/location","from":"/original/location"}
+  ]
+
+```
+
 ## Serialization
 Before an `asObject(Class)` or a `.body(Object)` invokation, is necessary to provide a custom implementation of the `ObjectMapper` interface.
 This should be done only the first time, as the instance of the ObjectMapper will be shared globally.

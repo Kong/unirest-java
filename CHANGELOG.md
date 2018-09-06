@@ -1,3 +1,16 @@
+## 2.3.00
+* Add support for the JSON Patch standard (RFC6902) https://tools.ietf.org/html/rfc6902
+```java
+     Unirest.jsonPatch(MockServer.PATCH)
+            .add("/fruits/-", "Apple")
+            .remove("/bugs")
+            .replace("/lastname", "Flintsone")
+            .test("/firstname", "Fred")
+            .move("/old/location", "/new/location")
+            .copy("/original/location", "/new/location")
+            .asJson();
+```
+
 ## 2.2.12
 * Add optional flag overload to ```Unirest.shutDown(false)```. The flag indicates if the various Options should be cleared. This only applies to options that could survive a shutdown. The HttpClients and thread monitors will still be discarded.
 

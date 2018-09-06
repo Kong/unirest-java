@@ -116,7 +116,7 @@ public class JsonPatchTest extends BddTest {
                 .test("/firstname", "Fred")
                 .move("/old/location", "/new/location")
                 .copy("/original/location", "/new/location")
-                .asString();
+                .asJson();
 
         /* This produces
           [
