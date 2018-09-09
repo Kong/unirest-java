@@ -3,6 +3,8 @@ package util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 import io.github.openunirest.http.HttpResponse;
 
 import java.io.*;
@@ -113,5 +115,9 @@ public class TestUtil {
         assertNotNull("Authorization Header Missing", raw);
         String credentials = raw.replace("Basic ","");
         assertEquals(username + ":" + password, new String(Base64.getDecoder().decode(credentials)));
+    }
+
+    public static String getResource(String resourceName) throws IOException {
+        return Resources.toString(Resources.getResource(resourceName), Charsets.UTF_8);
     }
 }

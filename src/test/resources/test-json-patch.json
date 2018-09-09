@@ -1,0 +1,8 @@
+[
+  {"op":"add","path":"/fruits/-","value":"Apple"},
+  {"op":"remove","path":"/bugs"},
+  {"op":"replace","path":"/lastname","value":"Flintstone"},
+  {"op":"test","path":"/firstname","value":"Fred"},
+  {"op":"move","path":"/new/location","from":"/old/location"},
+  {"op":"copy","path":"/new/location","from":"/original/location"}
+]

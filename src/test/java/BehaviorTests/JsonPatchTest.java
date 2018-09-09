@@ -5,6 +5,10 @@ import io.github.openunirest.http.Unirest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+import util.TestUtil;
+
+import java.io.IOException;
 
 import static io.github.openunirest.request.JsonPatchOperation.*;
 
@@ -85,7 +89,7 @@ public class JsonPatchTest extends BddTest {
                 .assertJsonPatch(add, "/stringArrays", new String[]{"foo, bar"})
                 .assertJsonPatch(add, "/maps", basicJson)
                 .assertJsonPatch(add, "/jsonObjects", basicJson)
-                .assertJsonPatch(add, "/jsonArrays", new  JSONArray().put(basicJson))
+                .assertJsonPatch(add, "/jsonArrays", new JSONArray().put(basicJson))
         ;
     }
 
@@ -108,24 +112,21 @@ public class JsonPatchTest extends BddTest {
     }
 
     @Test
-    public void allTogetherNow() {
-        Unirest.jsonPatch("http://localhost/thing")
+    public void thatsSomeValidJson() throws IOException {
+        String patch = Unirest.jsonPatch(MockServer.PATCH)
                 .add("/fruits/-", "Apple")
                 .remove("/bugs")
                 .replace("/lastname", "Flintstone")
                 .test("/firstname", "Fred")
                 .move("/old/location", "/new/location")
                 .copy("/original/location", "/new/location")
-                .asJson();
-        /* resulting body
-          [
-              {"op":"add","path":"/fruits/-","value":"Apple"},
-              {"op":"remove","path":"/bugs"},
-              {"op":"replace","path":"/lastname","value":"Flintstone"},
-              {"op":"test","path":"/firstname","value":"Fred"},
-              {"op":"move","path":"/new/location","from":"/old/location"},
-              {"op":"copy","path":"/new/location","from":"/original/location"}
-          ]
-         */
+                .asObject(RequestCapture.class)
+                .getBody()
+                .body;
+
+        String expected = TestUtil.getResource("test-json-patch.json");
+
+        JSONAssert.assertEquals(expected, patch, true);
     }
+
 }
