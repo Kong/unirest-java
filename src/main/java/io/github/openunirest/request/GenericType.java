@@ -1,5 +1,17 @@
 package io.github.openunirest.request;
 /*
+Parts of this file were taken from Jackson/core TypeReference<T> under the Apache License:
+
+Apache (Software) License, version 2.0 ("the License").
+See the License for details about distribution rights, and the
+specific rights regarding derivate works.
+
+You may obtain a copy of the License at:
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+The remaining
+===========================
 The MIT License
 
 Copyright OpenUnirest (c) 2018.
