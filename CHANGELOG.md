@@ -1,3 +1,6 @@
+## 2.4.00
+* Issue #19 Add support for generic types with object mappers.
+
 ## 2.3.00
 * Add support for the JSON Patch standard (RFC6902) https://tools.ietf.org/html/rfc6902
 ```java
