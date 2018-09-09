@@ -26,19 +26,16 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package io.github.openunirest.request;
 
-import io.github.openunirest.http.async.Callback;
 import io.github.openunirest.http.HttpResponse;
 import io.github.openunirest.http.JsonNode;
+import io.github.openunirest.http.async.Callback;
 import io.github.openunirest.http.exceptions.UnirestException;
 
 import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class BaseRequest {
 
-	protected static final Charset UTF_8 = StandardCharsets.UTF_8;
 	private final ResponseBuilder builder = new ResponseBuilder();
 
 	protected HttpRequest httpRequest;
@@ -81,6 +78,10 @@ public abstract class BaseRequest {
 
 	public <T> HttpResponse<T> asObject(Class<? extends T> responseClass) throws UnirestException {
 		return HttpClientHelper.request(httpRequest, r -> builder.asObject(r, responseClass));
+	}
+
+	public <T> HttpResponse<T> asObject(GenericType<T> genericType) throws UnirestException {
+		return HttpClientHelper.request(httpRequest, r -> builder.asObject(r, genericType));
 	}
 
 	public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass) {

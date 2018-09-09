@@ -29,8 +29,17 @@ class ResponseBuilder {
         return new HttpResponse<>(response, from(response.getEntity(), b -> toObject(b, aClass)));
     }
 
+    public <T> HttpResponse<T> asObject(org.apache.http.HttpResponse response, GenericType<T> genericType) {
+        return new HttpResponse<>(response, from(response.getEntity(), b -> toObject(b, genericType)));
+    }
+
     public HttpResponse<String> asString(org.apache.http.HttpResponse response) {
         return new HttpResponse<>(response, from(response.getEntity(), this::toString));
+    }
+
+    private <T> T toObject(BodyData<T> b, GenericType<T> genericType) {
+        ObjectMapper o = getObjectMapper();
+        return o.readValue(toString(b), genericType);
     }
 
     private <T> T toObject(BodyData<T> b, Class<? extends T> aClass) {

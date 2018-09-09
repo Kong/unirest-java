@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import io.github.openunirest.request.GenericType;
 import io.github.openunirest.request.JsonPatch;
 import io.github.openunirest.request.JsonPatchItem;
 import org.json.JSONObject;
@@ -30,6 +31,7 @@ public class JacksonObjectMapper implements ObjectMapper {
 		om.registerModule(simpleModule);
 	}
 
+	@Override
 	public <T> T readValue(String value, Class<T> valueType) {
 		try {
 			return om.readValue(value, valueType);
@@ -38,6 +40,16 @@ public class JacksonObjectMapper implements ObjectMapper {
 		}
 	}
 
+	@Override
+	public <T> T readValue(String value, GenericType<T> genericType) {
+		try {
+			return om.readValue(value,  om.constructType(genericType.getType()));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
 	public String writeValue(Object value) {
 		try {
 			return om.writeValueAsString(value);
