@@ -92,6 +92,14 @@ public abstract class BaseRequest {
 		return HttpClientHelper.requestAsync(httpRequest, r -> builder.asObject(r, responseClass), callback);
 	}
 
+	public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType) {
+		return HttpClientHelper.requestAsync(httpRequest, r -> builder.asObject(r, genericType));
+	}
+
+	public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType,  Callback<T> callback) {
+		return HttpClientHelper.requestAsync(httpRequest, r -> builder.asObject(r, genericType), callback);
+	}
+
 	public HttpResponse<InputStream> asBinary() throws UnirestException {
 		return HttpClientHelper.request(httpRequest, builder::asBinary);
 	}

@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -27,6 +28,33 @@ public class AsGenericTypeTest extends BddTest {
                                 .getBody();
 
         assertTheFoos(foos);
+    }
+
+    @Test
+    public void canGetAListOfObjectsAsync() throws ExecutionException, InterruptedException {
+        MockServer.setJsonAsResponse(foos);
+
+        List<Foo> foos = Unirest.get(MockServer.GET)
+                .asObjectAsync(new GenericType<List<Foo>>(){})
+                .get()
+                .getBody();
+
+        assertTheFoos(foos);
+    }
+
+    @Test
+    public void canGetAListOfObjectsAsyncWithCallback()  {
+        MockServer.setJsonAsResponse(foos);
+
+        Unirest.get(MockServer.GET)
+                .asObjectAsync(new GenericType<List<Foo>>(){},
+                r -> {
+                    List<Foo> f = r.getBody();
+                    assertTheFoos(f);
+                    asyncSuccess();
+                });
+
+        assertAsync();
     }
 
     @Test

@@ -1,3 +1,6 @@
+## 2.4.01
+* Add async versions of generic type methods
+
 ## 2.4.00
 * Issue #19 Add support for generic types with object mappers.
 
