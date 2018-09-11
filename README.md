@@ -84,31 +84,13 @@ will send a request with a body of
 ## Advanced Object Mapping with Jackson, GSON, JAX-B or others
 Before an `asObject(Class)` or a `.body(Object)` invokation, is necessary to provide a custom implementation of the `ObjectMapper` interface.
 This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
+Open Unirest offers a few plug-ins implementing popular object mappers like Jackson and Gson. See [mvn central](https://mvnrepository.com/artifact/io.github.openunirest) for details.
 
 For example, serializing Json from\to Object using the popular Jackson ObjectMapper takes only few lines of code.
 
 ```java
 // Only one time
-Unirest.setObjectMapper(new ObjectMapper() {
-    private com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper
-                = new com.fasterxml.jackson.databind.ObjectMapper();
-    
-    public <T> T readValue(String value, Class<T> valueType) {
-        try {
-            return jacksonObjectMapper.readValue(value, valueType);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public String writeValue(Object value) {
-        try {
-            return jacksonObjectMapper.writeValueAsString(value);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-});
+Unirest.setObjectMapper(new JacksonObjectMapper());
 
 // Response to Object
 Book book = Unirest.get("http://httpbin.org/books/1")
