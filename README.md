@@ -1,5 +1,7 @@
-# Unirest for Java [![Build Status](https://travis-ci.org/OpenUnirest/unirest-java.svg?branch=master)](https://travis-ci.org/OpenUnirest/unirest-java)
+# Unirest for Java 
 
+[![Build Status](https://travis-ci.org/OpenUnirest/unirest-java.svg?branch=master)](https://travis-ci.org/OpenUnirest/unirest-java)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.openunirest/unirest-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.openunirest/unirest-java)
 [![DepShield Badge](https://depshield.sonatype.org/badges/OpenUnirest/unirest-java/depshield.svg)](https://depshield.github.io)
 
 ## About This Repository
@@ -17,7 +19,7 @@ There are several such forks in the world. The guiding principals of this projec
 <dependency>
     <groupId>io.github.openunirest</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>2.4.01</version>
+    <version>2.4.02</version>
 </dependency>
 ```
 
