@@ -1,3 +1,6 @@
+## 2.4.02
+* Updated org.json dependency
+
 ## 2.4.01
 * Add async versions of generic type methods
 
