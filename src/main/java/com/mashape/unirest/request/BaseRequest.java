@@ -30,6 +30,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import org.apache.http.client.HttpClient;
 
 import java.io.InputStream;
 import java.util.concurrent.Future;
@@ -56,6 +57,10 @@ public abstract class BaseRequest {
 		return HttpClientHelper.request(httpRequest, String.class);
 	}
 
+	public HttpResponse<String> asString(HttpClient client) throws UnirestException {
+		return HttpClientHelper.request(client, httpRequest, String.class);
+	}
+
 	public Future<HttpResponse<String>> asStringAsync() {
 		return HttpClientHelper.requestAsync(httpRequest, String.class, null);
 	}
@@ -66,6 +71,9 @@ public abstract class BaseRequest {
 
 	public HttpResponse<JsonNode> asJson() throws UnirestException {
 		return HttpClientHelper.request(httpRequest, JsonNode.class);
+	}
+	public HttpResponse<JsonNode> asJson(HttpClient client) throws UnirestException {
+		return HttpClientHelper.request(client, httpRequest, JsonNode.class);
 	}
 
 	public Future<HttpResponse<JsonNode>> asJsonAsync() {
@@ -80,6 +88,10 @@ public abstract class BaseRequest {
 		return HttpClientHelper.request(httpRequest, (Class) responseClass);
 	}
 
+	public <T> HttpResponse<T> asObject(HttpClient client, Class<? extends T> responseClass) throws UnirestException {
+		return HttpClientHelper.request(client, httpRequest, (Class) responseClass);
+	}
+
 	public <T> Future<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass) {
 		return HttpClientHelper.requestAsync(httpRequest, (Class) responseClass, null);
 	}
@@ -90,6 +102,10 @@ public abstract class BaseRequest {
 
 	public HttpResponse<InputStream> asBinary() throws UnirestException {
 		return HttpClientHelper.request(httpRequest, InputStream.class);
+	}
+
+	public HttpResponse<InputStream> asBinary(HttpClient client) throws UnirestException {
+		return HttpClientHelper.request(client, httpRequest, InputStream.class);
 	}
 
 	public Future<HttpResponse<InputStream>> asBinaryAsync() {

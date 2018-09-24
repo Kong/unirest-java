@@ -130,9 +130,15 @@ public class HttpClientHelper {
 	public static <T> HttpResponse<T> request(HttpRequest request, Class<T> responseClass) throws UnirestException {
 		HttpRequestBase requestObj = prepareRequest(request, false);
 		HttpClient client = ClientFactory.getHttpClient(); // The
-															// DefaultHttpClient
-															// is thread-safe
+		return executeRequest(client, responseClass, requestObj);
+	}
 
+	public static <T> HttpResponse<T> request(HttpClient client, HttpRequest request, Class<T> responseClass) throws UnirestException {
+		HttpRequestBase requestObj = prepareRequest(request, false);
+		return executeRequest(client, responseClass, requestObj);
+	}
+
+	private static <T> HttpResponse<T> executeRequest(HttpClient client, Class<T> responseClass, HttpRequestBase requestObj) throws UnirestException {
 		org.apache.http.HttpResponse response;
 		try {
 			response = client.execute(requestObj);

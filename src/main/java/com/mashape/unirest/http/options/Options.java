@@ -47,52 +47,54 @@ public class Options {
 	}
 
 	public static void refresh() {
-		// Load timeouts
-		Object connectionTimeout = Options.getOption(Option.CONNECTION_TIMEOUT);
-		if (connectionTimeout == null)
-			connectionTimeout = CONNECTION_TIMEOUT;
-		Object socketTimeout = Options.getOption(Option.SOCKET_TIMEOUT);
-		if (socketTimeout == null)
-			socketTimeout = SOCKET_TIMEOUT;
+		if (!customClientSet) {
+			// Load timeouts
+			Object connectionTimeout = Options.getOption(Option.CONNECTION_TIMEOUT);
+			if (connectionTimeout == null)
+				connectionTimeout = CONNECTION_TIMEOUT;
+			Object socketTimeout = Options.getOption(Option.SOCKET_TIMEOUT);
+			if (socketTimeout == null)
+				socketTimeout = SOCKET_TIMEOUT;
 
-		// Load limits
-		Object maxTotal = Options.getOption(Option.MAX_TOTAL);
-		if (maxTotal == null)
-			maxTotal = MAX_TOTAL;
-		Object maxPerRoute = Options.getOption(Option.MAX_PER_ROUTE);
-		if (maxPerRoute == null)
-			maxPerRoute = MAX_PER_ROUTE;
+			// Load limits
+			Object maxTotal = Options.getOption(Option.MAX_TOTAL);
+			if (maxTotal == null)
+				maxTotal = MAX_TOTAL;
+			Object maxPerRoute = Options.getOption(Option.MAX_PER_ROUTE);
+			if (maxPerRoute == null)
+				maxPerRoute = MAX_PER_ROUTE;
 
-		// Load proxy if set
-		HttpHost proxy = (HttpHost) Options.getOption(Option.PROXY);
+			// Load proxy if set
+			HttpHost proxy = (HttpHost) Options.getOption(Option.PROXY);
 
-		// Create common default configuration
-		RequestConfig clientConfig = RequestConfig.custom().setConnectTimeout(((Long) connectionTimeout).intValue()).setSocketTimeout(((Long) socketTimeout).intValue()).setConnectionRequestTimeout(((Long) socketTimeout).intValue()).setProxy(proxy).build();
+			// Create common default configuration
+			RequestConfig clientConfig = RequestConfig.custom().setConnectTimeout(((Long) connectionTimeout).intValue()).setSocketTimeout(((Long) socketTimeout).intValue()).setConnectionRequestTimeout(((Long) socketTimeout).intValue()).setProxy(proxy).build();
 
-		PoolingHttpClientConnectionManager syncConnectionManager = new PoolingHttpClientConnectionManager();
-		syncConnectionManager.setMaxTotal((Integer) maxTotal);
-		syncConnectionManager.setDefaultMaxPerRoute((Integer) maxPerRoute);
+			PoolingHttpClientConnectionManager syncConnectionManager = new PoolingHttpClientConnectionManager();
+			syncConnectionManager.setMaxTotal((Integer) maxTotal);
+			syncConnectionManager.setDefaultMaxPerRoute((Integer) maxPerRoute);
 
-		// Create clients
-		setOption(Option.HTTPCLIENT, HttpClientBuilder.create().setDefaultRequestConfig(clientConfig).setConnectionManager(syncConnectionManager).build());
-		SyncIdleConnectionMonitorThread syncIdleConnectionMonitorThread = new SyncIdleConnectionMonitorThread(syncConnectionManager);
-		setOption(Option.SYNC_MONITOR, syncIdleConnectionMonitorThread);
-		syncIdleConnectionMonitorThread.start();
+			// Create clients
+			setOption(Option.HTTPCLIENT, HttpClientBuilder.create().setDefaultRequestConfig(clientConfig).setConnectionManager(syncConnectionManager).build());
+			SyncIdleConnectionMonitorThread syncIdleConnectionMonitorThread = new SyncIdleConnectionMonitorThread(syncConnectionManager);
+			setOption(Option.SYNC_MONITOR, syncIdleConnectionMonitorThread);
+			syncIdleConnectionMonitorThread.start();
 
-		DefaultConnectingIOReactor ioreactor;
-		PoolingNHttpClientConnectionManager asyncConnectionManager;
-		try {
-			ioreactor = new DefaultConnectingIOReactor();
-			asyncConnectionManager = new PoolingNHttpClientConnectionManager(ioreactor);
-			asyncConnectionManager.setMaxTotal((Integer) maxTotal);
-			asyncConnectionManager.setDefaultMaxPerRoute((Integer) maxPerRoute);
-		} catch (IOReactorException e) {
-			throw new RuntimeException(e);
+			DefaultConnectingIOReactor ioreactor;
+			PoolingNHttpClientConnectionManager asyncConnectionManager;
+			try {
+				ioreactor = new DefaultConnectingIOReactor();
+				asyncConnectionManager = new PoolingNHttpClientConnectionManager(ioreactor);
+				asyncConnectionManager.setMaxTotal((Integer) maxTotal);
+				asyncConnectionManager.setDefaultMaxPerRoute((Integer) maxPerRoute);
+			} catch (IOReactorException e) {
+				throw new RuntimeException(e);
+			}
+
+			CloseableHttpAsyncClient asyncClient = HttpAsyncClientBuilder.create().setDefaultRequestConfig(clientConfig).setConnectionManager(asyncConnectionManager).build();
+			setOption(Option.ASYNCHTTPCLIENT, asyncClient);
+			setOption(Option.ASYNC_MONITOR, new AsyncIdleConnectionMonitorThread(asyncConnectionManager));
 		}
-
-		CloseableHttpAsyncClient asyncClient = HttpAsyncClientBuilder.create().setDefaultRequestConfig(clientConfig).setConnectionManager(asyncConnectionManager).build();
-		setOption(Option.ASYNCHTTPCLIENT, asyncClient);
-		setOption(Option.ASYNC_MONITOR, new AsyncIdleConnectionMonitorThread(asyncConnectionManager));
 	}
 
 }
