@@ -16,6 +16,7 @@ public class JsonPatchTest extends BddTest {
 
     @Test
     public void canAddThings() {
+
         Unirest.jsonPatch(MockServer.PATCH)
                 .add("/some/path", "a value")
                 .add("/another/path", 42)

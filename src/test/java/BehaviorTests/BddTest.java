@@ -3,6 +3,7 @@ package BehaviorTests;
 import io.github.openunirest.http.*;
 import io.github.openunirest.http.options.Options;
 import org.junit.Before;
+import util.TestUtil;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +21,7 @@ public class BddTest {
 
     @Before
     public void setUp() {
+        //TestUtil.debugApache();
         MockServer.reset();
         Options.init();
         Unirest.setObjectMapper(objectMapper);
