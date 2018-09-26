@@ -1,10 +1,7 @@
 package io.github.openunirest.request;
 
 
-import io.github.openunirest.http.BodyData;
-import io.github.openunirest.http.HttpResponse;
-import io.github.openunirest.http.JsonNode;
-import io.github.openunirest.http.ObjectMapper;
+import io.github.openunirest.http.*;
 import io.github.openunirest.http.exceptions.UnirestException;
 import io.github.openunirest.http.options.Option;
 import io.github.openunirest.http.options.Options;
@@ -18,23 +15,23 @@ import static io.github.openunirest.http.BodyData.from;
 class ResponseBuilder {
 
     public HttpResponse<JsonNode> asJson(org.apache.http.HttpResponse response) {
-        return new HttpResponse<>(response, from(response.getEntity(), b -> toJson(b)));
+        return new HttpResponseImpl<>(response, from(response.getEntity(), b -> toJson(b)));
     }
 
     public HttpResponse<InputStream> asBinary(org.apache.http.HttpResponse response){
-        return new HttpResponse<>(response, from(response.getEntity(), BodyData::getRawInput));
+        return new HttpResponseImpl<>(response, from(response.getEntity(), BodyData::getRawInput));
     }
 
     public <T> HttpResponse<T> asObject(org.apache.http.HttpResponse response, Class<? extends T> aClass) {
-        return new HttpResponse<>(response, from(response.getEntity(), b -> toObject(b, aClass)));
+        return new HttpResponseImpl<>(response, from(response.getEntity(), b -> toObject(b, aClass)));
     }
 
     public <T> HttpResponse<T> asObject(org.apache.http.HttpResponse response, GenericType<T> genericType) {
-        return new HttpResponse<>(response, from(response.getEntity(), b -> toObject(b, genericType)));
+        return new HttpResponseImpl<>(response, from(response.getEntity(), b -> toObject(b, genericType)));
     }
 
     public HttpResponse<String> asString(org.apache.http.HttpResponse response) {
-        return new HttpResponse<>(response, from(response.getEntity(), this::toString));
+        return new HttpResponseImpl<>(response, from(response.getEntity(), this::toString));
     }
 
     private <T> T toObject(BodyData<T> b, GenericType<T> genericType) {
