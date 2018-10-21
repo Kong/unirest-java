@@ -14,7 +14,8 @@
 		<artifactId>oss-parent</artifactId>
 		<version>7</version>
 	</parent>
-<!--规划法规和法国恢复供货  -->
+
+
 	<licenses>
 		<license>
 			<name>MIT</name>
