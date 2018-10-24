@@ -79,10 +79,16 @@ class HttpClientHelper {
     private static CloseableHttpAsyncClient asyncClient() {
         CloseableHttpAsyncClient asyncHttpClient = ClientFactory.getAsyncHttpClient();
         if (!asyncHttpClient.isRunning()) {
+            tryStart(asyncHttpClient);
+        }
+        return asyncHttpClient;
+    }
+
+    private static synchronized void tryStart(CloseableHttpAsyncClient asyncHttpClient) {
+        if (!asyncHttpClient.isRunning()) {
             asyncHttpClient.start();
             AsyncIdleConnectionMonitorThread asyncIdleConnectionMonitorThread = (AsyncIdleConnectionMonitorThread) Options.getOption(Option.ASYNC_MONITOR);
             asyncIdleConnectionMonitorThread.start();
         }
-        return asyncHttpClient;
     }
 }
