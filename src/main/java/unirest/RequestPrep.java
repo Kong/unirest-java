@@ -43,7 +43,7 @@ class RequestPrep {
     private static final String USER_AGENT = "unirest-java/1.3.11";
     private static final UriFormatter URI_FORMATTER = new UriFormatter();
 
-    public static HttpRequestBase prepareRequest(HttpRequest request, boolean async) {
+    static HttpRequestBase prepareRequest(HttpRequest request, boolean async) {
 
         setDefaultHeaders(request);
 

@@ -38,9 +38,34 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
-public class ResponseUtils {
+class ResponseUtils {
 
     private static final Pattern CHARSET_PATTERN = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
+
+    static String getCharSet(HttpEntity responseEntity) {
+        Header contentType = responseEntity.getContentType();
+        if (contentType != null) {
+            String responseCharset = getCharsetFromContentType(contentType.getValue());
+            if (responseCharset != null && !responseCharset.trim().equals("")) {
+                return responseCharset;
+            }
+        }
+        return "UTF-8";
+    }
+
+    static byte[] getRawBody(HttpEntity responseEntity) {
+        try {
+            InputStream is = responseEntity.getContent();
+            if (isGzipped(responseEntity.getContentEncoding())) {
+                is = new GZIPInputStream(responseEntity.getContent());
+            }
+            return getBytes(is);
+        } catch (IOException e2) {
+            throw new UnirestException(e2);
+        } finally {
+            EntityUtils.consumeQuietly(responseEntity);
+        }
+    }
 
     /**
      * Parse out a charset from a content type header.
@@ -48,7 +73,7 @@ public class ResponseUtils {
      * @param contentType e.g. "text/html; charset=EUC-JP"
      * @return "EUC-JP", or null if not found. Charset is trimmed and uppercased.
      */
-    public static String getCharsetFromContentType(String contentType) {
+    private static String getCharsetFromContentType(String contentType) {
         if (contentType == null) {
             return null;
         }
@@ -60,7 +85,7 @@ public class ResponseUtils {
         return null;
     }
 
-    public static byte[] getBytes(InputStream is) throws IOException {
+    private static byte[] getBytes(InputStream is) throws IOException {
         int len;
         int size = 1024;
         byte[] buf;
@@ -80,7 +105,7 @@ public class ResponseUtils {
         return buf;
     }
 
-    public static boolean isGzipped(Header contentEncoding) {
+    private static boolean isGzipped(Header contentEncoding) {
         if (contentEncoding != null) {
             String value = contentEncoding.getValue();
             if (value != null && "gzip".equals(value.toLowerCase().trim())) {
@@ -88,30 +113,5 @@ public class ResponseUtils {
             }
         }
         return false;
-    }
-
-    public static String getCharSet(HttpEntity responseEntity) {
-        Header contentType = responseEntity.getContentType();
-        if (contentType != null) {
-            String responseCharset = getCharsetFromContentType(contentType.getValue());
-            if (responseCharset != null && !responseCharset.trim().equals("")) {
-                return responseCharset;
-            }
-        }
-        return "UTF-8";
-    }
-
-    public static byte[] getRawBody(HttpEntity responseEntity) {
-        try {
-            InputStream is = responseEntity.getContent();
-            if (isGzipped(responseEntity.getContentEncoding())) {
-                is = new GZIPInputStream(responseEntity.getContent());
-            }
-            return getBytes(is);
-        } catch (IOException e2) {
-            throw new UnirestException(e2);
-        } finally {
-            EntityUtils.consumeQuietly(responseEntity);
-        }
     }
 }

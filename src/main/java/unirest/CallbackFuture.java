@@ -28,9 +28,9 @@ package unirest;
 
 import java.util.concurrent.CompletableFuture;
 
-public class CallbackFuture  {
+class CallbackFuture  {
 
-    public static <T> CompletableFuture<HttpResponse<T>> wrap(Callback<T> source){
+    static <T> CompletableFuture<HttpResponse<T>> wrap(Callback<T> source){
         return new CompletableFuture<HttpResponse<T>>(){
             @Override
             public boolean complete(HttpResponse<T> value) {

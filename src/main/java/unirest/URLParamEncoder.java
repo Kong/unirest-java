@@ -29,8 +29,8 @@ package unirest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-public class URLParamEncoder {
-	public static String encode(String input) {
+class URLParamEncoder {
+	static String encode(String input) {
 		try {
 			return URLEncoder.encode(input, "UTF-8");
 		} catch (UnsupportedEncodingException e) {

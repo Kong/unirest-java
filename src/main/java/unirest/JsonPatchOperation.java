@@ -37,7 +37,6 @@ public enum JsonPatchOperation {
     private final String operationtype;
 
     JsonPatchOperation(String operationtype) {
-
         this.operationtype = operationtype;
     }
 

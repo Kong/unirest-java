@@ -38,7 +38,7 @@ import java.util.function.Function;
 
 class HttpClientHelper {
 
-    public static <T> HttpResponse<T> request(HttpRequest request,
+    static <T> HttpResponse<T> request(HttpRequest request,
                                               Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) {
 
         HttpRequestBase requestObj = RequestPrep.prepareRequest(request, false);
@@ -59,17 +59,17 @@ class HttpClientHelper {
         }
     }
 
-    public static <T> CompletableFuture<HttpResponse<T>> requestAsync(HttpRequest httpRequest, Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) {
+    static <T> CompletableFuture<HttpResponse<T>> requestAsync(HttpRequest httpRequest, Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) {
         return requestAsync(httpRequest, transformer, new CompletableFuture<>());
     }
 
-    public static <T> CompletableFuture<HttpResponse<T>> requestAsync(HttpRequest request, Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer, Callback<T> callback) {
+    static <T> CompletableFuture<HttpResponse<T>> requestAsync(HttpRequest request, Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer, Callback<T> callback) {
         return requestAsync(request, transformer, CallbackFuture.wrap(callback));
     }
 
-    public static <T> CompletableFuture<HttpResponse<T>> requestAsync(HttpRequest request,
-                                                                      Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer,
-                                                                      CompletableFuture<HttpResponse<T>> callback) {
+    private static <T> CompletableFuture<HttpResponse<T>> requestAsync(HttpRequest request,
+                                                                       Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer,
+                                                                       CompletableFuture<HttpResponse<T>> callback) {
         Objects.requireNonNull(callback);
 
         HttpUriRequest requestObj = RequestPrep.prepareRequest(request, true);
