@@ -1,10 +1,10 @@
 package BehaviorTests;
 
-import io.github.openunirest.http.Unirest;
-import util.NoopCallback;
+import unirest.Unirest;
+import unirest.NoopCallback;
 import org.junit.Test;
 
-import static util.MockCallback.json;
+import static unirest.MockCallback.json;
 
 public class CallbackFutureTest extends BddTest {
 

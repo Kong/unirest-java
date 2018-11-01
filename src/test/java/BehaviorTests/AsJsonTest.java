@@ -1,11 +1,11 @@
 package BehaviorTests;
 
-import io.github.openunirest.http.HttpResponse;
-import io.github.openunirest.http.JsonNode;
-import io.github.openunirest.http.Unirest;
+import unirest.HttpResponse;
+import unirest.JsonNode;
+import unirest.Unirest;
 import org.junit.Test;
-import util.MockCallback;
-import util.TestUtil;
+import unirest.MockCallback;
+import unirest.TestUtil;
 
 import java.util.concurrent.CompletableFuture;
 

@@ -1,18 +1,18 @@
 package BehaviorTests;
 
-import io.github.openunirest.http.Headers;
-import io.github.openunirest.http.HttpResponse;
-import io.github.openunirest.http.JsonNode;
-import io.github.openunirest.http.Unirest;
-import io.github.openunirest.request.GetRequest;
+import unirest.Headers;
+import unirest.HttpResponse;
+import unirest.JsonNode;
+import unirest.Unirest;
+import unirest.GetRequest;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
-import static util.TestUtil.assertBasicAuth;
-import static util.TestUtil.mapOf;
+import static unirest.TestUtil.assertBasicAuth;
+import static unirest.TestUtil.mapOf;
 
 public class HeaderTest extends BddTest {
     @Test

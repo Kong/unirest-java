@@ -26,12 +26,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package BehaviorTests;
 
-import io.github.openunirest.http.JacksonObjectMapper;
+import unirest.JacksonObjectMapper;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
 
-import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 

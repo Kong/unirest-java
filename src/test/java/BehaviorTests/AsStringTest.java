@@ -1,9 +1,9 @@
 package BehaviorTests;
 
-import io.github.openunirest.http.HttpResponse;
-import io.github.openunirest.http.Unirest;
+import unirest.HttpResponse;
+import unirest.Unirest;
 import org.junit.Test;
-import util.TestUtil;
+import unirest.TestUtil;
 
 import java.util.concurrent.CompletableFuture;
 

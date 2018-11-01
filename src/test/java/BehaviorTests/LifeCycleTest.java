@@ -1,16 +1,16 @@
 package BehaviorTests;
 
-import io.github.openunirest.http.Unirest;
-import io.github.openunirest.http.async.utils.AsyncIdleConnectionMonitorThread;
-import io.github.openunirest.http.options.Options;
-import io.github.openunirest.http.utils.SyncIdleConnectionMonitorThread;
+import unirest.Unirest;
+import unirest.AsyncIdleConnectionMonitorThread;
+import unirest.Options;
+import unirest.SyncIdleConnectionMonitorThread;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.junit.Test;
 
 import java.io.IOException;
 
-import static io.github.openunirest.http.options.Option.*;
+import static unirest.Option.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;

@@ -1,13 +1,13 @@
 package BehaviorTests;
 
-import io.github.openunirest.http.Unirest;
-import io.github.openunirest.request.HttpRequest;
+import unirest.Unirest;
+import unirest.HttpRequest;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.junit.Test;
-import util.MockCallback;
-import util.TestUtil;
+import unirest.MockCallback;
+import unirest.TestUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

@@ -4,14 +4,14 @@ import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import io.github.openunirest.http.*;
-import io.github.openunirest.request.JsonPatch;
-import io.github.openunirest.request.JsonPatchItem;
-import io.github.openunirest.request.JsonPatchOperation;
+import unirest.JsonPatch;
+import unirest.JsonPatchItem;
+import unirest.JsonPatchOperation;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
 import spark.Request;
-import util.TestUtil;
+import unirest.HttpMethod;
+import unirest.TestUtil;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
@@ -21,7 +21,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.github.openunirest.request.JsonPatchRequest.CONTENT_TYPE;
+import static unirest.JsonPatchRequest.CONTENT_TYPE;
 import static java.lang.System.getProperty;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.hasItem;

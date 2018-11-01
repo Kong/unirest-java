@@ -1,8 +1,8 @@
 package BehaviorTests;
 
-import io.github.openunirest.http.GsonObjectMapper;
-import io.github.openunirest.http.Unirest;
-import io.github.openunirest.request.GenericType;
+import unirest.GsonObjectMapper;
+import unirest.Unirest;
+import unirest.GenericType;
 import org.junit.Test;
 
 import java.util.Arrays;

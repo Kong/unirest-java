@@ -1,7 +1,7 @@
 package BehaviorTests;
 
-import io.github.openunirest.http.Unirest;
-import io.github.openunirest.http.options.Options;
+import unirest.Unirest;
+import unirest.Options;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;

@@ -1,6 +1,6 @@
 package BehaviorTests;
 
-import io.github.openunirest.http.Unirest;
+import unirest.Unirest;
 import org.junit.Test;
 
 public class AsObjectTest extends BddTest {

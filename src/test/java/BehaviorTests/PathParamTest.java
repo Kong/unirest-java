@@ -1,9 +1,9 @@
 package BehaviorTests;
 
-import io.github.openunirest.http.Unirest;
-import io.github.openunirest.http.exceptions.UnirestException;
+import unirest.Unirest;
+import unirest.UnirestException;
 import org.junit.Test;
-import util.TestUtil;
+import unirest.TestUtil;
 
 public class PathParamTest extends BddTest {
 

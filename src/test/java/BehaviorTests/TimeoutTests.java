@@ -26,9 +26,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package BehaviorTests;
 
-import io.github.openunirest.http.Unirest;
-import io.github.openunirest.http.exceptions.UnirestException;
-import io.github.openunirest.http.options.Options;
+import unirest.Unirest;
+import unirest.UnirestException;
+import unirest.Options;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.junit.Ignore;

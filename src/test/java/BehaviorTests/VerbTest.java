@@ -1,8 +1,8 @@
 package BehaviorTests;
 
-import io.github.openunirest.http.HttpMethod;
-import io.github.openunirest.http.HttpResponse;
-import io.github.openunirest.http.Unirest;
+import unirest.HttpMethod;
+import unirest.HttpResponse;
+import unirest.Unirest;
 import org.junit.Test;
 
 import java.io.InputStream;

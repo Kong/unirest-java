@@ -1,14 +1,12 @@
 package BehaviorTests;
 
-import io.github.openunirest.http.*;
-import io.github.openunirest.http.options.Options;
+import unirest.*;
 import org.junit.Before;
-import util.TestUtil;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static util.TestUtil.read;
+import static unirest.TestUtil.read;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

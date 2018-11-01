@@ -1,14 +1,14 @@
 package BehaviorTests;
 
-import io.github.openunirest.http.JsonNode;
-import io.github.openunirest.http.Unirest;
-import io.github.openunirest.http.exceptions.UnirestConfigException;
+import unirest.JsonNode;
+import unirest.Unirest;
+import unirest.UnirestConfigException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
-import util.MockCallback;
+import unirest.MockCallback;
 
-import static util.TestUtil.assertException;
+import static unirest.TestUtil.assertException;
 
 public class SendBodyTest extends BddTest {
     @Test

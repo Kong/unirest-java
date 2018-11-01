@@ -1,8 +1,8 @@
 package BehaviorTests;
 
-import io.github.openunirest.http.HttpResponse;
-import io.github.openunirest.http.Unirest;
-import io.github.openunirest.http.options.Options;
+import unirest.HttpResponse;
+import unirest.Unirest;
+import unirest.Options;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutionException;
