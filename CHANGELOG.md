@@ -1,3 +1,9 @@
+## 2.5.01
+* Fix Issue #41: possible init error in HttpClient under heavy load
+
+## 2.5.00
+* Extracted Interface for HttpResponse to make testing easier
+
 ## 2.4.02
 * Updated org.json dependency
 
