@@ -16,7 +16,7 @@ class HttpClientHelper {
                                               Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) {
 
         HttpRequestBase requestObj = RequestPrep.prepareRequest(request, false);
-        HttpClient client = ClientFactory.getHttpClient(); // The
+        HttpClient client = Options.getHttpClient(); // The
         // DefaultHttpClient
         // is thread-safe
 
@@ -69,7 +69,7 @@ class HttpClientHelper {
     }
 
     private static CloseableHttpAsyncClient asyncClient() {
-        CloseableHttpAsyncClient asyncHttpClient = ClientFactory.getAsyncHttpClient();
+        CloseableHttpAsyncClient asyncHttpClient = Options.getAsyncHttpClient();
         if (!asyncHttpClient.isRunning()) {
             tryStart(asyncHttpClient);
         }

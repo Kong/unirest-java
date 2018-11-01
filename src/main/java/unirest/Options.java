@@ -2,6 +2,7 @@ package unirest;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -250,5 +251,13 @@ public class Options {
 
 	public static List<HttpRequestInterceptor> getInterceptors() {
 		return interceptors;
+	}
+
+	public static HttpClient getHttpClient() {
+		return (HttpClient) getOption(Option.HTTPCLIENT);
+	}
+
+	public static CloseableHttpAsyncClient getAsyncHttpClient() {
+		return (CloseableHttpAsyncClient) getOption(Option.ASYNCHTTPCLIENT);
 	}
 }
