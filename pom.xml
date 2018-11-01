@@ -76,6 +76,36 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <version>1.8.0</version>
+                <configuration>
+                    <!-- Template location -->
+                    <header>build/fileHeader.txt</header>
+                    <strictCheck>true</strictCheck>
+                    <excludes>
+                        <exclude>**/*.html</exclude>
+                        <exclude>**/*.xml</exclude>
+                        <exclude>**/*.txt</exclude>
+                        <exclude>**/*.log</exclude>
+                        <exclude>**/*.md</exclude>
+                        <exclude>**/*.yml</exclude>
+                        <exclude>.idea/**</exclude>
+                        <exclude>.github/**</exclude>
+                        <exclude>.git*</exclude>
+                        <exclude>LICENSE</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.1.0</version>
