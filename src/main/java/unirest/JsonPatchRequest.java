@@ -35,8 +35,8 @@ public class JsonPatchRequest extends HttpRequest implements Body {
     public static final String CONTENT_TYPE = "application/json-patch+json";
     private JsonPatch items = new JsonPatch();
 
-    public JsonPatchRequest(String url) {
-        super(HttpMethod.PATCH, url);
+    public JsonPatchRequest(Config config, String url) {
+        super(config, HttpMethod.PATCH, url);
         header("Content-Type", CONTENT_TYPE);
     }
 

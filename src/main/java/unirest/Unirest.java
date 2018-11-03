@@ -26,159 +26,71 @@
 
 package unirest;
 
-import org.apache.http.HttpHost;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-
-import java.util.HashMap;
-import java.util.Map;
-
 public class Unirest {
 
-    /**
-     * Set the HttpClient implementation to use for every synchronous request
-     *
-     * @param httpClient Custom httpClient implementation
-     */
-    public static void setHttpClient(HttpClient httpClient) {
-        Options.setOption(Option.HTTPCLIENT, httpClient);
-        Options.customClientSet();
+    private static Unirest primaryInstance = new Unirest(new Config());
+    private final Config config;
+
+    public Unirest(Config config) {
+        this.config = config;
     }
 
     /**
-     * Set the asynchronous AbstractHttpAsyncClient implementation to use for every asynchronous request
-     *
-     * @param asyncHttpClient Custom CloseableHttpAsyncClient implementation
+     * Access the default configuration for the primary Unirest instance.
      */
-    public static void setAsyncHttpClient(CloseableHttpAsyncClient asyncHttpClient) {
-        Options.setOption(Option.ASYNCHTTPCLIENT, asyncHttpClient);
-        Options.customClientSet();
-    }
-
-    /**
-     * Set a proxy
-     *
-     * @param proxy Proxy settings object.
-     */
-    public static void setProxy(HttpHost proxy) {
-        Options.setOption(Option.PROXY, proxy);
-
-        // Reload the client implementations
-        Options.refresh();
-    }
-
-    /**
-     * Set the ObjectMapper implementation to use for Response to Object binding
-     *
-     * @param objectMapper Custom implementation of ObjectMapper interface
-     */
-    public static void setObjectMapper(ObjectMapper objectMapper) {
-        Options.setOption(Option.OBJECT_MAPPER, objectMapper);
-
-        // Reload the client implementations
-        Options.refresh();
-    }
-
-    /**
-     * Set the connection timeout and socket timeout
-     *
-     * @param connectionTimeout The timeout until a connection with the server is established (in milliseconds). Default is 10000. Set to zero to disable the timeout.
-     * @param socketTimeout     The timeout to receive data (in milliseconds). Default is 60000. Set to zero to disable the timeout.
-     */
-    public static void setTimeouts(int connectionTimeout, int socketTimeout) {
-        Options.setOption(Option.CONNECTION_TIMEOUT, connectionTimeout);
-        Options.setOption(Option.SOCKET_TIMEOUT, socketTimeout);
-
-        // Reload the client implementations
-        Options.refresh();
-    }
-
-    /**
-     * Set the concurrency levels
-     *
-     * @param maxTotal    Defines the overall connection limit for a connection pool. Default is 200.
-     * @param maxPerRoute Defines a connection limit per one HTTP route (this can be considered a per target host limit). Default is 20.
-     */
-    public static void setConcurrency(int maxTotal, int maxPerRoute) {
-        Options.setOption(Option.MAX_TOTAL, maxTotal);
-        Options.setOption(Option.MAX_PER_ROUTE, maxPerRoute);
-
-        // Reload the client implementations
-        Options.refresh();
-    }
-
-    /**
-     * Clear default headers
-     */
-    public static void clearDefaultHeaders() {
-        Options.setOption(Option.DEFAULT_HEADERS, null);
-    }
-
-    /**
-     * Set default header to appear on all requests
-     *
-     * @param name  The name of the header.
-     * @param value The value of the header.
-     */
-    @SuppressWarnings("unchecked")
-    public static void setDefaultHeader(String name, String value) {
-        Object headers = Options.getOption(Option.DEFAULT_HEADERS);
-        if (headers == null) {
-            headers = new HashMap<String, String>();
-        }
-        ((Map<String, String>) headers).put(name, value);
-        Options.setOption(Option.DEFAULT_HEADERS, headers);
+    public static Config config(){
+        return primaryInstance.config;
     }
 
     /**
      * Close the asynchronous client and its event loop. Use this method to close all the threads and allow an application to exit.
      * This will also clear any options returning Unirest to a default state
      */
-    public static void shutdown() {
-       shutdown(true);
+    public static void shutDown() {
+       shutDown(true);
     }
 
     /**
      * Close the asynchronous client and its event loop. Use this method to close all the threads and allow an application to exit.
-     * @param clearOptions  indicates if options should be cleared. Note that the HttpClient, AsyncClient and thread monitors will not be retained after shutdown.
+     * @param clearOptions  indicates if options should be cleared. Note that the HttpClient, AsyncClient and thread monitors will not be retained after shutDown.
      */
-    public static void shutdown(boolean clearOptions) {
-        Options.shutDown(clearOptions);
+    public static void shutDown(boolean clearOptions) {
+       primaryInstance.config.shutDown(clearOptions);
     }
 
     public static GetRequest get(String url) {
-        return new GetRequest(HttpMethod.GET, url);
+        return new GetRequest(primaryInstance.config, HttpMethod.GET, url);
     }
 
     public static GetRequest head(String url) {
-        return new GetRequest(HttpMethod.HEAD, url);
+        return new GetRequest(primaryInstance.config, HttpMethod.HEAD, url);
     }
 
     public static HttpRequestWithBody options(String url) {
-        return new HttpRequestWithBody(HttpMethod.OPTIONS, url);
+        return new HttpRequestWithBody(primaryInstance.config, HttpMethod.OPTIONS, url);
     }
 
     public static HttpRequestWithBody post(String url) {
-        return new HttpRequestWithBody(HttpMethod.POST, url);
+        return new HttpRequestWithBody(primaryInstance.config, HttpMethod.POST, url);
     }
 
     public static HttpRequestWithBody delete(String url) {
-        return new HttpRequestWithBody(HttpMethod.DELETE, url);
+        return new HttpRequestWithBody(primaryInstance.config, HttpMethod.DELETE, url);
     }
 
     public static HttpRequestWithBody patch(String url) {
-        return new HttpRequestWithBody(HttpMethod.PATCH, url);
+        return new HttpRequestWithBody(primaryInstance.config, HttpMethod.PATCH, url);
     }
 
     public static HttpRequestWithBody put(String url) {
-        return new HttpRequestWithBody(HttpMethod.PUT, url);
+        return new HttpRequestWithBody(primaryInstance.config, HttpMethod.PUT, url);
     }
 
     public static JsonPatchRequest jsonPatch(String url) {
-        return new JsonPatchRequest(url);
+        return new JsonPatchRequest(primaryInstance.config, url);
     }
 
     public static boolean isRunning() {
-        return Options.isRunning();
+        return primaryInstance.config.isRunning();
     }
 }

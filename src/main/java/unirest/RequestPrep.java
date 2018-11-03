@@ -45,8 +45,6 @@ class RequestPrep {
 
     static HttpRequestBase prepareRequest(HttpRequest request, boolean async) {
 
-        setDefaultHeaders(request);
-
         if (!request.getHeaders().containsKey(USER_AGENT_HEADER)) {
             request.header(USER_AGENT_HEADER, USER_AGENT);
         }
@@ -92,17 +90,6 @@ class RequestPrep {
                 for (String value : values) {
                     reqObj.addHeader(entry.getKey(), value);
                 }
-            }
-        }
-    }
-
-    private static void setDefaultHeaders(HttpRequest request) {
-        Object defaultHeaders = Options.getOption(Option.DEFAULT_HEADERS);
-        if (defaultHeaders != null) {
-            @SuppressWarnings("unchecked")
-            Set<Map.Entry<String, String>> entrySet = ((Map<String, String>) defaultHeaders).entrySet();
-            for (Map.Entry<String, String> entry : entrySet) {
-                request.header(entry.getKey(), entry.getValue());
             }
         }
     }

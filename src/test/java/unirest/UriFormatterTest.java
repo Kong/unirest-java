@@ -62,7 +62,7 @@ public class UriFormatterTest {
     }
 
     private void assertLinkSurvives(String s) {
-        assertEquals(s, helper.apply(new HttpRequest(HttpMethod.GET, s)));
+        assertEquals(s, helper.apply(new HttpRequest(new Config(), HttpMethod.GET, s)));
     }
 
 }

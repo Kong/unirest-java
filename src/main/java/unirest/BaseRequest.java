@@ -31,79 +31,82 @@ import java.util.concurrent.CompletableFuture;
 
 public abstract class BaseRequest {
 
-	private final ResponseBuilder builder = new ResponseBuilder();
-
+	private final ResponseBuilder builder;
+	private final Config config;
 	protected HttpRequest httpRequest;
 
-	protected BaseRequest(HttpRequest httpRequest) {
+	protected BaseRequest(Config config, HttpRequest httpRequest) {
+		this.config = config;
 		this.httpRequest = httpRequest;
+		this.builder = new ResponseBuilder(config);
+	}
+
+	protected BaseRequest(Config config) {
+		this.config = config;
+		this.builder = new ResponseBuilder(config);
 	}
 
 	public HttpRequest getHttpRequest() {
 		return this.httpRequest;
 	}
 
-	protected BaseRequest() {
-		super();
-	}
-
 	public HttpResponse<String> asString() throws UnirestException {
-		return HttpClientHelper.request(httpRequest, builder::asString);
+		return HttpClientHelper.request(config, httpRequest, builder::asString);
 	}
 
 	public CompletableFuture<HttpResponse<String>> asStringAsync() {
-		return HttpClientHelper.requestAsync(httpRequest, builder::asString);
+		return HttpClientHelper.requestAsync(config, httpRequest, builder::asString);
 	}
 
 	public CompletableFuture<HttpResponse<String>> asStringAsync(Callback<String> callback) {
-		return HttpClientHelper.requestAsync(httpRequest, builder::asString, callback);
+		return HttpClientHelper.requestAsync(config, httpRequest, builder::asString, callback);
 	}
 
 	public HttpResponse<JsonNode> asJson() throws UnirestException {
-		return HttpClientHelper.request(httpRequest, builder::asJson);
+		return HttpClientHelper.request(config, httpRequest, builder::asJson);
 	}
 
 	public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync() {
-		return HttpClientHelper.requestAsync(httpRequest, builder::asJson);
+		return HttpClientHelper.requestAsync(config, httpRequest, builder::asJson);
 	}
 
 	public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback) {
-		return HttpClientHelper.requestAsync(httpRequest, builder::asJson, callback);
+		return HttpClientHelper.requestAsync(config, httpRequest, builder::asJson, callback);
 	}
 
 	public <T> HttpResponse<T> asObject(Class<? extends T> responseClass) throws UnirestException {
-		return HttpClientHelper.request(httpRequest, r -> builder.asObject(r, responseClass));
+		return HttpClientHelper.request(config, httpRequest, r -> builder.asObject(r, responseClass));
 	}
 
 	public <T> HttpResponse<T> asObject(GenericType<T> genericType) throws UnirestException {
-		return HttpClientHelper.request(httpRequest, r -> builder.asObject(r, genericType));
+		return HttpClientHelper.request(config, httpRequest, r -> builder.asObject(r, genericType));
 	}
 
 	public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass) {
-		return HttpClientHelper.requestAsync(httpRequest, r -> builder.asObject(r, responseClass));
+		return HttpClientHelper.requestAsync(config, httpRequest, r -> builder.asObject(r, responseClass));
 	}
 
 	public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback) {
-		return HttpClientHelper.requestAsync(httpRequest, r -> builder.asObject(r, responseClass), callback);
+		return HttpClientHelper.requestAsync(config, httpRequest, r -> builder.asObject(r, responseClass), callback);
 	}
 
 	public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType) {
-		return HttpClientHelper.requestAsync(httpRequest, r -> builder.asObject(r, genericType));
+		return HttpClientHelper.requestAsync(config, httpRequest, r -> builder.asObject(r, genericType));
 	}
 
 	public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType,  Callback<T> callback) {
-		return HttpClientHelper.requestAsync(httpRequest, r -> builder.asObject(r, genericType), callback);
+		return HttpClientHelper.requestAsync(config, httpRequest, r -> builder.asObject(r, genericType), callback);
 	}
 
 	public HttpResponse<InputStream> asBinary() throws UnirestException {
-		return HttpClientHelper.request(httpRequest, builder::asBinary);
+		return HttpClientHelper.request(config, httpRequest, builder::asBinary);
 	}
 
 	public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync() {
-		return HttpClientHelper.requestAsync(httpRequest, builder::asBinary);
+		return HttpClientHelper.requestAsync(config, httpRequest, builder::asBinary);
 	}
 
 	public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback) {
-		return HttpClientHelper.requestAsync(httpRequest, builder::asBinary, callback);
+		return HttpClientHelper.requestAsync(config, httpRequest, builder::asBinary, callback);
 	}
 }

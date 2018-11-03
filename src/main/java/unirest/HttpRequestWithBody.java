@@ -40,10 +40,12 @@ import java.util.Map.Entry;
 
 public class HttpRequestWithBody extends HttpRequest {
 
+	private final Config config;
 	private Charset charSet = StandardCharsets.UTF_8;
 
-	public HttpRequestWithBody(HttpMethod method, String url) {
-		super(method, url);
+	public HttpRequestWithBody(Config config, HttpMethod method, String url) {
+		super(config, method, url);
+		this.config = config;
 	}
 
 	@Override
@@ -79,7 +81,7 @@ public class HttpRequestWithBody extends HttpRequest {
 	}
 
 	public MultipartBody field(String name, Collection<?> value) {
-		MultipartBody body = new MultipartBody(this).field(name, value);
+		MultipartBody body = new MultipartBody(config, this).field(name, value);
 		this.body = body;
 		return body;
 	}
@@ -89,7 +91,7 @@ public class HttpRequestWithBody extends HttpRequest {
 	}
 
 	public MultipartBody field(String name, File file, String contentType) {
-		MultipartBody body = new MultipartBody(this).field(name, file, contentType);
+		MultipartBody body = new MultipartBody(config, this).field(name, file, contentType);
 		this.body = body;
 		return body;
 	}
@@ -99,13 +101,13 @@ public class HttpRequestWithBody extends HttpRequest {
 	}
 
 	public MultipartBody field(String name, Object value, String contentType) {
-		MultipartBody body = new MultipartBody(this).field(name, nullToEmpty(value), contentType);
+		MultipartBody body = new MultipartBody(config, this).field(name, nullToEmpty(value), contentType);
 		this.body = body;
 		return body;
 	}
 
 	public MultipartBody fields(Map<String, Object> parameters) {
-		MultipartBody body = new MultipartBody(this);
+		MultipartBody body = new MultipartBody(config, this);
 		if (parameters != null) {
 			for (Entry<String, Object> param : parameters.entrySet()) {
 				if (param.getValue() instanceof File) {
@@ -127,7 +129,7 @@ public class HttpRequestWithBody extends HttpRequest {
 	}
 
 	public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
-		MultipartBody body = new MultipartBody(this).field(name, stream, contentType, fileName);
+		MultipartBody body = new MultipartBody(config, this).field(name, stream, contentType, fileName);
 		this.body = body;
 		return body;
 	}
@@ -148,23 +150,17 @@ public class HttpRequestWithBody extends HttpRequest {
 	}
 
 	public RequestBodyEntity body(String body) {
-		RequestBodyEntity b = new RequestBodyEntity(this).body(body);
+		RequestBodyEntity b = new RequestBodyEntity(config, this).body(body);
 		this.body = b;
 		return b;
 	}
 
 	public RequestBodyEntity body(Object body) {
-		ObjectMapper objectMapper = (ObjectMapper) Options.getOption(Option.OBJECT_MAPPER);
-
-		if (objectMapper == null) {
-			throw new UnirestConfigException("Serialization Impossible. Can't find an ObjectMapper implementation.");
-		}
-
-		return body(objectMapper.writeValue(body));
+		return body(config.getObjectMapper().writeValue(body));
 	}
 
 	public RawBody body(byte[] body) {
-		RawBody b = new RawBody(this).body(body);
+		RawBody b = new RawBody(config, this).body(body);
 		this.body = b;
 		return b;
 	}

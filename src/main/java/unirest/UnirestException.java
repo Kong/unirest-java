@@ -26,6 +26,9 @@
 
 package unirest;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 public class UnirestException extends RuntimeException {
 
 	private static final long serialVersionUID = -3714840499934575734L;
@@ -40,5 +43,9 @@ public class UnirestException extends RuntimeException {
 
 	public UnirestException(Throwable ex) {
 		super(ex);
+	}
+
+	public UnirestException(Collection<Exception> ex) {
+		super(ex.stream().map(e -> e.getClass().getName() + " " + e.getMessage()).collect(Collectors.joining("\n")));
 	}
 }

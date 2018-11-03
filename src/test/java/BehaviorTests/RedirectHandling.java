@@ -28,7 +28,6 @@ package BehaviorTests;
 
 import unirest.HttpResponse;
 import unirest.Unirest;
-import unirest.Options;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutionException;
@@ -47,7 +46,7 @@ public class RedirectHandling extends BddTest {
 
     @Test
     public void canDisableRedirects(){
-        Options.followRedirects(false);
+        Unirest.config().followRedirects(false);
         HttpResponse response = Unirest.get(MockServer.REDIRECT).asBinary();
 
         assertEquals(301, response.getStatus());
@@ -64,7 +63,7 @@ public class RedirectHandling extends BddTest {
 
     @Test
     public void canDisableRedirectsAsync() throws ExecutionException, InterruptedException {
-        Options.followRedirects(false);
+        Unirest.config().followRedirects(false);
         HttpResponse response = Unirest.get(MockServer.REDIRECT).asBinaryAsync().get();
 
         assertEquals(301, response.getStatus());

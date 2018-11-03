@@ -30,7 +30,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -38,13 +37,11 @@ import java.util.function.Function;
 
 class HttpClientHelper {
 
-    static <T> HttpResponse<T> request(HttpRequest request,
+    static <T> HttpResponse<T> request(Config config, HttpRequest request,
                                               Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) {
 
         HttpRequestBase requestObj = RequestPrep.prepareRequest(request, false);
-        HttpClient client = Options.getHttpClient(); // The
-        // DefaultHttpClient
-        // is thread-safe
+        HttpClient client = config.getClient();
 
         org.apache.http.HttpResponse response;
         try {
@@ -59,22 +56,25 @@ class HttpClientHelper {
         }
     }
 
-    static <T> CompletableFuture<HttpResponse<T>> requestAsync(HttpRequest httpRequest, Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) {
-        return requestAsync(httpRequest, transformer, new CompletableFuture<>());
+    static <T> CompletableFuture<HttpResponse<T>> requestAsync(Config config, HttpRequest httpRequest, Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) {
+        return requestAsync(config, httpRequest, transformer, new CompletableFuture<>());
     }
 
-    static <T> CompletableFuture<HttpResponse<T>> requestAsync(HttpRequest request, Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer, Callback<T> callback) {
-        return requestAsync(request, transformer, CallbackFuture.wrap(callback));
+    static <T> CompletableFuture<HttpResponse<T>> requestAsync(Config config,
+                                                               HttpRequest request,
+                                                               Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer,
+                                                               Callback<T> callback) {
+        return requestAsync(config, request, transformer, CallbackFuture.wrap(callback));
     }
 
-    private static <T> CompletableFuture<HttpResponse<T>> requestAsync(HttpRequest request,
+    private static <T> CompletableFuture<HttpResponse<T>> requestAsync(Config config, HttpRequest request,
                                                                        Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer,
                                                                        CompletableFuture<HttpResponse<T>> callback) {
         Objects.requireNonNull(callback);
 
         HttpUriRequest requestObj = RequestPrep.prepareRequest(request, true);
 
-        asyncClient()
+        config.getAsyncHttpClient()
                 .execute(requestObj, new FutureCallback<org.apache.http.HttpResponse>() {
                     @Override
                     public void completed(org.apache.http.HttpResponse httpResponse) {
@@ -94,19 +94,4 @@ class HttpClientHelper {
         return callback;
     }
 
-    private static CloseableHttpAsyncClient asyncClient() {
-        CloseableHttpAsyncClient asyncHttpClient = Options.getAsyncHttpClient();
-        if (!asyncHttpClient.isRunning()) {
-            tryStart(asyncHttpClient);
-        }
-        return asyncHttpClient;
-    }
-
-    private static synchronized void tryStart(CloseableHttpAsyncClient asyncHttpClient) {
-        if (!asyncHttpClient.isRunning()) {
-            asyncHttpClient.start();
-            AsyncIdleConnectionMonitorThread asyncIdleConnectionMonitorThread = (AsyncIdleConnectionMonitorThread) Options.getOption(Option.ASYNC_MONITOR);
-            asyncIdleConnectionMonitorThread.start();
-        }
-    }
 }

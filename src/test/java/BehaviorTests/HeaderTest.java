@@ -72,8 +72,8 @@ public class HeaderTest extends BddTest {
 
     @Test
     public void testDefaultHeaders() {
-        Unirest.setDefaultHeader("X-Custom-Header", "hello");
-        Unirest.setDefaultHeader("user-agent", "foobar");
+        Unirest.config().setDefaultHeader("X-Custom-Header", "hello");
+        Unirest.config().setDefaultHeader("user-agent", "foobar");
 
         HttpResponse<JsonNode> jsonResponse = Unirest.get(MockServer.GET).asJson();
 
@@ -86,7 +86,7 @@ public class HeaderTest extends BddTest {
                 .assertHeader("X-Custom-Header", "hello")
                 .assertHeader("User-Agent", "foobar");
 
-        Unirest.clearDefaultHeaders();
+        Unirest.config().clearDefaultHeaders();
 
         jsonResponse = Unirest.get(MockServer.GET).asJson();
         parse(jsonResponse)

@@ -10,3 +10,8 @@ cache:
   directories:
   - .autoconf
   - $HOME/.m2
+
+# blocklist
+branches:
+  except:
+  - v3

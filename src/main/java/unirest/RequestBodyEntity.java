@@ -36,8 +36,8 @@ public class RequestBodyEntity extends BaseRequest implements Body {
 	private final HttpRequestWithBody request;
 	private Object body;
 
-	public RequestBodyEntity(HttpRequestWithBody httpRequest) {
-		super(httpRequest);
+	public RequestBodyEntity(Config config, HttpRequestWithBody httpRequest) {
+		super(config, httpRequest);
 		request = httpRequest;
 	}
 

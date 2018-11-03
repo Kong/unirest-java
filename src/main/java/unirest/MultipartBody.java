@@ -48,8 +48,8 @@ public class MultipartBody extends BaseRequest implements Body {
     private HttpRequestWithBody httpRequestObj;
     private HttpMultipartMode mode = HttpMultipartMode.BROWSER_COMPATIBLE;
 
-    public MultipartBody(HttpRequestWithBody httpRequest) {
-        super(httpRequest);
+    public MultipartBody(Config config, HttpRequestWithBody httpRequest) {
+        super(config, httpRequest);
         this.httpRequestObj = httpRequest;
     }
 

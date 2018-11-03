@@ -40,10 +40,12 @@ public class HttpRequest extends BaseRequest {
 	Map<String, List<String>> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 	protected Body body;
 
-	public HttpRequest(HttpMethod method, String url) {
+	public HttpRequest(Config config, HttpMethod method, String url) {
+		super(config);
 		this.httpMethod = method;
 		this.url = url;
 		super.httpRequest = this;
+		headers.putAll(config.getDefaultHeaders());
 	}
 
 	public HttpRequest routeParam(String name, String value) {

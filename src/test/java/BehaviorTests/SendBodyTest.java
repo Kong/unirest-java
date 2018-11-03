@@ -126,10 +126,10 @@ public class SendBodyTest extends BddTest {
 
     @Test
     public void cantPostObjectWithoutObjectMapper(){
-        Unirest.setObjectMapper(null);
+        Unirest.config().setObjectMapper(null);
 
         assertException(() -> Unirest.post(MockServer.POST).body(new Foo("die")),
                 UnirestConfigException.class,
-                "Serialization Impossible. Can't find an ObjectMapper implementation.");
+                "No Object Mapper Configured. Please config one with Unirest.config().setObjectMapper");
     }
 }

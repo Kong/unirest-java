@@ -26,52 +26,96 @@
 
 package BehaviorTests;
 
-import unirest.Unirest;
-import unirest.AsyncIdleConnectionMonitorThread;
-import unirest.Options;
-import unirest.SyncIdleConnectionMonitorThread;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import unirest.*;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.junit.Test;
 
 import java.io.IOException;
-
-import static unirest.Option.*;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class LifeCycleTest extends BddTest {
+
+    @Mock
+    private CloseableHttpClient httpc;
+    @Mock
+    private PoolingHttpClientConnectionManager clientManager;
+    @Mock
+    private SyncIdleConnectionMonitorThread connMonitor;
+    @Mock
+    private CloseableHttpAsyncClient asyncClient;
+    @Mock
+    private AsyncIdleConnectionMonitorThread asyncMonitor;
+    @Mock
+    private PoolingNHttpClientConnectionManager manager;
 
     @Test
     public void testShutdown() throws IOException {
-        CloseableHttpClient httpc = mock(CloseableHttpClient.class);
-        SyncIdleConnectionMonitorThread connMonitor = mock(SyncIdleConnectionMonitorThread.class);
-        CloseableHttpAsyncClient asyncClient = mock(CloseableHttpAsyncClient.class);
         when(asyncClient.isRunning()).thenReturn(true);
-        AsyncIdleConnectionMonitorThread asyncMonitor = mock(AsyncIdleConnectionMonitorThread.class);
 
-        Options.setOption(HTTPCLIENT, httpc);
-        Options.setOption(SYNC_MONITOR, connMonitor);
-        Options.setOption(ASYNCHTTPCLIENT, asyncClient);
-        Options.setOption(ASYNC_MONITOR, asyncMonitor);
+        Unirest.config()
+                .httpClient(new ClientConfig(httpc, clientManager, connMonitor))
+                .asyncClient(new AsyncConfig(asyncClient, manager, asyncMonitor));
 
-        Unirest.shutdown();
+        Unirest.shutDown();
 
         verify(httpc).close();
+        verify(clientManager).close();
         verify(connMonitor).interrupt();
         verify(asyncClient).close();
         verify(asyncMonitor).interrupt();
     }
 
     @Test
-    public void DoesNotBombOnNullOptions() throws IOException {
-        Options.setOption(HTTPCLIENT, null);
-        Options.setOption(SYNC_MONITOR, null);
-        Options.setOption(ASYNCHTTPCLIENT, null);
-        Options.setOption(ASYNC_MONITOR, null);
+    public void willPowerThroughErrors() throws IOException {
+        when(asyncClient.isRunning()).thenReturn(true);
+        doThrow(new IOException("1")).when(httpc).close();
+        doThrow(new RuntimeException("2")).when(clientManager).close();
+        doThrow(new RuntimeException("3")).when(connMonitor).interrupt();
+        doThrow(new IOException("4")).when(asyncClient).close();
+        doThrow(new RuntimeException("5")).when(asyncMonitor).interrupt();
 
-        Unirest.shutdown();
+        Unirest.config()
+                .httpClient(new ClientConfig(httpc, clientManager, connMonitor))
+                .asyncClient(new AsyncConfig(asyncClient, manager, asyncMonitor));
+
+
+        TestUtil.assertException(Unirest::shutDown,
+                UnirestException.class,
+                "java.io.IOException 1\n" +
+                        "java.lang.RuntimeException 2\n" +
+                        "java.lang.RuntimeException 3\n" +
+                        "java.io.IOException 4\n" +
+                        "java.lang.RuntimeException 5");
+
+        verify(httpc).close();
+        verify(clientManager).close();
+        verify(connMonitor).interrupt();
+        verify(asyncClient).close();
+        verify(asyncMonitor).interrupt();
+    }
+
+    @Test
+    public void doesNotBombOnNullOptions() throws IOException {
+        when(asyncClient.isRunning()).thenReturn(true);
+
+        Unirest.config()
+                .httpClient(new ClientConfig(httpc, null, null))
+                .asyncClient(new AsyncConfig(asyncClient, null, null));
+
+        Unirest.shutDown();
+
+        verify(httpc).close();
+        verify(asyncClient).close();
     }
 
     @Test
@@ -79,9 +123,9 @@ public class LifeCycleTest extends BddTest {
         CloseableHttpAsyncClient asyncClient = mock(CloseableHttpAsyncClient.class);
         when(asyncClient.isRunning()).thenReturn(false);
 
-        Options.setOption(ASYNCHTTPCLIENT, asyncClient);
+        Unirest.config().asyncClient(asyncClient);
 
-        Unirest.shutdown();
+        Unirest.shutDown();
 
         verify(asyncClient, never()).close();
     }
@@ -91,16 +135,16 @@ public class LifeCycleTest extends BddTest {
         Unirest.get(MockServer.GET).asBinary();
         assertTrue(Unirest.isRunning());
 
-        Unirest.shutdown();
+        Unirest.shutDown();
         assertFalse(Unirest.isRunning());
 
-        Options.init();
+        Unirest.get(MockServer.GET).asBinary();
         assertTrue(Unirest.isRunning());
     }
 
     @Test
     public void willReinitIfLibraryIsUsedAfterShutdown() {
-        Unirest.shutdown();
+        Unirest.shutDown();
         assertFalse(Unirest.isRunning());
 
         Unirest.get(MockServer.GET).asBinary();

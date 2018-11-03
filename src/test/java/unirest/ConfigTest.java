@@ -26,32 +26,36 @@
 
 package unirest;
 
-import java.util.Map;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.runners.MockitoJUnitRunner;
 
-public class GetRequest extends HttpRequest {
+import static org.junit.Assert.*;
 
-	public GetRequest(Config config, HttpMethod method, String url) {
-		super(config, method, url);
-	}
+@RunWith(MockitoJUnitRunner.class)
+public class ConfigTest {
 
-	public GetRequest routeParam(String name, String value) {
-		super.routeParam(name, value);
-		return this;
-	}
+    @InjectMocks
+    private Config config;
 
-	@Override
-	public GetRequest header(String name, String value) {
-		return (GetRequest) super.header(name, value);
-	}
+    @Test
+    public void shouldKeepConnectionTimeOutDefault(){
+        assertEquals(Config.DEFAULT_CONNECT_TIMEOUT, config.getConnectionTimeout());
+    }
 
-	@Override
-	public GetRequest headers(Map<String, String> headers) {
-		return (GetRequest) super.headers(headers);
-	}
+    @Test
+    public void shouldKeepSocketTimeoutDefault(){
+        assertEquals(Config.DEFAULT_SOCKET_TIMEOUT, config.getSocketTimeout());
+    }
 
-	@Override
-	public GetRequest basicAuth(String username, String password) {
-		super.basicAuth(username, password);
-		return this;
-	}
+    @Test
+    public void shouldKeepMaxTotalDefault(){
+        assertEquals(Config.DEFAULT_MAX_CONNECTIONS, config.getMaxConnections());
+    }
+
+    @Test
+    public void shouldKeepMaxPerRouteDefault(){
+        assertEquals(Config.DEFAULT_MAX_PER_ROUTE, config.getMaxPerRoutes());
+    }
 }

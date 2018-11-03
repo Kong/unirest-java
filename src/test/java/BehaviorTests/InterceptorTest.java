@@ -27,7 +27,6 @@
 package BehaviorTests;
 
 import unirest.Unirest;
-import unirest.Options;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
@@ -40,7 +39,7 @@ import java.util.concurrent.ExecutionException;
 public class InterceptorTest extends BddTest {
     @Test
     public void canAddInterceptor() {
-        Options.addInterceptor(new TestInterceptor());
+        Unirest.config().addInterceptor(new TestInterceptor());
 
         Unirest.get(MockServer.GET)
                 .asObject(RequestCapture.class)
@@ -50,7 +49,7 @@ public class InterceptorTest extends BddTest {
 
     @Test
     public void canAddInterceptorToAsync() throws ExecutionException, InterruptedException {
-        Options.addInterceptor(new TestInterceptor());
+        Unirest.config().addInterceptor(new TestInterceptor());
 
         Unirest.get(MockServer.GET)
                 .asObjectAsync(RequestCapture.class)

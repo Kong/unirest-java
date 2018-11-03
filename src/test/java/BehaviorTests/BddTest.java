@@ -26,6 +26,7 @@
 
 package BehaviorTests;
 
+import org.junit.After;
 import unirest.*;
 import org.junit.Before;
 
@@ -47,10 +48,14 @@ public class BddTest {
     public void setUp() {
         //TestUtil.debugApache();
         MockServer.reset();
-        Options.init();
-        Unirest.setObjectMapper(objectMapper);
+        Unirest.config().setObjectMapper(objectMapper);
         lock = new CountDownLatch(1);
         status = false;
+    }
+
+    @After
+    public void tearDown() {
+        Unirest.shutDown(true);
     }
 
     public void assertAsync()  {

@@ -26,18 +26,39 @@
 
 package unirest;
 
-public enum Option {
-	HTTPCLIENT,
-	ASYNCHTTPCLIENT,
-	CONNECTION_TIMEOUT,
-	SOCKET_TIMEOUT,
-	DEFAULT_HEADERS,
-	SYNC_MONITOR,
-	ASYNC_MONITOR,
-	MAX_TOTAL,
-	MAX_PER_ROUTE,
-	PROXY,
-	OBJECT_MAPPER,
-	FOLLOW_REDIRECTS,
-	COOKIE_MANAGEMENT;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+class Util {
+
+    //In Java 9 this has been added as Optional::stream. Remove this whenever we get there.
+    static <T> Stream<T> stream(Optional<T> opt) {
+        return opt.map(Stream::of).orElseGet(Stream::empty);
+    }
+
+    static <T, M extends T> Optional<M> tryCast(T original, Class<M> too) {
+        if (original != null && too.isAssignableFrom(original.getClass())) {
+            return Optional.of((M) original);
+        }
+        return Optional.empty();
+    }
+
+    public static <T> Optional<Exception> tryDo(T c, ExConsumer<T> consumer) {
+        try {
+            if (Objects.nonNull(c)) {
+                consumer.accept(c);
+            }
+            return Optional.empty();
+        } catch (Exception e) {
+            return Optional.of(e);
+        }
+    }
+
+
+
+    @FunctionalInterface
+    public interface ExConsumer<T>{
+        void accept(T t) throws Exception;
+    }
 }

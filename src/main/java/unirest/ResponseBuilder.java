@@ -34,6 +34,12 @@ import static unirest.BodyData.from;
 
 class ResponseBuilder {
 
+    private final Config config;
+
+    public ResponseBuilder(Config config) {
+        this.config = config;
+    }
+
     public HttpResponse<JsonNode> asJson(org.apache.http.HttpResponse response) {
         return new HttpResponseImpl<>(response, from(response.getEntity(), b -> toJson(b)));
     }
@@ -78,12 +84,10 @@ class ResponseBuilder {
     }
 
     private ObjectMapper getObjectMapper() {
-        return Options.tryGet(Option.OBJECT_MAPPER, ObjectMapper.class)
-                .orElseThrow(() -> new UnirestException("No Object Mapper Configured. Please configure one with Unirest.setObjectMapper"));
+        return config.getObjectMapper();
     }
 
     public static class ParsingException extends RuntimeException {
-
         public ParsingException(Exception e){
             super(e);
         }

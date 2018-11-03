@@ -26,32 +26,20 @@
 
 package unirest;
 
-import java.util.Map;
+import org.junit.Test;
 
-public class GetRequest extends HttpRequest {
+import static org.junit.Assert.*;
 
-	public GetRequest(Config config, HttpMethod method, String url) {
-		super(config, method, url);
-	}
+public class UtilTest {
 
-	public GetRequest routeParam(String name, String value) {
-		super.routeParam(name, value);
-		return this;
-	}
+    @Test
+    public void canCast() {
+        Object foo = new Foo();
 
-	@Override
-	public GetRequest header(String name, String value) {
-		return (GetRequest) super.header(name, value);
-	}
+        assertEquals(foo, Util.tryCast(foo, Foo.class).get());
+        assertEquals(false, Util.tryCast("foo", Foo.class).isPresent());
+        assertEquals(false, Util.tryCast(null, Foo.class).isPresent());
+    }
 
-	@Override
-	public GetRequest headers(Map<String, String> headers) {
-		return (GetRequest) super.headers(headers);
-	}
-
-	@Override
-	public GetRequest basicAuth(String username, String password) {
-		super.basicAuth(username, password);
-		return this;
-	}
+    public class Foo {}
 }

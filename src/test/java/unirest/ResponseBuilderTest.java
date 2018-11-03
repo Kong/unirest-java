@@ -27,14 +27,10 @@
 package unirest;
 
 import BehaviorTests.Foo;
-import unirest.MockApacheResponse;
-import unirest.*;
-import unirest.JacksonObjectMapper;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.message.BasicStatusLine;
 import org.junit.Before;
 import org.junit.Test;
-import unirest.TestUtil;
 
 import java.io.InputStream;
 
@@ -44,13 +40,15 @@ import static unirest.TestUtil.assertException;
 import static unirest.TestUtil.toJson;
 
 public class ResponseBuilderTest {
-    private final ResponseBuilder builder = new ResponseBuilder();
+    private Config config;
+    private ResponseBuilder builder;
     private MockApacheResponse response;
 
     @Before
     public void setUp() {
         response = new MockApacheResponse();
-        Options.setOption(Option.OBJECT_MAPPER, new JacksonObjectMapper());
+        config = new Config().setObjectMapper(new JacksonObjectMapper());
+        builder = new ResponseBuilder(config);
     }
 
     @Test
@@ -96,13 +94,13 @@ public class ResponseBuilderTest {
 
     @Test
     public void willThrowErrorIfNoObjectMapperIsConfigured(){
-        Options.removeOption(Option.OBJECT_MAPPER);
+        config.setObjectMapper(null);
 
         response.setBody(toJson(new Foo("I like cheese")));
 
         assertException(() -> builder.asObject(response, Foo.class),
                 UnirestException.class,
-                "No Object Mapper Configured. Please configure one with Unirest.setObjectMapper");
+                "No Object Mapper Configured. Please config one with Unirest.config().setObjectMapper");
     }
 
     @Test

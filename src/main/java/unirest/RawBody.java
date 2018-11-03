@@ -33,8 +33,8 @@ public class RawBody extends BaseRequest implements Body {
 
 	private byte[] body;
 
-	public RawBody(HttpRequest httpRequest) {
-		super(httpRequest);
+	public RawBody(Config config, HttpRequest httpRequest) {
+		super(config, httpRequest);
 	}
 
 	public RawBody body(byte[] bodyBytes) {

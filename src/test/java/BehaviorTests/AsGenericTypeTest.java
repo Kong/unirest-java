@@ -97,7 +97,7 @@ public class AsGenericTypeTest extends BddTest {
 
     @Test
     public void itAlsoWorksWithGson() {
-        Unirest.setObjectMapper(new GsonObjectMapper());
+        Unirest.config().setObjectMapper(new GsonObjectMapper());
 
         MockServer.setJsonAsResponse(new WeirdType<>(foos, "hey"));
 

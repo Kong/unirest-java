@@ -28,9 +28,9 @@
 
 package BehaviorTests;
 
+import unirest.Config;
 import unirest.Unirest;
 import unirest.UnirestException;
-import unirest.Options;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.junit.Ignore;
@@ -55,11 +55,12 @@ public class TimeoutTests extends BddTest {
         try {
             Unirest.get("http://" + address + "/").asString();
         } catch (Exception e) {
-            if (System.currentTimeMillis() - start > Options.CONNECTION_TIMEOUT + 100) { // Add 100ms for code execution
+            if (System.currentTimeMillis() - start > Config.DEFAULT_CONNECTION_TIMEOUT + 100) { // Add 100ms for code execution
                 fail();
             }
         }
-        Unirest.setTimeouts(2000, 10000);
+        Unirest.config().connectTimeout(2000).socketTimeout(10000);
+
         start = System.currentTimeMillis();
         try {
             Unirest.get("http://" + address + "/").asString();
@@ -73,13 +74,13 @@ public class TimeoutTests extends BddTest {
     @Test
     @Ignore // this is flakey
     public void parallelTest() throws InterruptedException {
-        Unirest.setConcurrency(10, 5);
+        Unirest.config().connectTimeout(10).socketTimeout(5);
 
         long start = System.currentTimeMillis();
         makeParallelRequests();
         long smallerConcurrencyTime = (System.currentTimeMillis() - start);
 
-        Unirest.setConcurrency(200, 20);
+        Unirest.config().connectTimeout(200).socketTimeout(20);
         start = System.currentTimeMillis();
         makeParallelRequests();
         long higherConcurrencyTime = (System.currentTimeMillis() - start);
@@ -107,28 +108,28 @@ public class TimeoutTests extends BddTest {
     @Test
     public void setTimeoutsAndCustomClient() {
         try {
-            Unirest.setTimeouts(1000, 2000);
+            Unirest.config().connectTimeout(1000).socketTimeout(2000);
         } catch (Exception e) {
             fail();
         }
 
         try {
-            Unirest.setAsyncHttpClient(HttpAsyncClientBuilder.create().build());
+            Unirest.config().asyncClient(HttpAsyncClientBuilder.create().build());
         } catch (Exception e) {
             fail();
         }
 
         try {
-            Unirest.setAsyncHttpClient(HttpAsyncClientBuilder.create().build());
-            Unirest.setTimeouts(1000, 2000);
+            Unirest.config().asyncClient(HttpAsyncClientBuilder.create().build());
+            Unirest.config().connectTimeout(1000).socketTimeout(2000);
             fail();
         } catch (Exception e) {
             // Ok
         }
 
         try {
-            Unirest.setHttpClient(HttpClientBuilder.create().build());
-            Unirest.setTimeouts(1000, 2000);
+            Unirest.config().httpClient(HttpClientBuilder.create().build());
+            Unirest.config().connectTimeout(1000).socketTimeout(2000);
             fail();
         } catch (Exception e) {
             // Ok
