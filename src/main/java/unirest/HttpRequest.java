@@ -37,7 +37,7 @@ public class HttpRequest extends BaseRequest {
 
 	private HttpMethod httpMethod;
 	protected String url;
-	Map<String, List<String>> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+	protected Headers headers = new Headers();
 	protected Body body;
 
 	public HttpRequest(Config config, HttpMethod method, String url) {
@@ -67,12 +67,7 @@ public class HttpRequest extends BaseRequest {
 	}
 
 	public HttpRequest header(String name, String value) {
-		List<String> list = this.headers.get(name.trim());
-		if (list == null) {
-			list = new ArrayList<>();
-		}
-		list.add(value);
-		this.headers.put(name.trim(), list);
+		this.headers.add(name.trim(), value);
 		return this;
 	}
 
@@ -134,10 +129,7 @@ public class HttpRequest extends BaseRequest {
 		return url;
 	}
 
-	public Map<String, List<String>> getHeaders() {
-		if (headers == null) {
-			return new HashMap<>();
-		}
+	public Headers getHeaders() {
 		return headers;
 	}
 

@@ -124,10 +124,9 @@ public abstract class BaseRequest {
         HttpRequestBase requestObj = RequestPrep.prepareRequest(request, false);
         HttpClient client = config.getClient();
 
-        org.apache.http.HttpResponse response;
         try {
-            response = client.execute(requestObj);
-            HttpResponse<T> httpResponse = transformer.apply(response);
+            org.apache.http.HttpResponse execute = client.execute(requestObj);
+            HttpResponse<T> httpResponse = transformer.apply(execute);
             requestObj.releaseConnection();
             return httpResponse;
         } catch (Exception e) {

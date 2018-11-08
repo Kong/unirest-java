@@ -32,9 +32,6 @@ import org.apache.http.nio.entity.NByteArrayEntity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 class RequestPrep {
     private static final String CONTENT_TYPE = "content-type";
@@ -83,15 +80,7 @@ class RequestPrep {
     }
 
     private static void setRequestHeaders(HttpRequest request, HttpRequestBase reqObj) {
-        Set<Map.Entry<String, List<String>>> entrySet = request.getHeaders().entrySet();
-        for (Map.Entry<String, List<String>> entry : entrySet) {
-            List<String> values = entry.getValue();
-            if (values != null) {
-                for (String value : values) {
-                    reqObj.addHeader(entry.getKey(), value);
-                }
-            }
-        }
+        request.getHeaders().entries().forEach(reqObj::addHeader);
     }
 
     private static HttpRequestBase getHttpRequest(HttpRequest request) {

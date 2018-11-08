@@ -26,45 +26,31 @@
 
 package unirest;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Stream;
+import org.apache.http.Header;
+import org.junit.Test;
 
-class Util {
+import java.util.stream.Collectors;
 
-    //In Java 9 this has been added as Optional::stream. Remove this whenever we get there.
-    static <T> Stream<T> stream(Optional<T> opt) {
-        return opt.map(Stream::of).orElseGet(Stream::empty);
+import static org.junit.Assert.*;
+
+public class HeadersTest {
+
+    @Test
+    public void canGetApacheHeaders() {
+        Headers headers = new Headers();
+        headers.add("foo","bar");
+
+        Header h = headers.entries().findAny().get();
+
+        assertEquals("foo", h.getName());
+        assertEquals("bar", h.getValue());
     }
 
-    static <T, M extends T> Optional<M> tryCast(T original, Class<M> too) {
-        if (original != null && too.isAssignableFrom(original.getClass())) {
-            return Optional.of((M) original);
-        }
-        return Optional.empty();
-    }
+    @Test
+    public void dontBombOnNull(){
+        Headers h = new Headers();
+        h.add(null, "foo");
 
-    static <T> Optional<Exception> tryDo(T c, ExConsumer<T> consumer) {
-        try {
-            if (Objects.nonNull(c)) {
-                consumer.accept(c);
-            }
-            return Optional.empty();
-        } catch (Exception e) {
-            return Optional.of(e);
-        }
-    }
-
-    static String nullToEmpty(String value) {
-        if(value == null){
-            return "";
-        }
-        return value;
-    }
-
-
-    @FunctionalInterface
-    public interface ExConsumer<T>{
-        void accept(T t) throws Exception;
+        assertEquals(0, h.entries().collect(Collectors.toSet()).size());
     }
 }

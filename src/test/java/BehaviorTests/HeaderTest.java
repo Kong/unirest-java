@@ -117,17 +117,6 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void testHeaderNamesCaseSensitive() {
-        // Verify that header names are the same as server (case sensitive)
-        final Headers headers = new Headers();
-        headers.put("Content-Type", Arrays.asList("application/json"));
-
-        assertEquals("Only header \"Content-Type\" should exist", null, headers.getFirst("cOnTeNt-TyPe"));
-        assertEquals("Only header \"Content-Type\" should exist", null, headers.getFirst("content-type"));
-        assertEquals("Only header \"Content-Type\" should exist", "application/json", headers.getFirst("Content-Type"));
-    }
-
-    @Test
     public void canPassHeadersAsMap() {
         Unirest.post(MockServer.POST)
                 .headers(mapOf("one", "foo", "two", "bar", "three", null))

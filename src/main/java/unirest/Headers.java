@@ -27,18 +27,17 @@
 package unirest;
 
 import org.apache.http.Header;
+import org.apache.http.message.BasicHeader;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
 
-public class Headers extends HashMap<String, List<String>> {
+public class Headers extends TreeMap<String, List<String>> {
 
     private static final long serialVersionUID = 71310341388734766L;
 
     public Headers() {
-        super();
+        super(String.CASE_INSENSITIVE_ORDER);
     }
 
     public Headers(Header[] pairs) {
@@ -55,7 +54,17 @@ public class Headers extends HashMap<String, List<String>> {
     }
 
     public void add(String name, String value) {
-        computeIfAbsent(name, k -> new ArrayList<>()).add(value);
+        if(Objects.nonNull(name)){
+            computeIfAbsent(name, k -> new ArrayList<>()).add(Util.nullToEmpty(value));
+        }
     }
 
+    public Stream<Header> entries() {
+        return entrySet().stream().flatMap(this::toEntries);
+    }
+
+    private Stream<Header> toEntries(Map.Entry<String, List<String>> k) {
+        String key = k.getKey();
+        return k.getValue().stream().map(e -> new BasicHeader(key, e));
+    }
 }
