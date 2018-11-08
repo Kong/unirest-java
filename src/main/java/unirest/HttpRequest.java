@@ -26,6 +26,8 @@
 
 package unirest;
 
+import org.apache.http.HttpHeaders;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
@@ -64,6 +66,10 @@ public class HttpRequest extends BaseRequest {
 	public HttpRequest basicAuth(String username, String password) {
 		header("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
 		return this;
+	}
+
+	public HttpRequest accept(String value) {
+		return header(HttpHeaders.ACCEPT, value);
 	}
 
 	public HttpRequest header(String name, String value) {
@@ -136,5 +142,4 @@ public class HttpRequest extends BaseRequest {
 	public Body getBody() {
 		return body;
 	}
-
 }

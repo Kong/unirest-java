@@ -26,15 +26,12 @@
 
 package BehaviorTests;
 
-import unirest.Headers;
+import org.junit.Ignore;
+import org.junit.Test;
+import unirest.GetRequest;
 import unirest.HttpResponse;
 import unirest.JsonNode;
 import unirest.Unirest;
-import unirest.GetRequest;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static unirest.TestUtil.assertBasicAuth;
@@ -42,12 +39,14 @@ import static unirest.TestUtil.mapOf;
 
 public class HeaderTest extends BddTest {
     @Test
-    public void testCustomUserAgent() {
+    public void testHeadersOnGetRequests() {
         Unirest.get(MockServer.GET)
                 .header("user-agent", "hello-world")
+                .accept("application/cheese-wiz")
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertHeader("User-Agent", "hello-world");
+                .assertHeader("User-Agent", "hello-world")
+                .assertHeader("Accept","application/cheese-wiz");
     }
 
     @Test
@@ -114,6 +113,23 @@ public class HeaderTest extends BddTest {
         assertEquals("John", request.getHeaders().get("NAme").get(1));
         assertEquals("Marco", request.getHeaders().get("Name").get(0));
         assertEquals("John", request.getHeaders().get("Name").get(1));
+    }
+
+    @Test
+    public void headersOnMultipart() {
+        Unirest.post(MockServer.POST)
+                .field("one","a")
+                .accept("application/json")
+                .basicAuth("tony","tuna")
+                .header("cheese", "cheddar")
+                .contentType("application/xml")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("Accept", "application/json")
+                .assertBasicAuth("tony","tuna")
+                .assertHeader("cheese", "cheddar")
+                .assertHeader("Content-Type", "application/xml");
+
     }
 
     @Test

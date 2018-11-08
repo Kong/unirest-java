@@ -182,17 +182,20 @@ public class RequestCapture {
         return this;
     }
 
-    public void assertBasicAuth(String username, String password) {
+    public RequestCapture assertBasicAuth(String username, String password) {
         String raw = headers.get("Authorization");
         TestUtil.assertBasicAuth(raw, username, password);
+        return this;
     }
 
-    public void assertQueryString(String s) {
+    public RequestCapture assertQueryString(String s) {
         assertEquals(s, queryString);
+        return this;
     }
 
-    public void asserMethod(HttpMethod get) {
+    public RequestCapture asserMethod(HttpMethod get) {
         assertEquals(get, method);
+        return this;
     }
 
     public RequestCapture assertPathParam(String value) {

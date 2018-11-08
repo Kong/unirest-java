@@ -27,6 +27,7 @@
 package unirest;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
@@ -115,8 +116,23 @@ public class MultipartBody extends BaseRequest implements Body {
         return this;
     }
 
+    public MultipartBody accept(String mimeType) {
+        httpRequestObj.accept(mimeType);
+        return this;
+    }
+
+    public MultipartBody contentType(String mimeType) {
+        httpRequestObj.header(HttpHeaders.CONTENT_TYPE, mimeType);
+        return this;
+    }
+
     public MultipartBody basicAuth(String username, String password) {
         httpRequestObj.basicAuth(username, password);
+        return this;
+    }
+
+    public MultipartBody header(String name, String value) {
+        httpRequestObj.header(name, value);
         return this;
     }
 
