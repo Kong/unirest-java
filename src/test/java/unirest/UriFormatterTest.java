@@ -26,15 +26,11 @@
 
 package unirest;
 
-import unirest.HttpMethod;
 import org.junit.Test;
-import unirest.HttpRequest;
-import unirest.UriFormatter;
 
 import static org.junit.Assert.assertEquals;
 
 public class UriFormatterTest {
-    private UriFormatter helper = new UriFormatter();
 
     @Test
     public void testMangler_encoding() {
@@ -62,7 +58,7 @@ public class UriFormatterTest {
     }
 
     private void assertLinkSurvives(String s) {
-        assertEquals(s, helper.apply(new HttpRequest(new Config(), HttpMethod.GET, s)));
+        assertEquals(s, new HttpRequest(new Config(), HttpMethod.GET, s).url);
     }
 
 }

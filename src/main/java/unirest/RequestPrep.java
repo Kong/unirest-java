@@ -32,16 +32,46 @@ import org.apache.http.nio.entity.NByteArrayEntity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+import static unirest.HttpMethod.*;
 
 class RequestPrep {
     private static final String CONTENT_TYPE = "content-type";
     private static final String ACCEPT_ENCODING_HEADER = "accept-encoding";
     private static final String USER_AGENT_HEADER = "user-agent";
-    private static final String USER_AGENT = "unirest-java/1.3.11";
-    private static final UriFormatter URI_FORMATTER = new UriFormatter();
+    private static final String USER_AGENT = "unirest-java/3.0.00";
+    private static final Map<HttpMethod, Function<String, HttpRequestBase>> FACTORIES;
+    private final HttpRequest request;
+    private final boolean async;
 
-    static HttpRequestBase prepareRequest(HttpRequest request, boolean async) {
+    static {
+        FACTORIES = new HashMap<>();
+        FACTORIES.put(GET, HttpGet::new);
+        FACTORIES.put(POST, HttpPost::new);
+        FACTORIES.put(PUT, HttpPut::new);
+        FACTORIES.put(DELETE, HttpDeleteWithBody::new);
+        FACTORIES.put(PATCH, HttpPatchWithBody::new);
+        FACTORIES.put(OPTIONS, HttpOptions::new);
+        FACTORIES.put(HEAD, HttpHead::new);
+    }
 
+    RequestPrep(HttpRequest request, boolean async){
+        this.request = request;
+        this.async = async;
+    }
+
+    HttpRequestBase prepare(){
+        HttpRequestBase reqObj = getHttpRequestBase();
+
+        setBody(reqObj);
+
+        return reqObj;
+    }
+
+    private HttpRequestBase getHttpRequestBase() {
         if (!request.getHeaders().containsKey(USER_AGENT_HEADER)) {
             request.header(USER_AGENT_HEADER, USER_AGENT);
         }
@@ -49,15 +79,17 @@ class RequestPrep {
             request.header(ACCEPT_ENCODING_HEADER, "gzip");
         }
 
-        HttpRequestBase reqObj = getHttpRequest(request);
-        setRequestHeaders(request, reqObj);
-        setBody(request, async, reqObj);
-
-        return reqObj;
+        try {
+            HttpRequestBase reqObj = FACTORIES.get(request.getHttpMethod()).apply(request.url);
+            request.getHeaders().entries().forEach(reqObj::addHeader);
+            return reqObj;
+        }catch (RuntimeException e){
+            throw new UnirestException(e);
+        }
     }
 
-    private static void setBody(HttpRequest request, boolean async, HttpRequestBase reqObj) {
-        if (!(request.getHttpMethod() == HttpMethod.GET || request.getHttpMethod() == HttpMethod.HEAD)) {
+    private void setBody(HttpRequestBase reqObj) {
+        if (!(request.getHttpMethod() == GET || request.getHttpMethod() == HttpMethod.HEAD)) {
             if (request.getBody() != null) {
                 HttpEntity entity = request.getBody().getEntity();
                 if (async) {
@@ -70,47 +102,12 @@ class RequestPrep {
                         NByteArrayEntity en = new NByteArrayEntity(output.toByteArray());
                         ((HttpEntityEnclosingRequestBase) reqObj).setEntity(en);
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        throw new UnirestException(e);
                     }
                 } else {
                     ((HttpEntityEnclosingRequestBase) reqObj).setEntity(entity);
                 }
             }
         }
-    }
-
-    private static void setRequestHeaders(HttpRequest request, HttpRequestBase reqObj) {
-        request.getHeaders().entries().forEach(reqObj::addHeader);
-    }
-
-    private static HttpRequestBase getHttpRequest(HttpRequest request) {
-        HttpRequestBase reqObj = null;
-
-        String urlToRequest = URI_FORMATTER.apply(request);
-
-        switch (request.getHttpMethod()) {
-            case GET:
-                reqObj = new HttpGet(urlToRequest);
-                break;
-            case POST:
-                reqObj = new HttpPost(urlToRequest);
-                break;
-            case PUT:
-                reqObj = new HttpPut(urlToRequest);
-                break;
-            case DELETE:
-                reqObj = new HttpDeleteWithBody(urlToRequest);
-                break;
-            case PATCH:
-                reqObj = new HttpPatchWithBody(urlToRequest);
-                break;
-            case OPTIONS:
-                reqObj = new HttpOptions(urlToRequest);
-                break;
-            case HEAD:
-                reqObj = new HttpHead(urlToRequest);
-                break;
-        }
-        return reqObj;
     }
 }

@@ -83,7 +83,7 @@ public class PathParamTest extends BddTest {
                                 .queryString("name", "Mark")
                                 .asBinary(),
                 UnirestException.class,
-                "java.net.URISyntaxException: Illegal character in path at index 22: http://localhost:4567/{method}?name=Mark");
+                "java.lang.IllegalArgumentException: Illegal character in path at index 22: http://localhost:4567/{method}?name=Mark");
     }
 
     @Test

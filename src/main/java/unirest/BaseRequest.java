@@ -121,7 +121,7 @@ public abstract class BaseRequest {
     private <T> HttpResponse<T> request(HttpRequest request,
                                         Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) {
 
-        HttpRequestBase requestObj = RequestPrep.prepareRequest(request, false);
+        HttpRequestBase requestObj = new RequestPrep(request, false).prepare();
         HttpClient client = config.getClient();
 
         try {
@@ -156,7 +156,7 @@ public abstract class BaseRequest {
 
         Objects.requireNonNull(callback);
 
-        HttpUriRequest requestObj = RequestPrep.prepareRequest(request, true);
+        HttpUriRequest requestObj = new RequestPrep(request, true).prepare();
 
         config.getAsyncHttpClient()
                 .execute(requestObj, new FutureCallback<org.apache.http.HttpResponse>() {
