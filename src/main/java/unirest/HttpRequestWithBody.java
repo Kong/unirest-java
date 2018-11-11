@@ -159,8 +159,8 @@ public class HttpRequestWithBody extends HttpRequest {
 		return body(config.getObjectMapper().writeValue(body));
 	}
 
-	public RawBody body(byte[] body) {
-		RawBody b = new RawBody(config, this).body(body);
+	public RequestBodyEntity body(byte[] body) {
+		RequestBodyEntity b = new RequestBodyEntity(config, this).body(body);
 		this.body = b;
 		return b;
 	}

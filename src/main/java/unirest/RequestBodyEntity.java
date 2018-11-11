@@ -27,36 +27,39 @@
 package unirest;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.function.Supplier;
 
 public class RequestBodyEntity extends BaseRequest implements Body {
 
 	private final HttpRequestWithBody request;
-	private Object body;
+	private Supplier<HttpEntity> body = () -> new StringEntity("", StandardCharsets.UTF_8);
 
-	public RequestBodyEntity(Config config, HttpRequestWithBody httpRequest) {
+	RequestBodyEntity(Config config, HttpRequestWithBody httpRequest) {
 		super(config, httpRequest);
 		request = httpRequest;
 	}
 
+	public RequestBodyEntity body(byte[] bodyBytes) {
+		this.body = () -> new ByteArrayEntity(bodyBytes);
+		return this;
+	}
+
 	public RequestBodyEntity body(String bodyAsString) {
-		this.body = bodyAsString;
+		this.body = () -> new StringEntity(bodyAsString, request.getCharset());
 		return this;
 	}
 
 	public RequestBodyEntity body(JsonNode jsonBody) {
-		this.body = jsonBody.toString();
-		return this;
-	}
-
-	public Object getBody() {
-		return body;
+		return body(jsonBody.toString());
 	}
 
 	public HttpEntity getEntity() {
-		return new StringEntity(body.toString(), request.getCharset());
+		return body.get();
 	}
 
 	public RequestBodyEntity charset(Charset charset) {
