@@ -37,9 +37,8 @@ import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.junit.Test;
 
 import java.io.IOException;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -149,5 +148,10 @@ public class LifeCycleTest extends BddTest {
 
         Unirest.get(MockServer.GET).asBinary();
         assertTrue(Unirest.isRunning());
+    }
+
+    @Test
+    public void canGetTheCommonInstanceOfUnirest(){
+        assertSame(Unirest.getInstance(), Unirest.getInstance());
     }
 }

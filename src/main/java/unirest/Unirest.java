@@ -88,4 +88,8 @@ public class Unirest {
     public static boolean isRunning() {
         return primaryInstance.isRunning();
     }
+
+    public static UnirestInstance getInstance() {
+        return primaryInstance;
+    }
 }
