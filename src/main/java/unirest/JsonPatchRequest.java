@@ -31,7 +31,7 @@ import org.apache.http.entity.BasicHttpEntity;
 
 import java.io.ByteArrayInputStream;
 
-public class JsonPatchRequest extends HttpRequest implements Body {
+public class JsonPatchRequest extends HttpRequest<JsonPatchRequest> implements Body {
     public static final String CONTENT_TYPE = "application/json-patch+json";
     private JsonPatch items = new JsonPatch();
 

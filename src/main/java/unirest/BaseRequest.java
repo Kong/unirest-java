@@ -36,7 +36,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-public abstract class BaseRequest {
+public abstract class BaseRequest<R extends BaseRequest> {
 
     private final ResponseBuilder builder;
     private final Config config;

@@ -34,7 +34,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Supplier;
 
-public class RequestBodyEntity extends BaseRequest implements Body {
+public class RequestBodyEntity extends BaseRequest<RequestBodyEntity> implements Body {
 
 	private final HttpRequestWithBody request;
 	private Supplier<HttpEntity> body = () -> new StringEntity("", StandardCharsets.UTF_8);

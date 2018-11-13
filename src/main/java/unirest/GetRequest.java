@@ -28,7 +28,7 @@ package unirest;
 
 import java.util.Map;
 
-public class GetRequest extends HttpRequest {
+public class GetRequest extends HttpRequest<GetRequest> {
 
 	public GetRequest(Config config, HttpMethod method, String url) {
 		super(config, method, url);
