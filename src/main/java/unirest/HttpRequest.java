@@ -30,10 +30,10 @@ import org.apache.http.HttpHeaders;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public abstract class HttpRequest<R extends HttpRequest> extends BaseRequest<R> {
 
@@ -44,19 +44,6 @@ public abstract class HttpRequest<R extends HttpRequest> extends BaseRequest<R> 
 		super(config, method, url);
 		super.httpRequest = this;
 		headers.putAll(config.getDefaultHeaders());
-	}
-
-	public R routeParam(String name, String value) {
-		Matcher matcher = Pattern.compile("\\{" + name + "\\}").matcher(url);
-		int count = 0;
-		while (matcher.find()) {
-			count++;
-		}
-		if (count == 0) {
-			throw new RuntimeException("Can't find route parameter name \"" + name + "\"");
-		}
-		this.url = url.replaceAll("\\{" + name + "\\}", URLParamEncoder.encode(value));
-		return (R)this;
 	}
 
 	public R basicAuth(String username, String password) {

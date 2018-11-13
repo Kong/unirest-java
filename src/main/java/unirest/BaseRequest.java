@@ -35,6 +35,8 @@ import java.io.InputStream;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class BaseRequest<R extends BaseRequest> {
 
@@ -57,6 +59,19 @@ public abstract class BaseRequest<R extends BaseRequest> {
         this.builder = new ResponseBuilder(config);
         this.method = method;
         this.url = url;
+    }
+
+    public R routeParam(String name, String value) {
+        Matcher matcher = Pattern.compile("\\{" + name + "\\}").matcher(url);
+        int count = 0;
+        while (matcher.find()) {
+            count++;
+        }
+        if (count == 0) {
+            throw new RuntimeException("Can't find route parameter name \"" + name + "\"");
+        }
+        this.url = url.replaceAll("\\{" + name + "\\}", URLParamEncoder.encode(value));
+        return (R)this;
     }
 
     public HttpRequest getHttpRequest() {
