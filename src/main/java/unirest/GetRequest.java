@@ -26,32 +26,10 @@
 
 package unirest;
 
-import java.util.Map;
-
 public class GetRequest extends HttpRequest<GetRequest> {
 
 	public GetRequest(Config config, HttpMethod method, String url) {
 		super(config, method, url);
 	}
 
-	public GetRequest routeParam(String name, String value) {
-		super.routeParam(name, value);
-		return this;
-	}
-
-	@Override
-	public GetRequest header(String name, String value) {
-		return (GetRequest) super.header(name, value);
-	}
-
-	@Override
-	public GetRequest headers(Map<String, String> headers) {
-		return (GetRequest) super.headers(headers);
-	}
-
-	@Override
-	public GetRequest basicAuth(String username, String password) {
-		super.basicAuth(username, password);
-		return this;
-	}
 }
