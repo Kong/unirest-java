@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 
 public abstract class BaseRequest<R extends BaseRequest> {
 
+    protected Headers headers = new Headers();
     private final ResponseBuilder builder;
     private final Config config;
     protected HttpMethod method;
@@ -52,6 +53,7 @@ public abstract class BaseRequest<R extends BaseRequest> {
         this.builder = new ResponseBuilder(config);
         this.method = httpRequest.method;
         this.url = httpRequest.url;
+        headers.putAll(config.getDefaultHeaders());
     }
 
     protected BaseRequest(Config config, HttpMethod method, String url) {
@@ -59,6 +61,7 @@ public abstract class BaseRequest<R extends BaseRequest> {
         this.builder = new ResponseBuilder(config);
         this.method = method;
         this.url = url;
+        headers.putAll(config.getDefaultHeaders());
     }
 
     public R routeParam(String name, String value) {

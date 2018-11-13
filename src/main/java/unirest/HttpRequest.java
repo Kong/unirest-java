@@ -36,14 +36,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public abstract class HttpRequest<R extends HttpRequest> extends BaseRequest<R> {
-
-	protected Headers headers = new Headers();
 	protected Body body;
 
 	public HttpRequest(Config config, HttpMethod method, String url) {
 		super(config, method, url);
 		super.httpRequest = this;
-		headers.putAll(config.getDefaultHeaders());
 	}
 
 	public R basicAuth(String username, String password) {
