@@ -35,7 +35,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class HttpRequest extends BaseRequest {
+public abstract class HttpRequest extends BaseRequest {
 
 	private HttpMethod httpMethod;
 	protected String url;
