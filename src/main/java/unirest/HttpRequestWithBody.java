@@ -48,38 +48,6 @@ public class HttpRequestWithBody extends HttpRequest<HttpRequestWithBody> {
 		this.config = config;
 	}
 
-	@Override
-	public HttpRequestWithBody routeParam(String name, String value) {
-		super.routeParam(name, value);
-		return this;
-	}
-
-	@Override
-	public HttpRequestWithBody header(String name, String value) {
-		return (HttpRequestWithBody) super.header(name, value);
-	}
-
-	@Override
-	public HttpRequestWithBody headers(Map<String, String> headers) {
-		return (HttpRequestWithBody) super.headers(headers);
-	}
-
-	@Override
-	public HttpRequestWithBody basicAuth(String username, String password) {
-		super.basicAuth(username, password);
-		return this;
-	}
-
-	@Override
-	public HttpRequestWithBody queryString(Map<String, Object> parameters) {
-		return (HttpRequestWithBody) super.queryString(parameters);
-	}
-
-	@Override
-	public HttpRequestWithBody queryString(String name, Object value) {
-		return (HttpRequestWithBody) super.queryString(name, value);
-	}
-
 	public MultipartBody field(String name, Collection<?> value) {
 		MultipartBody body = new MultipartBody(config, this).field(name, value);
 		this.body = body;
