@@ -37,15 +37,11 @@ import java.util.regex.Pattern;
 
 public abstract class HttpRequest<R extends HttpRequest> extends BaseRequest<R> {
 
-	private HttpMethod httpMethod;
-	protected String url;
 	protected Headers headers = new Headers();
 	protected Body body;
 
 	public HttpRequest(Config config, HttpMethod method, String url) {
-		super(config);
-		this.httpMethod = method;
-		this.url = url;
+		super(config, method, url);
 		super.httpRequest = this;
 		headers.putAll(config.getDefaultHeaders());
 	}
@@ -108,7 +104,7 @@ public abstract class HttpRequest<R extends HttpRequest> extends BaseRequest<R> 
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
-		this.url += queryString.toString();
+		super.url += queryString.toString();
 		return (R)this;
 	}
 
@@ -128,7 +124,7 @@ public abstract class HttpRequest<R extends HttpRequest> extends BaseRequest<R> 
 	}
 
 	public HttpMethod getHttpMethod() {
-		return httpMethod;
+		return super.method;
 	}
 
 	public String getUrl() {

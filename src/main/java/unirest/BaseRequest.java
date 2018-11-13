@@ -40,17 +40,23 @@ public abstract class BaseRequest<R extends BaseRequest> {
 
     private final ResponseBuilder builder;
     private final Config config;
+    protected HttpMethod method;
+    protected String url;
     protected HttpRequest httpRequest;
 
     protected BaseRequest(Config config, HttpRequest httpRequest) {
         this.config = config;
         this.httpRequest = httpRequest;
         this.builder = new ResponseBuilder(config);
+        this.method = httpRequest.method;
+        this.url = httpRequest.url;
     }
 
-    protected BaseRequest(Config config) {
+    protected BaseRequest(Config config, HttpMethod method, String url) {
         this.config = config;
         this.builder = new ResponseBuilder(config);
+        this.method = method;
+        this.url = url;
     }
 
     public HttpRequest getHttpRequest() {
