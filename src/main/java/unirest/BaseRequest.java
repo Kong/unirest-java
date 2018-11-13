@@ -26,12 +26,18 @@
 
 package unirest;
 
+import org.apache.http.HttpHeaders;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -40,6 +46,7 @@ import java.util.regex.Pattern;
 
 public abstract class BaseRequest<R extends BaseRequest> {
 
+    protected Body body;
     protected Headers headers = new Headers();
     private final ResponseBuilder builder;
     private final Config config;
@@ -53,6 +60,7 @@ public abstract class BaseRequest<R extends BaseRequest> {
         this.builder = new ResponseBuilder(config);
         this.method = httpRequest.method;
         this.url = httpRequest.url;
+        this.headers.addAll(httpRequest.headers);
         headers.putAll(config.getDefaultHeaders());
     }
 
@@ -74,6 +82,70 @@ public abstract class BaseRequest<R extends BaseRequest> {
             throw new RuntimeException("Can't find route parameter name \"" + name + "\"");
         }
         this.url = url.replaceAll("\\{" + name + "\\}", URLParamEncoder.encode(value));
+        return (R)this;
+    }
+
+    public R basicAuth(String username, String password) {
+        header("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
+        return (R)this;
+    }
+
+    public R accept(String value) {
+        return header(HttpHeaders.ACCEPT, value);
+    }
+
+    public R header(String name, String value) {
+        this.headers.add(name.trim(), value);
+        return (R)this;
+    }
+
+    public R headers(Map<String, String> headerMap) {
+        if (headers != null) {
+            for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+                header(entry.getKey(), entry.getValue());
+            }
+        }
+        return (R)this;
+    }
+
+    public R queryString(String name, Collection<?> value) {
+        for (Object cur : value) {
+            queryString(name, cur);
+        }
+        return (R)this;
+    }
+
+    public R queryString(String name, Object value) {
+        StringBuilder queryString = new StringBuilder();
+        if (url.contains("?")) {
+            queryString.append("&");
+        } else {
+            queryString.append("?");
+        }
+        try {
+            queryString.append(URLEncoder.encode(name));
+            if(value != null) {
+                queryString.append("=").append(URLEncoder.encode(value.toString(), "UTF-8"));
+            }
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        url += queryString.toString();
+        return (R)this;
+    }
+
+    public R queryString(Map<String, Object> parameters) {
+        if (parameters != null) {
+            for (Map.Entry<String, Object> param : parameters.entrySet()) {
+                if (param.getValue() instanceof String || param.getValue() instanceof Number || param.getValue() instanceof Boolean || param.getValue() == null) {
+                    queryString(param.getKey(), param.getValue());
+                } else {
+                    throw new RuntimeException("Parameter \"" + param.getKey() +
+                            "\" can't be sent with a GET request because of type: "
+                            + param.getValue().getClass().getName());
+                }
+            }
+        }
         return (R)this;
     }
 
@@ -200,5 +272,22 @@ public abstract class BaseRequest<R extends BaseRequest> {
                     }
                 });
         return callback;
+    }
+
+
+    public HttpMethod getHttpMethod() {
+        return method;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public Headers getHeaders() {
+        return headers;
+    }
+
+    public Body getBody() {
+        return body;
     }
 }

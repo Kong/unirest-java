@@ -26,100 +26,13 @@
 
 package unirest;
 
-import org.apache.http.HttpHeaders;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-
 public abstract class HttpRequest<R extends HttpRequest> extends BaseRequest<R> {
-	protected Body body;
+
 
 	public HttpRequest(Config config, HttpMethod method, String url) {
 		super(config, method, url);
 		super.httpRequest = this;
 	}
 
-	public R basicAuth(String username, String password) {
-		header("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
-		return (R)this;
-	}
 
-	public R accept(String value) {
-		return header(HttpHeaders.ACCEPT, value);
-	}
-
-	public R header(String name, String value) {
-		this.headers.add(name.trim(), value);
-		return (R)this;
-	}
-
-	public R headers(Map<String, String> headerMap) {
-		if (headers != null) {
-			for (Map.Entry<String, String> entry : headerMap.entrySet()) {
-				header(entry.getKey(), entry.getValue());
-			}
-		}
-		return (R)this;
-	}
-
-	public R queryString(String name, Collection<?> value) {
-		for (Object cur : value) {
-			queryString(name, cur);
-		}
-		return (R)this;
-	}
-
-	public R queryString(String name, Object value) {
-		StringBuilder queryString = new StringBuilder();
-		if (this.url.contains("?")) {
-			queryString.append("&");
-		} else {
-			queryString.append("?");
-		}
-		try {
-			queryString.append(URLEncoder.encode(name));
-			if(value != null) {
-				queryString.append("=").append(URLEncoder.encode(value.toString(), "UTF-8"));
-			}
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-		super.url += queryString.toString();
-		return (R)this;
-	}
-
-	public R queryString(Map<String, Object> parameters) {
-		if (parameters != null) {
-			for (Entry<String, Object> param : parameters.entrySet()) {
-				if (param.getValue() instanceof String || param.getValue() instanceof Number || param.getValue() instanceof Boolean || param.getValue() == null) {
-					queryString(param.getKey(), param.getValue());
-				} else {
-					throw new RuntimeException("Parameter \"" + param.getKey() +
-							"\" can't be sent with a GET request because of type: "
-							+ param.getValue().getClass().getName());
-				}
-			}
-		}
-		return (R)this;
-	}
-
-	public HttpMethod getHttpMethod() {
-		return super.method;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public Headers getHeaders() {
-		return headers;
-	}
-
-	public Body getBody() {
-		return body;
-	}
 }

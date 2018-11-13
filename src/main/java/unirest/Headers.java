@@ -67,4 +67,8 @@ public class Headers extends TreeMap<String, List<String>> {
         String key = k.getKey();
         return k.getValue().stream().map(e -> new BasicHeader(key, e));
     }
+
+    public void addAll(Headers headers) {
+        headers.entries().forEach(e -> add(e.getName(), e.getValue()));
+    }
 }
