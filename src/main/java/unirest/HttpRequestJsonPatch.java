@@ -31,11 +31,11 @@ import org.apache.http.entity.BasicHttpEntity;
 
 import java.io.ByteArrayInputStream;
 
-public class HttpRequestJsonPatch extends BaseRequest<JsonPatchRequest> implements JsonPatchRequest {
+class HttpRequestJsonPatch extends BaseRequest<JsonPatchRequest> implements JsonPatchRequest {
 
     private JsonPatch items = new JsonPatch();
 
-    public HttpRequestJsonPatch(Config config, String url) {
+    HttpRequestJsonPatch(Config config, String url) {
         super(config, HttpMethod.PATCH, url);
         header("Content-Type", CONTENT_TYPE);
     }

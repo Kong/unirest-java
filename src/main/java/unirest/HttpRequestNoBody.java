@@ -26,7 +26,7 @@
 
 package unirest;
 
-public class HttpRequestNoBody extends BaseRequest<GetRequest> implements GetRequest {
+class HttpRequestNoBody extends BaseRequest<GetRequest> implements GetRequest {
 	public HttpRequestNoBody(Config config, HttpMethod method, String url) {
 		super(config, method, url);
 	}

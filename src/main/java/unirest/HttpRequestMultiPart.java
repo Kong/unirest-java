@@ -43,7 +43,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements MultipartBody {
+class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements MultipartBody {
     private List<FormPart> parameters = new ArrayList<>();
 
     private HttpRequestBody httpRequestObj;

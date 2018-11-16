@@ -40,17 +40,17 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-public abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
+abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     protected Body body;
     protected Headers headers = new Headers();
-    protected final ResponseBuilder builder;
     protected final Config config;
     protected HttpMethod method;
     protected Path url;
-    protected HttpRequest httpRequest;
+    private HttpRequest httpRequest;
+    private final ResponseBuilder builder;
 
-    protected BaseRequest(BaseRequest httpRequest) {
+    BaseRequest(BaseRequest httpRequest) {
         this.config = httpRequest.config;
         this.httpRequest = httpRequest;
         this.builder = httpRequest.builder;
@@ -60,7 +60,7 @@ public abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<
         this.body = httpRequest.body;
     }
 
-    protected BaseRequest(Config config, HttpMethod method, String url) {
+    BaseRequest(Config config, HttpMethod method, String url) {
         this.config = config;
         this.builder = new ResponseBuilder(config);
         this.method = method;
