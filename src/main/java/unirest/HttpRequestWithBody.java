@@ -113,22 +113,22 @@ public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> {
 		return this;
 	}
 
-	public RequestBodyEntity body(JsonNode body) {
+	public HttpRequestUniBody body(JsonNode body) {
 		return body(body.toString());
 	}
 
-	public RequestBodyEntity body(String body) {
-		RequestBodyEntity b = new RequestBodyEntity(this).body(body);
+	public HttpRequestUniBody body(String body) {
+        HttpRequestUniBody b = new RequestBodyEntity(this).body(body);
 		this.body = b;
 		return b;
 	}
 
-	public RequestBodyEntity body(Object body) {
+	public HttpRequestUniBody body(Object body) {
 		return body(config.getObjectMapper().writeValue(body));
 	}
 
-	public RequestBodyEntity body(byte[] body) {
-		RequestBodyEntity b = new RequestBodyEntity(this).body(body);
+	public HttpRequestUniBody body(byte[] body) {
+        HttpRequestUniBody b = new RequestBodyEntity(this).body(body);
 		this.body = b;
 		return b;
 	}
@@ -139,7 +139,7 @@ public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> {
 	 * @param body raw org.JSONObject
 	 * @return RequestBodyEntity instance
 	 */
-	public RequestBodyEntity body(JSONObject body) {
+	public HttpRequestUniBody body(JSONObject body) {
 		return body(body.toString());
 	}
 
@@ -149,7 +149,7 @@ public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> {
 	 * @param body raw org.JSONArray
 	 * @return RequestBodyEntity instance
 	 */
-	public RequestBodyEntity body(JSONArray body) {
+	public HttpRequestUniBody body(JSONArray body) {
 		return body(body.toString());
 	}
 
