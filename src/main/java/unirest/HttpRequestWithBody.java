@@ -38,7 +38,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> implements HttpRequestBody {
+public class HttpRequestWithBody extends BaseRequest<HttpRequestBody> implements HttpRequestBody {
 
 	private Charset charSet = StandardCharsets.UTF_8;
 

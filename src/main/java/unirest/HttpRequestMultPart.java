@@ -35,7 +35,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Collection;
 
-public interface HttpRequestMultPart extends HttpRequest<MultipartBody>, Body {
+public interface HttpRequestMultPart extends HttpRequest<HttpRequestMultPart>, Body {
     HttpRequestMultPart field(String name, String value);
 
     HttpRequestMultPart field(String name, String value, String contentType);

@@ -30,7 +30,7 @@ import org.apache.http.HttpEntity;
 
 import java.nio.charset.Charset;
 
-public interface HttpRequestUniBody extends HttpRequest<RequestBodyEntity>, Body {
+public interface HttpRequestUniBody extends HttpRequest<HttpRequestUniBody>, Body {
     HttpRequestUniBody body(byte[] bodyBytes);
 
     HttpRequestUniBody body(String bodyAsString);

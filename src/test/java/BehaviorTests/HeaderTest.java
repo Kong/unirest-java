@@ -28,10 +28,7 @@ package BehaviorTests;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import unirest.GetRequest;
-import unirest.HttpResponse;
-import unirest.JsonNode;
-import unirest.Unirest;
+import unirest.*;
 
 import static org.junit.Assert.assertEquals;
 import static unirest.TestUtil.assertBasicAuth;
@@ -94,7 +91,7 @@ public class HeaderTest extends BddTest {
 
     @Test
     public void testCaseInsensitiveHeaders() {
-        GetRequest request = Unirest.get(MockServer.GET)
+        BasicRequest request = Unirest.get(MockServer.GET)
                 .header("Name", "Marco");
 
         assertEquals(1, request.getHeaders().size());

@@ -57,31 +57,31 @@ public class UnirestInstance {
         config.shutDown(clearOptions);
     }
 
-    public GetRequest get(String url) {
-        return new GetRequest(config, HttpMethod.GET, url);
+    public BasicRequest get(String url) {
+        return new HttpRequestNoBody(config, HttpMethod.GET, url);
     }
 
-    public GetRequest head(String url) {
-        return new GetRequest(config, HttpMethod.HEAD, url);
+    public BasicRequest head(String url) {
+        return new HttpRequestNoBody(config, HttpMethod.HEAD, url);
     }
 
-    public HttpRequestWithBody options(String url) {
+    public HttpRequestBody options(String url) {
         return new HttpRequestWithBody(config, HttpMethod.OPTIONS, url);
     }
 
-    public HttpRequestWithBody post(String url) {
+    public HttpRequestBody post(String url) {
         return new HttpRequestWithBody(config, HttpMethod.POST, url);
     }
 
-    public HttpRequestWithBody delete(String url) {
+    public HttpRequestBody delete(String url) {
         return new HttpRequestWithBody(config, HttpMethod.DELETE, url);
     }
 
-    public HttpRequestWithBody patch(String url) {
+    public HttpRequestBody patch(String url) {
         return new HttpRequestWithBody(config, HttpMethod.PATCH, url);
     }
 
-    public HttpRequestWithBody put(String url) {
+    public HttpRequestBody put(String url) {
         return new HttpRequestWithBody(config, HttpMethod.PUT, url);
     }
 

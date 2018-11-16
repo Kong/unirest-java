@@ -40,7 +40,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-public abstract class BaseRequest<R extends BaseRequest> implements HttpRequest<R> {
+public abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     protected Body body;
     protected Headers headers = new Headers();

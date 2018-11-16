@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public interface HttpRequest<R extends BaseRequest> {
+public interface HttpRequest<R extends HttpRequest> {
     R routeParam(String name, String value);
 
     R basicAuth(String username, String password);
