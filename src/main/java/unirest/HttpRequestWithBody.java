@@ -49,7 +49,7 @@ public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> {
 	}
 
 	public MultipartBody field(String name, Collection<?> value) {
-		MultipartBody body = new MultipartBody(config, this).field(name, value);
+		MultipartBody body = new MultipartBody(this).field(name, value);
 		this.body = body;
 		return body;
 	}
@@ -59,7 +59,7 @@ public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> {
 	}
 
 	public MultipartBody field(String name, File file, String contentType) {
-		MultipartBody body = new MultipartBody(config, this).field(name, file, contentType);
+		MultipartBody body = new MultipartBody(this).field(name, file, contentType);
 		this.body = body;
 		return body;
 	}
@@ -69,13 +69,13 @@ public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> {
 	}
 
 	public MultipartBody field(String name, Object value, String contentType) {
-		MultipartBody body = new MultipartBody(config, this).field(name, nullToEmpty(value), contentType);
+		MultipartBody body = new MultipartBody(this).field(name, nullToEmpty(value), contentType);
 		this.body = body;
 		return body;
 	}
 
 	public MultipartBody fields(Map<String, Object> parameters) {
-		MultipartBody body = new MultipartBody(config, this);
+		MultipartBody body = new MultipartBody(this);
 		if (parameters != null) {
 			for (Entry<String, Object> param : parameters.entrySet()) {
 				if (param.getValue() instanceof File) {
@@ -97,7 +97,7 @@ public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> {
 	}
 
 	public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
-		MultipartBody body = new MultipartBody(config, this).field(name, stream, contentType, fileName);
+		MultipartBody body = new MultipartBody(this).field(name, stream, contentType, fileName);
 		this.body = body;
 		return body;
 	}
