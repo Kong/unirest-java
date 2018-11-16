@@ -48,9 +48,7 @@ class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRe
 
 	@Override
 	public MultipartBody field(String name, Collection<?> value) {
-		MultipartBody body = new HttpRequestMultiPart(this).field(name, value);
-		this.body = body;
-		return body;
+		return new HttpRequestMultiPart(this).field(name, value);
 	}
 
 	@Override
@@ -60,9 +58,7 @@ class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRe
 
 	@Override
 	public MultipartBody field(String name, File file, String contentType) {
-		MultipartBody body = new HttpRequestMultiPart(this).field(name, file, contentType);
-		this.body = body;
-		return body;
+		return new HttpRequestMultiPart(this).field(name, file, contentType);
 	}
 
 	@Override
@@ -72,9 +68,7 @@ class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRe
 
 	@Override
 	public MultipartBody field(String name, Object value, String contentType) {
-		MultipartBody body = new HttpRequestMultiPart(this).field(name, nullToEmpty(value), contentType);
-		this.body = body;
-		return body;
+		return new HttpRequestMultiPart(this).field(name, nullToEmpty(value), contentType);
 	}
 
 	@Override
@@ -89,7 +83,6 @@ class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRe
 				}
 			}
 		}
-		this.body = body;
 		return body;
 	}
 
@@ -102,16 +95,12 @@ class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRe
 
 	@Override
 	public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
-		MultipartBody body = new HttpRequestMultiPart(this).field(name, stream, contentType, fileName);
-		this.body = body;
-		return body;
+		return new HttpRequestMultiPart(this).field(name, stream, contentType, fileName);
 	}
 
 	@Override
 	public MultipartBody field(String name, InputStream stream, String fileName) {
-		MultipartBody body = field(name, stream, ContentType.APPLICATION_OCTET_STREAM, fileName);
-		this.body = body;
-		return body;
+		return field(name, stream, ContentType.APPLICATION_OCTET_STREAM, fileName);
 	}
 
 	@Override
@@ -127,9 +116,7 @@ class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRe
 
 	@Override
 	public RequestBodyEntity body(String body) {
-        RequestBodyEntity b = new HttpRequestUniBody(this).body(body);
-		this.body = b;
-		return b;
+		return new HttpRequestUniBody(this).body(body);
 	}
 
 	@Override
@@ -139,9 +126,7 @@ class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRe
 
 	@Override
 	public RequestBodyEntity body(byte[] body) {
-        RequestBodyEntity b = new HttpRequestUniBody(this).body(body);
-		this.body = b;
-		return b;
+		return new HttpRequestUniBody(this).body(body);
 	}
 
 	/**

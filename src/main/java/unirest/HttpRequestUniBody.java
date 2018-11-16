@@ -36,12 +36,12 @@ import java.util.function.Supplier;
 
 class HttpRequestUniBody extends BaseRequest<RequestBodyEntity> implements RequestBodyEntity {
 
-	private final HttpRequestBody request;
 	private Supplier<HttpEntity> body = () -> new StringEntity("", StandardCharsets.UTF_8);
+	private Charset charSet;
 
 	HttpRequestUniBody(HttpRequestBody httpRequest) {
 		super(httpRequest);
-		request = httpRequest;
+		this.charSet = httpRequest.getCharset();
 	}
 
 	@Override
@@ -52,7 +52,7 @@ class HttpRequestUniBody extends BaseRequest<RequestBodyEntity> implements Reque
 
 	@Override
 	public RequestBodyEntity body(String bodyAsString) {
-		this.body = () -> new StringEntity(bodyAsString, request.getCharset());
+		this.body = () -> new StringEntity(bodyAsString, charSet);
 		return this;
 	}
 
@@ -63,12 +63,17 @@ class HttpRequestUniBody extends BaseRequest<RequestBodyEntity> implements Reque
 
 	@Override
 	public RequestBodyEntity charset(Charset charset) {
-		request.charset(charset);
+		this.charSet = charset;
 		return this;
 	}
 
 	@Override
 	public HttpEntity getEntity() {
 		return body.get();
+	}
+
+	@Override
+	public Body getBody() {
+		return this;
 	}
 }

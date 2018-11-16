@@ -26,8 +26,6 @@
 
 package unirest;
 
-import org.apache.http.HttpEntity;
-
 import java.nio.charset.Charset;
 
 public interface RequestBodyEntity extends HttpRequest<RequestBodyEntity>, Body {
@@ -39,5 +37,4 @@ public interface RequestBodyEntity extends HttpRequest<RequestBodyEntity>, Body 
 
     RequestBodyEntity charset(Charset charset);
 
-    HttpEntity getEntity();
 }

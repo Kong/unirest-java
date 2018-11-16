@@ -42,22 +42,18 @@ import java.util.function.Function;
 
 abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
-    protected Body body;
     protected Headers headers = new Headers();
     protected final Config config;
     protected HttpMethod method;
     protected Path url;
-    private HttpRequest httpRequest;
     private final ResponseBuilder builder;
 
     BaseRequest(BaseRequest httpRequest) {
         this.config = httpRequest.config;
-        this.httpRequest = httpRequest;
         this.builder = httpRequest.builder;
         this.method = httpRequest.method;
         this.url = httpRequest.url;
         this.headers.addAll(httpRequest.headers);
-        this.body = httpRequest.body;
     }
 
     BaseRequest(Config config, HttpMethod method, String url) {
@@ -66,7 +62,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         this.method = method;
         this.url = new Path(url);
         headers.putAll(config.getDefaultHeaders());
-        this.httpRequest = this;
     }
 
     @Override
@@ -124,7 +119,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public HttpRequest getHttpRequest() {
-        return this.httpRequest;
+        return this;
     }
 
     @Override
@@ -205,7 +200,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     private <T> HttpResponse<T> request(Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) {
 
-        HttpRequestBase requestObj = new RequestPrep(httpRequest, false).prepare();
+        HttpRequestBase requestObj = new RequestPrep(this, false).prepare();
         HttpClient client = config.getClient();
 
         try {
@@ -237,7 +232,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
         Objects.requireNonNull(callback);
 
-        HttpUriRequest requestObj = new RequestPrep(httpRequest, true).prepare();
+        HttpUriRequest requestObj = new RequestPrep(this, true).prepare();
 
         config.getAsyncHttpClient()
                 .execute(requestObj, new FutureCallback<org.apache.http.HttpResponse>() {
@@ -277,6 +272,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public Body getBody() {
-        return body;
+        return null;
     }
 }

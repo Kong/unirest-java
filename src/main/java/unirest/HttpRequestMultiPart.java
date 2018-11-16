@@ -46,12 +46,12 @@ import java.util.List;
 class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements MultipartBody {
     private List<FormPart> parameters = new ArrayList<>();
 
-    private HttpRequestBody httpRequestObj;
     private HttpMultipartMode mode = HttpMultipartMode.BROWSER_COMPATIBLE;
+    private Charset charSet;
 
     public HttpRequestMultiPart(HttpRequestBody httpRequest) {
         super(httpRequest);
-        this.httpRequestObj = httpRequest;
+        this.charSet = httpRequest.getCharset();
     }
 
     @Override
@@ -123,31 +123,13 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
 
     @Override
     public MultipartBody charset(Charset charset) {
-        httpRequestObj.charset(charset);
+        this.charSet = charset;
         return this;
     }
 
     @Override
     public MultipartBody contentType(String mimeType) {
-        httpRequestObj.header(HttpHeaders.CONTENT_TYPE, mimeType);
-        return this;
-    }
-
-    @Override
-    public MultipartBody accept(String mimeType) {
-        httpRequestObj.accept(mimeType);
-        return this;
-    }
-
-    @Override
-    public MultipartBody basicAuth(String username, String password) {
-        httpRequestObj.basicAuth(username, password);
-        return this;
-    }
-
-    @Override
-    public MultipartBody header(String name, String value) {
-        httpRequestObj.header(name, value);
+        header(HttpHeaders.CONTENT_TYPE, mimeType);
         return this;
     }
 
@@ -167,15 +149,20 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
     public HttpEntity getEntity() {
         if (parameters.stream().anyMatch(FormPart::isFile)) {
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            builder.setCharset(httpRequestObj.getCharset());
+            builder.setCharset(charSet);
             builder.setMode(mode);
             for (FormPart key : parameters) {
                 builder.addPart(key.getName(), key.toApachePart());
             }
             return builder.build();
         } else {
-            return new UrlEncodedFormEntity(MapUtil.getList(parameters), httpRequestObj.getCharset());
+            return new UrlEncodedFormEntity(MapUtil.getList(parameters), charSet);
         }
+    }
+
+    @Override
+    public Body getBody() {
+        return this;
     }
 
     private void addPart(String name, Object value, ContentType type) {

@@ -26,7 +26,6 @@
 
 package unirest;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 
@@ -63,6 +62,4 @@ public interface MultipartBody extends HttpRequest<MultipartBody>, Body {
     MultipartBody mode(String value);
 
     MultipartBody mode(HttpMultipartMode value);
-
-    HttpEntity getEntity();
 }
