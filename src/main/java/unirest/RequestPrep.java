@@ -80,7 +80,7 @@ class RequestPrep {
         }
 
         try {
-            HttpRequestBase reqObj = FACTORIES.get(request.getHttpMethod()).apply(request.url);
+            HttpRequestBase reqObj = FACTORIES.get(request.getHttpMethod()).apply(request.url.toString());
             request.getHeaders().entries().forEach(reqObj::addHeader);
             return reqObj;
         }catch (RuntimeException e){

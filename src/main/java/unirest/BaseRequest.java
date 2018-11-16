@@ -33,16 +33,12 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
 
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public abstract class BaseRequest<R extends BaseRequest> {
 
@@ -51,7 +47,7 @@ public abstract class BaseRequest<R extends BaseRequest> {
     private final ResponseBuilder builder;
     private final Config config;
     protected HttpMethod method;
-    protected String url;
+    protected Path url;
     protected HttpRequest httpRequest;
 
     protected BaseRequest(Config config, HttpRequest httpRequest) {
@@ -68,20 +64,12 @@ public abstract class BaseRequest<R extends BaseRequest> {
         this.config = config;
         this.builder = new ResponseBuilder(config);
         this.method = method;
-        this.url = url;
+        this.url = new Path(url);
         headers.putAll(config.getDefaultHeaders());
     }
 
     public R routeParam(String name, String value) {
-        Matcher matcher = Pattern.compile("\\{" + name + "\\}").matcher(url);
-        int count = 0;
-        while (matcher.find()) {
-            count++;
-        }
-        if (count == 0) {
-            throw new RuntimeException("Can't find route parameter name \"" + name + "\"");
-        }
-        this.url = url.replaceAll("\\{" + name + "\\}", URLParamEncoder.encode(value));
+        url.param(name, value);
         return (R)this;
     }
 
@@ -116,36 +104,12 @@ public abstract class BaseRequest<R extends BaseRequest> {
     }
 
     public R queryString(String name, Object value) {
-        StringBuilder queryString = new StringBuilder();
-        if (url.contains("?")) {
-            queryString.append("&");
-        } else {
-            queryString.append("?");
-        }
-        try {
-            queryString.append(URLEncoder.encode(name));
-            if(value != null) {
-                queryString.append("=").append(URLEncoder.encode(value.toString(), "UTF-8"));
-            }
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-        url += queryString.toString();
+        url.queryString(name, value);
         return (R)this;
     }
 
     public R queryString(Map<String, Object> parameters) {
-        if (parameters != null) {
-            for (Map.Entry<String, Object> param : parameters.entrySet()) {
-                if (param.getValue() instanceof String || param.getValue() instanceof Number || param.getValue() instanceof Boolean || param.getValue() == null) {
-                    queryString(param.getKey(), param.getValue());
-                } else {
-                    throw new RuntimeException("Parameter \"" + param.getKey() +
-                            "\" can't be sent with a GET request because of type: "
-                            + param.getValue().getClass().getName());
-                }
-            }
-        }
+       url.queryString(parameters);
         return (R)this;
     }
 
@@ -280,7 +244,7 @@ public abstract class BaseRequest<R extends BaseRequest> {
     }
 
     public String getUrl() {
-        return url;
+        return url.toString();
     }
 
     public Headers getHeaders() {
