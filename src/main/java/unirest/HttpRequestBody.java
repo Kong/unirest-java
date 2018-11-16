@@ -33,39 +33,145 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 
-public interface HttpRequestBody extends HttpRequest<HttpRequestBody> {
-    HttpRequestBody charset(Charset charset);
+public class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRequestWithBody {
 
-    HttpRequestMultPart field(String name, Collection<?> value);
+	private Charset charSet = StandardCharsets.UTF_8;
 
-    HttpRequestMultPart field(String name, File file);
+	public HttpRequestBody(Config config, HttpMethod method, String url) {
+		super(config, method, url);
+	}
 
-    HttpRequestMultPart field(String name, File file, String contentType);
+	@Override
+	public MultipartBody field(String name, Collection<?> value) {
+		MultipartBody body = new HttpRequestMultiPart(this).field(name, value);
+		this.body = body;
+		return body;
+	}
 
-    HttpRequestMultPart field(String name, Object value);
+	@Override
+	public MultipartBody field(String name, File file) {
+		return field(name, file, null);
+	}
 
-    HttpRequestMultPart field(String name, Object value, String contentType);
+	@Override
+	public MultipartBody field(String name, File file, String contentType) {
+		MultipartBody body = new HttpRequestMultiPart(this).field(name, file, contentType);
+		this.body = body;
+		return body;
+	}
 
-    HttpRequestMultPart fields(Map<String, Object> parameters);
+	@Override
+	public MultipartBody field(String name, Object value) {
+		return field(name, value, null);
+	}
 
-    HttpRequestMultPart field(String name, InputStream stream, ContentType contentType, String fileName);
+	@Override
+	public MultipartBody field(String name, Object value, String contentType) {
+		MultipartBody body = new HttpRequestMultiPart(this).field(name, nullToEmpty(value), contentType);
+		this.body = body;
+		return body;
+	}
 
-    HttpRequestMultPart field(String name, InputStream stream, String fileName);
+	@Override
+	public MultipartBody fields(Map<String, Object> parameters) {
+		HttpRequestMultiPart body = new HttpRequestMultiPart(this);
+		if (parameters != null) {
+			for (Entry<String, Object> param : parameters.entrySet()) {
+				if (param.getValue() instanceof File) {
+					body.field(param.getKey(), (File) param.getValue());
+				} else {
+					body.field(param.getKey(), nullToEmpty(param.getValue()));
+				}
+			}
+		}
+		this.body = body;
+		return body;
+	}
 
-    HttpRequestUniBody body(JsonNode body);
+	private String nullToEmpty(Object v) {
+		if(v == null){
+			return "";
+		}
+		return v.toString();
+	}
 
-    HttpRequestUniBody body(String body);
+	@Override
+	public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
+		MultipartBody body = new HttpRequestMultiPart(this).field(name, stream, contentType, fileName);
+		this.body = body;
+		return body;
+	}
 
-    HttpRequestUniBody body(Object body);
+	@Override
+	public MultipartBody field(String name, InputStream stream, String fileName) {
+		MultipartBody body = field(name, stream, ContentType.APPLICATION_OCTET_STREAM, fileName);
+		this.body = body;
+		return body;
+	}
 
-    HttpRequestUniBody body(byte[] body);
+	@Override
+	public HttpRequestBody charset(Charset charset) {
+		this.charSet = charset;
+		return this;
+	}
 
-    HttpRequestUniBody body(JSONObject body);
+	@Override
+	public RequestBodyEntity body(JsonNode body) {
+		return body(body.toString());
+	}
 
-    HttpRequestUniBody body(JSONArray body);
+	@Override
+	public RequestBodyEntity body(String body) {
+        RequestBodyEntity b = new HttpRequestUniBody(this).body(body);
+		this.body = b;
+		return b;
+	}
 
-    Charset getCharset();
+	@Override
+	public RequestBodyEntity body(Object body) {
+		return body(config.getObjectMapper().writeValue(body));
+	}
+
+	@Override
+	public RequestBodyEntity body(byte[] body) {
+        RequestBodyEntity b = new HttpRequestUniBody(this).body(body);
+		this.body = b;
+		return b;
+	}
+
+	/**
+	 * Sugar method for body operation
+	 *
+	 * @param body raw org.JSONObject
+	 * @return RequestBodyEntity instance
+	 */
+	@Override
+	public RequestBodyEntity body(JSONObject body) {
+		return body(body.toString());
+	}
+
+	/**
+	 * Sugar method for body operation
+	 *
+	 * @param body raw org.JSONArray
+	 * @return RequestBodyEntity instance
+	 */
+	@Override
+	public RequestBodyEntity body(JSONArray body) {
+		return body(body.toString());
+	}
+
+	@Override
+	public Charset getCharset() {
+		return charSet;
+	}
+
+	void setCharset(Charset charset) {
+		this.charSet = charset;
+	}
 }

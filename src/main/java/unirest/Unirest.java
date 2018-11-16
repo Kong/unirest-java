@@ -53,31 +53,31 @@ public class Unirest {
        primaryInstance.shutDown(clearOptions);
     }
 
-    public static BasicRequest get(String url) {
+    public static GetRequest get(String url) {
         return primaryInstance.get(url);
     }
 
-    public static BasicRequest head(String url) {
+    public static GetRequest head(String url) {
         return primaryInstance.head(url);
     }
 
-    public static BasicRequest options(String url) {
+    public static GetRequest options(String url) {
         return primaryInstance.options(url);
     }
 
-    public static HttpRequestBody post(String url) {
+    public static HttpRequestWithBody post(String url) {
         return primaryInstance.post(url);
     }
 
-    public static HttpRequestBody delete(String url) {
+    public static HttpRequestWithBody delete(String url) {
         return primaryInstance.delete(url);
     }
 
-    public static HttpRequestBody patch(String url) {
+    public static HttpRequestWithBody patch(String url) {
         return primaryInstance.patch(url);
     }
 
-    public static HttpRequestBody put(String url) {
+    public static HttpRequestWithBody put(String url) {
         return primaryInstance.put(url);
     }
 

@@ -91,7 +91,7 @@ public class HeaderTest extends BddTest {
 
     @Test
     public void testCaseInsensitiveHeaders() {
-        BasicRequest request = Unirest.get(MockServer.GET)
+        GetRequest request = Unirest.get(MockServer.GET)
                 .header("Name", "Marco");
 
         assertEquals(1, request.getHeaders().size());

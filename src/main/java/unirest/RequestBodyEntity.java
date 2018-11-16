@@ -27,48 +27,17 @@
 package unirest;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.StringEntity;
 
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.function.Supplier;
 
-public class RequestBodyEntity extends BaseRequest<HttpRequestUniBody> implements HttpRequestUniBody {
+public interface RequestBodyEntity extends HttpRequest<RequestBodyEntity>, Body {
+    RequestBodyEntity body(byte[] bodyBytes);
 
-	private final HttpRequestWithBody request;
-	private Supplier<HttpEntity> body = () -> new StringEntity("", StandardCharsets.UTF_8);
+    RequestBodyEntity body(String bodyAsString);
 
-	RequestBodyEntity(HttpRequestWithBody httpRequest) {
-		super(httpRequest);
-		request = httpRequest;
-	}
+    RequestBodyEntity body(JsonNode jsonBody);
 
-	@Override
-	public HttpRequestUniBody body(byte[] bodyBytes) {
-		this.body = () -> new ByteArrayEntity(bodyBytes);
-		return this;
-	}
+    RequestBodyEntity charset(Charset charset);
 
-	@Override
-	public HttpRequestUniBody body(String bodyAsString) {
-		this.body = () -> new StringEntity(bodyAsString, request.getCharset());
-		return this;
-	}
-
-	@Override
-	public HttpRequestUniBody body(JsonNode jsonBody) {
-		return body(jsonBody.toString());
-	}
-
-	@Override
-	public HttpRequestUniBody charset(Charset charset) {
-		request.charset(charset);
-		return this;
-	}
-
-	@Override
-	public HttpEntity getEntity() {
-		return body.get();
-	}
+    HttpEntity getEntity();
 }

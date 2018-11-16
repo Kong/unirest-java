@@ -27,171 +27,42 @@
 package unirest;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHeaders;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.ByteArrayBody;
-import org.apache.http.entity.mime.content.InputStreamBody;
 
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
-public class MultipartBody extends BaseRequest<HttpRequestMultPart> implements HttpRequestMultPart {
-    private List<FormPart> parameters = new ArrayList<>();
+public interface MultipartBody extends HttpRequest<MultipartBody>, Body {
+    MultipartBody field(String name, String value);
 
-    private HttpRequestWithBody httpRequestObj;
-    private HttpMultipartMode mode = HttpMultipartMode.BROWSER_COMPATIBLE;
+    MultipartBody field(String name, String value, String contentType);
 
-    public MultipartBody(HttpRequestWithBody httpRequest) {
-        super(httpRequest);
-        this.httpRequestObj = httpRequest;
-    }
+    MultipartBody field(String name, Collection<?> collection);
 
-    @Override
-    public HttpRequestMultPart field(String name, String value) {
-        addPart(name, value);
-        return this;
-    }
+    MultipartBody field(String name, InputStream value, ContentType contentType);
 
-    @Override
-    public HttpRequestMultPart field(String name, String value, String contentType) {
-        addPart(name, value, tryParse(contentType));
-        return this;
-    }
+    MultipartBody field(String name, File file);
 
-    @Override
-    public HttpRequestMultPart field(String name, Collection<?> collection) {
-        for (Object current: collection) {
-            addPart(name, current, null);
-        }
-        return this;
-    }
+    MultipartBody field(String name, File file, String contentType);
 
-    @Override
-    public HttpRequestMultPart field(String name, InputStream value, ContentType contentType) {
-        addPart(name, new InputStreamBody(value, contentType), contentType);
-        return this;
-    }
+    MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName);
 
-    @Override
-    public HttpRequestMultPart field(String name, File file) {
-        addPart(name, file);
-        return this;
-    }
+    MultipartBody field(String name, InputStream stream, String fileName);
 
-    @Override
-    public HttpRequestMultPart field(String name, File file, String contentType) {
-        addPart(name, file, tryParse(contentType));
+    MultipartBody field(String name, byte[] bytes, ContentType contentType, String fileName);
 
-        return this;
-    }
+    MultipartBody field(String name, byte[] bytes, String fileName);
 
-    @Override
-    public HttpRequestMultPart field(String name, InputStream stream, ContentType contentType, String fileName) {
-        addPart(name, new InputStreamBody(stream, contentType, fileName), contentType);
+    MultipartBody charset(Charset charset);
 
-        return this;
-    }
+    MultipartBody contentType(String mimeType);
 
-    @Override
-    public HttpRequestMultPart field(String name, InputStream stream, String fileName) {
-        addPart(name, new InputStreamBody(stream, ContentType.APPLICATION_OCTET_STREAM, fileName), ContentType.APPLICATION_OCTET_STREAM);
+    MultipartBody mode(String value);
 
-        return this;
-    }
+    MultipartBody mode(HttpMultipartMode value);
 
-    @Override
-    public HttpRequestMultPart field(String name, byte[] bytes, ContentType contentType, String fileName) {
-        addPart(name, new ByteArrayBody(bytes, contentType, fileName), contentType);
-
-        return this;
-    }
-
-    @Override
-    public HttpRequestMultPart field(String name, byte[] bytes, String fileName) {
-        addPart(name, new ByteArrayBody(bytes, ContentType.APPLICATION_OCTET_STREAM, fileName), ContentType.APPLICATION_OCTET_STREAM);
-
-        return this;
-    }
-
-    @Override
-    public HttpRequestMultPart charset(Charset charset) {
-        httpRequestObj.charset(charset);
-        return this;
-    }
-
-    @Override
-    public HttpRequestMultPart contentType(String mimeType) {
-        httpRequestObj.header(HttpHeaders.CONTENT_TYPE, mimeType);
-        return this;
-    }
-
-    @Override
-    public MultipartBody accept(String mimeType) {
-        httpRequestObj.accept(mimeType);
-        return this;
-    }
-
-    @Override
-    public MultipartBody basicAuth(String username, String password) {
-        httpRequestObj.basicAuth(username, password);
-        return this;
-    }
-
-    @Override
-    public MultipartBody header(String name, String value) {
-        httpRequestObj.header(name, value);
-        return this;
-    }
-
-    @Override
-    public HttpRequestMultPart mode(String value) {
-        this.mode = HttpMultipartMode.valueOf(value);
-        return this;
-    }
-
-    @Override
-    public HttpRequestMultPart mode(HttpMultipartMode value) {
-        this.mode = value;
-        return this;
-    }
-
-    @Override
-    public HttpEntity getEntity() {
-        if (parameters.stream().anyMatch(FormPart::isFile)) {
-            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            builder.setCharset(httpRequestObj.getCharset());
-            builder.setMode(mode);
-            for (FormPart key : parameters) {
-                builder.addPart(key.getName(), key.toApachePart());
-            }
-            return builder.build();
-        } else {
-            return new UrlEncodedFormEntity(MapUtil.getList(parameters), httpRequestObj.getCharset());
-        }
-    }
-
-    private void addPart(String name, Object value, ContentType type) {
-        parameters.add(new FormPart(name, value, type));
-        Collections.sort(parameters);
-    }
-
-    private void addPart(String name, Object value) {
-        addPart(name, value, null);
-    }
-
-    private ContentType tryParse(String contentType) {
-        if (contentType != null && contentType.length() > 0) {
-            return ContentType.parse(contentType);
-        } else {
-            return null;
-        }
-    }
+    HttpEntity getEntity();
 }

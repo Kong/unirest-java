@@ -26,5 +26,5 @@
 
 package unirest;
 
-public interface BasicRequest extends HttpRequest<BasicRequest> {
+public interface GetRequest extends HttpRequest<GetRequest> {
 }

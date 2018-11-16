@@ -57,32 +57,32 @@ public class UnirestInstance {
         config.shutDown(clearOptions);
     }
 
-    public BasicRequest get(String url) {
+    public GetRequest get(String url) {
         return new HttpRequestNoBody(config, HttpMethod.GET, url);
     }
 
-    public BasicRequest head(String url) {
+    public GetRequest head(String url) {
         return new HttpRequestNoBody(config, HttpMethod.HEAD, url);
     }
 
-    public BasicRequest options(String url) {
+    public GetRequest options(String url) {
         return new HttpRequestNoBody(config, HttpMethod.OPTIONS, url);
     }
 
-    public HttpRequestBody post(String url) {
-        return new HttpRequestWithBody(config, HttpMethod.POST, url);
+    public HttpRequestWithBody post(String url) {
+        return new HttpRequestBody(config, HttpMethod.POST, url);
     }
 
-    public HttpRequestBody delete(String url) {
-        return new HttpRequestWithBody(config, HttpMethod.DELETE, url);
+    public HttpRequestWithBody delete(String url) {
+        return new HttpRequestBody(config, HttpMethod.DELETE, url);
     }
 
-    public HttpRequestBody patch(String url) {
-        return new HttpRequestWithBody(config, HttpMethod.PATCH, url);
+    public HttpRequestWithBody patch(String url) {
+        return new HttpRequestBody(config, HttpMethod.PATCH, url);
     }
 
-    public HttpRequestBody put(String url) {
-        return new HttpRequestWithBody(config, HttpMethod.PUT, url);
+    public HttpRequestWithBody put(String url) {
+        return new HttpRequestBody(config, HttpMethod.PUT, url);
     }
 
     public JsonPatchRequest jsonPatch(String url) {
