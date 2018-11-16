@@ -40,12 +40,10 @@ import java.util.Map.Entry;
 
 public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> {
 
-	private final Config config;
 	private Charset charSet = StandardCharsets.UTF_8;
 
 	public HttpRequestWithBody(Config config, HttpMethod method, String url) {
 		super(config, method, url);
-		this.config = config;
 	}
 
 	public HttpRequestMultPart field(String name, Collection<?> value) {
