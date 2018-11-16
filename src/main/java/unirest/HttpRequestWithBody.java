@@ -118,7 +118,7 @@ public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> {
 	}
 
 	public RequestBodyEntity body(String body) {
-		RequestBodyEntity b = new RequestBodyEntity(config, this).body(body);
+		RequestBodyEntity b = new RequestBodyEntity(this).body(body);
 		this.body = b;
 		return b;
 	}
@@ -128,7 +128,7 @@ public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> {
 	}
 
 	public RequestBodyEntity body(byte[] body) {
-		RequestBodyEntity b = new RequestBodyEntity(config, this).body(body);
+		RequestBodyEntity b = new RequestBodyEntity(this).body(body);
 		this.body = b;
 		return b;
 	}

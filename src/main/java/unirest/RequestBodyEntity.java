@@ -39,7 +39,7 @@ public class RequestBodyEntity extends BaseRequest<RequestBodyEntity> implements
 	private final HttpRequestWithBody request;
 	private Supplier<HttpEntity> body = () -> new StringEntity("", StandardCharsets.UTF_8);
 
-	RequestBodyEntity(Config config, HttpRequestWithBody httpRequest) {
+	RequestBodyEntity(HttpRequestWithBody httpRequest) {
 		super(httpRequest);
 		request = httpRequest;
 	}
