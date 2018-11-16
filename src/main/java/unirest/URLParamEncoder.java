@@ -34,7 +34,7 @@ class URLParamEncoder {
 		try {
 			return URLEncoder.encode(input, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
+			throw new UnirestException(e);
 		}
 	}
 }

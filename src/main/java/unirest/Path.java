@@ -46,7 +46,7 @@ public class Path {
             count++;
         }
         if (count == 0) {
-            throw new RuntimeException("Can't find route parameter name \"" + name + "\"");
+            throw new UnirestException("Can't find route parameter name \"" + name + "\"");
         }
         this.url = url.replaceAll("\\{" + name + "\\}", URLParamEncoder.encode(value));
     }
@@ -64,7 +64,7 @@ public class Path {
                 queryString.append("=").append(URLEncoder.encode(value.toString(), "UTF-8"));
             }
         } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            throw new UnirestException(e);
         }
         url += queryString.toString();
     }
@@ -75,7 +75,7 @@ public class Path {
                 if (param.getValue() instanceof String || param.getValue() instanceof Number || param.getValue() instanceof Boolean || param.getValue() == null) {
                     queryString(param.getKey(), param.getValue());
                 } else {
-                    throw new RuntimeException("Parameter \"" + param.getKey() +
+                    throw new UnirestException("Parameter \"" + param.getKey() +
                             "\" can't be sent with a GET request because of type: "
                             + param.getValue().getClass().getName());
                 }

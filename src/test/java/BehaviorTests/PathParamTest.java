@@ -72,7 +72,7 @@ public class PathParamTest extends BddTest {
                         .routeParam("method222", "get")
                         .queryString("name", "Mark")
                         .asBinary(),
-                RuntimeException.class,
+                UnirestException.class,
                 "Can't find route parameter name \"method222\"");
     }
 
