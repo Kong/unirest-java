@@ -129,84 +129,83 @@ public abstract class BaseRequest<R extends BaseRequest> implements HttpRequest<
 
     @Override
     public HttpResponse<String> asString() throws UnirestException {
-        return request(httpRequest, builder::asString);
+        return request(builder::asString);
     }
 
     @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync() {
-        return requestAsync(httpRequest, builder::asString);
+        return requestAsync(builder::asString);
     }
 
     @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync(Callback<String> callback) {
-        return requestAsync(httpRequest, builder::asString, callback);
+        return requestAsync(builder::asString, callback);
     }
 
     @Override
     public HttpResponse<JsonNode> asJson() throws UnirestException {
-        return request(httpRequest, builder::asJson);
+        return request(builder::asJson);
     }
 
     @Override
     public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync() {
-        return requestAsync(httpRequest, builder::asJson);
+        return requestAsync(builder::asJson);
     }
 
     @Override
     public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback) {
-        return requestAsync(httpRequest, builder::asJson, callback);
+        return requestAsync(builder::asJson, callback);
     }
 
     @Override
     public <T> HttpResponse<T> asObject(Class<? extends T> responseClass) throws UnirestException {
-        return request(httpRequest, r -> builder.asObject(r, responseClass));
+        return request(r -> builder.asObject(r, responseClass));
     }
 
     @Override
     public <T> HttpResponse<T> asObject(GenericType<T> genericType) throws UnirestException {
-        return request(httpRequest, r -> builder.asObject(r, genericType));
+        return request(r -> builder.asObject(r, genericType));
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass) {
-        return requestAsync(httpRequest, r -> builder.asObject(r, responseClass));
+        return requestAsync(r -> builder.asObject(r, responseClass));
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback) {
-        return requestAsync(httpRequest, r -> builder.asObject(r, responseClass), callback);
+        return requestAsync(r -> builder.asObject(r, responseClass), callback);
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType) {
-        return requestAsync(httpRequest, r -> builder.asObject(r, genericType));
+        return requestAsync(r -> builder.asObject(r, genericType));
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType, Callback<T> callback) {
-        return requestAsync(httpRequest, r -> builder.asObject(r, genericType), callback);
+        return requestAsync(r -> builder.asObject(r, genericType), callback);
     }
 
     @Override
     public HttpResponse<InputStream> asBinary() throws UnirestException {
-        return request(httpRequest, builder::asBinary);
+        return request(builder::asBinary);
     }
 
     @Override
     public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync() {
-        return requestAsync(httpRequest, builder::asBinary);
+        return requestAsync(builder::asBinary);
     }
 
     @Override
     public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback) {
-        return requestAsync(httpRequest, builder::asBinary, callback);
+        return requestAsync(builder::asBinary, callback);
     }
 
 
-    private <T> HttpResponse<T> request(HttpRequest request,
-                                        Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) {
+    private <T> HttpResponse<T> request(Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) {
 
-        HttpRequestBase requestObj = new RequestPrep(request, false).prepare();
+        HttpRequestBase requestObj = new RequestPrep(httpRequest, false).prepare();
         HttpClient client = config.getClient();
 
         try {
@@ -222,26 +221,23 @@ public abstract class BaseRequest<R extends BaseRequest> implements HttpRequest<
     }
 
     private <T> CompletableFuture<HttpResponse<T>> requestAsync(
-            HttpRequest request,
             Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) {
-        return requestAsync(request, transformer, new CompletableFuture<>());
+        return requestAsync(transformer, new CompletableFuture<>());
     }
 
     private <T> CompletableFuture<HttpResponse<T>> requestAsync(
-            HttpRequest request,
             Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer,
             Callback<T> callback) {
-        return requestAsync(request, transformer, CallbackFuture.wrap(callback));
+        return requestAsync(transformer, CallbackFuture.wrap(callback));
     }
 
     private <T> CompletableFuture<HttpResponse<T>> requestAsync(
-            HttpRequest request,
             Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer,
             CompletableFuture<HttpResponse<T>> callback) {
 
         Objects.requireNonNull(callback);
 
-        HttpUriRequest requestObj = new RequestPrep(request, true).prepare();
+        HttpUriRequest requestObj = new RequestPrep(httpRequest, true).prepare();
 
         config.getAsyncHttpClient()
                 .execute(requestObj, new FutureCallback<org.apache.http.HttpResponse>() {
