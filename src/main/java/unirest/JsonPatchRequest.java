@@ -26,59 +26,18 @@
 
 package unirest;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.entity.BasicHttpEntity;
+public interface JsonPatchRequest extends HttpRequest<JsonPatchRequest>, Body {
+    String CONTENT_TYPE = "application/json-patch+json";
 
-import java.io.ByteArrayInputStream;
+    JsonPatchRequest add(String path, Object value);
 
-public class JsonPatchRequest extends BaseRequest<JsonPatchRequest> implements Body {
-    public static final String CONTENT_TYPE = "application/json-patch+json";
-    private JsonPatch items = new JsonPatch();
+    JsonPatchRequest remove(String path);
 
-    public JsonPatchRequest(Config config, String url) {
-        super(config, HttpMethod.PATCH, url);
-        header("Content-Type", CONTENT_TYPE);
-    }
+    JsonPatchRequest replace(String path, Object value);
 
-    public JsonPatchRequest add(String path, Object value) {
-        items.add(path, value);
-        return this;
-    }
+    JsonPatchRequest test(String path, Object value);
 
-    public JsonPatchRequest remove(String path) {
-        items.remove(path);
-        return this;
-    }
+    JsonPatchRequest move(String from, String path);
 
-    public JsonPatchRequest replace(String path, Object value) {
-        items.replace(path, value);
-        return this;
-    }
-
-    public JsonPatchRequest test(String path, Object value) {
-        items.test(path, value);
-        return this;
-    }
-
-    public JsonPatchRequest move(String from, String path) {
-        items.move(from, path);
-        return this;
-    }
-
-    public JsonPatchRequest copy(String from, String path) {
-        items.copy(from, path);
-        return this;
-    }
-
-    @Override
-    public Body getBody() {
-        return this;
-    }
-
-    @Override
-    public HttpEntity getEntity() {
-        BasicHttpEntity e = new BasicHttpEntity();
-        e.setContent(new ByteArrayInputStream(items.toString().getBytes()));
-        return e;
-    }
+    JsonPatchRequest copy(String from, String path);
 }

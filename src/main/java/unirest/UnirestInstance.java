@@ -86,7 +86,7 @@ public class UnirestInstance {
     }
 
     public JsonPatchRequest jsonPatch(String url) {
-        return new JsonPatchRequest(config, url);
+        return new HttpRequestJsonPatch(config, url);
     }
 
     public boolean isRunning() {
