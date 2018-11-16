@@ -65,8 +65,8 @@ public class UnirestInstance {
         return new HttpRequestNoBody(config, HttpMethod.HEAD, url);
     }
 
-    public HttpRequestBody options(String url) {
-        return new HttpRequestWithBody(config, HttpMethod.OPTIONS, url);
+    public BasicRequest options(String url) {
+        return new HttpRequestNoBody(config, HttpMethod.OPTIONS, url);
     }
 
     public HttpRequestBody post(String url) {

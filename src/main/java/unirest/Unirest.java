@@ -61,7 +61,7 @@ public class Unirest {
         return primaryInstance.head(url);
     }
 
-    public static HttpRequestBody options(String url) {
+    public static BasicRequest options(String url) {
         return primaryInstance.options(url);
     }
 
