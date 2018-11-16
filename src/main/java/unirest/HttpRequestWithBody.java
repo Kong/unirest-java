@@ -48,33 +48,33 @@ public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> {
 		this.config = config;
 	}
 
-	public MultipartBody field(String name, Collection<?> value) {
-		MultipartBody body = new MultipartBody(this).field(name, value);
+	public HttpRequestMultPart field(String name, Collection<?> value) {
+		HttpRequestMultPart body = new MultipartBody(this).field(name, value);
 		this.body = body;
 		return body;
 	}
 
-	public MultipartBody field(String name, File file) {
+	public HttpRequestMultPart field(String name, File file) {
 		return field(name, file, null);
 	}
 
-	public MultipartBody field(String name, File file, String contentType) {
-		MultipartBody body = new MultipartBody(this).field(name, file, contentType);
+	public HttpRequestMultPart field(String name, File file, String contentType) {
+		HttpRequestMultPart body = new MultipartBody(this).field(name, file, contentType);
 		this.body = body;
 		return body;
 	}
 
-	public MultipartBody field(String name, Object value) {
+	public HttpRequestMultPart field(String name, Object value) {
 		return field(name, value, null);
 	}
 
-	public MultipartBody field(String name, Object value, String contentType) {
-		MultipartBody body = new MultipartBody(this).field(name, nullToEmpty(value), contentType);
+	public HttpRequestMultPart field(String name, Object value, String contentType) {
+		HttpRequestMultPart body = new MultipartBody(this).field(name, nullToEmpty(value), contentType);
 		this.body = body;
 		return body;
 	}
 
-	public MultipartBody fields(Map<String, Object> parameters) {
+	public HttpRequestMultPart fields(Map<String, Object> parameters) {
 		MultipartBody body = new MultipartBody(this);
 		if (parameters != null) {
 			for (Entry<String, Object> param : parameters.entrySet()) {
@@ -96,14 +96,14 @@ public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> {
 		return v.toString();
 	}
 
-	public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
-		MultipartBody body = new MultipartBody(this).field(name, stream, contentType, fileName);
+	public HttpRequestMultPart field(String name, InputStream stream, ContentType contentType, String fileName) {
+		HttpRequestMultPart body = new MultipartBody(this).field(name, stream, contentType, fileName);
 		this.body = body;
 		return body;
 	}
 
-	public MultipartBody field(String name, InputStream stream, String fileName) {
-		MultipartBody body = field(name, stream, ContentType.APPLICATION_OCTET_STREAM, fileName);
+	public HttpRequestMultPart field(String name, InputStream stream, String fileName) {
+		HttpRequestMultPart body = field(name, stream, ContentType.APPLICATION_OCTET_STREAM, fileName);
 		this.body = body;
 		return body;
 	}

@@ -43,7 +43,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class MultipartBody extends BaseRequest<MultipartBody> implements Body {
+public class MultipartBody extends BaseRequest<MultipartBody> implements HttpRequestMultPart {
     private List<FormPart> parameters = new ArrayList<>();
 
     private HttpRequestWithBody httpRequestObj;
@@ -54,98 +54,116 @@ public class MultipartBody extends BaseRequest<MultipartBody> implements Body {
         this.httpRequestObj = httpRequest;
     }
 
-    public MultipartBody field(String name, String value) {
+    @Override
+    public HttpRequestMultPart field(String name, String value) {
         addPart(name, value);
         return this;
     }
 
-    public MultipartBody field(String name, String value, String contentType) {
+    @Override
+    public HttpRequestMultPart field(String name, String value, String contentType) {
         addPart(name, value, tryParse(contentType));
         return this;
     }
 
-    public MultipartBody field(String name, Collection<?> collection) {
+    @Override
+    public HttpRequestMultPart field(String name, Collection<?> collection) {
         for (Object current: collection) {
             addPart(name, current, null);
         }
         return this;
     }
 
-    public MultipartBody field(String name, InputStream value, ContentType contentType) {
+    @Override
+    public HttpRequestMultPart field(String name, InputStream value, ContentType contentType) {
         addPart(name, new InputStreamBody(value, contentType), contentType);
         return this;
     }
 
-    public MultipartBody field(String name, File file) {
+    @Override
+    public HttpRequestMultPart field(String name, File file) {
         addPart(name, file);
         return this;
     }
 
-    public MultipartBody field(String name, File file, String contentType) {
+    @Override
+    public HttpRequestMultPart field(String name, File file, String contentType) {
         addPart(name, file, tryParse(contentType));
 
         return this;
     }
 
-    public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
+    @Override
+    public HttpRequestMultPart field(String name, InputStream stream, ContentType contentType, String fileName) {
         addPart(name, new InputStreamBody(stream, contentType, fileName), contentType);
 
         return this;
     }
 
-    public MultipartBody field(String name, InputStream stream, String fileName) {
+    @Override
+    public HttpRequestMultPart field(String name, InputStream stream, String fileName) {
         addPart(name, new InputStreamBody(stream, ContentType.APPLICATION_OCTET_STREAM, fileName), ContentType.APPLICATION_OCTET_STREAM);
 
         return this;
     }
 
-    public MultipartBody field(String name, byte[] bytes, ContentType contentType, String fileName) {
+    @Override
+    public HttpRequestMultPart field(String name, byte[] bytes, ContentType contentType, String fileName) {
         addPart(name, new ByteArrayBody(bytes, contentType, fileName), contentType);
 
         return this;
     }
 
-    public MultipartBody field(String name, byte[] bytes, String fileName) {
+    @Override
+    public HttpRequestMultPart field(String name, byte[] bytes, String fileName) {
         addPart(name, new ByteArrayBody(bytes, ContentType.APPLICATION_OCTET_STREAM, fileName), ContentType.APPLICATION_OCTET_STREAM);
 
         return this;
     }
 
-    public MultipartBody charset(Charset charset) {
+    @Override
+    public HttpRequestMultPart charset(Charset charset) {
         httpRequestObj.charset(charset);
         return this;
     }
 
+    @Override
+    public HttpRequestMultPart contentType(String mimeType) {
+        httpRequestObj.header(HttpHeaders.CONTENT_TYPE, mimeType);
+        return this;
+    }
+
+    @Override
     public MultipartBody accept(String mimeType) {
         httpRequestObj.accept(mimeType);
         return this;
     }
 
-    public MultipartBody contentType(String mimeType) {
-        httpRequestObj.header(HttpHeaders.CONTENT_TYPE, mimeType);
-        return this;
-    }
-
+    @Override
     public MultipartBody basicAuth(String username, String password) {
         httpRequestObj.basicAuth(username, password);
         return this;
     }
 
+    @Override
     public MultipartBody header(String name, String value) {
         httpRequestObj.header(name, value);
         return this;
     }
 
-    public MultipartBody mode(String value) {
+    @Override
+    public HttpRequestMultPart mode(String value) {
         this.mode = HttpMultipartMode.valueOf(value);
         return this;
     }
 
-    public MultipartBody mode(HttpMultipartMode value) {
+    @Override
+    public HttpRequestMultPart mode(HttpMultipartMode value) {
         this.mode = value;
         return this;
     }
 
+    @Override
     public HttpEntity getEntity() {
         if (parameters.stream().anyMatch(FormPart::isFile)) {
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
