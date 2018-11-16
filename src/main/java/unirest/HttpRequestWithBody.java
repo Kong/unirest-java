@@ -38,7 +38,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> {
+public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> implements HttpRequestBody {
 
 	private Charset charSet = StandardCharsets.UTF_8;
 
@@ -46,32 +46,38 @@ public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> {
 		super(config, method, url);
 	}
 
+	@Override
 	public HttpRequestMultPart field(String name, Collection<?> value) {
 		HttpRequestMultPart body = new MultipartBody(this).field(name, value);
 		this.body = body;
 		return body;
 	}
 
+	@Override
 	public HttpRequestMultPart field(String name, File file) {
 		return field(name, file, null);
 	}
 
+	@Override
 	public HttpRequestMultPart field(String name, File file, String contentType) {
 		HttpRequestMultPart body = new MultipartBody(this).field(name, file, contentType);
 		this.body = body;
 		return body;
 	}
 
+	@Override
 	public HttpRequestMultPart field(String name, Object value) {
 		return field(name, value, null);
 	}
 
+	@Override
 	public HttpRequestMultPart field(String name, Object value, String contentType) {
 		HttpRequestMultPart body = new MultipartBody(this).field(name, nullToEmpty(value), contentType);
 		this.body = body;
 		return body;
 	}
 
+	@Override
 	public HttpRequestMultPart fields(Map<String, Object> parameters) {
 		MultipartBody body = new MultipartBody(this);
 		if (parameters != null) {
@@ -94,37 +100,44 @@ public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> {
 		return v.toString();
 	}
 
+	@Override
 	public HttpRequestMultPart field(String name, InputStream stream, ContentType contentType, String fileName) {
 		HttpRequestMultPart body = new MultipartBody(this).field(name, stream, contentType, fileName);
 		this.body = body;
 		return body;
 	}
 
+	@Override
 	public HttpRequestMultPart field(String name, InputStream stream, String fileName) {
 		HttpRequestMultPart body = field(name, stream, ContentType.APPLICATION_OCTET_STREAM, fileName);
 		this.body = body;
 		return body;
 	}
 
+	@Override
 	public HttpRequestWithBody charset(Charset charset) {
 		this.charSet = charset;
 		return this;
 	}
 
+	@Override
 	public HttpRequestUniBody body(JsonNode body) {
 		return body(body.toString());
 	}
 
+	@Override
 	public HttpRequestUniBody body(String body) {
         HttpRequestUniBody b = new RequestBodyEntity(this).body(body);
 		this.body = b;
 		return b;
 	}
 
+	@Override
 	public HttpRequestUniBody body(Object body) {
 		return body(config.getObjectMapper().writeValue(body));
 	}
 
+	@Override
 	public HttpRequestUniBody body(byte[] body) {
         HttpRequestUniBody b = new RequestBodyEntity(this).body(body);
 		this.body = b;
@@ -137,6 +150,7 @@ public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> {
 	 * @param body raw org.JSONObject
 	 * @return RequestBodyEntity instance
 	 */
+	@Override
 	public HttpRequestUniBody body(JSONObject body) {
 		return body(body.toString());
 	}
@@ -147,10 +161,12 @@ public class HttpRequestWithBody extends BaseRequest<HttpRequestWithBody> {
 	 * @param body raw org.JSONArray
 	 * @return RequestBodyEntity instance
 	 */
+	@Override
 	public HttpRequestUniBody body(JSONArray body) {
 		return body(body.toString());
 	}
 
+	@Override
 	public Charset getCharset() {
 		return charSet;
 	}
