@@ -26,7 +26,7 @@
 
 package unirest;
 
-public class GetRequest extends HttpRequest<GetRequest> {
+public class GetRequest extends BaseRequest<GetRequest> {
 
 	public GetRequest(Config config, HttpMethod method, String url) {
 		super(config, method, url);

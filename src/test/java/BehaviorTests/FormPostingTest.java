@@ -26,14 +26,11 @@
 
 package BehaviorTests;
 
-import unirest.Unirest;
-import unirest.HttpRequest;
+import unirest.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.junit.Test;
-import unirest.MockCallback;
-import unirest.TestUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

@@ -40,24 +40,23 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-public abstract class BaseRequest<R extends BaseRequest> {
+public abstract class BaseRequest<R extends BaseRequest> implements HttpRequest<R> {
 
     protected Body body;
     protected Headers headers = new Headers();
-    private final ResponseBuilder builder;
-    private final Config config;
+    protected final ResponseBuilder builder;
+    protected final Config config;
     protected HttpMethod method;
     protected Path url;
     protected HttpRequest httpRequest;
 
-    protected BaseRequest(Config config, HttpRequest httpRequest) {
-        this.config = config;
+    protected BaseRequest(BaseRequest httpRequest) {
+        this.config = httpRequest.config;
         this.httpRequest = httpRequest;
-        this.builder = new ResponseBuilder(config);
+        this.builder = httpRequest.builder;
         this.method = httpRequest.method;
         this.url = httpRequest.url;
         this.headers.addAll(httpRequest.headers);
-        headers.putAll(config.getDefaultHeaders());
     }
 
     protected BaseRequest(Config config, HttpMethod method, String url) {
@@ -66,27 +65,33 @@ public abstract class BaseRequest<R extends BaseRequest> {
         this.method = method;
         this.url = new Path(url);
         headers.putAll(config.getDefaultHeaders());
+        this.httpRequest = this;
     }
 
+    @Override
     public R routeParam(String name, String value) {
         url.param(name, value);
         return (R)this;
     }
 
+    @Override
     public R basicAuth(String username, String password) {
         header("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
         return (R)this;
     }
 
+    @Override
     public R accept(String value) {
         return header(HttpHeaders.ACCEPT, value);
     }
 
+    @Override
     public R header(String name, String value) {
         this.headers.add(name.trim(), value);
         return (R)this;
     }
 
+    @Override
     public R headers(Map<String, String> headerMap) {
         if (headers != null) {
             for (Map.Entry<String, String> entry : headerMap.entrySet()) {
@@ -96,6 +101,7 @@ public abstract class BaseRequest<R extends BaseRequest> {
         return (R)this;
     }
 
+    @Override
     public R queryString(String name, Collection<?> value) {
         for (Object cur : value) {
             queryString(name, cur);
@@ -103,76 +109,94 @@ public abstract class BaseRequest<R extends BaseRequest> {
         return (R)this;
     }
 
+    @Override
     public R queryString(String name, Object value) {
         url.queryString(name, value);
         return (R)this;
     }
 
+    @Override
     public R queryString(Map<String, Object> parameters) {
        url.queryString(parameters);
         return (R)this;
     }
 
+    @Override
     public HttpRequest getHttpRequest() {
         return this.httpRequest;
     }
 
+    @Override
     public HttpResponse<String> asString() throws UnirestException {
         return request(httpRequest, builder::asString);
     }
 
+    @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync() {
         return requestAsync(httpRequest, builder::asString);
     }
 
+    @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync(Callback<String> callback) {
         return requestAsync(httpRequest, builder::asString, callback);
     }
 
+    @Override
     public HttpResponse<JsonNode> asJson() throws UnirestException {
         return request(httpRequest, builder::asJson);
     }
 
+    @Override
     public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync() {
         return requestAsync(httpRequest, builder::asJson);
     }
 
+    @Override
     public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback) {
         return requestAsync(httpRequest, builder::asJson, callback);
     }
 
+    @Override
     public <T> HttpResponse<T> asObject(Class<? extends T> responseClass) throws UnirestException {
         return request(httpRequest, r -> builder.asObject(r, responseClass));
     }
 
+    @Override
     public <T> HttpResponse<T> asObject(GenericType<T> genericType) throws UnirestException {
         return request(httpRequest, r -> builder.asObject(r, genericType));
     }
 
+    @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass) {
         return requestAsync(httpRequest, r -> builder.asObject(r, responseClass));
     }
 
+    @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback) {
         return requestAsync(httpRequest, r -> builder.asObject(r, responseClass), callback);
     }
 
+    @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType) {
         return requestAsync(httpRequest, r -> builder.asObject(r, genericType));
     }
 
+    @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType, Callback<T> callback) {
         return requestAsync(httpRequest, r -> builder.asObject(r, genericType), callback);
     }
 
+    @Override
     public HttpResponse<InputStream> asBinary() throws UnirestException {
         return request(httpRequest, builder::asBinary);
     }
 
+    @Override
     public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync() {
         return requestAsync(httpRequest, builder::asBinary);
     }
 
+    @Override
     public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback) {
         return requestAsync(httpRequest, builder::asBinary, callback);
     }
@@ -239,18 +263,22 @@ public abstract class BaseRequest<R extends BaseRequest> {
     }
 
 
+    @Override
     public HttpMethod getHttpMethod() {
         return method;
     }
 
+    @Override
     public String getUrl() {
         return url.toString();
     }
 
+    @Override
     public Headers getHeaders() {
         return headers;
     }
 
+    @Override
     public Body getBody() {
         return body;
     }

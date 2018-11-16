@@ -26,13 +26,65 @@
 
 package unirest;
 
-public abstract class HttpRequest<R extends HttpRequest> extends BaseRequest<R> {
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
+public interface HttpRequest<R extends BaseRequest> {
+    R routeParam(String name, String value);
 
-	public HttpRequest(Config config, HttpMethod method, String url) {
-		super(config, method, url);
-		super.httpRequest = this;
-	}
+    R basicAuth(String username, String password);
 
+    R accept(String value);
 
+    R header(String name, String value);
+
+    R headers(Map<String, String> headerMap);
+
+    R queryString(String name, Collection<?> value);
+
+    R queryString(String name, Object value);
+
+    R queryString(Map<String, Object> parameters);
+
+    HttpRequest getHttpRequest();
+
+    HttpResponse<String> asString() throws UnirestException;
+
+    CompletableFuture<HttpResponse<String>> asStringAsync();
+
+    CompletableFuture<HttpResponse<String>> asStringAsync(Callback<String> callback);
+
+    HttpResponse<JsonNode> asJson() throws UnirestException;
+
+    CompletableFuture<HttpResponse<JsonNode>> asJsonAsync();
+
+    CompletableFuture<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback);
+
+    <T> HttpResponse<T> asObject(Class<? extends T> responseClass) throws UnirestException;
+
+    <T> HttpResponse<T> asObject(GenericType<T> genericType) throws UnirestException;
+
+    <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass);
+
+    <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback);
+
+    <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType);
+
+    <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType, Callback<T> callback);
+
+    HttpResponse<InputStream> asBinary() throws UnirestException;
+
+    CompletableFuture<HttpResponse<InputStream>> asBinaryAsync();
+
+    CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback);
+
+    HttpMethod getHttpMethod();
+
+    String getUrl();
+
+    Headers getHeaders();
+
+    Body getBody();
 }
