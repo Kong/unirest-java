@@ -26,8 +26,12 @@
 
 package unirest;
 
-import java.util.Objects;
-import java.util.Optional;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.*;
 import java.util.stream.Stream;
 
 class Util {
@@ -55,18 +59,27 @@ class Util {
         }
     }
 
-    static String nullToEmpty(String value) {
-        if(value == null){
-            return "";
-        }
-        return value;
-    }
-
-    public static String nullToEmpty(Object v) {
+    static String nullToEmpty(Object v) {
         if(v == null){
             return "";
         }
-        return v.toString();
+        return String.valueOf(v);
+    }
+
+    static String encode(String input) {
+        try {
+            return URLEncoder.encode(input, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new UnirestException(e);
+        }
+    }
+
+    static List<NameValuePair> getList(Collection<FormPart> parameters) {
+        List<NameValuePair> result = new ArrayList<>();
+        for (FormPart entry : parameters) {
+            result.add(new BasicNameValuePair(entry.getName(), entry.getValue().toString()));
+        }
+        return result;
     }
 
 

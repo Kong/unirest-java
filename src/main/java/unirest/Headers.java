@@ -32,6 +32,8 @@ import org.apache.http.message.BasicHeader;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static unirest.Util.nullToEmpty;
+
 public class Headers extends TreeMap<String, List<String>> {
 
     private static final long serialVersionUID = 71310341388734766L;
@@ -55,7 +57,7 @@ public class Headers extends TreeMap<String, List<String>> {
 
     public void add(String name, String value) {
         if(Objects.nonNull(name)){
-            computeIfAbsent(name, k -> new ArrayList<>()).add(Util.nullToEmpty(value));
+            computeIfAbsent(name, k -> new ArrayList<>()).add(nullToEmpty(value));
         }
     }
 

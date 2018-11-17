@@ -168,7 +168,7 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
             }
             return builder.build();
         } else {
-            return new UrlEncodedFormEntity(MapUtil.getList(parameters), charSet);
+            return new UrlEncodedFormEntity(Util.getList(parameters), charSet);
         }
     }
 
