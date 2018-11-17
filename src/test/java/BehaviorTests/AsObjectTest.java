@@ -26,8 +26,13 @@
 
 package BehaviorTests;
 
+import com.google.gson.Gson;
+import unirest.JacksonObjectMapper;
+import unirest.ObjectMapper;
 import unirest.Unirest;
 import org.junit.Test;
+
+import static junit.framework.TestCase.assertTrue;
 
 public class AsObjectTest extends BddTest {
     @Test
@@ -60,5 +65,33 @@ public class AsObjectTest extends BddTest {
                 });
 
         assertAsync();
+    }
+
+    @Test
+    public void canPassAnObjectMapperAsPartOfARequest(){
+        TestingMapper mapper = new TestingMapper();
+        Unirest.get(MockServer.GET)
+                .queryString("foo", "bar")
+                .withObjectMapper(mapper)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertParam("foo", "bar");
+
+        assertTrue(mapper.wasCalled);
+    }
+
+    public static class TestingMapper implements ObjectMapper {
+        public boolean wasCalled;
+
+        @Override
+        public <T> T readValue(String value, Class<T> valueType) {
+            this.wasCalled = true;
+            return new JacksonObjectMapper().readValue(value, valueType);
+        }
+
+        @Override
+        public String writeValue(Object value) {
+            return new Gson().toJson(value);
+        }
     }
 }

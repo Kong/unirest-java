@@ -48,6 +48,8 @@ public interface HttpRequest<R extends HttpRequest> {
 
     R queryString(Map<String, Object> parameters);
 
+    R withObjectMapper(ObjectMapper mapper);
+
     HttpRequest getHttpRequest();
 
     HttpResponse<String> asString() throws UnirestException;

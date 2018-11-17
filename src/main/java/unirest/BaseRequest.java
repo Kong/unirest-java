@@ -33,12 +33,12 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
 
 import java.io.InputStream;
-import java.util.Base64;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+
+import static unirest.BodyData.from;
 
 abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
@@ -46,11 +46,10 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     protected final Config config;
     protected HttpMethod method;
     protected Path url;
-    private final ResponseBuilder builder;
+    private Optional<ObjectMapper> objectMapper = Optional.empty();
 
     BaseRequest(BaseRequest httpRequest) {
         this.config = httpRequest.config;
-        this.builder = httpRequest.builder;
         this.method = httpRequest.method;
         this.url = httpRequest.url;
         this.headers.addAll(httpRequest.headers);
@@ -58,7 +57,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     BaseRequest(Config config, HttpMethod method, String url) {
         this.config = config;
-        this.builder = new ResponseBuilder(config);
         this.method = method;
         this.url = new Path(url);
         headers.putAll(config.getDefaultHeaders());
@@ -118,83 +116,90 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
+    public R withObjectMapper(ObjectMapper mapper) {
+        Objects.requireNonNull(mapper, "ObjectMapper may not be null");
+        this.objectMapper = Optional.of(mapper);
+        return (R)this;
+    }
+
+    @Override
     public HttpRequest getHttpRequest() {
         return this;
     }
 
     @Override
     public HttpResponse<String> asString() throws UnirestException {
-        return request(builder::asString);
+        return request(this::asString);
     }
 
     @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync() {
-        return requestAsync(builder::asString);
+        return requestAsync(this::asString);
     }
 
     @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync(Callback<String> callback) {
-        return requestAsync(builder::asString, callback);
+        return requestAsync(this::asString, callback);
     }
 
     @Override
     public HttpResponse<JsonNode> asJson() throws UnirestException {
-        return request(builder::asJson);
+        return request(this::asJson);
     }
 
     @Override
     public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync() {
-        return requestAsync(builder::asJson);
+        return requestAsync(this::asJson);
     }
 
     @Override
     public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback) {
-        return requestAsync(builder::asJson, callback);
+        return requestAsync(this::asJson, callback);
     }
 
     @Override
     public <T> HttpResponse<T> asObject(Class<? extends T> responseClass) throws UnirestException {
-        return request(r -> builder.asObject(r, responseClass));
+        return request(r -> this.asObject(r, responseClass));
     }
 
     @Override
     public <T> HttpResponse<T> asObject(GenericType<T> genericType) throws UnirestException {
-        return request(r -> builder.asObject(r, genericType));
+        return request(r -> this.asObject(r, genericType));
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass) {
-        return requestAsync(r -> builder.asObject(r, responseClass));
+        return requestAsync(r -> this.asObject(r, responseClass));
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback) {
-        return requestAsync(r -> builder.asObject(r, responseClass), callback);
+        return requestAsync(r -> this.asObject(r, responseClass), callback);
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType) {
-        return requestAsync(r -> builder.asObject(r, genericType));
+        return requestAsync(r -> this.asObject(r, genericType));
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType, Callback<T> callback) {
-        return requestAsync(r -> builder.asObject(r, genericType), callback);
+        return requestAsync(r -> this.asObject(r, genericType), callback);
     }
 
     @Override
     public HttpResponse<InputStream> asBinary() throws UnirestException {
-        return request(builder::asBinary);
+        return request(this::asBinary);
     }
 
     @Override
     public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync() {
-        return requestAsync(builder::asBinary);
+        return requestAsync(this::asBinary);
     }
 
     @Override
     public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback) {
-        return requestAsync(builder::asBinary, callback);
+        return requestAsync(this::asBinary, callback);
     }
 
 
@@ -273,5 +278,52 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public Body getBody() {
         return null;
+    }
+
+    private HttpResponse<JsonNode> asJson(org.apache.http.HttpResponse response) {
+        return new HttpResponseImpl<>(response, from(response.getEntity(), b -> toJson(b)));
+    }
+
+    private HttpResponse<InputStream> asBinary(org.apache.http.HttpResponse response){
+        return new HttpResponseImpl<>(response, from(response.getEntity(), BodyData::getRawInput));
+    }
+
+    private <T> HttpResponse<T> asObject(org.apache.http.HttpResponse response, Class<? extends T> aClass) {
+        return new HttpResponseImpl<>(response, from(response.getEntity(), b -> toObject(b, aClass)));
+    }
+
+    private <T> HttpResponse<T> asObject(org.apache.http.HttpResponse response, GenericType<T> genericType) {
+        return new HttpResponseImpl<>(response, from(response.getEntity(), b -> toObject(b, genericType)));
+    }
+
+    private HttpResponse<String> asString(org.apache.http.HttpResponse response) {
+        return new HttpResponseImpl<>(response, from(response.getEntity(), this::toString));
+    }
+
+    private <T> T toObject(BodyData<T> b, GenericType<T> genericType) {
+        ObjectMapper o = getObjectMapper();
+        return o.readValue(toString(b), genericType);
+    }
+
+    private <T> T toObject(BodyData<T> b, Class<? extends T> aClass) {
+        ObjectMapper o = getObjectMapper();
+        return o.readValue(toString(b), aClass);
+    }
+
+    private String toString(BodyData b) {
+        try {
+            return new String(b.getRawBytes(), b.getCharset());
+        } catch (UnsupportedEncodingException e) {
+            throw new UnirestException(e);
+        }
+    }
+
+    private JsonNode toJson(BodyData<JsonNode> b) {
+        String jsonString = toString(b);
+        return new JsonNode(jsonString);
+    }
+
+    private ObjectMapper getObjectMapper() {
+        return objectMapper.orElseGet(config::getObjectMapper);
     }
 }
