@@ -120,6 +120,7 @@ public class Config {
      * @param value Proxy settings object.
      */
     public Config proxy(HttpHost value) {
+        validateClientsNotRunning();
         this.proxy = value;
         return this;
     }
@@ -140,7 +141,7 @@ public class Config {
      * @param inMillies The timeout until a connection with the server is established (in milliseconds). Default is 10000. Set to zero to disable the timeout.
      */
     public Config connectTimeout(int inMillies) {
-        validateNotCustomClient();
+        validateClientsNotRunning();
         this.connectionTimeout = inMillies;
         return this;
     }
@@ -151,7 +152,7 @@ public class Config {
      * @param inMillies The timeout to receive data (in milliseconds). Default is 60000. Set to zero to disable the timeout.
      */
     public Config socketTimeout(int inMillies) {
-        validateNotCustomClient();
+        validateClientsNotRunning();
         this.socketTimeout = inMillies;
         return this;
     }
@@ -163,7 +164,7 @@ public class Config {
      * @param perRoute Defines a connection limit per one HTTP route (this can be considered a per target host limit). Default is 20.
      */
     public Config concurrency(int total, int perRoute) {
-        validateNotCustomClient();
+        validateClientsNotRunning();
         this.maxTotal = total;
         this.maxPerRoute = perRoute;
         return this;
@@ -195,7 +196,7 @@ public class Config {
      * @param interceptor The addInterceptor
      */
     public Config addInterceptor(HttpRequestInterceptor interceptor) {
-        validateNotCustomClient();
+        validateClientsNotRunning();
         interceptors.add(interceptor);
         return this;
     }
@@ -206,7 +207,7 @@ public class Config {
      * @param enable The name of the header.
      */
     public Config followRedirects(boolean enable) {
-        validateNotCustomClient();
+        validateClientsNotRunning();
         this.followRedirects = enable;
         return this;
     }
@@ -217,7 +218,7 @@ public class Config {
      * @param enable The name of the header.
      */
     public Config enableCookieManagement(boolean enable) {
-        validateNotCustomClient();
+        validateClientsNotRunning();
         this.cookieManagement = enable;
         return this;
     }
@@ -269,11 +270,11 @@ public class Config {
         return objectMapper.orElseThrow(() -> new UnirestException("No Object Mapper Configured. Please config one with Unirest.config().setObjectMapper"));
     }
 
-    private void validateNotCustomClient() {
+    private void validateClientsNotRunning() {
         if (client.isPresent() || asyncClient.isPresent()) {
             throw new UnirestConfigException(
-                    "You can't set custom client settings when providing custom client implementations. " +
-                            "Set the timeouts directly in your custom client configuration instead."
+                    "Http Clients are already build in order to build a new config execute Unirest.config().reset() before changing settings. \n" +
+                            "This should be done rarely."
             );
         }
     }
@@ -317,5 +318,10 @@ public class Config {
 
     public static Stream<Exception> collectExceptions(Optional<Exception>... ex) {
         return Stream.of(ex).flatMap(Util::stream);
+    }
+
+    public Config reset() {
+        shutDown(false);
+        return this;
     }
 }

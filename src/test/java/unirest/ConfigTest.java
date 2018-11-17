@@ -26,12 +26,15 @@
 
 package unirest;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.nio.client.HttpAsyncClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigTest {
@@ -57,5 +60,19 @@ public class ConfigTest {
     @Test
     public void shouldKeepMaxPerRouteDefault(){
         assertEquals(Config.DEFAULT_MAX_PER_ROUTE, config.getMaxPerRoutes());
+    }
+
+    @Test
+    public void onceTheConfigIsRunningYouCannotChangeConfig(){
+        config.httpClient(mock(HttpClient.class));
+        config.asyncClient(mock(HttpAsyncClient.class));
+
+        TestUtil.assertException(() -> config.socketTimeout(533),
+                UnirestConfigException.class,
+                "Http Clients are already build in order to build a new config execute Unirest.config().reset() " +
+                        "before changing settings. \n" +
+                        "This should be done rarely.");
+
+        config.reset().socketTimeout(533);
     }
 }
