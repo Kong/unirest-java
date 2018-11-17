@@ -62,6 +62,13 @@ class Util {
         return value;
     }
 
+    public static String nullToEmpty(Object v) {
+        if(v == null){
+            return "";
+        }
+        return v.toString();
+    }
+
 
     @FunctionalInterface
     public interface ExConsumer<T>{

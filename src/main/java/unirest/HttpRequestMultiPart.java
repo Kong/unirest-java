@@ -38,10 +38,9 @@ import org.apache.http.entity.mime.content.InputStreamBody;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+
+import static unirest.Util.nullToEmpty;
 
 class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements MultipartBody {
     private List<FormPart> parameters = new ArrayList<>();
@@ -142,6 +141,19 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
     @Override
     public MultipartBody mode(HttpMultipartMode value) {
         this.mode = value;
+        return this;
+    }
+
+    public MultipartBody fields(Map<String, Object> fields) {
+        if (fields != null) {
+            for (Map.Entry<String, Object> param : fields.entrySet()) {
+                if (param.getValue() instanceof File) {
+                    field(param.getKey(), (File) param.getValue());
+                } else {
+                    field(param.getKey(), nullToEmpty(param.getValue()));
+                }
+            }
+        }
         return this;
     }
 

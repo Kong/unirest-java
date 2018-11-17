@@ -36,7 +36,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 
 class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRequestWithBody {
 
@@ -68,29 +67,12 @@ class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRe
 
 	@Override
 	public MultipartBody field(String name, Object value, String contentType) {
-		return new HttpRequestMultiPart(this).field(name, nullToEmpty(value), contentType);
+		return new HttpRequestMultiPart(this).field(name, Util.nullToEmpty(value), contentType);
 	}
 
 	@Override
 	public MultipartBody fields(Map<String, Object> parameters) {
-		HttpRequestMultiPart body = new HttpRequestMultiPart(this);
-		if (parameters != null) {
-			for (Entry<String, Object> param : parameters.entrySet()) {
-				if (param.getValue() instanceof File) {
-					body.field(param.getKey(), (File) param.getValue());
-				} else {
-					body.field(param.getKey(), nullToEmpty(param.getValue()));
-				}
-			}
-		}
-		return body;
-	}
-
-	private String nullToEmpty(Object v) {
-		if(v == null){
-			return "";
-		}
-		return v.toString();
+		return new HttpRequestMultiPart(this).fields(parameters);
 	}
 
 	@Override
