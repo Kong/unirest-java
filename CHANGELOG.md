@@ -1,3 +1,15 @@
+## 3.0.0
+* This is a **major** release with several **breaking changes** which (other than the namespace change) should ONLY impact you if you are using some of Unirests more advanced features or custom configurations.
+* The namespace has been shortened to just **unirest** (inspired by Java Spark)
+* The configuration system has been completely redone. Previously it was scattered across several classes and was entirely static. The new system has instances and supports multiple configurations. See the UPGRADE_GUIDE.md for details.
+    * Start accessing the config with ```Unirest.config()```
+* Almost everything is now fronted by interfaces, this makes testing easier.
+* Unirest itself can now be accessed as a interface with UnirestInstance
+* ObjectMappers can be passed in as part of the builder.
+* option no longer supports body (per http spec)
+* Accept and ContentType are now 1st class headers in the builder (```Unirest.get(path).accept("application/json")```)
+* Major internal fixes so that which builder operations were available when is consistent.
+
 ## 2.5.01
 * Fix Issue #41: possible init error in HttpClient under heavy load
 
