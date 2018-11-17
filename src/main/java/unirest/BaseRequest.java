@@ -42,11 +42,11 @@ import static unirest.BodyData.from;
 
 abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
+    private Optional<ObjectMapper> objectMapper = Optional.empty();
     protected Headers headers = new Headers();
     protected final Config config;
     protected HttpMethod method;
     protected Path url;
-    private Optional<ObjectMapper> objectMapper = Optional.empty();
 
     BaseRequest(BaseRequest httpRequest) {
         this.config = httpRequest.config;
@@ -97,9 +97,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public R queryString(String name, Collection<?> value) {
-        for (Object cur : value) {
-            queryString(name, cur);
-        }
+        url.queryString(name, value);
         return (R)this;
     }
 
@@ -134,12 +132,12 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync() {
-        return requestAsync(this::asString);
+        return requestAsync(this::asString, new CompletableFuture<>());
     }
 
     @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync(Callback<String> callback) {
-        return requestAsync(this::asString, callback);
+        return requestAsync(this::asString, CallbackFuture.wrap(callback));
     }
 
     @Override
@@ -149,12 +147,12 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync() {
-        return requestAsync(this::asJson);
+        return requestAsync(this::asJson, new CompletableFuture<>());
     }
 
     @Override
     public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback) {
-        return requestAsync(this::asJson, callback);
+        return requestAsync(this::asJson, CallbackFuture.wrap(callback));
     }
 
     @Override
@@ -169,22 +167,22 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass) {
-        return requestAsync(r -> this.asObject(r, responseClass));
+        return requestAsync(r -> this.asObject(r, responseClass), new CompletableFuture<>());
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback) {
-        return requestAsync(r -> this.asObject(r, responseClass), callback);
+        return requestAsync(r -> this.asObject(r, responseClass), CallbackFuture.wrap(callback));
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType) {
-        return requestAsync(r -> this.asObject(r, genericType));
+        return requestAsync(r -> this.asObject(r, genericType), new CompletableFuture<>());
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType, Callback<T> callback) {
-        return requestAsync(r -> this.asObject(r, genericType), callback);
+        return requestAsync(r -> this.asObject(r, genericType), CallbackFuture.wrap(callback));
     }
 
     @Override
@@ -194,14 +192,13 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync() {
-        return requestAsync(this::asBinary);
+        return requestAsync(this::asBinary, new CompletableFuture<>());
     }
 
     @Override
     public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback) {
-        return requestAsync(this::asBinary, callback);
+        return requestAsync(this::asBinary, CallbackFuture.wrap(callback));
     }
-
 
     private <T> HttpResponse<T> request(Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) {
 
@@ -218,17 +215,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         } finally {
             requestObj.releaseConnection();
         }
-    }
-
-    private <T> CompletableFuture<HttpResponse<T>> requestAsync(
-            Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) {
-        return requestAsync(transformer, new CompletableFuture<>());
-    }
-
-    private <T> CompletableFuture<HttpResponse<T>> requestAsync(
-            Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer,
-            Callback<T> callback) {
-        return requestAsync(transformer, CallbackFuture.wrap(callback));
     }
 
     private <T> CompletableFuture<HttpResponse<T>> requestAsync(

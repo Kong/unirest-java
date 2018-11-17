@@ -28,6 +28,7 @@ package unirest;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,6 +50,12 @@ public class Path {
             throw new UnirestException("Can't find route parameter name \"" + name + "\"");
         }
         this.url = url.replaceAll("\\{" + name + "\\}", URLParamEncoder.encode(value));
+    }
+
+    public void queryString(String name, Collection<?> value){
+        for (Object cur : value) {
+            queryString(name, cur);
+        }
     }
 
     public void queryString(String name, Object value) {
