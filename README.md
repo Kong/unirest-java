@@ -5,14 +5,9 @@
 [![DepShield Badge](https://depshield.sonatype.org/badges/OpenUnirest/unirest-java/depshield.svg)](https://depshield.github.io)
 
 ## About This Repository
-This repo is an updated, maintained, and independenct fork of the original Mashape/Kong Unirest-Java project. That project is no longer being maintained so this project was set up to keep it alive.
+This repo is an updated, maintained, and independent fork of the original Mashape/Kong Unirest-Java project. That project is no longer being maintained so this project was set up to keep it alive.
 
-There are several such forks in the world. The guiding principals of this project is:
-   * ***Maintain backwards compatibity whenever possible with the original project***: Other than a namespace change your code should work exactly like it did before for the vast majority of use cases.
-   * ***Security Patches are a Top Priority!***
-   * ***Move the project forward into modern Java***: This project does require Java 8 as a minimum.
-
-
+##### See the [UPGRADE_GUIDE](UPGRADE_GUIDE.md) for differences between this library and last kong release.
 
 ## Install With [Maven](https://mvnrepository.com/artifact/io.github.openunirest/unirest-java)
 ```
@@ -92,7 +87,7 @@ For example, serializing Json from\to Object using the popular Jackson ObjectMap
 
 ```java
 // Only one time
-Unirest.setObjectMapper(new JacksonObjectMapper());
+Unirest.config().setObjectMapper(new JacksonObjectMapper());
 
 // Response to Object
 Book book = Unirest.get("http://httpbin.org/books/1")
@@ -191,60 +186,43 @@ Authenticating the request with basic authentication can be done by calling the 
         .asJson();
 ```
 
-# Advanced Configuration
 
-You can set some advanced configuration to tune Unirest-Java:
 
-### Custom HTTP clients
+##### Changing the config
+Changing Unirest's config should ideally be done once, or rarely. There are several background threads spawned by both Unirest itself and Apache HttpAsyncClient. Once Unirest has been activated configuration options that are involved in creating the client cannot be changed without an explicit shutdown or reset.
 
-You can explicitly set your own `HttpClient` and `HttpAsyncClient` implementations by using the following methods:
-
-```java
-Unirest.setHttpClient(httpClient);
-Unirest.setAsyncHttpClient(asyncHttpClient);
-```
-### Timeouts
-
-You can set custom connection and socket timeout values (in **milliseconds**):
-
-```java
-Unirest.setTimeouts(long connectionTimeout, long socketTimeout);
+```Java
+     Unirest.config()
+            .reset()
+            .connectTimeout(5000)
 ```
 
-By default the connection timeout (the time it takes to connect to a server) is `10000`, and the socket timeout (the time it takes to receive data) is `60000`. You can set any of these timeouts to zero to disable the timeout.
-
-### Default Request Headers
-
-You can set default headers that will be sent on every request:
+##### Setting custom Apache Client
+You can set your own custom Apache HttpClient and HttpAsyncClient. Note that Unirest settings like timeouts or interceptors are not applied to custom clients.
 
 ```java
-Unirest.setDefaultHeader("Header1", "Value1");
-Unirest.setDefaultHeader("Header2", "Value2");
+     Unirest.config()
+            .httpClient(myClient)
+            .asyncClient(myAsyncClient)
 ```
 
-You can clear the default headers anytime with:
+#### Multiple Configuration Instances
+As usual, Unirest maintains a primary single instance. Sometimes you might want different configurations for different systems. You might also want an instance rather than a static context for testing purposes.
 
 ```java
-Unirest.clearDefaultHeaders();
+
+    // this returns the same instance used by Unirest.get("http://somewhere/")
+    UnirestInstance unirest = Unirest.primaryInstance(); 
+    // It can be configured and used just like the static context
+    unirest.config().connectTimeout(5000);
+    String result = unirest.get("http://foo").asString().getBody();
+    
+    // You can also get a whole new instance
+    UnirestInstance unirest = Unirest.spawnInstance();
 ```
 
-### Concurrency
+**WARNING!** If you get a new instance of unirest YOU are responsible for shutting it down when the JVM shuts down. It is not tracked or shut down by ```Unirest.shutDown();```
 
-You can set custom concurrency levels if you need to tune the performance of the syncronous or asyncronous client:
-
-```java
-Unirest.setConcurrency(int maxTotal, int maxPerRoute);
-```
-
-By default the maxTotal (overall connection limit in the pool) is `200`, and the maxPerRoute (connection limit per target host) is `20`.
-
-### Proxy
-
-You can set a proxy by invoking:
-
-```java
-Unirest.setProxy(new HttpHost("127.0.0.1", 8000));
-```
 
 # Exiting an application
 
@@ -254,6 +232,6 @@ Unirest starts a background event loop and your Java application won't be able t
 Unirest.shutdown();
 ```
 
-Once shutdown, you can call `Options.init()` to re-initialize Unirest.
+Once shutdown, using Unirest again will re-init the system
 
 
