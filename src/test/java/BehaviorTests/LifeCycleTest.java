@@ -152,6 +152,8 @@ public class LifeCycleTest extends BddTest {
 
     @Test
     public void canGetTheCommonInstanceOfUnirest(){
-        assertSame(Unirest.getInstance(), Unirest.getInstance());
+        assertSame(Unirest.primaryInstance(), Unirest.primaryInstance());
+        assertNotSame(Unirest.primaryInstance(), Unirest.spawnInstance());
+        assertNotSame(Unirest.spawnInstance(), Unirest.spawnInstance());
     }
 }

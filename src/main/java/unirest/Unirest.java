@@ -89,7 +89,11 @@ public class Unirest {
         return primaryInstance.isRunning();
     }
 
-    public static UnirestInstance getInstance() {
+    public static UnirestInstance spawnInstance() {
+        return new UnirestInstance(new Config());
+    }
+
+    public static UnirestInstance primaryInstance() {
         return primaryInstance;
     }
 }

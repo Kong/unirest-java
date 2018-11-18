@@ -26,6 +26,7 @@
 
 package unirest;
 
+import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.nio.client.HttpAsyncClient;
 import org.junit.Test;
@@ -73,6 +74,6 @@ public class ConfigTest {
                         "before changing settings. \n" +
                         "This should be done rarely.");
 
-        config.reset().socketTimeout(533);
+        Unirest.shutDown();
     }
 }
