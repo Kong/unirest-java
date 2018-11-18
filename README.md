@@ -186,7 +186,24 @@ Authenticating the request with basic authentication can be done by calling the 
         .asJson();
 ```
 
+# Configuration
+Previous versions of unirest had configuration split across several different places. Sometimes it was done on ```Unirest```, sometimes it was done on ```Option```, sometimes it was somewhere else. 
+All configuration is now done through ```Unirest.config()```
 
+#### Unirest.config()
+Unirest config allows easy access to build a configuration just like you would build a request:
+
+```java
+    Unirest.config()
+           .socketTimeout(500)
+           .connectTimeout(1000)
+           .concurrency(10, 5)
+           .proxy(new HttpHost("https://proxy"))
+           .setDefaultHeader("Accept", "application/json")
+           .followRedirects(false)
+           .enableCookieManagement(false)
+           .addInterceptor(new MyCustomInterceptor());
+```
 
 ##### Changing the config
 Changing Unirest's config should ideally be done once, or rarely. There are several background threads spawned by both Unirest itself and Apache HttpAsyncClient. Once Unirest has been activated configuration options that are involved in creating the client cannot be changed without an explicit shutdown or reset.
@@ -222,6 +239,8 @@ As usual, Unirest maintains a primary single instance. Sometimes you might want 
 ```
 
 **WARNING!** If you get a new instance of unirest YOU are responsible for shutting it down when the JVM shuts down. It is not tracked or shut down by ```Unirest.shutDown();```
+
+
 
 
 # Exiting an application
