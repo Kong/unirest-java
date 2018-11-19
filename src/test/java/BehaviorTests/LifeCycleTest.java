@@ -1,5 +1,7 @@
 package BehaviorTests;
 
+import com.github.paweladamski.httpclientmock.HttpClientMock;
+import io.github.openunirest.http.HttpResponse;
 import io.github.openunirest.http.Unirest;
 import io.github.openunirest.http.async.utils.AsyncIdleConnectionMonitorThread;
 import io.github.openunirest.http.options.Options;
@@ -10,12 +12,40 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static io.github.openunirest.http.Unirest.get;
 import static io.github.openunirest.http.options.Option.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class LifeCycleTest extends BddTest {
+
+    @Test
+    public void settingACustomClient() {
+        HttpClientMock httpClientMock = new HttpClientMock();
+        httpClientMock.onGet("http://localhost/getme").doReturn(202, "Howdy Ho!");
+
+        Unirest.setHttpClient(httpClientMock);
+        HttpResponse<String> result =  Unirest.get("http://localhost/getme").asString();
+
+        assertEquals(202, result.getStatus());
+        assertEquals("Howdy Ho!", result.getBody());
+    }
+
+    @Test
+    public void settingClientAfterClientHasAlreadyBeenSet() {
+        HttpClientMock httpClientMock = new HttpClientMock();
+        httpClientMock.onGet("http://localhost/getme").doReturn(202, "Howdy Ho!");
+
+        assertEquals(200, Unirest.get(MockServer.GET).asString().getStatus());
+
+        Unirest.setHttpClient(httpClientMock);
+        HttpResponse<String> result =  Unirest.get("http://localhost/getme").asString();
+
+        assertEquals(202, result.getStatus());
+        assertEquals("Howdy Ho!", result.getBody());
+    }
 
     @Test
     public void testShutdown() throws IOException {
@@ -62,7 +92,7 @@ public class LifeCycleTest extends BddTest {
 
     @Test
     public void canDetectIfSystemIsRunning() {
-        Unirest.get(MockServer.GET).asBinary();
+        get(MockServer.GET).asBinary();
         assertTrue(Unirest.isRunning());
 
         Unirest.shutdown();
@@ -77,7 +107,7 @@ public class LifeCycleTest extends BddTest {
         Unirest.shutdown();
         assertFalse(Unirest.isRunning());
 
-        Unirest.get(MockServer.GET).asBinary();
+        get(MockServer.GET).asBinary();
         assertTrue(Unirest.isRunning());
     }
 }

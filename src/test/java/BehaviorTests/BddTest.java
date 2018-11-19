@@ -2,6 +2,7 @@ package BehaviorTests;
 
 import io.github.openunirest.http.*;
 import io.github.openunirest.http.options.Options;
+import org.junit.After;
 import org.junit.Before;
 import util.TestUtil;
 
@@ -27,6 +28,11 @@ public class BddTest {
         Unirest.setObjectMapper(objectMapper);
         lock = new CountDownLatch(1);
         status = false;
+    }
+
+    @After
+    public void tearDown() {
+        Unirest.shutdown(true);
     }
 
     public void assertAsync()  {
