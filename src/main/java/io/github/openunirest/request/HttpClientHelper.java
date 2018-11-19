@@ -88,7 +88,7 @@ class HttpClientHelper {
         if (!asyncHttpClient.isRunning()) {
             asyncHttpClient.start();
             AsyncIdleConnectionMonitorThread asyncIdleConnectionMonitorThread = (AsyncIdleConnectionMonitorThread) Options.getOption(Option.ASYNC_MONITOR);
-            asyncIdleConnectionMonitorThread.start();
+            asyncIdleConnectionMonitorThread.tryStart();
         }
     }
 }

@@ -1,3 +1,6 @@
+## 2.5.02 
+* Another fix for #41. Double check the monitor to make sure it has not already started.
+
 ## 2.5.01
 * Fix Issue #41: possible init error in HttpClient under heavy load
 
