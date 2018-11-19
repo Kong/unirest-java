@@ -48,7 +48,7 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
     private HttpMultipartMode mode = HttpMultipartMode.BROWSER_COMPATIBLE;
     private Charset charSet;
 
-    public HttpRequestMultiPart(HttpRequestBody httpRequest) {
+    HttpRequestMultiPart(HttpRequestBody httpRequest) {
         super(httpRequest);
         this.charSet = httpRequest.getCharset();
     }

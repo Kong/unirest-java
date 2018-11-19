@@ -32,16 +32,12 @@ import org.apache.http.entity.mime.content.*;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 
-public final class FormPart implements Comparable {
+class FormPart implements Comparable {
     private final String name;
     private final Object value;
     private final ContentType contentType;
 
-    public FormPart(String name, Object value){
-        this(name, value, null);
-    }
-
-    public FormPart(String name, Object value, ContentType contentType) {
+    FormPart(String name, Object value, ContentType contentType) {
         this.name = name;
         this.value = value;
         this.contentType = contentType;
@@ -51,7 +47,7 @@ public final class FormPart implements Comparable {
         return value;
     }
 
-    public ContentType getContentType() {
+    private ContentType getContentType() {
         if(contentType == null){
             if(isFile()){
                 return ContentType.APPLICATION_OCTET_STREAM;
@@ -61,7 +57,7 @@ public final class FormPart implements Comparable {
         return contentType;
     }
 
-    public ContentBody toApachePart() {
+    ContentBody toApachePart() {
         if (value instanceof File) {
             File file = (File) value;
             return new FileBody(file, getContentType(), file.getName());

@@ -33,10 +33,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Path {
+class Path {
     private String url;
 
-    public Path(String url) {
+    Path(String url) {
         this.url = url;
     }
 

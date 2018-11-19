@@ -37,7 +37,7 @@ import static unirest.ResponseUtils.getCharSet;
 import static unirest.ResponseUtils.getRawBody;
 
 @Deprecated // use at your own risk
-public class BodyData<T>  {
+class BodyData<T>  {
 
     public static <T> BodyData<T> from(HttpEntity e, Function<BodyData<T>, T> transformer) {
         if(Objects.isNull(e)){

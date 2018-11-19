@@ -71,11 +71,7 @@ class HttpResponseImpl<T> implements HttpResponse<T> {
 	public String getStatusText() {
 		return statusText;
 	}
-
-	/**
-	 * @return Response Headers (map) with <b>same case</b> as server response.
-	 * For instance use <code>getHeaders().getFirst("Location")</code> and not <code>getHeaders().getFirst("location")</code> to get first header "Location"
-	 */
+	
 	@Override
 	public Headers getHeaders() {
 		return headers;

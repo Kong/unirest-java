@@ -61,7 +61,7 @@ public class Headers extends TreeMap<String, List<String>> {
         }
     }
 
-    public Stream<Header> entries() {
+    Stream<Header> entries() {
         return entrySet().stream().flatMap(this::toEntries);
     }
 
