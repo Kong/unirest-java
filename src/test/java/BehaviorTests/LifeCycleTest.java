@@ -26,6 +26,7 @@
 
 package BehaviorTests;
 
+import com.github.paweladamski.httpclientmock.HttpClientMock;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.junit.runner.RunWith;
@@ -56,6 +57,27 @@ public class LifeCycleTest extends BddTest {
     private AsyncIdleConnectionMonitorThread asyncMonitor;
     @Mock
     private PoolingNHttpClientConnectionManager manager;
+
+    @Test
+    public void settingACustomClient() {
+        HttpClientMock httpClientMock = new HttpClientMock();
+        httpClientMock.onGet("http://localhost/getme").doReturn(202, "Howdy Ho!");
+        Unirest.config().httpClient(httpClientMock);
+        HttpResponse<String> result =  Unirest.get("http://localhost/getme").asString();
+        assertEquals(202, result.getStatus());
+        assertEquals("Howdy Ho!", result.getBody());
+    }
+
+    @Test
+    public void settingClientAfterClientHasAlreadyBeenSet() {
+        HttpClientMock httpClientMock = new HttpClientMock();
+        httpClientMock.onGet("http://localhost/getme").doReturn(202, "Howdy Ho!");
+        assertEquals(200, Unirest.get(MockServer.GET).asString().getStatus());
+        Unirest.config().httpClient(httpClientMock);
+        HttpResponse<String> result =  Unirest.get("http://localhost/getme").asString();
+        assertEquals(202, result.getStatus());
+        assertEquals("Howdy Ho!", result.getBody());
+    }
 
     @Test
     public void testShutdown() throws IOException {
