@@ -67,7 +67,7 @@ class ClientFactory {
             CloseableHttpAsyncClient build = ab.build();
             build.start();
             AsyncIdleConnectionMonitorThread syncMonitor = new AsyncIdleConnectionMonitorThread(manager);
-            syncMonitor.start();
+            syncMonitor.tryStart();
             return new AsyncConfig(build, manager, syncMonitor);
 
         } catch (IOReactorException e) {

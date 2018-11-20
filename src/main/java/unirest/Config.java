@@ -281,9 +281,15 @@ public class Config {
 
     public HttpClient getClient() {
         if (!client.isPresent()) {
-            client = Optional.of(factory.buildHttpClient());
+            buildClient();
         }
         return client.get().getClient();
+    }
+
+    private synchronized void buildClient() {
+        if (!client.isPresent()) {
+            client = Optional.of(factory.buildHttpClient());
+        }
     }
 
     public HttpAsyncClient getAsyncHttpClient() {

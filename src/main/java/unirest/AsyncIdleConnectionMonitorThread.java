@@ -58,4 +58,10 @@ public class AsyncIdleConnectionMonitorThread extends Thread {
 		}
 	}
 
+	public synchronized void tryStart() {
+		if(!super.isAlive()){
+			super.start();
+		}
+	}
+
 }
