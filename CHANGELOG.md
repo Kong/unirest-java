@@ -10,6 +10,12 @@
 * Accept and ContentType are now 1st class headers in the builder (```Unirest.get(path).accept("application/json")```)
 * Major internal fixes so that which builder operations were available when is consistent.
 
+## 2.5.03
+* Lazy init the HttpClients so they don't get in the way of setting custom clients.
+
+## 2.5.02
+* More safety for issue #41
+
 ## 2.5.01
 * Fix Issue #41: possible init error in HttpClient under heavy load
 
