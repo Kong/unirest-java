@@ -62,7 +62,7 @@ public class ClientConfig {
     }
 
     public Stream<Exception> close() {
-        return Config.collectExceptions(Util.tryCast(client, CloseableHttpClient.class)
+        return Util.collectExceptions(Util.tryCast(client, CloseableHttpClient.class)
                         .map(c -> Util.tryDo(c, Closeable::close))
                         .filter(Optional::isPresent)
                         .map(Optional::get),

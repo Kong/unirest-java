@@ -78,6 +78,7 @@ public class Config {
      * Set the HttpClient implementation to use for every synchronous request
      *
      * @param httpClient Custom httpClient implementation
+     * @return this config object
      */
     public Config httpClient(HttpClient httpClient) {
         client = Optional.of(new ClientConfig(httpClient, null, null));
@@ -88,6 +89,7 @@ public class Config {
      * Set the HttpClient implementation to use for every synchronous request
      *
      * @param httpClient Custom httpClient implementation
+     * @return this config object
      */
     public Config httpClient(ClientConfig httpClient) {
         client = Optional.of(httpClient);
@@ -98,6 +100,7 @@ public class Config {
      * Set the asynchronous AbstractHttpAsyncClient implementation to use for every asynchronous request
      *
      * @param value Custom CloseableHttpAsyncClient implementation
+     * @return this config object
      */
     public Config asyncClient(HttpAsyncClient value) {
         this.asyncClient = Optional.of(new AsyncConfig(value, null, null));
@@ -108,6 +111,7 @@ public class Config {
      * Set the full async configuration including monitors. These will be shutDown on a Unirest.shudown()
      *
      * @param value Custom AsyncConfig class. The actual AsyncHttpClient is required.
+     * @return this config object
      */
     public Config asyncClient(AsyncConfig value) {
         asyncClient = Optional.of(value);
@@ -118,6 +122,7 @@ public class Config {
      * Set a proxy
      *
      * @param value Proxy settings object.
+     * @return this config object
      */
     public Config proxy(HttpHost value) {
         validateClientsNotRunning();
@@ -129,6 +134,7 @@ public class Config {
      * Set the ObjectMapper implementation to use for Response to Object binding
      *
      * @param om Custom implementation of ObjectMapper interface
+     * @return this config object
      */
     public Config setObjectMapper(ObjectMapper om) {
         this.objectMapper = Optional.ofNullable(om);
@@ -139,6 +145,7 @@ public class Config {
      * Set the connection timeout
      *
      * @param inMillies The timeout until a connection with the server is established (in milliseconds). Default is 10000. Set to zero to disable the timeout.
+     * @return this config object
      */
     public Config connectTimeout(int inMillies) {
         validateClientsNotRunning();
@@ -150,6 +157,7 @@ public class Config {
      * Set the socket timeout
      *
      * @param inMillies The timeout to receive data (in milliseconds). Default is 60000. Set to zero to disable the timeout.
+     * @return this config object
      */
     public Config socketTimeout(int inMillies) {
         validateClientsNotRunning();
@@ -162,6 +170,7 @@ public class Config {
      *
      * @param total    Defines the overall connection limit for a connection pool. Default is 200.
      * @param perRoute Defines a connection limit per one HTTP route (this can be considered a per target host limit). Default is 20.
+     * @return this config object
      */
     public Config concurrency(int total, int perRoute) {
         validateClientsNotRunning();
@@ -172,6 +181,7 @@ public class Config {
 
     /**
      * Clear default headers
+     * @return this config object
      */
     public Config clearDefaultHeaders() {
         defaultHeaders.clear();
@@ -183,6 +193,7 @@ public class Config {
      *
      * @param name  The name of the header.
      * @param value The value of the header.
+     * @return this config object
      */
     public Config setDefaultHeader(String name, String value) {
         defaultHeaders.add(name, value);
@@ -194,6 +205,7 @@ public class Config {
      * https://hc.apache.org/httpcomponents-core-ga/httpcore/apidocs/org/apache/http/HttpRequestInterceptor.html
      *
      * @param interceptor The addInterceptor
+     * @return this config object
      */
     public Config addInterceptor(HttpRequestInterceptor interceptor) {
         validateClientsNotRunning();
@@ -205,6 +217,7 @@ public class Config {
      * Allow the client to follow redirects. Defaults to TRUE
      *
      * @param enable The name of the header.
+     * @return this config object
      */
     public Config followRedirects(boolean enable) {
         validateClientsNotRunning();
@@ -216,6 +229,7 @@ public class Config {
      * Allow the client to manage cookies. Defaults to TRUE
      *
      * @param enable The name of the header.
+     * @return this config object
      */
     public Config enableCookieManagement(boolean enable) {
         validateClientsNotRunning();
@@ -223,6 +237,40 @@ public class Config {
         return this;
     }
 
+    /**
+     * Return default headers that are added to every request
+     *
+     * @return Headers
+     */
+    public Headers getDefaultHeaders() {
+        return defaultHeaders;
+    }
+
+    /**
+     * Does the config have currently running clients? Find out here.
+     *
+     * @return boolean
+     */
+    public boolean isRunning() {
+        return client.isPresent() || asyncClient.isPresent();
+    }
+
+    /**
+     * Shutdown the current config and re-init.
+     *
+     * @return this config
+     */
+    public Config reset() {
+        shutDown(false);
+        return this;
+    }
+
+    /**
+     * Shut down the configuration and its clients.
+     * The config can be re-initialized with its settings
+     *
+     * @param clearOptions should the current non-client settings be retained.
+     */
     public void shutDown(boolean clearOptions) {
         List<Exception> ex = Stream.concat(
                 client.map(ClientConfig::close).orElseGet(Stream::empty),
@@ -238,6 +286,45 @@ public class Config {
 
         if(!ex.isEmpty()){
             throw new UnirestException(ex);
+        }
+    }
+
+    /**
+     * Return the current HttpClient. One will be build if it does
+     * not yet exist.
+     *
+     * @return  Apache HttpClient
+     */
+    public HttpClient getClient() {
+        if (!client.isPresent()) {
+            buildClient();
+        }
+        return client.get().getClient();
+    }
+
+    private synchronized void buildClient() {
+        if (!client.isPresent()) {
+            client = Optional.of(factory.buildHttpClient());
+        }
+    }
+
+    /**
+     * Return the current HttpAsyncClient. One will be build if it does
+     * not yet exist.
+     *
+     * @return  Apache HttpAsyncClient
+     */
+    public HttpAsyncClient getAsyncHttpClient() {
+        if (!asyncClient.isPresent()) {
+            buildAsyncClient();
+        }
+        return asyncClient.get().getClient();
+    }
+
+    private synchronized void buildAsyncClient() {
+        if (!asyncClient.isPresent()) {
+            AsyncConfig value = factory.buildAsyncClient();
+            asyncClient = Optional.of(value);
         }
     }
 
@@ -279,55 +366,11 @@ public class Config {
         }
     }
 
-    public HttpClient getClient() {
-        if (!client.isPresent()) {
-            buildClient();
-        }
-        return client.get().getClient();
-    }
-
-    private synchronized void buildClient() {
-        if (!client.isPresent()) {
-            client = Optional.of(factory.buildHttpClient());
-        }
-    }
-
-    public HttpAsyncClient getAsyncHttpClient() {
-        if (!asyncClient.isPresent()) {
-            buildAsyncClient();
-        }
-        return asyncClient.get().getClient();
-    }
-
-    private synchronized void buildAsyncClient() {
-        if (!asyncClient.isPresent()) {
-            AsyncConfig value = factory.buildAsyncClient();
-            asyncClient = Optional.of(value);
-        }
-    }
-
     List<HttpRequestInterceptor> getInterceptors() {
         return interceptors;
     }
 
     HttpHost getProxy() {
         return proxy;
-    }
-
-    public Headers getDefaultHeaders() {
-        return defaultHeaders;
-    }
-
-    public boolean isRunning() {
-        return client.isPresent() || asyncClient.isPresent();
-    }
-
-    public static Stream<Exception> collectExceptions(Optional<Exception>... ex) {
-        return Stream.of(ex).flatMap(Util::stream);
-    }
-
-    public Config reset() {
-        shutDown(false);
-        return this;
     }
 }

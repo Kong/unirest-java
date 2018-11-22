@@ -57,38 +57,84 @@ public class UnirestInstance {
         config.shutDown(clearOptions);
     }
 
+    /**
+     * Start a GET HttpRequest which does not support a body from the primary config
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return A HttpRequest builder
+     */
     public GetRequest get(String url) {
         return new HttpRequestNoBody(config, HttpMethod.GET, url);
     }
 
+    /**
+     * Start a HEAD HttpRequest which does not support a body from the primary config
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return A HttpRequest builder
+     */
     public GetRequest head(String url) {
         return new HttpRequestNoBody(config, HttpMethod.HEAD, url);
     }
 
+    /**
+     * Start a OPTIONS HttpRequest which does not support a body from the primary config
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return A HttpRequest builder
+     */
     public GetRequest options(String url) {
         return new HttpRequestNoBody(config, HttpMethod.OPTIONS, url);
     }
 
+    /**
+     * Start a POST HttpRequest which supports a body from the primary config
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return A HttpRequest builder
+     */
     public HttpRequestWithBody post(String url) {
         return new HttpRequestBody(config, HttpMethod.POST, url);
     }
 
+    /**
+     * Start a DELETE HttpRequest which supports a body from the primary config
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return A HttpRequest builder
+     */
     public HttpRequestWithBody delete(String url) {
         return new HttpRequestBody(config, HttpMethod.DELETE, url);
     }
 
+    /**
+     * Start a PATCH HttpRequest which supports a body from the primary config
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return A HttpRequest builder
+     */
     public HttpRequestWithBody patch(String url) {
         return new HttpRequestBody(config, HttpMethod.PATCH, url);
     }
 
+    /**
+     * Start a PUT HttpRequest which supports a body from the primary config
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return A HttpRequest builder
+     */
     public HttpRequestWithBody put(String url) {
         return new HttpRequestBody(config, HttpMethod.PUT, url);
     }
 
+    /**
+     * Start a PATCH HttpRequest which supports a JSON Patch builder.
+     * this supports RFC-6902 https://tools.ietf.org/html/rfc6902
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return A HttpRequest builder
+     */
     public JsonPatchRequest jsonPatch(String url) {
         return new HttpRequestJsonPatch(config, url);
     }
 
+    /**
+     * Does the config have currently running clients? Find out here.
+     *
+     * @return boolean
+     */
     public boolean isRunning() {
         return config.isRunning();
     }

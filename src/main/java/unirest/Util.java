@@ -82,6 +82,10 @@ class Util {
         return result;
     }
 
+    static Stream<Exception> collectExceptions(Optional<Exception>... ex) {
+        return Stream.of(ex).flatMap(Util::stream);
+    }
+
 
     @FunctionalInterface
     public interface ExConsumer<T>{

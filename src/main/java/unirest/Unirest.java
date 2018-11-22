@@ -32,8 +32,9 @@ public class Unirest {
 
     /**
      * Access the default configuration for the primary Unirest instance.
+     * @return the config object of the primary instance
      */
-    public static Config config(){
+    public static Config config() {
         return primaryInstance.config();
     }
 
@@ -42,7 +43,7 @@ public class Unirest {
      * This will also clear any options returning Unirest to a default state
      */
     public static void shutDown() {
-       shutDown(true);
+        shutDown(true);
     }
 
     /**
@@ -50,49 +51,107 @@ public class Unirest {
      * @param clearOptions  indicates if options should be cleared. Note that the HttpClient, AsyncClient and thread monitors will not be retained after shutDown.
      */
     public static void shutDown(boolean clearOptions) {
-       primaryInstance.shutDown(clearOptions);
+        primaryInstance.shutDown(clearOptions);
     }
 
+    /**
+     * Start a GET HttpRequest which does not support a body from the primary config
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return A HttpRequest builder
+     */
     public static GetRequest get(String url) {
         return primaryInstance.get(url);
     }
 
+    /**
+     * Start a HEAD HttpRequest which does not support a body from the primary config
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return A HttpRequest builder
+     */
     public static GetRequest head(String url) {
         return primaryInstance.head(url);
     }
 
+    /**
+     * Start a OPTIONS HttpRequest which does not support a body from the primary config
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return A HttpRequest builder
+     */
     public static GetRequest options(String url) {
         return primaryInstance.options(url);
     }
 
+    /**
+     * Start a POST HttpRequest which supports a body from the primary config
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return A HttpRequest builder
+     */
     public static HttpRequestWithBody post(String url) {
         return primaryInstance.post(url);
     }
 
+    /**
+     * Start a DELETE HttpRequest which supports a body from the primary config
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return A HttpRequest builder
+     */
     public static HttpRequestWithBody delete(String url) {
         return primaryInstance.delete(url);
     }
 
+    /**
+     * Start a PATCH HttpRequest which supports a body from the primary config
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return A HttpRequest builder
+     */
     public static HttpRequestWithBody patch(String url) {
         return primaryInstance.patch(url);
     }
 
+    /**
+     * Start a PUT HttpRequest which supports a body from the primary config
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return A HttpRequest builder
+     */
     public static HttpRequestWithBody put(String url) {
         return primaryInstance.put(url);
     }
 
+    /**
+     * Start a PATCH HttpRequest which supports a JSON Patch builder.
+     * this supports RFC-6902 https://tools.ietf.org/html/rfc6902
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return A HttpRequest builder
+     */
     public static JsonPatchRequest jsonPatch(String url) {
         return primaryInstance.jsonPatch(url);
     }
 
+    /**
+     * Does the config have currently running clients? Find out here.
+     *
+     * @return boolean
+     */
     public static boolean isRunning() {
         return primaryInstance.isRunning();
     }
 
+    /**
+     * Spawn a new Unirest Instance with a new config.
+     * Don't forget to shut it down when your done.
+     * It will not be tracked and shutdown with Unirest.shutDown()
+     *
+     * @return a new UnirestInstance
+     */
     public static UnirestInstance spawnInstance() {
         return new UnirestInstance(new Config());
     }
 
+    /**
+     * return the primary UnirestInstance.
+     *
+     * @return a new UnirestInstance
+     */
     public static UnirestInstance primaryInstance() {
         return primaryInstance;
     }

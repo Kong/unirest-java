@@ -54,7 +54,7 @@ public class AsyncConfig {
     }
 
     public Stream<Exception> close() {
-        return Config.collectExceptions(Util.tryCast(client, CloseableHttpAsyncClient.class)
+        return Util.collectExceptions(Util.tryCast(client, CloseableHttpAsyncClient.class)
                         .filter(c -> c.isRunning())
                         .map(c -> Util.tryDo(c, d -> d.close()))
                         .filter(c -> c.isPresent())
