@@ -38,7 +38,11 @@ import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.util.stream.IntStream;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -177,5 +181,12 @@ public class LifeCycleTest extends BddTest {
         assertSame(Unirest.primaryInstance(), Unirest.primaryInstance());
         assertNotSame(Unirest.primaryInstance(), Unirest.spawnInstance());
         assertNotSame(Unirest.spawnInstance(), Unirest.spawnInstance());
+    }
+
+    @Test
+    public void shouldReuseThreadPool() {
+        int startingCount = ManagementFactory.getThreadMXBean().getThreadCount();
+        IntStream.range(0,100).forEach(i -> Unirest.config().reset());
+        assertThat(ManagementFactory.getThreadMXBean().getThreadCount(), is(lessThan(startingCount + 10)));
     }
 }
