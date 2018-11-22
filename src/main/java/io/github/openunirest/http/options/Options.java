@@ -46,7 +46,14 @@ public class Options {
 
 	public static void setOption(Option option, Object value) {
 		validateOption(option);
+		warmUpifClient(option);
 		options.put(option, value);
+	}
+
+	private static void warmUpifClient(Option option) {
+		if(option == Option.HTTPCLIENT || option == Option.ASYNCHTTPCLIENT){
+			isRunning = true;
+		}
 	}
 
 	private static void validateOption(Option option) {

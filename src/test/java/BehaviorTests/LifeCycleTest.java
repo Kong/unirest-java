@@ -8,18 +8,22 @@ import io.github.openunirest.http.options.Options;
 import io.github.openunirest.http.utils.SyncIdleConnectionMonitorThread;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 
 import static io.github.openunirest.http.Unirest.get;
 import static io.github.openunirest.http.options.Option.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class LifeCycleTest extends BddTest {
+
+    @Before
+    public void setUp() {
+        MockServer.reset();
+    }
 
     @Test
     public void settingACustomClient() {
