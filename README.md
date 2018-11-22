@@ -9,14 +9,18 @@ This repo is an updated, maintained, and independent fork of the original Mashap
 
 ##### See the [UPGRADE_GUIDE](UPGRADE_GUIDE.md) for differences between this library and last kong release.
 
-## Install With [Maven](https://mvnrepository.com/artifact/io.github.openunirest/unirest-java)
+## Install With [Maven](https://mvnrepository.com/artifact/io.github.openunirest/open-unirest-java)
 ```
 <dependency>
     <groupId>io.github.openunirest</groupId>
-    <artifactId>unirest-java</artifactId>
-    <version>2.5.01</version>
+    <artifactId>open-unirest-java</artifactId>
+    <version>3.0.00</version>
 </dependency>
 ```
+
+#### Note on 2.x 
+Because 3.0 made several very not backwards compatible changes the artifactID was changed. The 2.0 line is still available [Here](https://mvnrepository.com/artifact/io.github.openunirest/unirest-java). Security patches and major defects will still be patched on it until 2020.
+
 
 ## Features
 
