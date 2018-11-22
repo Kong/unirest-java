@@ -47,7 +47,6 @@ public class Unirest {
      */
     public static void setHttpClient(HttpClient httpClient) {
         Options.setOption(Option.HTTPCLIENT, httpClient);
-        Options.customClientSet();
     }
 
     /**

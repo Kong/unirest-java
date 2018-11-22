@@ -193,6 +193,10 @@ public class RequestCapture {
         this.jsonPatches = patch;
     }
 
+    public void assertOk() {
+        assertTrue(url.length() > 0);
+    }
+
     public static class File {
         public String fileName;
         public String type;

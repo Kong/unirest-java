@@ -24,7 +24,7 @@ public class BddTest {
     public void setUp() {
         //TestUtil.debugApache();
         MockServer.reset();
-        Options.init();
+        Unirest.shutdown();
         Unirest.setObjectMapper(objectMapper);
         lock = new CountDownLatch(1);
         status = false;

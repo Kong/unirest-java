@@ -26,12 +26,12 @@ public class OptionsTest {
 
     @Test
     public void shouldKeepConnectionTimeOutDefault(){
-        assertOpDefault(Options.CONNECTION_TIMEOUT, CONNECTION_TIMEOUT, 4L);
+        assertOpDefault(Options.CONNECTION_TIMEOUT, CONNECTION_TIMEOUT, 4);
     }
 
     @Test
     public void shouldKeepSocketTimeoutDefault(){
-        assertOpDefault(Options.SOCKET_TIMEOUT, Option.SOCKET_TIMEOUT, 4L);
+        assertOpDefault(Options.SOCKET_TIMEOUT, Option.SOCKET_TIMEOUT, 4);
     }
 
     @Test

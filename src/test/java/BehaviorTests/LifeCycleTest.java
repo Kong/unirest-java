@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import static io.github.openunirest.http.Unirest.get;
 import static io.github.openunirest.http.options.Option.*;
@@ -20,13 +21,8 @@ import static org.mockito.Mockito.*;
 
 public class LifeCycleTest extends BddTest {
 
-    @Before
-    public void setUp() {
-        MockServer.reset();
-    }
-
     @Test
-    public void settingACustomClient() {
+    public void settingACustomClient() throws ExecutionException, InterruptedException {
         HttpClientMock httpClientMock = new HttpClientMock();
         httpClientMock.onGet("http://localhost/getme").doReturn(202, "Howdy Ho!");
 
@@ -35,6 +31,12 @@ public class LifeCycleTest extends BddTest {
 
         assertEquals(202, result.getStatus());
         assertEquals("Howdy Ho!", result.getBody());
+
+        Unirest.get(MockServer.GET)
+                .asObjectAsync(RequestCapture.class)
+                .get()
+                .getBody()
+                .assertOk();
     }
 
     @Test

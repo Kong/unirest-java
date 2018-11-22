@@ -19,246 +19,264 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.*;
 
-import static io.github.openunirest.http.options.Option.COOKIE_MANAGEMENT;
-import static io.github.openunirest.http.options.Option.FOLLOW_REDIRECTS;
+import static io.github.openunirest.http.options.Option.*;
 
 public class Options {
-	public static final int MAX_TOTAL = 200;
-	public static final int MAX_PER_ROUTE = 20;
-	public static final int CONNECTION_TIMEOUT = 10000;
-	public static final int SOCKET_TIMEOUT = 60000;
+    public static final int MAX_TOTAL = 200;
+    public static final int MAX_PER_ROUTE = 20;
+    public static final int CONNECTION_TIMEOUT = 10000;
+    public static final int SOCKET_TIMEOUT = 60000;
 
-	private static boolean customClientSet = false;
-	private static boolean isRunning = false;
-	private static Map<Option, Object> options = new HashMap<>();
-	private static PoolingHttpClientConnectionManager syncConnectionManager;
-	private static SyncIdleConnectionMonitorThread defaultSyncMonitor;
-	private static List<HttpRequestInterceptor> interceptors = new ArrayList<>();
+    private static boolean customClientSet = false;
+    private static boolean customAsyncClientSet = false;
+    private static Map<Option, Object> options = new HashMap<>();
+    private static List<HttpRequestInterceptor> interceptors = new ArrayList<>();
 
-	public static void customClientSet() {
-		customClientSet = true;
-	}
+    static {
+        setDefaults();
+    }
 
-	private static void setIfAbsent(Option option, Object value) {
-		validateOption(option);
-		options.putIfAbsent(option, value);
-	}
+    public static void customClientSet() {
+        customClientSet = true;
+    }
 
-	public static void setOption(Option option, Object value) {
-		validateOption(option);
-		warmUpifClient(option);
-		options.put(option, value);
-	}
+    private static void setIfAbsent(Option option, Object value) {
+        validateOption(option);
+        options.putIfAbsent(option, value);
+    }
 
-	private static void warmUpifClient(Option option) {
-		if(option == Option.HTTPCLIENT || option == Option.ASYNCHTTPCLIENT){
-			isRunning = true;
-		}
-	}
+    public static void setOption(Option option, Object value) {
+        validateOption(option);
+        flagClients(option);
+        options.put(option, value);
+    }
 
-	private static void validateOption(Option option) {
-		if ((option == Option.CONNECTION_TIMEOUT || option == Option.SOCKET_TIMEOUT) && customClientSet) {
-			throw new RuntimeException(
-					"You can't set custom timeouts when providing custom client implementations. " +
-					"Set the timeouts directly in your custom client configuration instead."
-			);
-		}
-	}
+    private static void flagClients(Option option) {
+        if(option == Option.HTTPCLIENT){
+            customClientSet = true;
+        } else if (option == Option.ASYNCHTTPCLIENT){
+            customAsyncClientSet = true;
+        }
+    }
 
-	public static Object getOption(Option option) {
-		warmUp();
-		return options.get(option);
-	}
+    private static void warmUpifClient(Option option) {
+        if (isOptionNotSet(option, Option.HTTPCLIENT)) {
+            customClientSet = false;
+            buildHttpClient();
+        } else if (isOptionNotSet(option, Option.ASYNCHTTPCLIENT)) {
+            customAsyncClientSet = false;
+            buildAsyncClient();
+        }
+    }
 
-	private static void warmUp() {
-		if(!isRunning()){
-			init();
-		}
-	}
+    private static boolean isOptionNotSet(Option o, Option expected){
+        return o == expected && options.get(o) == null;
+    }
 
-	private static <T> T getOptionOrDefault(Option option, T defaultValue){
-		warmUp();
-		return (T)options.computeIfAbsent(option, o -> defaultValue);
-	}
+    private static void validateOption(Option option) {
+        if ((option == Option.CONNECTION_TIMEOUT || option == Option.SOCKET_TIMEOUT) && customClientSet) {
+            throw new RuntimeException(
+                    "You can't set custom timeouts when providing custom client implementations. " +
+                            "Set the timeouts directly in your custom client configuration instead."
+            );
+        }
+    }
 
-	private static void createMonitors() {
-		syncConnectionManager = new PoolingHttpClientConnectionManager();
-		defaultSyncMonitor = new SyncIdleConnectionMonitorThread(syncConnectionManager);
-		defaultSyncMonitor.start();
-		setOption(Option.SYNC_MONITOR, defaultSyncMonitor);
-		isRunning = true;
-	}
+    public static Object getOption(Option option) {
+        warmUpifClient(option);
+        return options.get(option);
+    }
 
 
-	public static void refresh() {
-		if(syncConnectionManager == null){
-			createMonitors();
-		}
-		RequestConfig clientConfig = getRequestConfig();
+    private static <T> T getOptionOrDefault(Option option, T defaultValue) {
+        return (T) options.computeIfAbsent(option, o -> defaultValue);
+    }
 
-		Integer maxTotal = getOptionOrDefault(Option.MAX_TOTAL, MAX_TOTAL);
-		Integer maxPerRoute = getOptionOrDefault(Option.MAX_PER_ROUTE, MAX_PER_ROUTE);
-		syncConnectionManager.setMaxTotal(maxTotal);
-		syncConnectionManager.setDefaultMaxPerRoute(maxPerRoute);
 
-		buildHttpClient(clientConfig);
+    public static void refresh() {
+        if (!customClientSet) {
+            buildHttpClient();
+        }
+        if (!customAsyncClientSet) {
+            buildAsyncClient();
+        }
+    }
 
-		PoolingNHttpClientConnectionManager asyncConnectionManager;
-		try {
-			asyncConnectionManager = new PoolingNHttpClientConnectionManager(new DefaultConnectingIOReactor());
-			asyncConnectionManager.setMaxTotal(maxTotal);
-			asyncConnectionManager.setDefaultMaxPerRoute(maxPerRoute);
-		} catch (IOReactorException e) {
-			throw new RuntimeException(e);
-		}
+    private static synchronized CloseableHttpAsyncClient buildAsyncClient() {
+        PoolingNHttpClientConnectionManager asyncConnectionManager;
+        try {
+            asyncConnectionManager = new PoolingNHttpClientConnectionManager(new DefaultConnectingIOReactor());
+            asyncConnectionManager.setMaxTotal(getOptionOrDefault(Option.MAX_TOTAL, MAX_TOTAL));
+            asyncConnectionManager.setDefaultMaxPerRoute(getOptionOrDefault(Option.MAX_PER_ROUTE, MAX_PER_ROUTE));
+        } catch (IOReactorException e) {
+            throw new RuntimeException(e);
+        }
 
-		CloseableHttpAsyncClient asyncClient = buildAsyncClient(clientConfig, asyncConnectionManager);
+        HttpAsyncClientBuilder ab = HttpAsyncClientBuilder.create()
+                .setDefaultRequestConfig(getRequestConfig())
+                .setConnectionManager(asyncConnectionManager)
+                .useSystemProperties();
+        if (shouldDisableRedirects()) {
+            ab.setRedirectStrategy(new NoRedirects());
+        }
+        if (shouldDisableCookieManagement()) {
+            ab.disableCookieManagement();
+        }
+        interceptors.stream().forEach(i -> ab.addInterceptorFirst(i));
+        CloseableHttpAsyncClient build = ab.build();
 
-		setOption(Option.ASYNCHTTPCLIENT, asyncClient);
-		setOption(Option.ASYNC_MONITOR, new AsyncIdleConnectionMonitorThread(asyncConnectionManager));
-	}
+        options.put(Option.ASYNCHTTPCLIENT, build);
+        options.put(Option.ASYNC_MONITOR, new AsyncIdleConnectionMonitorThread(asyncConnectionManager));
+        return build;
+    }
 
-	private static CloseableHttpAsyncClient buildAsyncClient(RequestConfig clientConfig, PoolingNHttpClientConnectionManager asyncConnectionManager) {
-		HttpAsyncClientBuilder ab = HttpAsyncClientBuilder.create()
-				.setDefaultRequestConfig(clientConfig)
-				.setConnectionManager(asyncConnectionManager)
-				.useSystemProperties();
-		if(shouldDisableRedirects()){
-			ab.setRedirectStrategy(new NoRedirects());
-		}
-		if(shouldDisableCookieManagement()){
-			ab.disableCookieManagement();
-		}
-		interceptors.stream().forEach(i -> ab.addInterceptorFirst(i));
-		return ab.build();
-	}
+    private static synchronized void buildHttpClient() {
+        PoolingHttpClientConnectionManager syncman = getSyncMonitor();
 
-	private static void buildHttpClient(RequestConfig clientConfig) {
-		// Create clients
-		HttpClientBuilder cb = HttpClientBuilder.create()
-				.setDefaultRequestConfig(clientConfig)
-				.setConnectionManager(syncConnectionManager)
-				.useSystemProperties();
-		if(shouldDisableRedirects()){
-			cb.disableRedirectHandling();
-		}
-		if(shouldDisableCookieManagement()){
-			cb.disableCookieManagement();
-		}
-		interceptors.stream().forEach(i -> cb.addInterceptorFirst(i));
-		CloseableHttpClient build = cb.build();
+        // Create clients
+        HttpClientBuilder cb = HttpClientBuilder.create()
+                .setDefaultRequestConfig(getRequestConfig())
+                .setConnectionManager(syncman)
+                .useSystemProperties();
+        if (shouldDisableRedirects()) {
+            cb.disableRedirectHandling();
+        }
+        if (shouldDisableCookieManagement()) {
+            cb.disableCookieManagement();
+        }
+        interceptors.stream().forEach(i -> cb.addInterceptorFirst(i));
+        CloseableHttpClient build = cb.build();
 
-		setOption(Option.HTTPCLIENT, build);
-	}
+        options.put(Option.HTTPCLIENT, build);
+    }
 
-	private static boolean shouldDisableCookieManagement() {
-		return !(Boolean)options.getOrDefault(COOKIE_MANAGEMENT, true);
-	}
+    private static PoolingHttpClientConnectionManager getSyncMonitor() {
+        PoolingHttpClientConnectionManager conman = (PoolingHttpClientConnectionManager)options.get(CONNECTION_MONITOR);
+        if(conman != null){
+            return conman;
+        }
 
-	private static boolean shouldDisableRedirects() {
-		return !(Boolean)options.getOrDefault(FOLLOW_REDIRECTS, true);
-	}
+        conman = new PoolingHttpClientConnectionManager();
+        conman.setMaxTotal(getOptionOrDefault(Option.MAX_TOTAL, MAX_TOTAL));
+        conman.setDefaultMaxPerRoute(getOptionOrDefault(Option.MAX_PER_ROUTE, MAX_PER_ROUTE));
 
-	private static RequestConfig getRequestConfig() {
-		Integer connectionTimeout = getOptionOrDefault(Option.CONNECTION_TIMEOUT, CONNECTION_TIMEOUT);
-		Integer socketTimeout = getOptionOrDefault(Option.SOCKET_TIMEOUT, SOCKET_TIMEOUT);
-		HttpHost proxy = (HttpHost) Options.getOption(Option.PROXY);
-		return RequestConfig.custom()
-				.setConnectTimeout(connectionTimeout)
-				.setSocketTimeout(socketTimeout)
-				.setConnectionRequestTimeout(socketTimeout)
-				.setProxy(proxy)
-				.build();
-	}
+        SyncIdleConnectionMonitorThread defaultSyncMonitor = new SyncIdleConnectionMonitorThread(conman);
+        defaultSyncMonitor.start();
+        options.put(Option.SYNC_MONITOR, defaultSyncMonitor);
+        options.put(Option.CONNECTION_MONITOR, conman);
+        return conman;
+    }
 
-	public static void init() {
-		createMonitors();
-		setDefaults();
-		refresh();
-	}
+    private static boolean shouldDisableCookieManagement() {
+        return !(Boolean) options.getOrDefault(COOKIE_MANAGEMENT, true);
+    }
 
-	private static void setDefaults() {
-		customClientSet = false;
-		setIfAbsent(Option.CONNECTION_TIMEOUT, CONNECTION_TIMEOUT);
-		setIfAbsent(Option.SOCKET_TIMEOUT, SOCKET_TIMEOUT);
-		setIfAbsent(Option.MAX_TOTAL, MAX_TOTAL);
-		setIfAbsent(Option.MAX_PER_ROUTE, MAX_PER_ROUTE);
-		setIfAbsent(Option.SYNC_MONITOR, defaultSyncMonitor);
-	}
+    private static boolean shouldDisableRedirects() {
+        return !(Boolean) options.getOrDefault(FOLLOW_REDIRECTS, true);
+    }
 
-	public static <T> Optional<T> tryGet(Option option, Class<T> as) {
-		Object o = getOption(option);
-		if(Objects.isNull(o) || !as.isAssignableFrom(o.getClass())){
-			return Optional.empty();
-		}
-		return Optional.of((T) o);
-	}
+    private static RequestConfig getRequestConfig() {
+        Integer connectionTimeout = getOptionOrDefault(Option.CONNECTION_TIMEOUT, CONNECTION_TIMEOUT);
+        Integer socketTimeout = getOptionOrDefault(Option.SOCKET_TIMEOUT, SOCKET_TIMEOUT);
+        HttpHost proxy = (HttpHost) Options.getOption(Option.PROXY);
+        return RequestConfig.custom()
+                .setConnectTimeout(connectionTimeout)
+                .setSocketTimeout(socketTimeout)
+                .setConnectionRequestTimeout(socketTimeout)
+                .setProxy(proxy)
+                .build();
+    }
 
-	public static void removeOption(Option objectMapper) {
-		options.remove(objectMapper);
-	}
+    @Deprecated
+    public static void init() {
+        setDefaults();
+        refresh();
+    }
 
-	public static boolean isRunning() {
-		return isRunning;
-	}
+    private static void setDefaults() {
+        customClientSet = false;
+        customAsyncClientSet = false;
+        setIfAbsent(Option.CONNECTION_TIMEOUT, CONNECTION_TIMEOUT);
+        setIfAbsent(Option.SOCKET_TIMEOUT, SOCKET_TIMEOUT);
+        setIfAbsent(Option.MAX_TOTAL, MAX_TOTAL);
+        setIfAbsent(Option.MAX_PER_ROUTE, MAX_PER_ROUTE);
+    }
 
-	public static void shutDown(){
-		shutDown(true);
-	}
+    public static <T> Optional<T> tryGet(Option option, Class<T> as) {
+        Object o = getOption(option);
+        if (Objects.isNull(o) || !as.isAssignableFrom(o.getClass())) {
+            return Optional.empty();
+        }
+        return Optional.of((T) o);
+    }
 
-	public static void shutDown(boolean clearOptions) {
-		tryGet(Option.HTTPCLIENT,
-				CloseableHttpClient.class)
-				.ifPresent(Options::closeIt);
-		options.remove(Option.HTTPCLIENT);
+    public static void removeOption(Option objectMapper) {
+        options.remove(objectMapper);
+    }
 
-		tryGet(Option.SYNC_MONITOR,
-				SyncIdleConnectionMonitorThread.class)
-				.ifPresent(Thread::interrupt);
-		options.remove(Option.SYNC_MONITOR);
+    public static boolean isRunning() {
+        return options.get(HTTPCLIENT) != null || options.get(ASYNCHTTPCLIENT) != null;
+    }
 
-		tryGet(Option.ASYNCHTTPCLIENT,
-				CloseableHttpAsyncClient.class)
-				.filter(CloseableHttpAsyncClient::isRunning)
-				.ifPresent(Options::closeIt);
-		options.remove(Option.ASYNCHTTPCLIENT);
+    public static void shutDown() {
+        shutDown(true);
+    }
 
-		tryGet(Option.ASYNC_MONITOR,
-				AsyncIdleConnectionMonitorThread.class)
-				.ifPresent(Thread::interrupt);
-		options.remove(Option.ASYNC_MONITOR);
+    public static void shutDown(boolean clearOptions) {
+        tryGet(Option.HTTPCLIENT,
+                CloseableHttpClient.class)
+                .ifPresent(Options::closeIt);
+        options.remove(Option.HTTPCLIENT);
 
-		if(clearOptions){
-			options.clear();
-			interceptors.clear();
-		}
-		isRunning = false;
-	}
+        tryGet(Option.SYNC_MONITOR,
+                SyncIdleConnectionMonitorThread.class)
+                .ifPresent(Thread::interrupt);
+        options.remove(Option.SYNC_MONITOR);
 
-	public static void closeIt(Closeable c) {
-		try {
-			c.close();
-		}catch (IOException e){
-			throw new UnirestException(e);
-		}
-	}
+        tryGet(Option.ASYNCHTTPCLIENT,
+                CloseableHttpAsyncClient.class)
+                .filter(CloseableHttpAsyncClient::isRunning)
+                .ifPresent(Options::closeIt);
+        options.remove(Option.ASYNCHTTPCLIENT);
 
-	public static void addInterceptor(HttpRequestInterceptor interceptor) {
-		interceptors.add(interceptor);
-		refresh();
-	}
+        tryGet(Option.ASYNC_MONITOR,
+                AsyncIdleConnectionMonitorThread.class)
+                .ifPresent(Thread::interrupt);
+        options.remove(Option.ASYNC_MONITOR);
 
-	public static void followRedirects(boolean enable) {
-		options.put(FOLLOW_REDIRECTS, enable);
-		refresh();
-	}
+        if (clearOptions) {
+            options.clear();
+            interceptors.clear();
+            setDefaults();
+        }
+        customAsyncClientSet = false;
+        customClientSet = false;
+    }
 
-	public static void enableCookieManagement(boolean enable){
-		options.put(COOKIE_MANAGEMENT, enable);
-		refresh();
-	}
+    public static void closeIt(Closeable c) {
+        try {
+            c.close();
+        } catch (IOException e) {
+            throw new UnirestException(e);
+        }
+    }
 
-	public static List<HttpRequestInterceptor> getInterceptors() {
-		return interceptors;
-	}
+    public static void addInterceptor(HttpRequestInterceptor interceptor) {
+        interceptors.add(interceptor);
+        refresh();
+    }
+
+    public static void followRedirects(boolean enable) {
+        options.put(FOLLOW_REDIRECTS, enable);
+        refresh();
+    }
+
+    public static void enableCookieManagement(boolean enable) {
+        options.put(COOKIE_MANAGEMENT, enable);
+        refresh();
+    }
+
+    public static List<HttpRequestInterceptor> getInterceptors() {
+        return interceptors;
+    }
 }
