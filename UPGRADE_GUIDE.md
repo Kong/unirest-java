@@ -1,4 +1,4 @@
-## Upgrading to Open Uirest 3.0 from previous versions
+## Upgrading to Open Unirest 3.0 from previous versions
 
 ### Package
 Inspired by the "Java Spark" project, all classes are now in the ```unirest``` package. This project only has 45 files, it really doesn't need anything more complicated than that.
