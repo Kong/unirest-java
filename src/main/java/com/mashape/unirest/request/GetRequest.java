@@ -40,6 +40,12 @@ public class GetRequest extends HttpRequest {
 		return this;
 	}
 
+	public GetRequest routeParams(Map<String,String> routeParameters) {
+		for(Map.Entry<String,String> routeParameter :routeParameters.entrySet())
+			routeParam(routeParameter.getKey(),routeParameter.getValue());
+		return this;
+	}
+
 	@Override
 	public GetRequest header(String name, String value) {
 		return (GetRequest) super.header(name, value);

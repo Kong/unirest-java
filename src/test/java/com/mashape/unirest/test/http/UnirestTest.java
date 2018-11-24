@@ -49,6 +49,8 @@ import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -536,6 +538,17 @@ public class UnirestTest {
 	@Test
 	public void testPathParameters() throws UnirestException {
 		HttpResponse<JsonNode> jsonResponse = Unirest.get("http://httpbin.org/{method}").routeParam("method", "get").queryString("name", "Mark").asJson();
+
+		assertEquals(200, jsonResponse.getStatus());
+		assertEquals(jsonResponse.getBody().getObject().getJSONObject("args").getString("name"), "Mark");
+	}
+
+	@Test
+	public void testPathParameterMap() throws UnirestException {
+		Map<String,String> pathParameters = new HashMap<>();
+		pathParameters.put("method", "get");
+
+		HttpResponse<JsonNode> jsonResponse = Unirest.get("http://httpbin.org/{method}").routeParams(pathParameters).queryString("name", "Mark").asJson();
 
 		assertEquals(200, jsonResponse.getStatus());
 		assertEquals(jsonResponse.getBody().getObject().getJSONObject("args").getString("name"), "Mark");
