@@ -28,11 +28,14 @@ package BehaviorTests;
 
 import org.apache.http.HttpHost;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
+import unirest.HttpResponse;
 import unirest.Unirest;
 
 import static org.junit.Assert.assertTrue;
 
+@Ignore
 public class ProxyTest extends BddTest {
 
     @After @Override
@@ -68,5 +71,27 @@ public class ProxyTest extends BddTest {
                 .assertStatus(200);
 
         assertTrue(JankyProxy.wasUsed());
+    }
+
+    @Test
+    public void canSetAuthenticatedProxy(){
+        JankyProxy.runServer("localhost", 4567, 7777);
+
+        Unirest.config().proxy("localhost", 7777, "username", "password1!");
+
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertStatus(200);
+
+        assertTrue(JankyProxy.wasUsed());
+    }
+
+    @Test @Ignore
+    public void callSomethingRealThroughARealProxy() {
+        Unirest.config().proxy("proxyv.local.com",81, "myuser","pass1!");
+        HttpResponse<String> r = Unirest.get("https://twitter.com/ryber").asString();
+        System.out.println("status = " + r.getStatus());
+        System.out.println("body= " + r.getBody());
     }
 }

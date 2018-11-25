@@ -62,7 +62,8 @@
     <!-- Checks for Size Violations.                    -->
     <!-- See http://checkstyle.sf.net/config_sizes.html -->
     <module name="FileLength">
-        <property name="max" value="400"/>
+        <!-- This can't ignore javadocs so it's kind of stupid -->
+        <property name="max" value="1000"/>
     </module>
 
     <!-- Checks for whitespace                               -->

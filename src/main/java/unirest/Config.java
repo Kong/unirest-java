@@ -28,7 +28,11 @@ package unirest;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.nio.client.HttpAsyncClient;
 
 import java.util.*;
@@ -49,14 +53,16 @@ public class Config {
     private Optional<ObjectMapper> objectMapper = Optional.empty();
 
     private List<HttpRequestInterceptor> interceptors = new ArrayList<>();
-    private HttpHost proxy;
     private Headers defaultHeaders;
+    private HttpHost proxy;
+    private CredentialsProvider proxyCreds;
     private int connectionTimeout;
     private int socketTimeout;
     private int maxTotal;
     private int maxPerRoute;
     private boolean followRedirects;
     private boolean cookieManagement;
+
 
     private void setDefaults(){
         interceptors.clear();
@@ -141,6 +147,21 @@ public class Config {
         return proxy(new HttpHost(host, port));
     }
 
+    /**
+     * Set an authenticated proxy
+     *
+     * @param host the hostname of the proxy server.
+     * @param port the port of the proxy server
+     * @param username username for authenticated proxy
+     * @param password password for authenticated proxy
+     * @return this config object
+     */
+    public Config proxy(String host, int port, String username, String password) {
+        proxyCreds = new BasicCredentialsProvider();
+        proxyCreds.setCredentials(new AuthScope(host, port),
+                new UsernamePasswordCredentials(username, password));
+        return proxy(new HttpHost(host, port));
+    }
 
     /**
      * Set the ObjectMapper implementation to use for Response to Object binding
@@ -384,5 +405,9 @@ public class Config {
 
     HttpHost getProxy() {
         return proxy;
+    }
+
+    CredentialsProvider getProxyCreds(){
+        return proxyCreds;
     }
 }

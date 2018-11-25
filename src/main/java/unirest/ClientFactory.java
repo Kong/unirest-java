@@ -82,6 +82,7 @@ class ClientFactory {
 
         HttpClientBuilder cb = HttpClientBuilder.create()
                 .setDefaultRequestConfig(getRequestConfig())
+                .setDefaultCredentialsProvider(config.getProxyCreds())
                 .setConnectionManager(manager)
                 .useSystemProperties();
 
