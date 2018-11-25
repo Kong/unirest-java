@@ -1,5 +1,9 @@
-## 3.0.0
+## 3.0.01
+* Support for authenticated proxies with ```Unirest.config().proxy("proxy.server.host", 80, "username","password")```
+
+## 3.0.00
 * This is a **major** release with several **breaking changes** which (other than the namespace change) should ONLY impact you if you are using some of Unirests more advanced features or custom configurations.
+* The maven artifact has changed to ```open-unirest-java```
 * The namespace has been shortened to just **unirest** (inspired by Java Spark)
 * The configuration system has been completely redone. Previously it was scattered across several classes and was entirely static. The new system has instances and supports multiple configurations. See the UPGRADE_GUIDE.md for details.
     * Start accessing the config with ```Unirest.config()```
