@@ -24,12 +24,36 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package unirest;
+package BehaviorTests;
 
-public interface Callback<T> {
-	void completed(HttpResponse<T> response);
+import org.apache.http.HttpHost;
+import org.junit.After;
+import org.junit.Test;
+import unirest.Unirest;
 
-	default void failed(UnirestException e){}
+import java.io.IOException;
 
-	default void cancelled(){}
+import static org.junit.Assert.assertTrue;
+
+public class ProxyTest extends BddTest {
+
+    @After @Override
+    public void tearDown() {
+        super.tearDown();
+        Unirest.shutDown(true);
+    }
+
+    @Test
+    public void canUseNonAuthProxy() {
+        JankyProxy.runServer("localhost", 4567, 7777);
+
+        Unirest.config().proxy(new HttpHost("localhost", 7777));
+
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertStatus(200);
+
+        assertTrue(JankyProxy.wasUsed());
+    }
 }

@@ -64,6 +64,9 @@ public class RequestCapture {
     public String param;
     public String contentType;
     public JsonPatch jsonPatches;
+    public Integer status;
+    private boolean isProxied;
+
 
     public RequestCapture() {
     }
@@ -76,6 +79,7 @@ public class RequestCapture {
         writeQuery(req);
         param = req.params("p");
         contentType = req.contentType();
+        status = 200;
     }
 
     public void writeBody(Request req) {
@@ -220,6 +224,20 @@ public class RequestCapture {
 
     public void setPatch(JsonPatch patch) {
         this.jsonPatches = patch;
+    }
+
+    public RequestCapture assertStatus(Integer i) {
+         assertEquals(i, status);
+         return this;
+    }
+
+    public void setIsProxied(boolean b) {
+        this.isProxied = b;
+    }
+
+    public RequestCapture assertIsProxied(boolean b) {
+        assertEquals(b, isProxied);
+        return this;
     }
 
     public static class File {

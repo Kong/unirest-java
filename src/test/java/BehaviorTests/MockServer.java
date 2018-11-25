@@ -69,6 +69,7 @@ public class MockServer {
 	public static final int PORT = 4567;
 	public static final String HOST = "http://localhost:" + PORT;
 	public static final String REDIRECT = HOST + "/redirect";
+	public static final String PROXY = "localhost:4567";
 	public static final String POST = HOST + "/post";
 	public static final String GET = HOST + "/get";
 	public static final String DELETE = HOST + "/delete";
@@ -100,6 +101,7 @@ public class MockServer {
 		head("/get", MockServer::jsonResponse);
 		put("/post", MockServer::jsonResponse);
 		get("/get/:p/passed", MockServer::jsonResponse);
+		get("/proxy", MockServer::proxiedResponse);
         Runtime.getRuntime().addShutdownHook(new Thread(Spark::stop));
 		try {
 			new CountDownLatch(1).await(2, TimeUnit.SECONDS);
@@ -121,6 +123,17 @@ public class MockServer {
 	private static Object gzipResponse(Request request, Response response) {
 		response.header("Content-Encoding", "gzip");
 		return jsonResponse(request, response);
+	}
+
+	private static Object proxiedResponse(Request req, Response res) {
+		res.cookie("JSESSIONID", "ABC123");
+		if(responseBody != null){
+			return responseBody;
+		}
+		RequestCapture value = new RequestCapture(req);
+		value.writeBody(req);
+		value.setIsProxied(true);
+		return om.writeValue(value);
 	}
 
 	private static Object jsonResponse(Request req, Response res) {
