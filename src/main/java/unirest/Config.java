@@ -131,6 +131,18 @@ public class Config {
     }
 
     /**
+     * Set a proxy
+     *
+     * @param host the hostname of the proxy server.
+     * @param port the port of the proxy server
+     * @return this config object
+     */
+    public Config proxy(String host, int port) {
+        return proxy(new HttpHost(host, port));
+    }
+
+
+    /**
      * Set the ObjectMapper implementation to use for Response to Object binding
      *
      * @param om Custom implementation of ObjectMapper interface
@@ -327,8 +339,8 @@ public class Config {
             asyncClient = Optional.of(value);
         }
     }
-
     // Accessors for unirest.
+
     boolean getEnabledCookieManagement() {
         return cookieManagement;
     }

@@ -35,6 +35,7 @@ public class UnirestInstance {
     }
     /**
      * Access the default configuration for the primary Unirest instance.
+     * @return the instance's config
      */
     public Config config() {
         return config;

@@ -31,8 +31,6 @@ import org.junit.After;
 import org.junit.Test;
 import unirest.Unirest;
 
-import java.io.IOException;
-
 import static org.junit.Assert.assertTrue;
 
 public class ProxyTest extends BddTest {
@@ -41,6 +39,7 @@ public class ProxyTest extends BddTest {
     public void tearDown() {
         super.tearDown();
         Unirest.shutDown(true);
+        JankyProxy.shutdown();
     }
 
     @Test
@@ -48,6 +47,20 @@ public class ProxyTest extends BddTest {
         JankyProxy.runServer("localhost", 4567, 7777);
 
         Unirest.config().proxy(new HttpHost("localhost", 7777));
+
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertStatus(200);
+
+        assertTrue(JankyProxy.wasUsed());
+    }
+
+    @Test
+    public void canUseNonAuthProxyWithEasyMethod() {
+        JankyProxy.runServer("localhost", 4567, 7777);
+
+        Unirest.config().proxy("localhost", 7777);
 
         Unirest.get(MockServer.GET)
                 .asObject(RequestCapture.class)

@@ -57,7 +57,7 @@ public class JankyProxy {
     public static void shutdown(){
         if(thread != null){
             try {
-                thread.interrupt();
+                thread.shutdown();
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -147,5 +147,14 @@ class ThreadProxy extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void shutdown() {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        interrupt();
     }
 }
