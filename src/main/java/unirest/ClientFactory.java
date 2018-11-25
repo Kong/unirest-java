@@ -54,6 +54,7 @@ class ClientFactory {
             HttpAsyncClientBuilder ab = HttpAsyncClientBuilder.create()
                     .setDefaultRequestConfig(getRequestConfig())
                     .setConnectionManager(manager)
+                    .setDefaultCredentialsProvider(config.getProxyCreds())
                     .useSystemProperties();
 
             if (shouldDisableRedirects()) {

@@ -1,3 +1,6 @@
+## 3.0.02
+* Add support for the authenticated proxies to the async client
+
 ## 3.0.01
 * Support for authenticated proxies with ```Unirest.config().proxy("proxy.server.host", 80, "username","password")```
 
