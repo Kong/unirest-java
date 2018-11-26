@@ -60,6 +60,15 @@ public class QueryStringTest extends BddTest {
     }
 
     @Test
+    public void canPassInACharSequence() {
+        Unirest.get(MockServer.GET)
+                .queryString("foo", new StringBuilder("bar"))
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertParam("foo", "bar");
+    }
+
+    @Test
     public void multipleParams() {
         Unirest.get(MockServer.GET + "?name=ringo")
                 .queryString("name", "paul")
