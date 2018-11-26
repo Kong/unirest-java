@@ -1,3 +1,8 @@
+## 3.0.03
+* Support Java system properties for proxies via ```Unirest.config().useSystemProperties(true);```
+    * https://docs.oracle.com/javase/7/docs/api/java/net/doc-files/net-properties.html
+
+
 ## 3.0.02
 * Add support for the authenticated proxies to the async client
 
