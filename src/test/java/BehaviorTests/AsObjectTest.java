@@ -27,11 +27,11 @@
 package BehaviorTests;
 
 import com.google.gson.Gson;
-import unirest.JacksonObjectMapper;
-import unirest.ObjectMapper;
-import unirest.Unirest;
+import unirest.*;
 import org.junit.Test;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
 
 public class AsObjectTest extends BddTest {
@@ -78,6 +78,39 @@ public class AsObjectTest extends BddTest {
                 .assertParam("foo", "bar");
 
         assertTrue(mapper.wasCalled);
+    }
+
+    @Test
+    public void ifTheObjectMapperFailsReturnEmptyAndAddToParsingError() {
+        HttpResponse<RequestCapture> request = Unirest.get(MockServer.INVALID_REQUEST)
+                .asObject(RequestCapture.class);
+
+        assertNull(request.getBody());
+        assertTrue(request.getParsingError().isPresent());
+        assertEquals("com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'You': was expecting ('true', 'false' or 'null')\n" +
+                " at [Source: (String)\"You did something bad\"; line: 1, column: 4]", request.getParsingError().get().getMessage());
+    }
+
+    @Test
+    public void ifTheObjectMapperFailsReturnEmptyAndAddToParsingErrorObGenericTypes() {
+        HttpResponse<RequestCapture> request = Unirest.get(MockServer.INVALID_REQUEST)
+                .asObject(new GenericType<RequestCapture>() {});
+
+        assertNull(request.getBody());
+        assertTrue(request.getParsingError().isPresent());
+        assertEquals("com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'You': was expecting ('true', 'false' or 'null')\n" +
+                " at [Source: (String)\"You did something bad\"; line: 1, column: 4]", request.getParsingError().get().getMessage());
+    }
+
+    @Test
+    public void unirestExceptionsAreAlsoParseExceptions() {
+        HttpResponse<RequestCapture> request = Unirest.get(MockServer.INVALID_REQUEST)
+                .asObject(new GenericType<RequestCapture>() {});
+
+        assertNull(request.getBody());
+        assertTrue(request.getParsingError().isPresent());
+        assertEquals("com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'You': was expecting ('true', 'false' or 'null')\n" +
+                " at [Source: (String)\"You did something bad\"; line: 1, column: 4]", request.getParsingError().get().getMessage());
     }
 
     public static class TestingMapper implements ObjectMapper {

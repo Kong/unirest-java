@@ -63,7 +63,7 @@ public class JacksonObjectMapper implements ObjectMapper {
 		try {
 			return om.readValue(value, valueType);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new UnirestException(e);
 		}
 	}
 
@@ -72,7 +72,7 @@ public class JacksonObjectMapper implements ObjectMapper {
 		try {
 			return om.readValue(value,  om.constructType(genericType.getType()));
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new UnirestException(e);
 		}
 	}
 
@@ -81,7 +81,7 @@ public class JacksonObjectMapper implements ObjectMapper {
 		try {
 			return om.writeValueAsString(value);
 		} catch (JsonProcessingException e) {
-			throw new RuntimeException(e);
+			throw new UnirestException(e);
 		}
 	}
 

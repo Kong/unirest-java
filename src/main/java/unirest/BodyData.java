@@ -89,8 +89,6 @@ class BodyData<T>  {
     private void transformBody(Function<BodyData<T>, T> transformer) {
         try {
             this.transFormedBody = transformer.apply(this);
-        }catch (UnirestException e){
-            throw e;
         }catch (RuntimeException e){
             parseEx = e;
         }
