@@ -62,6 +62,7 @@ public class Config {
     private int maxPerRoute;
     private boolean followRedirects;
     private boolean cookieManagement;
+    private boolean useSystemProperties;
 
 
     private void setDefaults(){
@@ -271,6 +272,17 @@ public class Config {
     }
 
     /**
+     * Tell the HttpClients to use the system properties for things like proxies
+     *
+     * @param value a bool is its true or not.
+     * @return this config object
+     */
+    public Config useSystemProperties(boolean value) {
+        this.useSystemProperties = value;
+        return this;
+    }
+
+    /**
      * Return default headers that are added to every request
      *
      * @return Headers
@@ -409,5 +421,9 @@ public class Config {
 
     CredentialsProvider getProxyCreds(){
         return proxyCreds;
+    }
+
+    boolean useSystemProperties(){
+        return this.useSystemProperties;
     }
 }

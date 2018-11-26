@@ -57,6 +57,9 @@ class ClientFactory {
                     .setDefaultCredentialsProvider(config.getProxyCreds())
                     .useSystemProperties();
 
+            if(config.useSystemProperties()){
+                ab.useSystemProperties();
+            }
             if (shouldDisableRedirects()) {
                 ab.setRedirectStrategy(new NoRedirects());
             }
@@ -87,6 +90,9 @@ class ClientFactory {
                 .setConnectionManager(manager)
                 .useSystemProperties();
 
+        if(config.useSystemProperties()){
+            cb.useSystemProperties();
+        }
         if (shouldDisableRedirects()) {
             cb.disableRedirectHandling();
         }

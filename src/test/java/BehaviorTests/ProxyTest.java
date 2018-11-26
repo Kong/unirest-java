@@ -87,6 +87,24 @@ public class ProxyTest extends BddTest {
         assertTrue(JankyProxy.wasUsed());
     }
 
+    @Test
+    @Ignore // there is some weird conflict between jetty and unirest here
+    public void canFlagTheClientsToUseSystemProperties(){
+        JankyProxy.runServer("localhost", 4567, 7777);
+
+        System.setProperty("http.proxyHost", "localhost");
+        System.setProperty("http.proxyPort", "7777");
+
+        Unirest.config().useSystemProperties(true);
+
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertStatus(200);
+
+        assertTrue(JankyProxy.wasUsed());
+    }
+
     @Test @Ignore
     public void callSomethingRealThroughARealProxy() {
         Unirest.config().proxy("proxyv.local.com",81, "myuser","pass1!");
