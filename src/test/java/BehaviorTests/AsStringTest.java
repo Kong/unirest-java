@@ -27,14 +27,24 @@
 package BehaviorTests;
 
 import unirest.HttpResponse;
+import unirest.JsonNode;
 import unirest.Unirest;
 import org.junit.Test;
 import unirest.TestUtil;
 
 import java.util.concurrent.CompletableFuture;
 
+import static org.junit.Assert.assertEquals;
+
 public class AsStringTest extends BddTest {
 
+    @Test
+    public void whenNoBodyIsReturned() {
+        HttpResponse<String> i = Unirest.get(MockServer.NOBODY).asString();
+
+        assertEquals(200, i.getStatus());
+        assertEquals("", i.getBody());
+    }
 
     @Test
     public void canGetBinaryResponse() {

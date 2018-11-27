@@ -33,12 +33,22 @@ import org.junit.Test;
 import unirest.MockCallback;
 import unirest.TestUtil;
 
+import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 public class AsJsonTest extends BddTest {
+
+    @Test
+    public void whenNoBodyIsReturned() {
+        HttpResponse<JsonNode> i = Unirest.get(MockServer.NOBODY).asJson();
+
+        assertEquals(200, i.getStatus());
+        assertEquals("{}", i.getBody().toString());
+    }
+
     @Test
     public void canGetBinaryResponse() {
         HttpResponse<JsonNode> i = Unirest.get(MockServer.GET)

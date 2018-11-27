@@ -31,10 +31,22 @@ import unirest.Unirest;
 import org.junit.Test;
 import unirest.TestUtil;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 public class AsBinaryTest extends BddTest {
+    @Test
+    public void whenNoBodyIsReturned() {
+        HttpResponse<InputStream> i = Unirest.get(MockServer.NOBODY).asBinary();
+
+        assertEquals(200, i.getStatus());
+        assertEquals("", TestUtil.toString(i.getBody()));
+    }
+
     @Test
     public void canGetBinaryResponse() {
         HttpResponse<InputStream> i = Unirest.get(MockServer.GET)

@@ -69,6 +69,7 @@ public class MockServer {
 	public static final int PORT = 4567;
 	public static final String HOST = "http://localhost:" + PORT;
 	public static final String REDIRECT = HOST + "/redirect";
+	public static final String NOBODY = HOST + "/nobody";
 	public static final String PROXY = "localhost:4567";
 	public static final String POST = HOST + "/post";
 	public static final String GET = HOST + "/get";
@@ -98,6 +99,7 @@ public class MockServer {
         patch("/patch", MockServer::jsonResponse);
         get("/invalid", MockServer::inValid);
         options("/get", MockServer::jsonResponse);
+        get("/nobody", MockServer::nobody);
 		head("/get", MockServer::jsonResponse);
 		put("/post", MockServer::jsonResponse);
 		get("/get/:p/passed", MockServer::jsonResponse);
@@ -108,6 +110,11 @@ public class MockServer {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static Object nobody(Request request, Response response) {
+		Spark.halt(200);
+		return null;
 	}
 
 	private static Object redirect(Request request, Response response) {

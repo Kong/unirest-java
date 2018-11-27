@@ -34,20 +34,13 @@ import java.util.function.Function;
 
 class HttpResponseImpl<T> implements HttpResponse<T> {
 
+	private Optional<RuntimeException> parsingError = Optional.empty();
 	private final Headers headers;
-	private final int statusCode;
 	private final String statusText;
+	private final int statusCode;
 
 	private InputStream rawBody;
-	private Optional<RuntimeException> parsingError = Optional.empty();
 	private T body;
-
-	private HttpResponseImpl(org.apache.http.HttpResponse response){
-		headers = new Headers(response.getAllHeaders());
-		StatusLine statusLine = response.getStatusLine();
-		this.statusCode = statusLine.getStatusCode();
-		this.statusText = statusLine.getReasonPhrase();
-	}
 
 	public HttpResponseImpl(org.apache.http.HttpResponse response, BodyData<T> data){
 		this(response);
@@ -61,6 +54,13 @@ class HttpResponseImpl<T> implements HttpResponse<T> {
         this.body = body;
         this.rawBody = is;
     }
+
+	private HttpResponseImpl(org.apache.http.HttpResponse response){
+		headers = new Headers(response.getAllHeaders());
+		StatusLine statusLine = response.getStatusLine();
+		this.statusCode = statusLine.getStatusCode();
+		this.statusText = statusLine.getReasonPhrase();
+	}
 
 	@Override
 	public int getStatus() {

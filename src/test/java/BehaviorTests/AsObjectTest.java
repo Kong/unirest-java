@@ -27,6 +27,7 @@
 package BehaviorTests;
 
 import com.google.gson.Gson;
+import org.junit.Assert;
 import unirest.*;
 import org.junit.Test;
 
@@ -35,6 +36,15 @@ import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
 
 public class AsObjectTest extends BddTest {
+
+    @Test
+    public void whenNoBodyIsReturned() {
+        HttpResponse<RequestCapture> i = Unirest.get(MockServer.NOBODY).asObject(RequestCapture.class);
+
+        Assert.assertEquals(200, i.getStatus());
+        Assert.assertEquals(null, i.getBody());
+    }
+
     @Test
     public void canGetObjectResponse() {
          Unirest.get(MockServer.GET)
