@@ -267,23 +267,23 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     private HttpResponse<JsonNode> asJson(org.apache.http.HttpResponse response) {
-        return new HttpResponseImpl<>(response, from(response.getEntity(), b -> toJson(b)));
+        return new Response<>(response, from(response.getEntity(), b -> toJson(b)));
     }
 
     private HttpResponse<InputStream> asBinary(org.apache.http.HttpResponse response){
-        return new HttpResponseImpl<>(response, from(response.getEntity(), BodyData::getRawInput));
+        return new Response<>(response, from(response.getEntity(), BodyData::getRawInput));
     }
 
     private <T> HttpResponse<T> asObject(org.apache.http.HttpResponse response, Class<? extends T> aClass) {
-        return new HttpResponseImpl<>(response, from(response.getEntity(), b -> toObject(b, aClass)));
+        return new Response<>(response, from(response.getEntity(), b -> toObject(b, aClass)));
     }
 
     private <T> HttpResponse<T> asObject(org.apache.http.HttpResponse response, GenericType<T> genericType) {
-        return new HttpResponseImpl<>(response, from(response.getEntity(), b -> toObject(b, genericType)));
+        return new Response<>(response, from(response.getEntity(), b -> toObject(b, genericType)));
     }
 
     private HttpResponse<String> asString(org.apache.http.HttpResponse response) {
-        return new HttpResponseImpl<>(response, from(response.getEntity(), this::toString));
+        return new Response<>(response, from(response.getEntity(), this::toString));
     }
 
     private <T> T toObject(BodyData<T> b, GenericType<T> genericType) {

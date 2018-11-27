@@ -32,7 +32,7 @@ import java.io.InputStream;
 import java.util.Optional;
 import java.util.function.Function;
 
-class HttpResponseImpl<T> implements HttpResponse<T> {
+class Response<T> implements HttpResponse<T> {
 
 	private Optional<RuntimeException> parsingError = Optional.empty();
 	private final Headers headers;
@@ -42,20 +42,20 @@ class HttpResponseImpl<T> implements HttpResponse<T> {
 	private InputStream rawBody;
 	private T body;
 
-	public HttpResponseImpl(org.apache.http.HttpResponse response, BodyData<T> data){
+	public Response(org.apache.http.HttpResponse response, BodyData<T> data){
 		this(response);
 		this.rawBody = data.getRawInput();
 		this.body = data.getTransFormedBody();
 		this.parsingError = Optional.ofNullable(data.getParseEx());
 	}
 
-    public HttpResponseImpl(org.apache.http.HttpResponse response, T body, InputStream is){
+    public Response(org.apache.http.HttpResponse response, T body, InputStream is){
         this(response);
         this.body = body;
         this.rawBody = is;
     }
 
-	private HttpResponseImpl(org.apache.http.HttpResponse response){
+	private Response(org.apache.http.HttpResponse response){
 		headers = new Headers(response.getAllHeaders());
 		StatusLine statusLine = response.getStatusLine();
 		this.statusCode = statusLine.getStatusCode();
