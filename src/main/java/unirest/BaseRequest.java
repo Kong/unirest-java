@@ -127,17 +127,17 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public HttpResponse<String> asString() throws UnirestException {
-        return request(this::asString);
+        return request(StringResponse::new);
     }
 
     @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync() {
-        return requestAsync(this::asString, new CompletableFuture<>());
+        return requestAsync(StringResponse::new, new CompletableFuture<>());
     }
 
     @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync(Callback<String> callback) {
-        return requestAsync(this::asString, CallbackFuture.wrap(callback));
+        return requestAsync(StringResponse::new, CallbackFuture.wrap(callback));
     }
 
     @Override
@@ -198,23 +198,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback) {
         return requestAsync(this::asBinary, CallbackFuture.wrap(callback));
-    }
-
-    private <T> HttpResponse<T> request(Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) {
-
-        HttpRequestBase requestObj = new RequestPrep(this, false).prepare();
-        HttpClient client = config.getClient();
-
-        try {
-            org.apache.http.HttpResponse execute = client.execute(requestObj);
-            HttpResponse<T> httpResponse = transformer.apply(execute);
-            requestObj.releaseConnection();
-            return httpResponse;
-        } catch (Exception e) {
-            throw new UnirestException(e);
-        } finally {
-            requestObj.releaseConnection();
-        }
     }
 
     private <T> CompletableFuture<HttpResponse<T>> requestAsync(
@@ -282,8 +265,21 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         return new Response<>(response, from(response.getEntity(), b -> toObject(b, genericType)));
     }
 
-    private HttpResponse<String> asString(org.apache.http.HttpResponse response) {
-        return new Response<>(response, from(response.getEntity(), this::toString));
+    private <T> HttpResponse<T> request(Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) {
+
+        HttpRequestBase requestObj = new RequestPrep(this, false).prepare();
+        HttpClient client = config.getClient();
+
+        try {
+            org.apache.http.HttpResponse execute = client.execute(requestObj);
+            HttpResponse<T> httpResponse = transformer.apply(execute);
+            requestObj.releaseConnection();
+            return httpResponse;
+        } catch (Exception e) {
+            throw new UnirestException(e);
+        } finally {
+            requestObj.releaseConnection();
+        }
     }
 
     private <T> T toObject(BodyData<T> b, GenericType<T> genericType) {
