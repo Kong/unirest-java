@@ -32,6 +32,7 @@ import org.junit.Test;
 import unirest.TestUtil;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 
@@ -40,11 +41,11 @@ import static org.junit.Assert.assertNull;
 
 public class AsBinaryTest extends BddTest {
     @Test
-    public void whenNoBodyIsReturned() {
+    public void whenNoBodyIsReturned() throws IOException {
         HttpResponse<InputStream> i = Unirest.get(MockServer.NOBODY).asBinary();
 
         assertEquals(200, i.getStatus());
-        assertEquals("", TestUtil.toString(i.getBody()));
+        assertEquals(0, i.getBody().available());
     }
 
     @Test

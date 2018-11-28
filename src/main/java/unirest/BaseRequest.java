@@ -187,17 +187,17 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public HttpResponse<InputStream> asBinary() throws UnirestException {
-        return request(this::asBinary);
+        return request(response -> new BinaryResponse(response));
     }
 
     @Override
     public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync() {
-        return requestAsync(this::asBinary, new CompletableFuture<>());
+        return requestAsync(response -> new BinaryResponse(response), new CompletableFuture<>());
     }
 
     @Override
     public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback) {
-        return requestAsync(this::asBinary, CallbackFuture.wrap(callback));
+        return requestAsync(response -> new BinaryResponse(response), CallbackFuture.wrap(callback));
     }
 
     private <T> CompletableFuture<HttpResponse<T>> requestAsync(
@@ -251,10 +251,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     private HttpResponse<JsonNode> asJson(org.apache.http.HttpResponse response) {
         return new Response<>(response, from(response.getEntity(), b -> toJson(b)));
-    }
-
-    private HttpResponse<InputStream> asBinary(org.apache.http.HttpResponse response){
-        return new Response<>(response, from(response.getEntity(), BodyData::getRawInput));
     }
 
     private <T> HttpResponse<T> asObject(org.apache.http.HttpResponse response, Class<? extends T> aClass) {
