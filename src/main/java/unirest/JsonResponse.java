@@ -26,63 +26,57 @@
 
 package unirest;
 
-import org.apache.http.StatusLine;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
-import java.util.function.Function;
+import java.util.Objects;
 
-abstract class BaseResponse<T> implements HttpResponse<T> {
+public class JsonResponse extends BaseResponse<JsonNode> {
+    private JsonNode node;
+    private InputStream errorStream;
 
-    private final Headers headers;
-    private final String statusText;
-    private final int statusCode;
-    private Optional<RuntimeException> parsingerror = Optional.empty();
+    protected JsonResponse(HttpResponse response) {
+        super(response);
+        node = getNode(response.getEntity());
+    }
 
-    protected BaseResponse(org.apache.http.HttpResponse response){
-        headers = new Headers(response.getAllHeaders());
-        StatusLine statusLine = response.getStatusLine();
-        this.statusCode = statusLine.getStatusCode();
-        this.statusText = statusLine.getReasonPhrase();
+    private JsonNode getNode(HttpEntity entity) {
+        if(Objects.isNull(entity)){
+            return new JsonNode(null);
+        } else {
+            try {
+                String json = EntityUtils.toString(entity);
+                return toJsonNode(json);
+            } catch (IOException e) {
+                throw new UnirestException(e);
+            }
+        }
+    }
+
+    private JsonNode toJsonNode(String json) {
+        try {
+            return new JsonNode(json);
+        }catch (RuntimeException e){
+            super.setParsingException(e);
+            errorStream = new ByteArrayInputStream(json.getBytes());
+            return null;
+        }
     }
 
     @Override
-    public int getStatus() {
-        return statusCode;
+    public InputStream getRawBody() {
+        if(errorStream != null){
+            return errorStream;
+        }
+        return new ByteArrayInputStream(node.toString().getBytes());
     }
 
     @Override
-    public String getStatusText() {
-        return statusText;
-    }
-
-    @Override
-    public Headers getHeaders() {
-        return headers;
-    }
-
-    @Override
-    public abstract InputStream getRawBody();
-
-    @Override
-    public abstract T getBody();
-
-    @Override
-    public Optional<RuntimeException> getParsingError() {
-        return parsingerror;
-    }
-
-    @Override
-    public <V> V mapBody(Function<T, V> func){
-        return func.apply(getBody());
-    }
-
-    @Override
-    public <V> V mapRawBody(Function<InputStream, V> func) {
-        return func.apply(getRawBody());
-    }
-
-    protected void setParsingException(RuntimeException e) {
-        parsingerror = Optional.of(e);
+    public JsonNode getBody() {
+        return node;
     }
 }

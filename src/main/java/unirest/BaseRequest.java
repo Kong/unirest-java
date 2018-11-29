@@ -142,17 +142,17 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public HttpResponse<JsonNode> asJson() throws UnirestException {
-        return request(this::asJson);
+        return request(response -> new JsonResponse(response));
     }
 
     @Override
     public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync() {
-        return requestAsync(this::asJson, new CompletableFuture<>());
+        return requestAsync(response -> new JsonResponse(response), new CompletableFuture<>());
     }
 
     @Override
     public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback) {
-        return requestAsync(this::asJson, CallbackFuture.wrap(callback));
+        return requestAsync(response -> new JsonResponse(response), CallbackFuture.wrap(callback));
     }
 
     @Override
@@ -249,10 +249,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         return null;
     }
 
-    private HttpResponse<JsonNode> asJson(org.apache.http.HttpResponse response) {
-        return new Response<>(response, from(response.getEntity(), b -> toJson(b)));
-    }
-
     private <T> HttpResponse<T> asObject(org.apache.http.HttpResponse response, Class<? extends T> aClass) {
         return new Response<>(response, from(response.getEntity(), b -> toObject(b, aClass)));
     }
@@ -294,11 +290,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         } catch (UnsupportedEncodingException e) {
             throw new UnirestException(e);
         }
-    }
-
-    private JsonNode toJson(BodyData<JsonNode> b) {
-        String jsonString = toString(b);
-        return new JsonNode(jsonString);
     }
 
     private ObjectMapper getObjectMapper() {
