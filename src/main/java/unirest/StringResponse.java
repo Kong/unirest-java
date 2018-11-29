@@ -28,6 +28,7 @@ package unirest;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -51,7 +52,7 @@ public class StringResponse extends ResponseBase<String> {
 
     private String toString(HttpEntity b) {
         try {
-            return new String(ResponseUtils.getRawBody(b), getCharSet(b));
+            return EntityUtils.toString(b);
         } catch (IOException e) {
             throw new UnirestException(e);
         }
