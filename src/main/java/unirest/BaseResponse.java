@@ -32,13 +32,13 @@ import java.io.InputStream;
 import java.util.Optional;
 import java.util.function.Function;
 
-abstract class ResponseBase<T> implements HttpResponse<T> {
+abstract class BaseResponse<T> implements HttpResponse<T> {
 
     private final Headers headers;
     private final String statusText;
     private final int statusCode;
 
-    protected ResponseBase(org.apache.http.HttpResponse response){
+    protected BaseResponse(org.apache.http.HttpResponse response){
         headers = new Headers(response.getAllHeaders());
         StatusLine statusLine = response.getStatusLine();
         this.statusCode = statusLine.getStatusCode();

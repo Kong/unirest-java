@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-public class BinaryResponse extends ResponseBase<InputStream> {
+public class BinaryResponse extends BaseResponse<InputStream> {
 
     private InputStream body;
 

@@ -36,7 +36,7 @@ import java.io.InputStream;
 import java.util.Objects;
 
 
-public class StringResponse extends ResponseBase<String> {
+public class StringResponse extends BaseResponse<String> {
     private String body;
 
     public StringResponse(HttpResponse response) {
