@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-import static unirest.ResponseUtils.getCharSet;
 
 public class StringResponse extends ResponseBase<String> {
     private String body;

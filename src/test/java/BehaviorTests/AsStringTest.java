@@ -47,6 +47,17 @@ public class AsStringTest extends BddTest {
     }
 
     @Test
+    public void canParseGzippedStringResponse() {
+        HttpResponse<String> i = Unirest.get(MockServer.GZIP)
+                .queryString("foo", "bar")
+                .asString();
+
+        RequestCapture cap = TestUtil.readValue(i.getBody(), RequestCapture.class);
+        assertEquals(200, i.getStatus());
+        cap.assertParam("foo", "bar");
+    }
+
+    @Test
     public void canGetBinaryResponse() {
         HttpResponse<String> i = Unirest.get(MockServer.GET)
                 .queryString("foo", "bar")
