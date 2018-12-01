@@ -41,15 +41,8 @@ class Response<T> implements HttpResponse<T> {
 
 	private InputStream rawBody;
 	private T body;
-
-	public Response(org.apache.http.HttpResponse response, BodyData<T> data){
-		this(response);
-		this.rawBody = data.getRawInput();
-		this.body = data.getTransFormedBody();
-		this.parsingError = Optional.ofNullable(data.getParseEx());
-	}
-
-    public Response(org.apache.http.HttpResponse response, T body, InputStream is){
+	
+    Response(org.apache.http.HttpResponse response, T body, InputStream is){
         this(response);
         this.body = body;
         this.rawBody = is;
