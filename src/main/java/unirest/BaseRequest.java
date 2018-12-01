@@ -139,17 +139,17 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public HttpResponse<JsonNode> asJson() throws UnirestException {
-        return request(response -> new JsonResponse(response));
+        return request(JsonResponse::new);
     }
 
     @Override
     public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync() {
-        return requestAsync(response -> new JsonResponse(response), new CompletableFuture<>());
+        return requestAsync(JsonResponse::new, new CompletableFuture<>());
     }
 
     @Override
     public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback) {
-        return requestAsync(response -> new JsonResponse(response), CallbackFuture.wrap(callback));
+        return requestAsync(JsonResponse::new, CallbackFuture.wrap(callback));
     }
 
     @Override
@@ -169,32 +169,32 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback) {
-        return requestAsync(r -> new ObjectResponse<T>(getObjectMapper(), r, responseClass), CallbackFuture.wrap(callback));
+        return requestAsync(r -> new ObjectResponse<>(getObjectMapper(), r, responseClass), CallbackFuture.wrap(callback));
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType) {
-        return requestAsync(r -> new ObjectResponse<T>(getObjectMapper(), r, genericType), new CompletableFuture<>());
+        return requestAsync(r -> new ObjectResponse<>(getObjectMapper(), r, genericType), new CompletableFuture<>());
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType, Callback<T> callback) {
-        return requestAsync(r -> new ObjectResponse<T>(getObjectMapper(), r, genericType), CallbackFuture.wrap(callback));
+        return requestAsync(r -> new ObjectResponse<>(getObjectMapper(), r, genericType), CallbackFuture.wrap(callback));
     }
 
     @Override
     public HttpResponse<InputStream> asBinary() throws UnirestException {
-        return request(response -> new BinaryResponse(response));
+        return request(BinaryResponse::new);
     }
 
     @Override
     public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync() {
-        return requestAsync(response -> new BinaryResponse(response), new CompletableFuture<>());
+        return requestAsync(BinaryResponse::new, new CompletableFuture<>());
     }
 
     @Override
     public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback) {
-        return requestAsync(response -> new BinaryResponse(response), CallbackFuture.wrap(callback));
+        return requestAsync(BinaryResponse::new, CallbackFuture.wrap(callback));
     }
 
     private <T> CompletableFuture<HttpResponse<T>> requestAsync(
