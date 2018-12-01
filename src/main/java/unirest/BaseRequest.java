@@ -33,12 +33,9 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
 
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-
-import static unirest.BodyData.from;
 
 abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
@@ -157,32 +154,32 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public <T> HttpResponse<T> asObject(Class<? extends T> responseClass) throws UnirestException {
-        return request(r -> this.asObject(r, responseClass));
+        return request(r -> new ObjectResponse<T>(getObjectMapper(), r, responseClass));
     }
 
     @Override
     public <T> HttpResponse<T> asObject(GenericType<T> genericType) throws UnirestException {
-        return request(r -> this.asObject(r, genericType));
+        return request(r -> new ObjectResponse<T>(getObjectMapper(), r, genericType));
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass) {
-        return requestAsync(r -> this.asObject(r, responseClass), new CompletableFuture<>());
+        return requestAsync(r -> new ObjectResponse<T>(getObjectMapper(), r, responseClass), new CompletableFuture<>());
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback) {
-        return requestAsync(r -> this.asObject(r, responseClass), CallbackFuture.wrap(callback));
+        return requestAsync(r -> new ObjectResponse<T>(getObjectMapper(), r, responseClass), CallbackFuture.wrap(callback));
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType) {
-        return requestAsync(r -> this.asObject(r, genericType), new CompletableFuture<>());
+        return requestAsync(r -> new ObjectResponse<T>(getObjectMapper(), r, genericType), new CompletableFuture<>());
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType, Callback<T> callback) {
-        return requestAsync(r -> this.asObject(r, genericType), CallbackFuture.wrap(callback));
+        return requestAsync(r -> new ObjectResponse<T>(getObjectMapper(), r, genericType), CallbackFuture.wrap(callback));
     }
 
     @Override
@@ -249,14 +246,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         return null;
     }
 
-    private <T> HttpResponse<T> asObject(org.apache.http.HttpResponse response, Class<? extends T> aClass) {
-        return new Response<>(response, from(response.getEntity(), b -> toObject(b, aClass)));
-    }
-
-    private <T> HttpResponse<T> asObject(org.apache.http.HttpResponse response, GenericType<T> genericType) {
-        return new Response<>(response, from(response.getEntity(), b -> toObject(b, genericType)));
-    }
-
     private <T> HttpResponse<T> request(Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) {
 
         HttpRequestBase requestObj = new RequestPrep(this, false).prepare();
@@ -271,24 +260,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
             throw new UnirestException(e);
         } finally {
             requestObj.releaseConnection();
-        }
-    }
-
-    private <T> T toObject(BodyData<T> b, GenericType<T> genericType) {
-        ObjectMapper o = getObjectMapper();
-        return o.readValue(toString(b), genericType);
-    }
-
-    private <T> T toObject(BodyData<T> b, Class<? extends T> aClass) {
-        ObjectMapper o = getObjectMapper();
-        return o.readValue(toString(b), aClass);
-    }
-
-    private String toString(BodyData b) {
-        try {
-            return new String(b.getRawBytes(), b.getCharset());
-        } catch (UnsupportedEncodingException e) {
-            throw new UnirestException(e);
         }
     }
 

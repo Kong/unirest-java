@@ -26,9 +26,11 @@
 
 package unirest;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
@@ -84,6 +86,15 @@ class Util {
 
     static Stream<Exception> collectExceptions(Optional<Exception>... ex) {
         return Stream.of(ex).flatMap(Util::stream);
+    }
+
+    public static String readString(HttpEntity b) {
+        try {
+            String charSet = ResponseUtils.getCharSet(b);
+            return new String(ResponseUtils.getRawBody(b), charSet);
+        } catch (IOException e) {
+            throw new UnirestException(e);
+        }
     }
 
 

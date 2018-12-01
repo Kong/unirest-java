@@ -32,28 +32,50 @@ import org.apache.http.HttpResponse;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Objects;
+import java.util.function.Function;
 
+import static unirest.Util.readString;
 
-public class StringResponse extends BaseResponse<String> {
-    private String body;
+class ObjectResponse<T> extends BaseResponse<T> {
 
-    public StringResponse(HttpResponse response) {
+    private final T body;
+    private final ObjectMapper om;
+
+    ObjectResponse(ObjectMapper om, HttpResponse response, Class<? extends T> to) {
         super(response);
-        HttpEntity entity = response.getEntity();
-        if(Objects.nonNull(entity)){
-            body = Util.readString(entity);
+        this.om = om;
+        this.body = getBody(response, e -> om.readValue(readString(e), to));
+    }
+
+    ObjectResponse(ObjectMapper om, HttpResponse response, GenericType<? extends T> to){
+        super(response);
+        this.om = om;
+        this.body = getBody(response, e -> om.readValue(readString(e), to));
+    }
+
+    private T getBody(HttpResponse response, Function<HttpEntity, T> func){
+        if(!Objects.isNull(response.getEntity())) {
+            try {
+                return func.apply(response.getEntity());
+            }catch (RuntimeException e){
+                setParsingException(e);
+                return null;
+            }
         } else {
-            body = "";
+            return null;
         }
     }
 
     @Override
     public InputStream getRawBody() {
-        return new ByteArrayInputStream(body.getBytes());
+        if(body == null){
+            return new ByteArrayInputStream(new byte[0]);
+        }
+        return new ByteArrayInputStream(om.writeValue(body).getBytes());
     }
 
     @Override
-    public String getBody() {
+    public T getBody() {
         return body;
     }
 }
