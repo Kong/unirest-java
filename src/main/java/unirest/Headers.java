@@ -42,6 +42,7 @@ public class Headers extends TreeMap<String, List<String>> {
         super(String.CASE_INSENSITIVE_ORDER);
     }
 
+    @Deprecated // In version 4 Apache classes will be abstracted out
     public Headers(Header[] pairs) {
         for (Header header : pairs) {
             add(header.getName(), header.getValue());

@@ -41,17 +41,20 @@ public interface MultipartBody extends HttpRequest<MultipartBody>, Body {
 
     MultipartBody field(String name, Collection<?> collection);
 
-    MultipartBody field(String name, InputStream value, ContentType contentType);
-
     MultipartBody field(String name, File file);
 
     MultipartBody field(String name, File file, String contentType);
 
+    @Deprecated // In version 4 Apache classes will be abstracted out
+    MultipartBody field(String name, InputStream value, ContentType contentType);
+
+    @Deprecated // In version 4 Apache classes will be abstracted out
     MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName);
 
-    MultipartBody field(String name, InputStream stream, String fileName);
-
+    @Deprecated // In version 4 Apache classes will be abstracted out
     MultipartBody field(String name, byte[] bytes, ContentType contentType, String fileName);
+
+    MultipartBody field(String name, InputStream stream, String fileName);
 
     MultipartBody field(String name, byte[] bytes, String fileName);
 

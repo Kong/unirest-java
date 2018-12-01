@@ -30,6 +30,7 @@ import org.apache.http.HttpEntity;
 
 public interface Body {
 
+	@Deprecated // In version 4 Apache classes will be abstracted out
 	HttpEntity getEntity();
 
 }
