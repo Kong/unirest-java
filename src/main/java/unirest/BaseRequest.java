@@ -174,11 +174,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
-    public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Function<RawResponse, T> function, Callback<T> callback) {
-        return requestAsync(funcResponse(function), CallbackFuture.wrap(callback));
-    }
-
-    @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback) {
         return requestAsync(r -> new ObjectResponse<>(getObjectMapper(), r, responseClass), CallbackFuture.wrap(callback));
     }

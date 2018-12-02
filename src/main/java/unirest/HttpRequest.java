@@ -149,7 +149,7 @@ public interface HttpRequest<R extends HttpRequest> {
     CompletableFuture<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback);
 
     /**
-     * Executes the request and returns the response with the body mapped into T by a supplied ObjectMapper
+     * Executes the request and returns the response with the body mapped into T by a configured ObjectMapper
      * @param responseClass the class to return. This will be passed to the ObjectMapper
      * @param <T> the return type
      * @return a response
@@ -157,16 +157,20 @@ public interface HttpRequest<R extends HttpRequest> {
     <T> HttpResponse<T> asObject(Class<? extends T> responseClass);
 
     /**
-     * Executes the request and returns the response with the body mapped into T by a supplied ObjectMapper
+     * Executes the request and returns the response with the body mapped into T by a configured ObjectMapper
      * @param genericType the genertic type to return. This will be passed to the ObjectMapper
      * @param <T> the return type
      * @return a response
      */
     <T> HttpResponse<T> asObject(GenericType<T> genericType);
 
+    /**
+     * Executes the request asynchronously and returns response with the body mapped into T by a configured ObjectMapper
+     * @param responseClass the class type to map to
+     * @param <T> the return type
+     * @return a CompletableFuture of a response
+     */
     <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass);
-
-    <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Function<RawResponse, T> function, Callback<T> callback);
 
     <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback);
 

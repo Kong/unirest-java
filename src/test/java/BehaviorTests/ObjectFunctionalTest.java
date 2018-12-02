@@ -66,20 +66,4 @@ public class ObjectFunctionalTest extends BddTest {
 
         assertEquals("bar", r.get("foo"));
     }
-
-    @Test
-    public void canUseAFunctionToTransformAsyncWithCallback() throws Exception {
-        MockServer.setJsonAsResponse(of("foo", "bar"));
-
-        Unirest.get(MockServer.GET)
-                .queryString("foo", "bar")
-                .asObjectAsync(i -> gson.fromJson(i.getContentReader(), HashMap.class),
-                        r -> {
-                            HashMap map = r.getBody();
-                            assertEquals("bar", map.get("foo"));
-                            asyncSuccess();
-                        });
-
-        assertAsync();
-    }
 }
