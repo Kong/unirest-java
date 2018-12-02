@@ -24,35 +24,44 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package unirest;
+package BehaviorTests;
 
-import java.io.InputStream;
-import java.util.Optional;
-import java.util.function.Function;
+import org.junit.After;
+import org.junit.Test;
+import unirest.Unirest;
 
-public interface HttpResponse<T> {
+import static org.junit.Assert.assertEquals;
 
-    int getStatus();
+public class ConsumerTests extends BddTest {
 
-    String getStatusText();
+    private int status;
 
-    /**
-     * @return Response Headers (map) with <b>same case</b> as server response.
-     * For instance use <code>getHeaders().getFirst("Location")</code> and not <code>getHeaders().getFirst("location")</code> to get first header "Location"
-     */
-    Headers getHeaders();
+    @Override
+    @After
+    public void tearDown() {
+        super.tearDown();
+        status = 0;
+    }
 
-    // This method is a lie. You never get the real raw response from it
-    // you only get a copy, or worse, the body transformed BACK to a stream
-    // If you want to use raw content use the new functional methods
-    @Deprecated
-    InputStream getRawBody();
+    @Test
+    public void canSimplyConsumeAResponse() {
+        Unirest.get(MockServer.GET)
+                .thenConsume(r -> status = r.getStatus());
 
-    T getBody();
+        assertEquals(200, status);
+    }
 
-    Optional<RuntimeException> getParsingError();
+    @Test
+    public void canSimplyConsumeAResponseAsync() {
+        Unirest.get(MockServer.GET)
+                .thenConsumeAsync(r -> status = r.getStatus());
 
-    <V> V mapBody(Function<T, V> func);
-
-    <V> V mapRawBody(Function<InputStream, V> func);
+        long time = System.currentTimeMillis();
+        while(System.currentTimeMillis() - time < 5000){
+            if(status != 0){
+                break;
+            }
+        }
+        assertEquals(200, status);
+    }
 }

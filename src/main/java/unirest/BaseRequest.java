@@ -35,6 +35,7 @@ import org.apache.http.concurrent.FutureCallback;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
@@ -214,6 +215,23 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback) {
         return requestAsync(BinaryResponse::new, CallbackFuture.wrap(callback));
+    }
+
+    @Override
+    public void thenConsume(Consumer<RawResponse> consumer) {
+        request(getConsumer(consumer));
+    }
+
+    @Override
+    public void thenConsumeAsync(Consumer<RawResponse> consumer) {
+        requestAsync(getConsumer(consumer), new CompletableFuture<>());
+    }
+
+    private Function<org.apache.http.HttpResponse, HttpResponse<Object>> getConsumer(Consumer<RawResponse> consumer) {
+        return r -> {
+            consumer.accept(new ApacheResponse(r));
+            return null;
+        };
     }
 
     private <T> CompletableFuture<HttpResponse<T>> requestAsync(

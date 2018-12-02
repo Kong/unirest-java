@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface HttpRequest<R extends HttpRequest> {
@@ -88,6 +89,10 @@ public interface HttpRequest<R extends HttpRequest> {
     CompletableFuture<HttpResponse<InputStream>> asBinaryAsync();
 
     CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback);
+
+    void thenConsume(Consumer<RawResponse> consumer);
+
+    void thenConsumeAsync(Consumer<RawResponse> consumer);
 
     HttpMethod getHttpMethod();
 
