@@ -165,6 +165,16 @@ public interface HttpRequest<R extends HttpRequest> {
     <T> HttpResponse<T> asObject(GenericType<T> genericType);
 
     /**
+     * Execute the request and pass the raw response to a function for mapping.
+     * This is raw response contains the original InputStream and is suitable for
+     * reading large responses.
+     * @param function the function to map the response into a object of T
+     * @param <T> The type of the response mapping
+     * @return A HttpResponse containing T as the body
+     */
+    <T> HttpResponse<T> asObject(Function<RawResponse, T> function);
+
+    /**
      * Executes the request asynchronously and returns response with the body mapped into T by a configured ObjectMapper
      * @param responseClass the class type to map to
      * @param <T> the return type
@@ -177,8 +187,6 @@ public interface HttpRequest<R extends HttpRequest> {
     <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType);
 
     <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType, Callback<T> callback);
-
-    <T> HttpResponse<T> asObject(Function<RawResponse, T> function);
 
     <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Function<RawResponse, T> function);
 
