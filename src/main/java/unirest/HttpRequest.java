@@ -166,7 +166,7 @@ public interface HttpRequest<R extends HttpRequest> {
 
     /**
      * Execute the request and pass the raw response to a function for mapping.
-     * This is raw response contains the original InputStream and is suitable for
+     * This raw response contains the original InputStream and is suitable for
      * reading large responses.
      * @param function the function to map the response into a object of T
      * @param <T> The type of the response mapping
@@ -182,29 +182,96 @@ public interface HttpRequest<R extends HttpRequest> {
      */
     <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass);
 
+    /**
+     * Executes the request asynchronously, mapping to a type via the configured object mapper and then passed to a callback handler.
+     * @param responseClass the type for the ObjectMapper to map to
+     * @param callback a callback for handling the body post mapping
+     * @param <T> the return type
+     * @return a CompletableFuture of a HttpResponse containing the body of T
+     */
     <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback);
 
+    /**
+     * Executes the request asynchronously, and use a GenericType with the ObjectMapper
+     * @param genericType the generic type containing the type
+     * @param <T> the type of the response
+     * @return a CompletableFuture of a HttpResponse containing the body of T
+     */
     <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType);
 
+    /**
+     * Executes the request asynchronously, and use a GenericType with the ObjectMapper
+     * @param genericType the generic type containing the type
+     * @param callback a callback for handling the body post mapping
+     * @param <T> the type of the response
+     * @return a CompletableFuture of a HttpResponse containing the body of T
+     */
     <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType, Callback<T> callback);
 
+    /**
+     * Executes the request asynchronously, and pass the raw response to a function for mapping.
+     * This raw response contains the original InputStream and is suitable for
+     * reading large responses
+     * @param function a function to map the raw request into a object
+     * @param <T> the type of the response
+     * @return a CompletableFuture of a HttpResponse containing the body of T
+     */
     <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Function<RawResponse, T> function);
 
+    /**
+     * Executes the request and returns a copy of the original InputStream
+     * @return a HttpResponse with a InputStream
+     */
     HttpResponse<InputStream> asBinary();
 
+    /**
+     * Executes the request asynchronously and returns a copy of the original InputStream
+     * @return a CompletableFuture of a HttpResponse with a InputStream
+     */
     CompletableFuture<HttpResponse<InputStream>> asBinaryAsync();
 
+    /**
+     * Executes the request asynchronously and returns a copy of the original InputStream which is passed to a callback
+     * @param callback the callback
+     * @return a CompletableFuture of a HttpResponse with a InputStream
+     */
     CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback);
 
+    /**
+     * Execute the request asynchronously and pass the raw response to a consumer.
+     * This raw response contains the original InputStream and is suitable for
+     * reading large responses
+     * @param consumer a consumer function
+     */
     void thenConsume(Consumer<RawResponse> consumer);
 
+    /**
+     * Execute the request and pass the raw response to a consumer.
+     * This raw response contains the original InputStream and is suitable for
+     * reading large responses
+     * @param consumer a consumer function
+     */
     void thenConsumeAsync(Consumer<RawResponse> consumer);
 
+    /**
+     * @return The HTTP method of the request
+     */
     HttpMethod getHttpMethod();
 
+    /**
+     * @return The current URL string for the request
+     */
     String getUrl();
 
+    /**
+     * @return the current headers for the request
+     */
     Headers getHeaders();
 
+    /**
+     * Deprecated because it exposes Apache
+     * @return The current body object.
+     */
+    @Deprecated
     Body getBody();
 }
