@@ -119,11 +119,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
-    public HttpRequest getHttpRequest() {
-        return this;
-    }
-
-    @Override
     public HttpResponse<String> asString() throws UnirestException {
         return request(StringResponse::new);
     }

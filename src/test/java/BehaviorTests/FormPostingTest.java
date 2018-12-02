@@ -256,8 +256,7 @@ public class FormPostingTest extends BddTest {
         HttpRequest httpRequest = Unirest.post("test")
                 .field("z", "Z")
                 .field("y", "Y")
-                .field("x", "X")
-                .getHttpRequest();
+                .field("x", "X");
 
         InputStream content = httpRequest.getBody().getEntity().getContent();
         String body = IOUtils.toString(content, "UTF-8");
