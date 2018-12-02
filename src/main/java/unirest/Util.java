@@ -30,7 +30,9 @@ import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
@@ -95,6 +97,10 @@ class Util {
         } catch (IOException e) {
             throw new UnirestException(e);
         }
+    }
+
+    public static InputStream emptyStream() {
+        return new ByteArrayInputStream(new byte[0]);
     }
 
 

@@ -163,8 +163,23 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
+    public <T> HttpResponse<T> asObject(Function<RawResponse, T> function) {
+        return request(funcResponse(function));
+    }
+
+    @Override
+    public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Function<RawResponse, T> function) {
+        return requestAsync(funcResponse(function), new CompletableFuture<>());
+    }
+
+    @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass) {
         return requestAsync(r -> new ObjectResponse<T>(getObjectMapper(), r, responseClass), new CompletableFuture<>());
+    }
+
+    @Override
+    public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Function<RawResponse, T> function, Callback<T> callback) {
+        return requestAsync(funcResponse(function), CallbackFuture.wrap(callback));
     }
 
     @Override
@@ -180,6 +195,10 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType, Callback<T> callback) {
         return requestAsync(r -> new ObjectResponse<>(getObjectMapper(), r, genericType), CallbackFuture.wrap(callback));
+    }
+
+    private <T> Function<org.apache.http.HttpResponse, HttpResponse<T>> funcResponse(Function<RawResponse, T> function) {
+        return r -> new BasicResponse<>(r, function.apply(new ApacheResponse(r)));
     }
 
     @Override

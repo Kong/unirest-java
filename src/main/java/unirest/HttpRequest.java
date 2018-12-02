@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 public interface HttpRequest<R extends HttpRequest> {
     R routeParam(String name, String value);
@@ -70,11 +71,17 @@ public interface HttpRequest<R extends HttpRequest> {
 
     <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass);
 
+    <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Function<RawResponse, T> function, Callback<T> callback);
+
     <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback);
 
     <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType);
 
     <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType, Callback<T> callback);
+
+    <T> HttpResponse<T> asObject(Function<RawResponse, T> function);
+
+    <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Function<RawResponse, T> function);
 
     HttpResponse<InputStream> asBinary() throws UnirestException;
 

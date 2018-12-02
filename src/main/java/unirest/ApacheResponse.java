@@ -26,32 +26,50 @@
 
 package unirest;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
-import java.util.function.Function;
+import java.io.InputStreamReader;
 
-public interface HttpResponse<T> {
-    int getStatus();
+class ApacheResponse implements RawResponse {
+    private final HttpResponse r;
 
-    String getStatusText();
+    public ApacheResponse(HttpResponse r){
+        this.r = r;
+    }
 
-    /**
-     * @return Response Headers (map) with <b>same case</b> as server response.
-     * For instance use <code>getHeaders().getFirst("Location")</code> and not <code>getHeaders().getFirst("location")</code> to get first header "Location"
-     */
-    Headers getHeaders();
+    @Override
+    public int getStatus(){
+        return r.getStatusLine().getStatusCode();
+    }
 
-    // This method is a lie. You never get the real raw response from it
-    // you only get a copy, or worse, the body transformed BACK to a stream
-    // If you want to use raw content use the new functional methods
-    @Deprecated
-    InputStream getRawBody();
+    @Override
+    public String getStatusText(){
+        return r.getStatusLine().getReasonPhrase();
+    }
 
-    T getBody();
+    @Override
+    public Headers getHeaders(){
+        return new Headers(r.getAllHeaders());
+    }
 
-    Optional<RuntimeException> getParsingError();
+    @Override
+    public InputStream getContent(){
+        try {
+            HttpEntity entity = r.getEntity();
+            if(entity != null) {
+                return entity.getContent();
+            }
+            return Util.emptyStream();
+        } catch (IOException e) {
+            throw new UnirestException(e);
+        }
+    }
 
-    <V> V mapBody(Function<T, V> func);
-
-    <V> V mapRawBody(Function<InputStream, V> func);
+    @Override
+    public InputStreamReader getContentReader(){
+        return new InputStreamReader(getContent());
+    }
 }

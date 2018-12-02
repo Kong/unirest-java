@@ -27,31 +27,22 @@
 package unirest;
 
 import java.io.InputStream;
-import java.util.Optional;
-import java.util.function.Function;
 
-public interface HttpResponse<T> {
-    int getStatus();
+class BasicResponse<T> extends BaseResponse<T> {
+    private final T body;
 
-    String getStatusText();
+    public BasicResponse(org.apache.http.HttpResponse httpResponse, T body) {
+        super(httpResponse);
+        this.body = body;
+    }
 
-    /**
-     * @return Response Headers (map) with <b>same case</b> as server response.
-     * For instance use <code>getHeaders().getFirst("Location")</code> and not <code>getHeaders().getFirst("location")</code> to get first header "Location"
-     */
-    Headers getHeaders();
+    @Override
+    public InputStream getRawBody() {
+        return null;
+    }
 
-    // This method is a lie. You never get the real raw response from it
-    // you only get a copy, or worse, the body transformed BACK to a stream
-    // If you want to use raw content use the new functional methods
-    @Deprecated
-    InputStream getRawBody();
-
-    T getBody();
-
-    Optional<RuntimeException> getParsingError();
-
-    <V> V mapBody(Function<T, V> func);
-
-    <V> V mapRawBody(Function<InputStream, V> func);
+    @Override
+    public T getBody() {
+        return body;
+    }
 }
