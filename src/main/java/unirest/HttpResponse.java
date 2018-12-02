@@ -30,10 +30,19 @@ import java.io.InputStream;
 import java.util.Optional;
 import java.util.function.Function;
 
+/**
+ * @param <T> a Http Response holding a specific type of body.
+ */
 public interface HttpResponse<T> {
 
+    /**
+     * @return the HTTP status code.
+     */
     int getStatus();
 
+    /**
+     * @return status text
+     */
     String getStatusText();
 
     /**
@@ -42,17 +51,41 @@ public interface HttpResponse<T> {
      */
     Headers getHeaders();
 
-    // This method is a lie. You never get the real raw response from it
-    // you only get a copy, or worse, the body transformed BACK to a stream
-    // If you want to use raw content use the new functional methods
+    /**
+     * This method is a lie. You never get the real raw response from it
+     * you only get a copy, or worse, the body transformed BACK to a stream
+     * If you want to use raw content use the new functional methods
+     * @return a copy of the input stream
+     * */
     @Deprecated
     InputStream getRawBody();
 
+    /**
+     * @return the body
+     */
     T getBody();
 
+    /**
+     * If the transformation to the body failed by an exception it will be kept here
+     * @return a possible RuntimeException. Checked exceptions are wrapped in a UnirestException
+     */
     Optional<RuntimeException> getParsingError();
 
+    /**
+     * @param func a function to transform a body type to something else.
+     * @param <V> The return type of the function
+     * @return
+     */
     <V> V mapBody(Function<T, V> func);
 
+    /**
+     * This method is a lie. You never get the real raw response from it
+     * you only get a copy, or worse, the body transformed BACK to a stream
+     * If you want to use raw content use the new functional methods
+     * @param func a function to map a inputstream to a new body
+     * @param <V> the return type
+     * @return the return type
+     */
+    @Deprecated
     <V> V mapRawBody(Function<InputStream, V> func);
 }
