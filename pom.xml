@@ -4,7 +4,7 @@
     <groupId>io.github.openunirest</groupId>
     <artifactId>open-unirest-java</artifactId>
     <packaging>jar</packaging>
-    <version>3.0.05-SNAPSHOT</version>
+    <version>3.1.00-SNAPSHOT</version>
     <name>unirest-java</name>
     <description>Simplified, lightweight HTTP client library.</description>
     <url>http://github.com/OpenUnirest/</url>
