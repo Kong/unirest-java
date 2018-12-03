@@ -1,3 +1,7 @@
+## 3.1.00
+* Deprecate methods that expose Apache. In the 4 line we will start supporting other clients. Primarily the java one supplied in Java9 (apache will still exist for 8-)
+* Add several functional methods for dealing with the raw response before the connection is closed. This is nice for large responses.
+
 ## 3.0.04
 * Parsing handler should capture unirest exceptions just like other exceptions.
 

@@ -14,7 +14,7 @@ This repo is an updated, maintained, and independent fork of the original Mashap
 <dependency>
     <groupId>io.github.openunirest</groupId>
     <artifactId>open-unirest-java</artifactId>
-    <version>3.0.04</version>
+    <version>3.1.00</version>
 </dependency>
 ```
 
