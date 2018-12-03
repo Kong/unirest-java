@@ -134,10 +134,31 @@ CompletableFuture<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.
   .field("param2", "value2")
   .asJsonAsync(response -> {
         int code = response.getStatus();
-        Map<String, String> headers = response.getHeaders();
         JsonNode body = response.getBody();
-        InputStream rawBody = response.getRawBody();
     });
+```
+
+## Custom mappings and handling large responses
+Most response methods (```asString```, ```asJson```, and even ```asBinary```) read the entire
+response stream into memory. In order to read the original stream and handle large responses you
+can use several functional methods like:
+
+```java
+   Map r = Unirest.get(MockServer.GET)
+                .queryString("foo", "bar")
+                .asObject(i -> new Gson().fromJson(i.getContentReader(), HashMap.class))
+                .getBody();
+
+```
+
+or consumers:
+
+```java
+
+         Unirest.get(MockServer.GET)
+                .thenConsumeAsync(r -> {
+                       // something like writing a file to disk
+                });
 ```
 
 ## File Uploads
@@ -157,28 +178,6 @@ HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
 HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
   .header("accept", "application/json")
   .body("{\"parameter\":\"value\", \"foo\":\"bar\"}")
-  .asJson();
-```
-
-## Byte Stream as Entity Body
-
-```java
-final InputStream stream = new FileInputStream(new File(getClass().getResource("/image.jpg").toURI()));
-final byte[] bytes = new byte[stream.available()];
-stream.read(bytes);
-stream.close();
-final HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
-  .field("name", "Mark")
-  .field("file", bytes, "image.jpg")
-  .asJson();
-```
-
-## InputStream as Entity Body
-
-```java
-HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
-  .field("name", "Mark")
-  .field("file", new FileInputStream(new File(getClass().getResource("/image.jpg").toURI())), ContentType.APPLICATION_OCTET_STREAM, "image.jpg")
   .asJson();
 ```
 
