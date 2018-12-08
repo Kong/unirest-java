@@ -26,6 +26,9 @@
 
 package unirest;
 
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.nio.client.HttpAsyncClient;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -34,12 +37,22 @@ public class UtilTest {
 
     @Test
     public void canCast() {
-        Object foo = new Foo();
+        Object foo = new Foo(){};
 
         assertEquals(foo, Util.tryCast(foo, Foo.class).get());
         assertEquals(false, Util.tryCast("foo", Foo.class).isPresent());
         assertEquals(false, Util.tryCast(null, Foo.class).isPresent());
+        assertEquals(true, Util.tryCast(new Bar(), Foo.class).isPresent());
     }
 
-    public class Foo {}
+    @Test
+    public void canCastAAsyncClient() {
+        HttpAsyncClient build = HttpAsyncClientBuilder.create().build();
+
+        assertEquals(true, Util.tryCast(build, CloseableHttpAsyncClient.class).isPresent());
+    }
+
+    public abstract class Foo {}
+
+    public class Bar extends Foo {}
 }

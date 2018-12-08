@@ -26,8 +26,8 @@
 
 package unirest;
 
-import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.nio.client.HttpAsyncClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +36,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigTest {
@@ -75,5 +76,39 @@ public class ConfigTest {
                         "This should be done rarely.");
 
         Unirest.shutDown();
+    }
+
+    @Test
+    public void willNotRebuildIfNotClosableAsyncClient() {
+        HttpAsyncClient c = mock(HttpAsyncClient.class);
+        config.asyncClient(c);
+
+        assertSame(c, config.getAsyncHttpClient());
+        assertSame(c, config.getAsyncHttpClient());
+    }
+
+    @Test
+    public void willRebuildIfEmpty() {
+        assertSame(config.getAsyncHttpClient(), config.getAsyncHttpClient());
+    }
+
+    @Test
+    public void willRebuildIfClosableAndStopped() {
+        CloseableHttpAsyncClient c = mock(CloseableHttpAsyncClient.class);
+        when(c.isRunning()).thenReturn(false);
+
+        config.asyncClient(c);
+
+        assertNotSame(c, config.getAsyncHttpClient());
+    }
+
+    @Test
+    public void willNotRebuildIfRunning() {
+        CloseableHttpAsyncClient c = mock(CloseableHttpAsyncClient.class);
+        when(c.isRunning()).thenReturn(true);
+
+        config.asyncClient(c);
+
+        assertSame(c, config.getAsyncHttpClient());
     }
 }

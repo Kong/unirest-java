@@ -33,11 +33,14 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.nio.client.HttpAsyncClient;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static unirest.Util.tryCast;
 
 public class Config {
     public static final int DEFAULT_CONNECTION_TIMEOUT = 10000;
@@ -360,14 +363,21 @@ public class Config {
      * @return  Apache HttpAsyncClient
      */
     public HttpAsyncClient getAsyncHttpClient() {
-        if (!asyncClient.isPresent()) {
+        if (!asyncClientIsReady()) {
             buildAsyncClient();
         }
         return asyncClient.get().getClient();
     }
 
+    private boolean asyncClientIsReady() {
+        return asyncClient.isPresent() &&
+                tryCast(asyncClient.get().getClient(), CloseableHttpAsyncClient.class)
+                .map(CloseableHttpAsyncClient::isRunning)
+                        .orElse(true);
+    }
+
     private synchronized void buildAsyncClient() {
-        if (!asyncClient.isPresent()) {
+        if (!asyncClientIsReady()) {
             AsyncConfig value = factory.buildAsyncClient();
             asyncClient = Optional.of(value);
         }

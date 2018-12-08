@@ -26,11 +26,18 @@
 
 package BehaviorTests;
 
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.nio.client.HttpAsyncClient;
 import unirest.Unirest;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.IntStream;
+
+import static junit.framework.TestCase.assertNotSame;
+import static junit.framework.TestCase.assertSame;
 
 public class DefectTest extends BddTest {
 
@@ -56,5 +63,26 @@ public class DefectTest extends BddTest {
                 .assertParam("foo", "")
                 .assertParam("baz", "qux")
                 .assertQueryString("foo&baz=qux");
+    }
+
+
+    @Test
+    public void issue_41_IllegalThreadStateExceptionUnderHighLoad() throws IOException {
+        Unirest.get(MockServer.GET).asStringAsync();
+
+        HttpAsyncClient first = Unirest.config().getAsyncHttpClient();
+        IntStream.range(1, 50).forEach(i ->{
+            assertSame(first, Unirest.config().getAsyncHttpClient());
+        });
+
+        ((CloseableHttpAsyncClient)Unirest.config().getAsyncHttpClient()).close();
+        Unirest.get(MockServer.GET).asStringAsync();
+
+        HttpAsyncClient second = Unirest.config().getAsyncHttpClient();
+        assertNotSame(first, second);
+
+        IntStream.range(1, 50).forEach(i ->{
+            assertSame(second, Unirest.config().getAsyncHttpClient());
+        });
     }
 }
