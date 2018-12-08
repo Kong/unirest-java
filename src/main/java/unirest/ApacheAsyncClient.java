@@ -26,21 +26,27 @@
 
 package unirest;
 
-import org.apache.http.HttpHost;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
+import org.apache.http.nio.client.HttpAsyncClient;
 import org.apache.http.nio.reactor.IOReactorException;
 
-class ClientFactory {
+import java.util.Objects;
+import java.util.stream.Stream;
 
+import static unirest.Util.tryCast;
 
-    public AsyncClient buildAsyncClient(Config config) {
+public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
 
+    private final HttpAsyncClient client;
+    private final PoolingNHttpClientConnectionManager manager;
+    private final AsyncIdleConnectionMonitorThread syncMonitor;
+
+    public ApacheAsyncClient(Config config) {
         try {
-            PoolingNHttpClientConnectionManager manager = new PoolingNHttpClientConnectionManager(new DefaultConnectingIOReactor());
+            manager = new PoolingNHttpClientConnectionManager(new DefaultConnectingIOReactor());
             manager.setMaxTotal(config.getMaxConnections());
             manager.setDefaultMaxPerRoute(config.getMaxPerRoutes());
 
@@ -63,24 +69,43 @@ class ClientFactory {
 
             CloseableHttpAsyncClient build = ab.build();
             build.start();
-            AsyncIdleConnectionMonitorThread syncMonitor = new AsyncIdleConnectionMonitorThread(manager);
+            syncMonitor = new AsyncIdleConnectionMonitorThread(manager);
             syncMonitor.tryStart();
-            return new AsyncClient(build, manager, syncMonitor);
-
+            client = build;
         } catch (IOReactorException e) {
             throw new UnirestConfigException(e);
         }
     }
 
-    private RequestConfig getRequestConfig(Config config) {
-        Integer connectionTimeout = config.getConnectionTimeout();
-        Integer socketTimeout = config.getSocketTimeout();
-        HttpHost proxy = config.getProxy();
-        return RequestConfig.custom()
-                .setConnectTimeout(connectionTimeout)
-                .setSocketTimeout(socketTimeout)
-                .setConnectionRequestTimeout(socketTimeout)
-                .setProxy(proxy)
-                .build();
+    public ApacheAsyncClient(HttpAsyncClient client,
+                             PoolingNHttpClientConnectionManager manager,
+                             AsyncIdleConnectionMonitorThread syncMonitor) {
+        this.syncMonitor = syncMonitor;
+        Objects.requireNonNull(client, "Client may not be null");
+        this.client = client;
+        this.manager = manager;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return tryCast(client, CloseableHttpAsyncClient.class)
+                .map(CloseableHttpAsyncClient::isRunning)
+                .orElse(true);
+    }
+
+    @Override
+    public HttpAsyncClient getClient() {
+        return client;
+    }
+
+    @Override
+    public Stream<Exception> close() {
+        return Util.collectExceptions(Util.tryCast(client, CloseableHttpAsyncClient.class)
+                        .filter(c -> c.isRunning())
+                        .map(c -> Util.tryDo(c, d -> d.close()))
+                        .filter(c -> c.isPresent())
+                        .map(c -> c.get()),
+                Util.tryDo(manager, m -> m.shutdown()),
+                Util.tryDo(syncMonitor, m -> m.interrupt()));
     }
 }

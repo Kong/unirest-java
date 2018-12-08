@@ -37,6 +37,7 @@ import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.nio.client.HttpAsyncClient;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,8 +49,6 @@ public class Config {
     public static final int DEFAULT_MAX_PER_ROUTE = 20;
     public static final int DEFAULT_CONNECT_TIMEOUT = 10000;
     public static final int DEFAULT_SOCKET_TIMEOUT = 60000;
-
-    private ClientFactory factory;
 
     private Optional<Client> client = Optional.empty();
     private Optional<AsyncClient> asyncClient = Optional.empty();
@@ -66,13 +65,9 @@ public class Config {
     private boolean followRedirects;
     private boolean cookieManagement;
     private boolean useSystemProperties;
+    private Function<Config, AsyncClient> asyncBuilder = ApacheAsyncClient::new;
 
-    public Config(){
-        this(new ClientFactory());
-    }
-
-    Config(ClientFactory clientFactory){
-        this.factory = clientFactory;
+    public Config() {
         setDefaults();
     }
 
@@ -117,7 +112,7 @@ public class Config {
      * @return this config object
      */
     public Config asyncClient(HttpAsyncClient value) {
-        this.asyncClient = Optional.of(new AsyncClient(value, null, null));
+        this.asyncClient = Optional.of(new ApacheAsyncClient(value, null, null));
         return this;
     }
 
@@ -129,6 +124,11 @@ public class Config {
      */
     public Config asyncClient(AsyncClient value) {
         asyncClient = Optional.of(value);
+        return this;
+    }
+
+    public Config asyncClient(Function<Config, AsyncClient> asyncClientBuilder){
+        this.asyncBuilder = asyncClientBuilder;
         return this;
     }
 
@@ -382,17 +382,14 @@ public class Config {
 
     private synchronized void buildAsyncClient() {
         if (!asyncClientIsReady()) {
-            AsyncClient value = factory.buildAsyncClient(this);
+            AsyncClient value = asyncBuilder.apply(this);
             verifyIsOn(value);
             asyncClient = Optional.of(value);
         }
     }
 
     private void verifyIsOn(AsyncClient value) {
-        Boolean isOn = tryCast(value.getClient(), CloseableHttpAsyncClient.class)
-                .map(CloseableHttpAsyncClient::isRunning)
-                .orElse(true);
-        if(!isOn){
+        if(!value.isRunning()){
             throw new UnirestConfigException("Attempted to get a new async client but it was not started. Please ensure it is");
         }
     }

@@ -26,40 +26,16 @@
 
 package unirest;
 
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.apache.http.nio.client.HttpAsyncClient;
 
-import java.util.Objects;
 import java.util.stream.Stream;
 
-public class AsyncClient {
-
-    private final HttpAsyncClient client;
-    private final PoolingNHttpClientConnectionManager manager;
-    private final AsyncIdleConnectionMonitorThread syncMonitor;
-
-    public AsyncClient(HttpAsyncClient client,
-                       PoolingNHttpClientConnectionManager manager,
-                       AsyncIdleConnectionMonitorThread syncMonitor) {
-        this.syncMonitor = syncMonitor;
-        Objects.requireNonNull(client, "Client may not be null");
-        this.client = client;
-        this.manager = manager;
+public interface AsyncClient {
+    HttpAsyncClient getClient();
+    default Stream<Exception> close() {
+        return Stream.empty();
     }
-
-
-    public HttpAsyncClient getClient() {
-        return client;
-    }
-
-    public Stream<Exception> close() {
-        return Util.collectExceptions(Util.tryCast(client, CloseableHttpAsyncClient.class)
-                        .filter(c -> c.isRunning())
-                        .map(c -> Util.tryDo(c, d -> d.close()))
-                        .filter(c -> c.isPresent())
-                        .map(c -> c.get()),
-                Util.tryDo(manager, m -> m.shutdown()),
-                Util.tryDo(syncMonitor, m -> m.interrupt()));
+    default boolean isRunning(){
+        return true;
     }
 }
