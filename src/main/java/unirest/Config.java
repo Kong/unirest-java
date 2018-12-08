@@ -33,15 +33,14 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.nio.client.HttpAsyncClient;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static unirest.Util.tryCast;
 
 public class Config {
     public static final int DEFAULT_CONNECTION_TIMEOUT = 10000;
@@ -139,6 +138,12 @@ public class Config {
         return this;
     }
 
+    /**
+     * Set the full async configuration including monitors. These will be shutDown on a Unirest.shudown()
+     *
+     * @param asyncClientBuilder A builder function for creating a AsyncClient
+     * @return this config object
+     */
     public Config asyncClient(Function<Config, AsyncClient> asyncClientBuilder){
         this.asyncBuilder = asyncClientBuilder;
         return this;
@@ -386,10 +391,9 @@ public class Config {
     }
 
     private boolean asyncClientIsReady() {
-        return asyncClient.isPresent() &&
-                tryCast(asyncClient.get().getClient(), CloseableHttpAsyncClient.class)
-                .map(CloseableHttpAsyncClient::isRunning)
-                        .orElse(true);
+        return asyncClient
+                .map(AsyncClient::isRunning)
+                .orElse(false);
     }
 
     private synchronized void buildAsyncClient() {
