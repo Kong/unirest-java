@@ -66,6 +66,7 @@ public class Config {
     private boolean cookieManagement;
     private boolean useSystemProperties;
     private Function<Config, AsyncClient> asyncBuilder = ApacheAsyncClient::new;
+    private Function<Config, Client> clientBuilder = ApacheClient::new;
 
     public Config() {
         setDefaults();
@@ -90,7 +91,7 @@ public class Config {
      * @return this config object
      */
     public Config httpClient(HttpClient httpClient) {
-        client = Optional.of(new Client(httpClient));
+        client = Optional.of(new ApacheClient(httpClient));
         return this;
     }
 
@@ -102,6 +103,17 @@ public class Config {
      */
     public Config httpClient(Client httpClient) {
         client = Optional.of(httpClient);
+        return this;
+    }
+
+    /**
+     * Provide a builder for a client
+     *
+     * @param httpClient Custom httpClient implementation
+     * @return this config object
+     */
+    public Config httpClient(Function<Config, Client> httpClient) {
+        clientBuilder = httpClient;
         return this;
     }
 
@@ -356,7 +368,7 @@ public class Config {
 
     private synchronized void buildClient() {
         if (!client.isPresent()) {
-            client = Optional.of(new Client(this));
+            client = Optional.of(clientBuilder.apply(this));
         }
     }
 
