@@ -39,7 +39,7 @@ import org.apache.http.nio.reactor.IOReactorException;
 class ClientFactory {
 
 
-    public AsyncConfig buildAsyncClient(Config config) {
+    public AsyncClient buildAsyncClient(Config config) {
 
         try {
             PoolingNHttpClientConnectionManager manager = new PoolingNHttpClientConnectionManager(new DefaultConnectingIOReactor());
@@ -67,14 +67,14 @@ class ClientFactory {
             build.start();
             AsyncIdleConnectionMonitorThread syncMonitor = new AsyncIdleConnectionMonitorThread(manager);
             syncMonitor.tryStart();
-            return new AsyncConfig(build, manager, syncMonitor);
+            return new AsyncClient(build, manager, syncMonitor);
 
         } catch (IOReactorException e) {
             throw new UnirestConfigException(e);
         }
     }
 
-    public ClientConfig buildHttpClient(Config config) {
+    public Client buildHttpClient(Config config) {
         PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
         SyncIdleConnectionMonitorThread syncMonitor = new SyncIdleConnectionMonitorThread(manager);
         syncMonitor.start();
@@ -96,7 +96,7 @@ class ClientFactory {
         }
         config.getInterceptors().stream().forEach(cb::addInterceptorFirst);
 
-        return new ClientConfig(cb.build(), manager, syncMonitor);
+        return new Client(cb.build(), manager, syncMonitor);
     }
 
     private RequestConfig getRequestConfig(Config config) {

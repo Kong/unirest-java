@@ -51,8 +51,8 @@ public class Config {
 
     private ClientFactory factory;
 
-    private Optional<ClientConfig> client = Optional.empty();
-    private Optional<AsyncConfig> asyncClient = Optional.empty();
+    private Optional<Client> client = Optional.empty();
+    private Optional<AsyncClient> asyncClient = Optional.empty();
     private Optional<ObjectMapper> objectMapper = Optional.empty();
 
     private List<HttpRequestInterceptor> interceptors = new ArrayList<>();
@@ -95,7 +95,7 @@ public class Config {
      * @return this config object
      */
     public Config httpClient(HttpClient httpClient) {
-        client = Optional.of(new ClientConfig(httpClient, null, null));
+        client = Optional.of(new Client(httpClient, null, null));
         return this;
     }
 
@@ -105,7 +105,7 @@ public class Config {
      * @param httpClient Custom httpClient implementation
      * @return this config object
      */
-    public Config httpClient(ClientConfig httpClient) {
+    public Config httpClient(Client httpClient) {
         client = Optional.of(httpClient);
         return this;
     }
@@ -117,7 +117,7 @@ public class Config {
      * @return this config object
      */
     public Config asyncClient(HttpAsyncClient value) {
-        this.asyncClient = Optional.of(new AsyncConfig(value, null, null));
+        this.asyncClient = Optional.of(new AsyncClient(value, null, null));
         return this;
     }
 
@@ -127,7 +127,7 @@ public class Config {
      * @param value Custom AsyncConfig class. The actual AsyncHttpClient is required.
      * @return this config object
      */
-    public Config asyncClient(AsyncConfig value) {
+    public Config asyncClient(AsyncClient value) {
         asyncClient = Optional.of(value);
         return this;
     }
@@ -325,8 +325,8 @@ public class Config {
      */
     public void shutDown(boolean clearOptions) {
         List<Exception> ex = Stream.concat(
-                client.map(ClientConfig::close).orElseGet(Stream::empty),
-                asyncClient.map(AsyncConfig::close).orElseGet(Stream::empty)
+                client.map(Client::close).orElseGet(Stream::empty),
+                asyncClient.map(AsyncClient::close).orElseGet(Stream::empty)
         ).collect(Collectors.toList());
 
         client = Optional.empty();
@@ -382,13 +382,13 @@ public class Config {
 
     private synchronized void buildAsyncClient() {
         if (!asyncClientIsReady()) {
-            AsyncConfig value = factory.buildAsyncClient(this);
+            AsyncClient value = factory.buildAsyncClient(this);
             verifyIsOn(value);
             asyncClient = Optional.of(value);
         }
     }
 
-    private void verifyIsOn(AsyncConfig value) {
+    private void verifyIsOn(AsyncClient value) {
         Boolean isOn = tryCast(value.getClient(), CloseableHttpAsyncClient.class)
                 .map(CloseableHttpAsyncClient::isRunning)
                 .orElse(true);
@@ -396,6 +396,8 @@ public class Config {
             throw new UnirestConfigException("Attempted to get a new async client but it was not started. Please ensure it is");
         }
     }
+
+
     // Accessors for unirest.
 
     boolean getEnabledCookieManagement() {

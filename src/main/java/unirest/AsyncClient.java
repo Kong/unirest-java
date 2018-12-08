@@ -33,13 +33,13 @@ import org.apache.http.nio.client.HttpAsyncClient;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class AsyncConfig {
+public class AsyncClient {
 
     private final HttpAsyncClient client;
     private final PoolingNHttpClientConnectionManager manager;
     private final AsyncIdleConnectionMonitorThread syncMonitor;
 
-    public AsyncConfig(HttpAsyncClient client,
+    public AsyncClient(HttpAsyncClient client,
                        PoolingNHttpClientConnectionManager manager,
                        AsyncIdleConnectionMonitorThread syncMonitor) {
         this.syncMonitor = syncMonitor;

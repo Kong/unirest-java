@@ -111,7 +111,7 @@ public class ConfigTest {
         when(c.isRunning()).thenReturn(false);
         config.asyncClient(c);
 
-        when(factory.buildAsyncClient(config)).thenReturn(new AsyncConfig(c, null, null));
+        when(factory.buildAsyncClient(config)).thenReturn(new AsyncClient(c, null, null));
 
         TestUtil.assertException(() -> config.getAsyncHttpClient(),
                 UnirestConfigException.class,

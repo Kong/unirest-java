@@ -35,14 +35,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class ClientConfig {
+public class Client {
     private final HttpClient client;
     private final PoolingHttpClientConnectionManager manager;
     private final SyncIdleConnectionMonitorThread syncMonitor;
 
-    public ClientConfig(HttpClient client,
-                        PoolingHttpClientConnectionManager manager,
-                        SyncIdleConnectionMonitorThread syncMonitor) {
+    public Client(HttpClient client,
+                  PoolingHttpClientConnectionManager manager,
+                  SyncIdleConnectionMonitorThread syncMonitor) {
         Objects.requireNonNull(client, "Client may not be null");
         this.client = client;
         this.manager = manager;

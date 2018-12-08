@@ -88,8 +88,8 @@ public class LifeCycleTest extends BddTest {
         when(asyncClient.isRunning()).thenReturn(true);
 
         Unirest.config()
-                .httpClient(new ClientConfig(httpc, clientManager, connMonitor))
-                .asyncClient(new AsyncConfig(asyncClient, manager, asyncMonitor));
+                .httpClient(new Client(httpc, clientManager, connMonitor))
+                .asyncClient(new AsyncClient(asyncClient, manager, asyncMonitor));
 
         Unirest.shutDown();
 
@@ -110,8 +110,8 @@ public class LifeCycleTest extends BddTest {
         doThrow(new RuntimeException("5")).when(asyncMonitor).interrupt();
 
         Unirest.config()
-                .httpClient(new ClientConfig(httpc, clientManager, connMonitor))
-                .asyncClient(new AsyncConfig(asyncClient, manager, asyncMonitor));
+                .httpClient(new Client(httpc, clientManager, connMonitor))
+                .asyncClient(new AsyncClient(asyncClient, manager, asyncMonitor));
 
 
         TestUtil.assertException(Unirest::shutDown,
@@ -134,8 +134,8 @@ public class LifeCycleTest extends BddTest {
         when(asyncClient.isRunning()).thenReturn(true);
 
         Unirest.config()
-                .httpClient(new ClientConfig(httpc, null, null))
-                .asyncClient(new AsyncConfig(asyncClient, null, null));
+                .httpClient(new Client(httpc, null, null))
+                .asyncClient(new AsyncClient(asyncClient, null, null));
 
         Unirest.shutDown();
 
