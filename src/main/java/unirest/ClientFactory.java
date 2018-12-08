@@ -28,8 +28,6 @@ package unirest;
 
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
@@ -72,31 +70,6 @@ class ClientFactory {
         } catch (IOReactorException e) {
             throw new UnirestConfigException(e);
         }
-    }
-
-    public Client buildHttpClient(Config config) {
-        PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
-        SyncIdleConnectionMonitorThread syncMonitor = new SyncIdleConnectionMonitorThread(manager);
-        syncMonitor.start();
-
-        HttpClientBuilder cb = HttpClientBuilder.create()
-                .setDefaultRequestConfig(getRequestConfig(config))
-                .setDefaultCredentialsProvider(config.getProxyCreds())
-                .setConnectionManager(manager)
-                .useSystemProperties();
-
-        if(config.useSystemProperties()){
-            cb.useSystemProperties();
-        }
-        if (!config.getFollowRedirects()) {
-            cb.disableRedirectHandling();
-        }
-        if (!config.getEnabledCookieManagement()) {
-            cb.disableCookieManagement();
-        }
-        config.getInterceptors().stream().forEach(cb::addInterceptorFirst);
-
-        return new Client(cb.build(), manager, syncMonitor);
     }
 
     private RequestConfig getRequestConfig(Config config) {

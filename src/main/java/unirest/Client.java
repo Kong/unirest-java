@@ -28,25 +28,54 @@ package unirest;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
 import java.io.Closeable;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class Client {
+public class Client extends BaseApacheClient {
     private final HttpClient client;
     private final PoolingHttpClientConnectionManager manager;
     private final SyncIdleConnectionMonitorThread syncMonitor;
 
-    public Client(HttpClient client,
-                  PoolingHttpClientConnectionManager manager,
-                  SyncIdleConnectionMonitorThread syncMonitor) {
-        Objects.requireNonNull(client, "Client may not be null");
-        this.client = client;
-        this.manager = manager;
-        this.syncMonitor = syncMonitor;
+    public Client(Config config) {
+        manager = new PoolingHttpClientConnectionManager();
+        syncMonitor = new SyncIdleConnectionMonitorThread(manager);
+        syncMonitor.start();
+
+        HttpClientBuilder cb = HttpClientBuilder.create()
+                .setDefaultRequestConfig(getRequestConfig(config))
+                .setDefaultCredentialsProvider(config.getProxyCreds())
+                .setConnectionManager(manager)
+                .useSystemProperties();
+
+        if(config.useSystemProperties()){
+            cb.useSystemProperties();
+        }
+        if (!config.getFollowRedirects()) {
+            cb.disableRedirectHandling();
+        }
+        if (!config.getEnabledCookieManagement()) {
+            cb.disableCookieManagement();
+        }
+        config.getInterceptors().stream().forEach(cb::addInterceptorFirst);
+        client = cb.build();
+    }
+
+    public Client(HttpClient httpClient) {
+        this.client = httpClient;
+        this.manager = null;
+        this.syncMonitor = null;
+    }
+
+    public Client(HttpClient httpc,
+                  PoolingHttpClientConnectionManager clientManager,
+                  SyncIdleConnectionMonitorThread connMonitor) {
+        this.client = httpc;
+        this.manager = clientManager;
+        this.syncMonitor = connMonitor;
     }
 
     public HttpClient getClient() {
@@ -69,7 +98,6 @@ public class Client {
                 Util.tryDo(manager, m -> m.close()),
                 Util.tryDo(syncMonitor, i -> i.interrupt())
         );
-
     }
 
 }

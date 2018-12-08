@@ -95,7 +95,7 @@ public class Config {
      * @return this config object
      */
     public Config httpClient(HttpClient httpClient) {
-        client = Optional.of(new Client(httpClient, null, null));
+        client = Optional.of(new Client(httpClient));
         return this;
     }
 
@@ -356,7 +356,7 @@ public class Config {
 
     private synchronized void buildClient() {
         if (!client.isPresent()) {
-            client = Optional.of(factory.buildHttpClient(this));
+            client = Optional.of(new Client(this));
         }
     }
 
