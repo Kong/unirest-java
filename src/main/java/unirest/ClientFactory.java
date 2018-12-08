@@ -38,13 +38,8 @@ import org.apache.http.nio.reactor.IOReactorException;
 
 class ClientFactory {
 
-    private final Config config;
 
-    public ClientFactory(Config config) {
-        this.config = config;
-    }
-
-    public AsyncConfig buildAsyncClient() {
+    public AsyncConfig buildAsyncClient(Config config) {
 
         try {
             PoolingNHttpClientConnectionManager manager = new PoolingNHttpClientConnectionManager(new DefaultConnectingIOReactor());
@@ -52,7 +47,7 @@ class ClientFactory {
             manager.setDefaultMaxPerRoute(config.getMaxPerRoutes());
 
             HttpAsyncClientBuilder ab = HttpAsyncClientBuilder.create()
-                    .setDefaultRequestConfig(getRequestConfig())
+                    .setDefaultRequestConfig(getRequestConfig(config))
                     .setConnectionManager(manager)
                     .setDefaultCredentialsProvider(config.getProxyCreds())
                     .useSystemProperties();
@@ -60,10 +55,10 @@ class ClientFactory {
             if(config.useSystemProperties()){
                 ab.useSystemProperties();
             }
-            if (shouldDisableRedirects()) {
+            if (!config.getFollowRedirects()) {
                 ab.setRedirectStrategy(new NoRedirects());
             }
-            if (shouldDisableCookieManagement()) {
+            if (!config.getEnabledCookieManagement()) {
                 ab.disableCookieManagement();
             }
             config.getInterceptors().forEach(ab::addInterceptorFirst);
@@ -79,13 +74,13 @@ class ClientFactory {
         }
     }
 
-    public ClientConfig buildHttpClient() {
+    public ClientConfig buildHttpClient(Config config) {
         PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager();
         SyncIdleConnectionMonitorThread syncMonitor = new SyncIdleConnectionMonitorThread(manager);
         syncMonitor.start();
 
         HttpClientBuilder cb = HttpClientBuilder.create()
-                .setDefaultRequestConfig(getRequestConfig())
+                .setDefaultRequestConfig(getRequestConfig(config))
                 .setDefaultCredentialsProvider(config.getProxyCreds())
                 .setConnectionManager(manager)
                 .useSystemProperties();
@@ -93,10 +88,10 @@ class ClientFactory {
         if(config.useSystemProperties()){
             cb.useSystemProperties();
         }
-        if (shouldDisableRedirects()) {
+        if (!config.getFollowRedirects()) {
             cb.disableRedirectHandling();
         }
-        if (shouldDisableCookieManagement()) {
+        if (!config.getEnabledCookieManagement()) {
             cb.disableCookieManagement();
         }
         config.getInterceptors().stream().forEach(cb::addInterceptorFirst);
@@ -104,15 +99,7 @@ class ClientFactory {
         return new ClientConfig(cb.build(), manager, syncMonitor);
     }
 
-    private boolean shouldDisableCookieManagement() {
-        return !config.getEnabledCookieManagement();
-    }
-
-    private boolean shouldDisableRedirects() {
-        return !config.getFollowRedirects();
-    }
-
-    private RequestConfig getRequestConfig() {
+    private RequestConfig getRequestConfig(Config config) {
         Integer connectionTimeout = config.getConnectionTimeout();
         Integer socketTimeout = config.getSocketTimeout();
         HttpHost proxy = config.getProxy();

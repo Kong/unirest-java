@@ -49,7 +49,7 @@ public class Config {
     public static final int DEFAULT_CONNECT_TIMEOUT = 10000;
     public static final int DEFAULT_SOCKET_TIMEOUT = 60000;
 
-    private ClientFactory factory = new ClientFactory(this);
+    private ClientFactory factory;
 
     private Optional<ClientConfig> client = Optional.empty();
     private Optional<AsyncConfig> asyncClient = Optional.empty();
@@ -67,6 +67,14 @@ public class Config {
     private boolean cookieManagement;
     private boolean useSystemProperties;
 
+    public Config(){
+        this(new ClientFactory());
+    }
+
+    Config(ClientFactory clientFactory){
+        this.factory = clientFactory;
+        setDefaults();
+    }
 
     private void setDefaults(){
         interceptors.clear();
@@ -78,10 +86,6 @@ public class Config {
         maxPerRoute = DEFAULT_MAX_PER_ROUTE;
         followRedirects = true;
         cookieManagement = true;
-    }
-
-    public Config(){
-        setDefaults();
     }
 
     /**
@@ -352,7 +356,7 @@ public class Config {
 
     private synchronized void buildClient() {
         if (!client.isPresent()) {
-            client = Optional.of(factory.buildHttpClient());
+            client = Optional.of(factory.buildHttpClient(this));
         }
     }
 
@@ -378,8 +382,18 @@ public class Config {
 
     private synchronized void buildAsyncClient() {
         if (!asyncClientIsReady()) {
-            AsyncConfig value = factory.buildAsyncClient();
+            AsyncConfig value = factory.buildAsyncClient(this);
+            verifyIsOn(value);
             asyncClient = Optional.of(value);
+        }
+    }
+
+    private void verifyIsOn(AsyncConfig value) {
+        Boolean isOn = tryCast(value.getClient(), CloseableHttpAsyncClient.class)
+                .map(CloseableHttpAsyncClient::isRunning)
+                .orElse(true);
+        if(!isOn){
+            throw new UnirestConfigException("Attempted to get a new async client but it was not started. Please ensure it is");
         }
     }
     // Accessors for unirest.

@@ -32,6 +32,7 @@ import org.apache.http.nio.client.HttpAsyncClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.*;
@@ -41,6 +42,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigTest {
 
+    @Spy
+    private ClientFactory factory;
     @InjectMocks
     private Config config;
 
@@ -100,6 +103,19 @@ public class ConfigTest {
         config.asyncClient(c);
 
         assertNotSame(c, config.getAsyncHttpClient());
+    }
+
+    @Test
+    public void ifTheNextAsyncClientThatIsReturnedIsAlsoOffThrowAnException(){
+        CloseableHttpAsyncClient c = mock(CloseableHttpAsyncClient.class);
+        when(c.isRunning()).thenReturn(false);
+        config.asyncClient(c);
+
+        when(factory.buildAsyncClient(config)).thenReturn(new AsyncConfig(c, null, null));
+
+        TestUtil.assertException(() -> config.getAsyncHttpClient(),
+                UnirestConfigException.class,
+                "Attempted to get a new async client but it was not started. Please ensure it is");
     }
 
     @Test
