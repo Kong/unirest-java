@@ -26,12 +26,13 @@
 
 package unirest;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.util.zip.GZIPInputStream;
 
 class ApacheResponse implements RawResponse {
     private final HttpResponse r;
@@ -69,7 +70,76 @@ class ApacheResponse implements RawResponse {
     }
 
     @Override
+    public byte[] getContentAsBytes() {
+        if(!hasContent()){
+            return new byte[0];
+        }
+        try {
+            InputStream is = getContent();
+            if (isGzipped(getEncoding())) {
+                is = new GZIPInputStream(getContent());
+            }
+            return getBytes(is);
+        } catch (IOException e2) {
+            throw new UnirestException(e2);
+        } finally {
+            EntityUtils.consumeQuietly(r.getEntity());
+        }
+    }
+
+    @Override
     public InputStreamReader getContentReader(){
         return new InputStreamReader(getContent());
+    }
+
+    @Override
+    public boolean hasContent() {
+        return r.getEntity() != null;
+    }
+
+    @Override
+    public String getContentType() {
+        if(hasContent()){
+            Header contentType = r.getEntity().getContentType();
+            if(contentType != null){
+                return contentType.getValue();
+            }
+        }
+        return "";
+    }
+
+    @Override
+    public String getEncoding() {
+        if(hasContent()){
+            Header contentType = r.getEntity().getContentEncoding();
+            if(contentType != null){
+                return contentType.getValue();
+            }
+        }
+        return "";
+    }
+
+    private static byte[] getBytes(InputStream is) throws IOException {
+        int len;
+        int size = 1024;
+        byte[] buf;
+
+        if (is instanceof ByteArrayInputStream) {
+            size = is.available();
+            buf = new byte[size];
+            len = is.read(buf, 0, size);
+        } else {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            buf = new byte[size];
+            while ((len = is.read(buf, 0, size)) != -1) {
+                bos.write(buf, 0, len);
+            }
+            buf = bos.toByteArray();
+        }
+        return buf;
+    }
+
+    private static boolean isGzipped(String value) {
+        return "gzip".equalsIgnoreCase(value.toLowerCase().trim());
     }
 }

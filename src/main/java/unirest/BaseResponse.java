@@ -26,8 +26,6 @@
 
 package unirest;
 
-import org.apache.http.StatusLine;
-
 import java.io.InputStream;
 import java.util.Optional;
 import java.util.function.Function;
@@ -39,11 +37,10 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     private final int statusCode;
     private Optional<RuntimeException> parsingerror = Optional.empty();
 
-    protected BaseResponse(org.apache.http.HttpResponse response){
-        headers = new Headers(response.getAllHeaders());
-        StatusLine statusLine = response.getStatusLine();
-        this.statusCode = statusLine.getStatusCode();
-        this.statusText = statusLine.getReasonPhrase();
+    protected BaseResponse(RawResponse response){
+        headers = response.getHeaders();
+        this.statusCode = response.getStatus();
+        this.statusText = response.getStatusText();
     }
 
     @Override

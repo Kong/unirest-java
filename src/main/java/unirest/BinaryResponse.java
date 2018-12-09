@@ -26,32 +26,20 @@
 
 package unirest;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.util.EntityUtils;
-
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Objects;
 
 public class BinaryResponse extends BaseResponse<InputStream> {
 
     private InputStream body;
 
-    protected BinaryResponse(HttpResponse response) {
+    protected BinaryResponse(RawResponse response) {
         super(response);
         body = new ByteArrayInputStream(getBody(response));
     }
 
-    private byte[] getBody(HttpResponse response) {
-        if (Objects.isNull(response.getEntity())) {
-            return new byte[0];
-        }
-        try {
-            return EntityUtils.toByteArray(response.getEntity());
-        } catch (IOException e) {
-            throw new UnirestException(e);
-        }
+    private byte[] getBody(RawResponse response) {
+        return response.getContentAsBytes();
     }
 
     @Override

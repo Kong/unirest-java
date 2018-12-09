@@ -26,22 +26,17 @@
 
 package unirest;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Objects;
 
 
 public class StringResponse extends BaseResponse<String> {
     private String body;
 
-    public StringResponse(HttpResponse response) {
+    public StringResponse(RawResponse response) {
         super(response);
-        HttpEntity entity = response.getEntity();
-        if(Objects.nonNull(entity)){
-            body = Util.readString(entity);
+        if(response.hasContent()){
+            body = Util.readString(response);
         } else {
             body = "";
         }

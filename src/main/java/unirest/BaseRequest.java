@@ -188,8 +188,8 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         return requestAsync(r -> new ObjectResponse<>(getObjectMapper(), r, genericType), CallbackFuture.wrap(callback));
     }
 
-    private <T> Function<org.apache.http.HttpResponse, HttpResponse<T>> funcResponse(Function<RawResponse, T> function) {
-        return r -> new BasicResponse<>(r, function.apply(new ApacheResponse(r)));
+    private <T> Function<RawResponse, HttpResponse<T>> funcResponse(Function<RawResponse, T> function) {
+        return r -> new BasicResponse<>(r, function.apply(r));
     }
 
     @Override
@@ -217,15 +217,15 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         requestAsync(getConsumer(consumer), new CompletableFuture<>());
     }
 
-    private Function<org.apache.http.HttpResponse, HttpResponse<Object>> getConsumer(Consumer<RawResponse> consumer) {
+    private Function<RawResponse, HttpResponse<Object>> getConsumer(Consumer<RawResponse> consumer) {
         return r -> {
-            consumer.accept(new ApacheResponse(r));
+            consumer.accept(r);
             return null;
         };
     }
 
     private <T> CompletableFuture<HttpResponse<T>> requestAsync(
-            Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer,
+            Function<RawResponse, HttpResponse<T>> transformer,
             CompletableFuture<HttpResponse<T>> callback) {
 
         Objects.requireNonNull(callback);
@@ -236,7 +236,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
                 .execute(requestObj, new FutureCallback<org.apache.http.HttpResponse>() {
                     @Override
                     public void completed(org.apache.http.HttpResponse httpResponse) {
-                        callback.complete(transformer.apply(httpResponse));
+                        callback.complete(transformer.apply(new ApacheResponse(httpResponse)));
                     }
 
                     @Override
@@ -273,14 +273,14 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         return null;
     }
 
-    private <T> HttpResponse<T> request(Function<org.apache.http.HttpResponse, HttpResponse<T>> transformer) {
+    private <T> HttpResponse<T> request(Function<RawResponse, HttpResponse<T>> transformer) {
 
         HttpRequestBase requestObj = new RequestPrep(this, false).prepare();
         HttpClient client = config.getClient();
 
         try {
             org.apache.http.HttpResponse execute = client.execute(requestObj);
-            HttpResponse<T> httpResponse = transformer.apply(execute);
+            HttpResponse<T> httpResponse = transformer.apply(new ApacheResponse(execute));
             requestObj.releaseConnection();
             return httpResponse;
         } catch (Exception e) {

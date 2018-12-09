@@ -26,12 +26,7 @@
 
 package unirest;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.util.EntityUtils;
-
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
@@ -39,28 +34,24 @@ public class JsonResponse extends BaseResponse<JsonNode> {
     private JsonNode node;
     private InputStream errorStream;
 
-    protected JsonResponse(HttpResponse response) {
+    protected JsonResponse(RawResponse response) {
         super(response);
-        node = getNode(response.getEntity());
+        node = getNode(response);
     }
 
-    private JsonNode getNode(HttpEntity entity) {
-        if(Objects.isNull(entity)){
+    private JsonNode getNode(RawResponse response) {
+        if (Objects.isNull(response) || !response.hasContent()) {
             return new JsonNode(null);
         } else {
-            try {
-                String json = EntityUtils.toString(entity);
-                return toJsonNode(json);
-            } catch (IOException e) {
-                throw new UnirestException(e);
-            }
+            String json = Util.readString(response);
+            return toJsonNode(json);
         }
     }
 
     private JsonNode toJsonNode(String json) {
         try {
             return new JsonNode(json);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             super.setParsingException(e);
             errorStream = new ByteArrayInputStream(json.getBytes());
             return null;
@@ -69,7 +60,7 @@ public class JsonResponse extends BaseResponse<JsonNode> {
 
     @Override
     public InputStream getRawBody() {
-        if(errorStream != null){
+        if (errorStream != null) {
             return errorStream;
         }
         return new ByteArrayInputStream(node.toString().getBytes());

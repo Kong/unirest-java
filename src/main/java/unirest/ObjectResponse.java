@@ -26,12 +26,8 @@
 
 package unirest;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Objects;
 import java.util.function.Function;
 
 import static unirest.Util.readString;
@@ -41,22 +37,22 @@ class ObjectResponse<T> extends BaseResponse<T> {
     private final T body;
     private final ObjectMapper om;
 
-    ObjectResponse(ObjectMapper om, HttpResponse response, Class<? extends T> to) {
+    ObjectResponse(ObjectMapper om, RawResponse response, Class<? extends T> to) {
         super(response);
         this.om = om;
         this.body = getBody(response, e -> om.readValue(readString(e), to));
     }
 
-    ObjectResponse(ObjectMapper om, HttpResponse response, GenericType<? extends T> to){
+    ObjectResponse(ObjectMapper om, RawResponse response, GenericType<? extends T> to){
         super(response);
         this.om = om;
         this.body = getBody(response, e -> om.readValue(readString(e), to));
     }
 
-    private T getBody(HttpResponse response, Function<HttpEntity, T> func){
-        if(!Objects.isNull(response.getEntity())) {
+    private T getBody(RawResponse response, Function<RawResponse, T> func){
+        if(response.hasContent()) {
             try {
-                return func.apply(response.getEntity());
+                return func.apply(response);
             }catch (RuntimeException e){
                 setParsingException(e);
                 return null;

@@ -31,7 +31,7 @@ import java.io.InputStream;
 class BasicResponse<T> extends BaseResponse<T> {
     private final T body;
 
-    public BasicResponse(org.apache.http.HttpResponse httpResponse, T body) {
+    public BasicResponse(RawResponse httpResponse, T body) {
         super(httpResponse);
         this.body = body;
     }

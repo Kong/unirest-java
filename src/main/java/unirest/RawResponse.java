@@ -31,12 +31,12 @@ import java.io.InputStreamReader;
 
 public interface RawResponse {
     int getStatus();
-
     String getStatusText();
-
     Headers getHeaders();
-
     InputStream getContent();
-
+    byte[] getContentAsBytes();
     InputStreamReader getContentReader();
+    boolean hasContent();
+    String getContentType();
+    String getEncoding();
 }

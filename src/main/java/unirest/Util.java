@@ -26,7 +26,6 @@
 
 package unirest;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -90,10 +89,10 @@ class Util {
         return Stream.of(ex).flatMap(Util::stream);
     }
 
-    public static String readString(HttpEntity b) {
+    public static String readString(RawResponse b) {
         try {
             String charSet = ResponseUtils.getCharSet(b);
-            return new String(ResponseUtils.getRawBody(b), charSet);
+            return new String(b.getContentAsBytes(), charSet);
         } catch (IOException e) {
             throw new UnirestException(e);
         }

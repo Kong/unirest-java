@@ -32,6 +32,8 @@ import org.junit.Test;
 import unirest.ResponseUtils;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ResponseUtilsTest {
 
@@ -40,7 +42,7 @@ public class ResponseUtilsTest {
         assertEquals("UTF-8", ResponseUtils.getCharSet(entity(null)));
         assertEquals("UTF-8", ResponseUtils.getCharSet(entity("")));
         assertEquals("UTF-8", ResponseUtils.getCharSet(entity("         ")));
-        assertEquals("UTF-8", ResponseUtils.getCharSet(new BasicHttpEntity()));
+        assertEquals("UTF-8", ResponseUtils.getCharSet(mock(RawResponse.class)));
         assertEquals("UTF-8", ResponseUtils.getCharSet(entity("Content-Type: text/html;")));
         assertEquals("UTF-8", ResponseUtils.getCharSet(entity("Content-Type: text/html; charset=")));
     }
@@ -50,9 +52,9 @@ public class ResponseUtilsTest {
         assertEquals("LATIN-1", ResponseUtils.getCharSet(entity("Content-Type: text/html; charset=latin-1")));
     }
 
-    private HttpEntity entity(String charset) {
-        BasicHttpEntity e = new BasicHttpEntity();
-        e.setContentType(charset);
-        return e;
+    private RawResponse entity(String charset) {
+        RawResponse r = mock(RawResponse.class);
+        when(r.getContentType()).thenReturn(charset);
+        return r;
     }
 }
