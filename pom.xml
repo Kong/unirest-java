@@ -255,6 +255,49 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.4.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.sonatype.ossindex.maven</groupId>
+                        <artifactId>ossindex-maven-enforcer-rules</artifactId>
+                        <version>3.0.2</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>vulnerability-checks</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <banVulnerable implementation="org.sonatype.ossindex.maven.enforcer.BanVulnerableDependencies" />
+                            </rules>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>enforce-versions</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <!--at least maven 3.2-->
+                                    <version>[3.2,)</version>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>1.8</version>
+                                </requireJavaVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -309,7 +352,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>24.0-jre</version>
+            <version>27.0.1-jre</version>
             <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-guava -->
