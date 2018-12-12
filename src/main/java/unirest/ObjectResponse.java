@@ -28,36 +28,43 @@ package unirest;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static unirest.Util.readString;
 
 class ObjectResponse<T> extends BaseResponse<T> {
-
     private final T body;
     private final ObjectMapper om;
 
     ObjectResponse(ObjectMapper om, RawResponse response, Class<? extends T> to) {
         super(response);
         this.om = om;
-        this.body = getBody(response, e -> om.readValue(readString(e), to));
+        this.body = readBody(response)
+                .map(s -> getBody(s, e -> om.readValue(e, to)))
+                .orElse(null);
     }
 
     ObjectResponse(ObjectMapper om, RawResponse response, GenericType<? extends T> to){
         super(response);
         this.om = om;
-        this.body = getBody(response, e -> om.readValue(readString(e), to));
+        this.body = readBody(response)
+                .map(s -> getBody(s, e -> om.readValue(e, to)))
+                .orElse(null);
     }
 
-    private T getBody(RawResponse response, Function<RawResponse, T> func){
-        if(response.hasContent()) {
-            try {
-                return func.apply(response);
-            }catch (RuntimeException e){
-                setParsingException(e);
-                return null;
-            }
-        } else {
+    private Optional<String> readBody(RawResponse response) {
+        if(!response.hasContent()){
+            return Optional.empty();
+        }
+        return Optional.of(readString(response));
+    }
+
+    private T getBody(String b, Function<String, T> func){
+        try {
+            return func.apply(b);
+        } catch (RuntimeException e) {
+            setParsingException(b, e);
             return null;
         }
     }

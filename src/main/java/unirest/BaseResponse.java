@@ -35,7 +35,7 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     private final Headers headers;
     private final String statusText;
     private final int statusCode;
-    private Optional<RuntimeException> parsingerror = Optional.empty();
+    private Optional<UnirestParsingException> parsingerror = Optional.empty();
 
     protected BaseResponse(RawResponse response){
         headers = response.getHeaders();
@@ -65,7 +65,7 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     public abstract T getBody();
 
     @Override
-    public Optional<RuntimeException> getParsingError() {
+    public Optional<UnirestParsingException> getParsingError() {
         return parsingerror;
     }
 
@@ -79,7 +79,7 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
         return func.apply(getRawBody());
     }
 
-    protected void setParsingException(RuntimeException e) {
-        parsingerror = Optional.of(e);
+    protected void setParsingException(String originalBody, RuntimeException e) {
+        parsingerror = Optional.of(new UnirestParsingException(originalBody, e));
     }
 }

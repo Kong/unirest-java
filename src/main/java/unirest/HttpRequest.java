@@ -228,6 +228,7 @@ public interface HttpRequest<R extends HttpRequest> {
     HttpResponse<InputStream> asBinary();
 
     /**
+     * WARNING!!This is a beta feature and may change
      * Executes the request and writes the contents into a file
      * @param path The path to the file.
      * @return a file containing the results

@@ -1,3 +1,7 @@
+## 3.1.02
+* When encountering a parsing error with asObject or asJson capture the body in a UnirestParsingException
+* New BETA feature asFile method to stream the response into a file.
+
 ## 3.1.01
 * Detect if the async client has stopped for some reason and construct a new one. This one may be different from the one that was originally configured so we need to add a way to configure a supplier for clients rather than a direct client.
 

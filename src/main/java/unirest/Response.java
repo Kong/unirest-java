@@ -34,7 +34,7 @@ import java.util.function.Function;
 
 class Response<T> implements HttpResponse<T> {
 
-	private Optional<RuntimeException> parsingError = Optional.empty();
+	private Optional<UnirestParsingException> parsingError = Optional.empty();
 	private final Headers headers;
 	private final String statusText;
 	private final int statusCode;
@@ -81,7 +81,7 @@ class Response<T> implements HttpResponse<T> {
 	}
 
 	@Override
-	public Optional<RuntimeException> getParsingError() {
+	public Optional<UnirestParsingException> getParsingError() {
 		return parsingError;
 	}
 

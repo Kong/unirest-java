@@ -97,8 +97,10 @@ public class AsObjectTest extends BddTest {
 
         assertNull(request.getBody());
         assertTrue(request.getParsingError().isPresent());
-        assertEquals("com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'You': was expecting ('true', 'false' or 'null')\n" +
+        assertEquals("unirest.UnirestException: com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'You': was expecting ('true', 'false' or 'null')\n" +
                 " at [Source: (String)\"You did something bad\"; line: 1, column: 4]", request.getParsingError().get().getMessage());
+        assertEquals("You did something bad", request.getParsingError().get().getOriginalBody());
+
     }
 
     @Test
@@ -108,8 +110,9 @@ public class AsObjectTest extends BddTest {
 
         assertNull(request.getBody());
         assertTrue(request.getParsingError().isPresent());
-        assertEquals("com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'You': was expecting ('true', 'false' or 'null')\n" +
+        assertEquals("unirest.UnirestException: com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'You': was expecting ('true', 'false' or 'null')\n" +
                 " at [Source: (String)\"You did something bad\"; line: 1, column: 4]", request.getParsingError().get().getMessage());
+        assertEquals("You did something bad", request.getParsingError().get().getOriginalBody());
     }
 
     @Test
@@ -119,8 +122,9 @@ public class AsObjectTest extends BddTest {
 
         assertNull(request.getBody());
         assertTrue(request.getParsingError().isPresent());
-        assertEquals("com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'You': was expecting ('true', 'false' or 'null')\n" +
+        assertEquals("unirest.UnirestException: com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'You': was expecting ('true', 'false' or 'null')\n" +
                 " at [Source: (String)\"You did something bad\"; line: 1, column: 4]", request.getParsingError().get().getMessage());
+        assertEquals("You did something bad", request.getParsingError().get().getOriginalBody());
     }
 
     public static class TestingMapper implements ObjectMapper {
