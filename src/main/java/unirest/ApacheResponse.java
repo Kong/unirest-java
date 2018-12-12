@@ -88,6 +88,19 @@ class ApacheResponse implements RawResponse {
     }
 
     @Override
+    public String getContentAsString() {
+        if(!hasContent()){
+            return "";
+        }
+        try {
+            String charSet = ResponseUtils.getCharSet(this);
+            return new String(getContentAsBytes(), charSet);
+        } catch (IOException e) {
+            throw new UnirestException(e);
+        }
+    }
+
+    @Override
     public InputStreamReader getContentReader(){
         return new InputStreamReader(getContent());
     }

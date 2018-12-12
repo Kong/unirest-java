@@ -30,7 +30,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -87,15 +86,6 @@ class Util {
 
     static Stream<Exception> collectExceptions(Optional<Exception>... ex) {
         return Stream.of(ex).flatMap(Util::stream);
-    }
-
-    public static String readString(RawResponse b) {
-        try {
-            String charSet = ResponseUtils.getCharSet(b);
-            return new String(b.getContentAsBytes(), charSet);
-        } catch (IOException e) {
-            throw new UnirestException(e);
-        }
     }
 
     public static InputStream emptyStream() {

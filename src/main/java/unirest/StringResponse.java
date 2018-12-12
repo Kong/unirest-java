@@ -35,11 +35,7 @@ public class StringResponse extends BaseResponse<String> {
 
     public StringResponse(RawResponse response) {
         super(response);
-        if(response.hasContent()){
-            body = Util.readString(response);
-        } else {
-            body = "";
-        }
+        body = response.getContentAsString();
     }
 
     @Override

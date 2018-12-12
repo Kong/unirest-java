@@ -43,7 +43,7 @@ public class JsonResponse extends BaseResponse<JsonNode> {
         if (Objects.isNull(response) || !response.hasContent()) {
             return new JsonNode(null);
         } else {
-            String json = Util.readString(response);
+            String json = response.getContentAsString();
             return toJsonNode(json);
         }
     }

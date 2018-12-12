@@ -31,7 +31,6 @@ import java.io.InputStream;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static unirest.Util.readString;
 
 class ObjectResponse<T> extends BaseResponse<T> {
     private final T body;
@@ -57,7 +56,7 @@ class ObjectResponse<T> extends BaseResponse<T> {
         if(!response.hasContent()){
             return Optional.empty();
         }
-        return Optional.of(readString(response));
+        return Optional.of(response.getContentAsString());
     }
 
     private T getBody(String b, Function<String, T> func){
