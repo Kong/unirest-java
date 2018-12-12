@@ -236,6 +236,14 @@ public interface HttpRequest<R extends HttpRequest> {
     HttpResponse<File> asFile(String path);
 
     /**
+     * WARNING!!This is a beta feature and may change
+     * asynchronously executes the request and writes the contents into a file
+     * @param path The path to the file.
+     * @return a file containing the results
+     */
+    CompletableFuture<HttpResponse<File>> asFileAsync(String path);
+
+    /**
      * Executes the request asynchronously and returns a copy of the original InputStream
      * @deprecated This method returns a copy of the original stream and is not suitable for streaming. Use asObjectAsync(Function&lt;RawResponse, T&gt; function)
      * @return a CompletableFuture of a HttpResponse with a InputStream
