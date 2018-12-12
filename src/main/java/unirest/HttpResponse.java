@@ -55,6 +55,7 @@ public interface HttpResponse<T> {
      * This method is a lie. You never get the real raw response from it
      * you only get a copy, or worse, the body transformed BACK to a stream
      * If you want to use raw content use the new functional methods
+     * @deprecated this method is redundant and not the original stream. Use the functional asObject methods.
      * @return a copy of the input stream
      * */
     @Deprecated

@@ -41,6 +41,7 @@ import unirest.JsonPatchItem;
 import org.json.JSONObject;
 import unirest.ObjectMapper;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -56,6 +57,14 @@ public class JacksonObjectMapper implements ObjectMapper {
 		simpleModule.addDeserializer(JsonPatchItem.class, new PatchDeserializer());
 		simpleModule.addDeserializer(JsonPatch.class, new JsonPatchDeSerializer());
 		om.registerModule(simpleModule);
+	}
+
+	public <T> T readValue(File f, Class<T> valueType){
+		try {
+			return om.readValue(f, valueType);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

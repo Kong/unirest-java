@@ -26,6 +26,7 @@
 
 package unirest;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
@@ -225,6 +226,13 @@ public interface HttpRequest<R extends HttpRequest> {
      */
     @Deprecated
     HttpResponse<InputStream> asBinary();
+
+    /**
+     * Executes the request and writes the contents into a file
+     * @param path The path to the file.
+     * @return a file containing the results
+     */
+    HttpResponse<File> asFile(String path);
 
     /**
      * Executes the request asynchronously and returns a copy of the original InputStream

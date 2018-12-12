@@ -32,6 +32,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -215,6 +216,11 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public void thenConsumeAsync(Consumer<RawResponse> consumer) {
         requestAsync(getConsumer(consumer), new CompletableFuture<>());
+    }
+
+    @Override
+    public HttpResponse<File> asFile(String path) {
+        return request(r -> new FileResponse(r, path));
     }
 
     private Function<RawResponse, HttpResponse<Object>> getConsumer(Consumer<RawResponse> consumer) {
