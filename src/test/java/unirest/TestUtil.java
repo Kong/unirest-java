@@ -65,14 +65,6 @@ public class TestUtil {
         }
     }
 
-    public static String toJson(Object o) {
-        try {
-            return om.writeValueAsString(o);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static void assertException(Runnable runnable, Class<? extends Throwable> exClass, String message) {
         try{
             runnable.run();

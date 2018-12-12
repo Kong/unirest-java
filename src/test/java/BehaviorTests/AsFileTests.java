@@ -85,6 +85,23 @@ public class AsFileTests extends BddTest {
     }
 
     @Test
+    public void canSaveContentsIntoFileAsyncWithCallback() throws Exception {
+        Unirest.get(MockServer.GET)
+                .queryString("talking","heads")
+                .queryString("param3", "こんにちは")
+                .asFileAsync(test.toString(), r -> {
+                        om.readValue(r.getBody(), RequestCapture.class)
+                            .assertParam("talking", "heads")
+                            .assertParam("param3", "こんにちは")
+                            .assertStatus(200);
+                    assertEquals(test.toFile().getPath(), r.getBody().getPath());
+                    asyncSuccess();
+                });
+
+        assertAsync();
+    }
+
+    @Test
     public void canDownloadABinaryFile() throws Exception {
         File f1 = TestUtil.rezFile("/image.jpg");
 
@@ -94,5 +111,4 @@ public class AsFileTests extends BddTest {
 
         assertTrue(com.google.common.io.Files.equal(f1, f2));
     }
-
 }

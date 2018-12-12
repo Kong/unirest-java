@@ -228,6 +228,11 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         return requestAsync(r -> new FileResponse(r, path), new CompletableFuture<>());
     }
 
+    @Override
+    public CompletableFuture<HttpResponse<File>> asFileAsync(String path, Callback<File> callback) {
+        return requestAsync(r -> new FileResponse(r, path), CallbackFuture.wrap(callback));
+    }
+
     private Function<RawResponse, HttpResponse<Object>> getConsumer(Consumer<RawResponse> consumer) {
         return r -> {
             consumer.accept(r);

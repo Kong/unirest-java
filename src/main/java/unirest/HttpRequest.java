@@ -228,7 +228,6 @@ public interface HttpRequest<R extends HttpRequest> {
     HttpResponse<InputStream> asBinary();
 
     /**
-     * WARNING!!This is a beta feature and may change
      * Executes the request and writes the contents into a file
      * @param path The path to the file.
      * @return a file containing the results
@@ -236,12 +235,19 @@ public interface HttpRequest<R extends HttpRequest> {
     HttpResponse<File> asFile(String path);
 
     /**
-     * WARNING!!This is a beta feature and may change
      * asynchronously executes the request and writes the contents into a file
      * @param path The path to the file.
      * @return a file containing the results
      */
     CompletableFuture<HttpResponse<File>> asFileAsync(String path);
+
+    /**
+     * asynchronously executes the request and writes the contents into a file
+     * @param path The path to the file.
+     * @param callback a callback for handling the body post mapping
+     * @return a file containing the results
+     */
+    CompletableFuture<HttpResponse<File>> asFileAsync(String path, Callback<File> callback);
 
     /**
      * Executes the request asynchronously and returns a copy of the original InputStream
