@@ -52,13 +52,22 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package BehaviorTests;
 
+import spark.utils.IOUtils;
 import unirest.JacksonObjectMapper;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
 
+import javax.servlet.ServletOutputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URISyntaxException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static spark.Spark.*;
 
@@ -69,6 +78,7 @@ public class MockServer {
 	public static final int PORT = 4567;
 	public static final String HOST = "http://localhost:" + PORT;
 	public static final String REDIRECT = HOST + "/redirect";
+	public static final String BINARYFILE = HOST + "/binary";
 	public static final String NOBODY = HOST + "/nobody";
 	public static final String PROXY = "localhost:4567";
 	public static final String POST = HOST + "/post";
@@ -104,12 +114,26 @@ public class MockServer {
 		put("/post", MockServer::jsonResponse);
 		get("/get/:p/passed", MockServer::jsonResponse);
 		get("/proxy", MockServer::proxiedResponse);
+		get("/binary", MockServer::file);
         Runtime.getRuntime().addShutdownHook(new Thread(Spark::stop));
 		try {
 			new CountDownLatch(1).await(2, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static Object file(Request request, Response response) throws Exception {
+		 File f = new File(MockServer.class.getResource("/image.jpg").toURI());
+		 response.raw().setContentType("application/octet-stream");
+		 response.raw().setHeader("Content-Disposition", "attachment;filename=image.jpg");
+		 response.status(200);
+		 final ServletOutputStream out = response.raw().getOutputStream();
+		 final FileInputStream in = new FileInputStream(f);
+		 IOUtils.copy(in, out);
+		 out.close();
+		 in.close();
+		 return null;
 	}
 
 	private static Object nobody(Request request, Response response) {

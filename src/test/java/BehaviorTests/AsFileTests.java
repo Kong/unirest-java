@@ -26,16 +26,17 @@
 
 package BehaviorTests;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import org.junit.Test;
 import unirest.JacksonObjectMapper;
 import unirest.Unirest;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import static org.junit.Assert.assertTrue;
 
 public class AsFileTests extends BddTest {
 
@@ -46,9 +47,7 @@ public class AsFileTests extends BddTest {
     public void tearDown() {
         try {
             Files.delete(test);
-        } catch (IOException e) {
-
-        }
+        } catch (Exception e) { }
     }
 
     @Test
@@ -58,5 +57,16 @@ public class AsFileTests extends BddTest {
 
         om.readValue(test.toFile(), RequestCapture.class)
                 .assertStatus(200);
+    }
+
+    @Test
+    public void canDownloadABinaryFile() throws Exception {
+        File f1 = new File(MockServer.class.getResource("/image.jpg").toURI());
+
+        File f2 = Unirest.get(MockServer.BINARYFILE)
+                .asFile(test.toString())
+                .getBody();
+
+        assertTrue(com.google.common.io.Files.equal(f1, f2));
     }
 }
