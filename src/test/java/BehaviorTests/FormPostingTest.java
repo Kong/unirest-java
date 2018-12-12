@@ -41,6 +41,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
+import static unirest.TestUtil.rezFile;
 
 public class FormPostingTest extends BddTest {
     @Test
@@ -74,7 +75,7 @@ public class FormPostingTest extends BddTest {
     public void testMultipart() throws Exception {
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
-                .field("file", new File(getClass().getResource("/test").toURI()))
+                .field("file", rezFile("/test"))
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertParam("name", "Mark")
@@ -87,7 +88,7 @@ public class FormPostingTest extends BddTest {
     public void testMultipartContentType() throws Exception {
          Unirest.post(MockServer.POST)
                 .field("name", "Mark")
-                .field("file", new File(getClass().getResource("/image.jpg").toURI()), "image/jpeg")
+                .field("file", rezFile("/image.jpg"), "image/jpeg")
                  .asObject(RequestCapture.class)
                  .getBody()
                  .assertParam("name", "Mark")
@@ -97,7 +98,7 @@ public class FormPostingTest extends BddTest {
 
     @Test
     public void testMultipartInputStreamContentType() throws Exception {
-        FileInputStream stream = new FileInputStream(new File(getClass().getResource("/image.jpg").toURI()));
+        FileInputStream stream = new FileInputStream(rezFile("/image.jpg"));
 
         Unirest.post(MockServer.POST)
                 .header("accept", ContentType.MULTIPART_FORM_DATA.toString())
@@ -115,7 +116,7 @@ public class FormPostingTest extends BddTest {
     public void testMultipartInputStreamContentTypeAsync() throws Exception {
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
-                .field("file", new FileInputStream(new File(getClass().getResource("/test").toURI())), ContentType.APPLICATION_OCTET_STREAM, "test")
+                .field("file", new FileInputStream(rezFile("/test")), ContentType.APPLICATION_OCTET_STREAM, "test")
                 .asJsonAsync(new MockCallback<>(this, r -> parse(r)
                         .assertParam("name", "Mark")
                         .getFile("test")
@@ -127,7 +128,7 @@ public class FormPostingTest extends BddTest {
 
     @Test
     public void testMultipartByteContentType() throws Exception {
-        final InputStream stream = new FileInputStream(new File(getClass().getResource("/image.jpg").toURI()));
+        final InputStream stream = new FileInputStream(rezFile("/image.jpg"));
         final byte[] bytes = new byte[stream.available()];
         stream.read(bytes);
         stream.close();
@@ -144,7 +145,7 @@ public class FormPostingTest extends BddTest {
 
     @Test
     public void testMultipartByteContentTypeAsync() throws Exception {
-        final InputStream stream = new FileInputStream(new File(getClass().getResource("/test").toURI()));
+        final InputStream stream = new FileInputStream(rezFile("/test"));
         final byte[] bytes = new byte[stream.available()];
         stream.read(bytes);
         stream.close();
@@ -166,7 +167,7 @@ public class FormPostingTest extends BddTest {
     public void testMultipartAsync() throws Exception {
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
-                .field("file", new File(getClass().getResource("/test").toURI()))
+                .field("file", rezFile("/test"))
                 .asJsonAsync(new MockCallback<>(this, r ->
                         parse(r)
                                 .assertParam("name", "Mark")
@@ -198,8 +199,8 @@ public class FormPostingTest extends BddTest {
     public void testPostMultipleFiles()throws Exception {
         Unirest.post(MockServer.POST)
                 .field("param3", "wot")
-                .field("file1", new File(getClass().getResource("/test").toURI()))
-                .field("file2", new File(getClass().getResource("/test").toURI()))
+                .field("file1", rezFile("/test"))
+                .field("file2", rezFile("/test"))
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertParam("param3", "wot")
@@ -233,7 +234,7 @@ public class FormPostingTest extends BddTest {
         Unirest.post(MockServer.POST)
                 .header("Accept", ContentType.MULTIPART_FORM_DATA.getMimeType())
                 .field("param3", "こんにちは")
-                .field("file", new File(getClass().getResource("/test").toURI()))
+                .field("file", rezFile("/test"))
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertParam("param3", "こんにちは")
@@ -427,6 +428,6 @@ public class FormPostingTest extends BddTest {
 
 
     private File getImageFile() throws URISyntaxException {
-        return new File(getClass().getResource("/image.jpg").toURI());
+        return rezFile("/image.jpg");
     }
 }

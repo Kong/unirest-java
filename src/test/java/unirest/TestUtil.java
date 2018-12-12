@@ -26,6 +26,7 @@
 
 package unirest;
 
+import BehaviorTests.MockServer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
@@ -34,6 +35,7 @@ import com.google.common.io.Resources;
 import unirest.HttpResponse;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -146,5 +148,13 @@ public class TestUtil {
 
     public static String getResource(String resourceName) throws IOException {
         return Resources.toString(Resources.getResource(resourceName), Charsets.UTF_8);
+    }
+
+    public static File rezFile(String name) {
+        try {
+            return new File(MockServer.class.getResource(name).toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

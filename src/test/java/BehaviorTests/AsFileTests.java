@@ -28,14 +28,15 @@ package BehaviorTests;
 
 import org.junit.Test;
 import unirest.JacksonObjectMapper;
+import unirest.TestUtil;
 import unirest.Unirest;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class AsFileTests extends BddTest {
@@ -52,16 +53,23 @@ public class AsFileTests extends BddTest {
 
     @Test
     public void canSaveContentsIntoFile() {
-        Unirest.get(MockServer.GET)
-                .asFile(test.toString());
+        File result = Unirest.get(MockServer.GET)
+                .queryString("talking","heads")
+                .queryString("param3", "こんにちは")
+                .asFile(test.toString())
+                .getBody();
 
-        om.readValue(test.toFile(), RequestCapture.class)
+        om.readValue(result, RequestCapture.class)
+                .assertParam("talking", "heads")
+                .assertParam("param3", "こんにちは")
                 .assertStatus(200);
+
+        assertEquals(test.toFile().getPath(), result.getPath());
     }
 
     @Test
     public void canDownloadABinaryFile() throws Exception {
-        File f1 = new File(MockServer.class.getResource("/image.jpg").toURI());
+        File f1 = TestUtil.rezFile("/image.jpg");
 
         File f2 = Unirest.get(MockServer.BINARYFILE)
                 .asFile(test.toString())
@@ -69,4 +77,5 @@ public class AsFileTests extends BddTest {
 
         assertTrue(com.google.common.io.Files.equal(f1, f2));
     }
+
 }

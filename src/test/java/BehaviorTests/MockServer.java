@@ -57,6 +57,7 @@ import unirest.JacksonObjectMapper;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
+import unirest.TestUtil;
 
 import javax.servlet.ServletOutputStream;
 import java.io.BufferedInputStream;
@@ -124,7 +125,7 @@ public class MockServer {
 	}
 
 	private static Object file(Request request, Response response) throws Exception {
-		 File f = new File(MockServer.class.getResource("/image.jpg").toURI());
+		 File f = TestUtil.rezFile("/image.jpg");
 		 response.raw().setContentType("application/octet-stream");
 		 response.raw().setHeader("Content-Disposition", "attachment;filename=image.jpg");
 		 response.status(200);
