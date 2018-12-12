@@ -220,16 +220,16 @@ public interface HttpRequest<R extends HttpRequest> {
 
     /**
      * Executes the request and returns a copy of the original InputStream
+     * @deprecated This method returns a copy of the original stream and is not suitable for streaming. Use asObject(Function&lt;RawResponse, T&gt; function)
      * @return a HttpResponse with a InputStream
-     * @Deprecated This method returns a copy of the original stream and is not suitable for streaming. Use asObject(Function&lt;RawResponse, T&gt; function)
      */
     @Deprecated
     HttpResponse<InputStream> asBinary();
 
     /**
      * Executes the request asynchronously and returns a copy of the original InputStream
+     * @deprecated This method returns a copy of the original stream and is not suitable for streaming. Use asObjectAsync(Function&lt;RawResponse, T&gt; function)
      * @return a CompletableFuture of a HttpResponse with a InputStream
-     * @Deprecated This method returns a copy of the original stream and is not suitable for streaming. Use asObjectAsync(Function&lt;RawResponse, T&gt; function)
      */
     @Deprecated
     CompletableFuture<HttpResponse<InputStream>> asBinaryAsync();
@@ -237,8 +237,8 @@ public interface HttpRequest<R extends HttpRequest> {
     /**
      * Executes the request asynchronously and returns a copy of the original InputStream which is passed to a callback
      * @param callback the callback
+     * @deprecated This method returns a copy of the original stream and is not suitable for streaming. Use asObjectAsync(Function&lt;RawResponse, T&gt; function)
      * @return a CompletableFuture of a HttpResponse with a InputStream
-     * @Deprecated This method returns a copy of the original stream and is not suitable for streaming. Use asObjectAsync(Function&lt;RawResponse, T&gt; function)
      */
     @Deprecated
     CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback);

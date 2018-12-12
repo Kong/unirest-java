@@ -74,7 +74,7 @@ public interface HttpResponse<T> {
     /**
      * @param func a function to transform a body type to something else.
      * @param <V> The return type of the function
-     * @return
+     * @return the return type
      */
     <V> V mapBody(Function<T, V> func);
 
