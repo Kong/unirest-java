@@ -35,11 +35,7 @@ public class BinaryResponse extends BaseResponse<InputStream> {
 
     protected BinaryResponse(RawResponse response) {
         super(response);
-        body = new ByteArrayInputStream(getBody(response));
-    }
-
-    private byte[] getBody(RawResponse response) {
-        return response.getContentAsBytes();
+        body = new ByteArrayInputStream(response.getContentAsBytes());
     }
 
     @Override
