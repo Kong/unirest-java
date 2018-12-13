@@ -1,3 +1,12 @@
+# 3.2.00
+* Now you can stream the results into a file!
+   * It doesn't need to be a file either. It could be any result. Unirest will shove it in a file.
+```
+File file = Unirest.get("https://someplace/file.tar.gz")
+                   .asFile("/local/storage/file.tar.gz")
+                   .getBody();
+```
+
 ## 3.1.02
 * When encountering a parsing error with asObject or asJson capture the body in a UnirestParsingException
 * New BETA feature asFile method to stream the response into a file.
