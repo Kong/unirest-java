@@ -85,6 +85,18 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
+    public R headerReplace(String name, String value) {
+        if(this.headers.containsKey(name)) {
+            List<String> repl = new ArrayList<>();
+            repl.add(value);
+            this.headers.replace(name.trim(), repl);
+        } else {
+            header(name, value);
+        }
+        return (R)this;
+    }
+
+    @Override
     public R headers(Map<String, String> headerMap) {
         if (headers != null) {
             for (Map.Entry<String, String> entry : headerMap.entrySet()) {

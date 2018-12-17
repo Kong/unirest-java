@@ -64,12 +64,20 @@ public interface HttpRequest<R extends HttpRequest> {
     R accept(String value);
 
     /**
-     * Add a http header
+     * Add a http header, HTTP supports multiple of the same header. This will continue to append new values
      * @param name name of the header
      * @param value value for the header
      * @return this request builder
      */
     R header(String name, String value);
+
+    /**
+     * Replace a header value or add it if it doesn't exist
+     * @param name name of the header
+     * @param value value for the header
+     * @return this request builder
+     */
+    R headerReplace(String name, String value);
 
     /**
      * Add headers as a map

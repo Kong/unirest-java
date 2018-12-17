@@ -222,8 +222,8 @@ public class HeaderTest extends BddTest {
         assertBasicAuth(header, "user2", "pass2");
     }
 
-    @Test
-    public void interactionsBetweenGlobalAndLocalHeaders() {
+    @Test //https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
+    public void canHaveTheSameHeaderAddedTwice() {
         Unirest.config().setDefaultHeader("foo", "bar");
 
         Unirest.get(MockServer.GET)
@@ -233,5 +233,20 @@ public class HeaderTest extends BddTest {
                 .assertHeaderSize("foo", 2)
                 .assertHeader("foo", "bar")
                 .assertHeader("foo", "qux");
+    }
+
+    @Test
+    public void canReplaceAHeader() {
+        Unirest.config().setDefaultHeader("foo", "bar");
+
+        Unirest.get(MockServer.GET)
+                .headerReplace("foo", "qux")
+                .headerReplace("fruit", "mango")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeaderSize("foo", 1)
+                .assertHeaderSize("fruit", 1)
+                .assertHeader("foo", "qux")
+                .assertHeader("fruit", "mango");
     }
 }
