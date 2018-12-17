@@ -62,6 +62,16 @@ public class Headers extends TreeMap<String, List<String>> {
         }
     }
 
+    public void replace(String name, String value){
+        if(this.containsKey(name)) {
+            List<String> repl = new ArrayList<>();
+            repl.add(value);
+            this.replace(name.trim(), repl);
+        } else {
+            add(name, value);
+        }
+    }
+
     Stream<Header> entries() {
         return entrySet().stream().flatMap(this::toEntries);
     }

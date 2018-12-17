@@ -254,6 +254,18 @@ public class Config {
      * @return this config object
      */
     public Config setDefaultHeader(String name, String value) {
+        defaultHeaders.replace(name, value);
+        return this;
+    }
+
+    /**
+     * Add default header to appear on all requests
+     *
+     * @param name  The name of the header.
+     * @param value The value of the header.
+     * @return this config object
+     */
+    public Config addDefaultHeader(String name, String value) {
         defaultHeaders.add(name, value);
         return this;
     }

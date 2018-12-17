@@ -238,7 +238,6 @@ public class HeaderTest extends BddTest {
     @Test
     public void canReplaceAHeader() {
         Unirest.config().setDefaultHeader("foo", "bar");
-
         Unirest.get(MockServer.GET)
                 .headerReplace("foo", "qux")
                 .headerReplace("fruit", "mango")
@@ -248,5 +247,28 @@ public class HeaderTest extends BddTest {
                 .assertHeaderSize("fruit", 1)
                 .assertHeader("foo", "qux")
                 .assertHeader("fruit", "mango");
+    }
+
+    @Test
+    public void setVsAddDefaultHeaders() {
+        Unirest.config().setDefaultHeader("foo", "bar")
+                        .setDefaultHeader("foo", "qux")
+                        .addDefaultHeader("fruit", "mango")
+                        .addDefaultHeader("fruit", "orange")
+                        .addDefaultHeader("colour","red")
+                        .setDefaultHeader("colour","blue")
+                        .addDefaultHeader("colour", "yellow");
+
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeaderSize("foo", 1)
+                .assertHeader("foo", "qux")
+                .assertHeaderSize("fruit", 2)
+                .assertHeader("fruit", "mango")
+                .assertHeader("fruit", "orange")
+                .assertHeaderSize("colour", 2)
+                .assertHeader("colour","blue")
+                .assertHeader("colour", "yellow");
     }
 }
