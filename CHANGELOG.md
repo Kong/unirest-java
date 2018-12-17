@@ -1,3 +1,6 @@
+# 3.2.02
+* distinguish between set and add for default headers.
+
 # 3.2.01
 * add method to replace a header rather than append to it.
 
