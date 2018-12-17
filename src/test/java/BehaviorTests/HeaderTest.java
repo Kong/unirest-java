@@ -221,4 +221,17 @@ public class HeaderTest extends BddTest {
         String header = bin.getObject().getJSONObject("headers").getString("Authorization");
         assertBasicAuth(header, "user2", "pass2");
     }
+
+    @Test
+    public void interactionsBetweenGlobalAndLocalHeaders() {
+        Unirest.config().setDefaultHeader("foo", "bar");
+
+        Unirest.get(MockServer.GET)
+                .header("foo", "qux")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeaderSize("foo", 2)
+                .assertHeader("foo", "bar")
+                .assertHeader("foo", "qux");
+    }
 }

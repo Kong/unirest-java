@@ -27,9 +27,7 @@
 package BehaviorTests;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 import unirest.JsonPatch;
 import unirest.JsonPatchItem;
 import unirest.JsonPatchOperation;
@@ -54,7 +52,7 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.*;
 
 public class RequestCapture {
-    public Map<String, String> headers = new LinkedHashMap<>();
+    public ListMultimap<String, String> headers = LinkedListMultimap.create();
     public List<File> files = new ArrayList<>();
     public Multimap<String, String> params = HashMultimap.create();
     public String body;
@@ -152,12 +150,12 @@ public class RequestCapture {
     }
 
     private RequestCapture writeHeaders(Request req) {
-        req.headers().forEach(h -> headers.put(h, req.headers(h)));
+        req.headers().forEach(h -> headers.putAll(h, Collections.list(req.raw().getHeaders(h))));
         return this;
     }
 
     public RequestCapture assertHeader(String key, String value) {
-        assertEquals("Expected Header Failed", value, headers.get(key));
+        assertThat("Expected Header Failed", headers.get(key), hasItem(value));
         return this;
     }
 
@@ -187,7 +185,7 @@ public class RequestCapture {
     }
 
     public RequestCapture assertBasicAuth(String username, String password) {
-        String raw = headers.get("Authorization");
+        String raw = headers.get("Authorization").get(0);
         TestUtil.assertBasicAuth(raw, username, password);
         return this;
     }
@@ -238,6 +236,11 @@ public class RequestCapture {
     public RequestCapture assertIsProxied(boolean b) {
         assertEquals(b, isProxied);
         return this;
+    }
+
+    public RequestCapture assertHeaderSize(String foo, int size) {
+         assertEquals(size, headers.get(foo).size());
+         return this;
     }
 
     public static class File {
