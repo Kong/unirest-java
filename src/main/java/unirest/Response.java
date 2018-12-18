@@ -49,7 +49,7 @@ class Response<T> implements HttpResponse<T> {
     }
 
 	private Response(org.apache.http.HttpResponse response){
-		headers = new Headers(response.getAllHeaders());
+		headers = ApacheUtils.extractHeader(response);
 		StatusLine statusLine = response.getStatusLine();
 		this.statusCode = statusLine.getStatusCode();
 		this.statusText = statusLine.getReasonPhrase();

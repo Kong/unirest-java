@@ -1,3 +1,9 @@
+# 3.2.03
+* Allow the configuration of header suppliers.
+```java
+   Unirest.config().setDefaultHeader("trace", () -> value);
+```
+
 # 3.2.02
 * distinguish between set and add for default headers.
 
@@ -7,7 +13,7 @@
 # 3.2.00
 * Now you can stream the results into a file!
    * It doesn't need to be a file either. It could be any result. Unirest will shove it in a file.
-```
+```java
 File file = Unirest.get("https://someplace/file.tar.gz")
                    .asFile("/local/storage/file.tar.gz")
                    .getBody();

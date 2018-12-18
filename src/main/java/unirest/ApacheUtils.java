@@ -26,30 +26,15 @@
 
 package unirest;
 
-import org.junit.Test;
+import org.apache.http.HttpResponse;
 
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static org.junit.Assert.*;
-
-public class HeadersTest {
-
-    @Test
-    public void canGetApacheHeaders() {
-        Headers headers = new Headers();
-        headers.add("foo","bar");
-
-        Headers.Entry h = headers.stream().findAny().get();
-
-        assertEquals("foo", h.getName());
-        assertEquals("bar", h.getValue());
-    }
-
-    @Test
-    public void dontBombOnNull(){
-        Headers h = new Headers();
-        h.add(null, "foo");
-
-        assertEquals(0, h.stream().collect(Collectors.toSet()).size());
+class ApacheUtils {
+    public static Headers extractHeader(HttpResponse r) {
+        return new Headers(Stream.of(r.getAllHeaders())
+                .map(e -> new Headers.Entry(e.getName(), e.getValue()))
+                .collect(Collectors.toList()));
     }
 }

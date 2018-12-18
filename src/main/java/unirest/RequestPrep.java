@@ -26,8 +26,10 @@
 
 package unirest;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.*;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.nio.entity.NByteArrayEntity;
 
 import java.io.ByteArrayOutputStream;
@@ -81,11 +83,16 @@ class RequestPrep {
 
         try {
             HttpRequestBase reqObj = FACTORIES.get(request.getHttpMethod()).apply(request.getUrl());
-            request.getHeaders().entries().forEach(reqObj::addHeader);
+            request.getHeaders().stream().map(this::toEntries).forEach(reqObj::addHeader);
             return reqObj;
         }catch (RuntimeException e){
             throw new UnirestException(e);
         }
+    }
+
+
+    private Header toEntries(Headers.Entry k) {
+        return new BasicHeader(k.getName(), k.getValue());
     }
 
     private void setBody(HttpRequestBase reqObj) {

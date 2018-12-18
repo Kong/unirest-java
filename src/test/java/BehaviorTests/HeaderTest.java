@@ -35,6 +35,8 @@ import static unirest.TestUtil.assertBasicAuth;
 import static unirest.TestUtil.mapOf;
 
 public class HeaderTest extends BddTest {
+    private String value = "one";
+
     @Test
     public void testHeadersOnGetRequests() {
         Unirest.get(MockServer.GET)
@@ -270,5 +272,22 @@ public class HeaderTest extends BddTest {
                 .assertHeaderSize("colour", 2)
                 .assertHeader("colour","blue")
                 .assertHeader("colour", "yellow");
+    }
+
+    @Test
+    public void canSetAHeaderAsASupplier() {
+        Unirest.config().setDefaultHeader("trace", () -> value);
+
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("trace", "one");
+
+        value = "two";
+
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("trace", "two");
     }
 }

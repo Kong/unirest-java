@@ -53,7 +53,7 @@ class ApacheResponse implements RawResponse {
 
     @Override
     public Headers getHeaders(){
-        return new Headers(r.getAllHeaders());
+        return ApacheUtils.extractHeader(r);
     }
 
     @Override

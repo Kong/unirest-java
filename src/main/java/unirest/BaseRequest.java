@@ -51,7 +51,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         this.config = httpRequest.config;
         this.method = httpRequest.method;
         this.url = httpRequest.url;
-        this.headers.addAll(httpRequest.headers);
+        this.headers.putAll(httpRequest.headers);
     }
 
     BaseRequest(Config config, HttpMethod method, String url) {

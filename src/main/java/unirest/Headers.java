@@ -26,62 +26,99 @@
 
 package unirest;
 
-import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
-
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static unirest.Util.nullToEmpty;
+import static java.util.stream.Collectors.toList;
 
-public class Headers extends TreeMap<String, List<String>> {
+public class Headers {
 
     private static final long serialVersionUID = 71310341388734766L;
+    private TreeMap<String, List<Entry>> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
-    public Headers() {
-        super(String.CASE_INSENSITIVE_ORDER);
-    }
+    public Headers(){}
 
-    @Deprecated // In version 4 Apache classes will be abstracted out
-    public Headers(Header[] pairs) {
-        for (Header header : pairs) {
-            add(header.getName(), header.getValue());
-        }
-    }
-
-    public String getFirst(Object key) {
-        return getOrDefault(key, Collections.emptyList())
-                .stream()
-                .findFirst()
-                .orElse(null);
+    public Headers(Collection<Entry> entries){
+        entries.forEach(e -> add(e.name, e.value));
     }
 
     public void add(String name, String value) {
-        if(Objects.nonNull(name)){
-            computeIfAbsent(name, k -> new ArrayList<>()).add(nullToEmpty(value));
+        add(name, () -> value);
+    }
+
+    public void add(String name, Supplier<String> value) {
+        if(Objects.nonNull(name)) {
+            headers.computeIfAbsent(name, k -> new ArrayList<>()).add(new Entry(name, value));
         }
     }
 
     public void replace(String name, String value){
-        if(this.containsKey(name)) {
-            List<String> repl = new ArrayList<>();
-            repl.add(value);
-            this.replace(name.trim(), repl);
+        if(headers.containsKey(name)) {
+            List<Entry> repl = new ArrayList<>();
+            repl.add(new Entry(name, () -> value));
+            headers.replace(name.trim(), repl);
         } else {
             add(name, value);
         }
     }
 
-    Stream<Header> entries() {
-        return entrySet().stream().flatMap(this::toEntries);
+    public int size() {
+        return headers.size();
     }
 
-    private Stream<Header> toEntries(Map.Entry<String, List<String>> k) {
-        String key = k.getKey();
-        return k.getValue().stream().map(e -> new BasicHeader(key, e));
+    public List<String> get(String name) {
+        return headers.get(name)
+                .stream()
+                .map(Entry::getValue)
+                .collect(toList());
     }
 
-    public void addAll(Headers headers) {
-        headers.entries().forEach(e -> add(e.getName(), e.getValue()));
+    public void putAll(Headers defaultHeaders) {
+        this.headers.putAll(defaultHeaders.headers);
+    }
+
+    public boolean containsKey(String key) {
+        return this.headers.containsKey(key);
+    }
+
+    public void clear() {
+        this.headers.clear();
+    }
+
+    public String getFirst(String key) {
+        return headers.getOrDefault(key, Collections.emptyList())
+                .stream()
+                .map(e -> e.value)
+                .map(Supplier::get)
+                .findFirst()
+                .orElse("");
+    }
+
+    Stream<Entry> stream() {
+        return this.headers.values().stream().flatMap(Collection::stream);
+    }
+
+    static class Entry {
+        private final String name;
+        private final Supplier<String> value;
+
+        public Entry(String name, String value){
+            this.name = name;
+            this.value = () -> value;
+        }
+
+        public Entry(String name, Supplier<String> value){
+            this.name = name;
+            this.value = value;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getValue(){
+            return value.get();
+        }
     }
 }

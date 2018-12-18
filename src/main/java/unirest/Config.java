@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -255,6 +256,19 @@ public class Config {
      */
     public Config setDefaultHeader(String name, String value) {
         defaultHeaders.replace(name, value);
+        return this;
+    }
+
+    /**
+     * Set default header to appear on all requests, value is through a Supplier
+     * This is useful for adding tracing elements to requests.
+     *
+     * @param name  The name of the header.
+     * @param value a supplier that will get called as part of the request.
+     * @return this config object
+     */
+    public Config setDefaultHeader(String name, Supplier<String> value) {
+        defaultHeaders.add(name, value);
         return this;
     }
 
