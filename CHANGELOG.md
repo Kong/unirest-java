@@ -1,4 +1,4 @@
-# 3.2.04
+## 3.2.04
 * Adds chainable ifSuccess and ifFailure consumer methods to the response. Now you can handle the response like
 ```java
  Unirest.get("https://localhost/somewhere")
@@ -7,19 +7,19 @@
                 .ifFailure(r -> log.error("Booo"));
 ```
 
-# 3.2.03
+## 3.2.03
 * Allow the configuration of header suppliers.
 ```java
    Unirest.config().setDefaultHeader("trace", () -> value);
 ```
 
-# 3.2.02
+## 3.2.02
 * distinguish between set and add for default headers.
 
-# 3.2.01
+## 3.2.01
 * add method to replace a header rather than append to it.
 
-# 3.2.00
+## 3.2.00
 * Now you can stream the results into a file!
    * It doesn't need to be a file either. It could be any result. Unirest will shove it in a file.
 ```java
