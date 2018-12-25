@@ -1,7 +1,7 @@
 # 3.2.04
 * Adds chainable ifSuccess and ifFailure consumer methods to the response. Now you can handle the response like
 ```java
- Unirest.get("https://localhost/somewhere)
+ Unirest.get("https://localhost/somewhere")
                 .asString()
                 .ifSuccess(r -> log.info("Yippy!"))
                 .ifFailure(r -> log.error("Booo"));
