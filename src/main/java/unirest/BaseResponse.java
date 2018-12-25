@@ -28,6 +28,7 @@ package unirest;
 
 import java.io.InputStream;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 abstract class BaseResponse<T> implements HttpResponse<T> {
@@ -81,5 +82,25 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
 
     protected void setParsingException(String originalBody, RuntimeException e) {
         parsingerror = Optional.of(new UnirestParsingException(originalBody, e));
+    }
+
+    @Override
+    public HttpResponse<T> ifSuccess(Consumer<HttpResponse<T>> consumer) {
+        if(isSuccess()){
+            consumer.accept(this);
+        }
+        return this;
+    }
+
+    @Override
+    public HttpResponse<T> ifFailure(Consumer<HttpResponse<T>> consumer) {
+        if(!isSuccess()){
+            consumer.accept(this);
+        }
+        return this;
+    }
+
+    private boolean isSuccess() {
+        return getStatus() >= 200 && getStatus() < 300 && !getParsingError().isPresent();
     }
 }

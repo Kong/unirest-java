@@ -28,6 +28,7 @@ package unirest;
 
 import java.io.InputStream;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -89,4 +90,20 @@ public interface HttpResponse<T> {
      */
     @Deprecated
     <V> V mapRawBody(Function<InputStream, V> func);
+
+    /**
+     * If the response was a 200-series response. Invoke this consumer
+     * can be chained with ifFailure
+     * @param consumer a function to consume a HttpResponse
+     * @return the same response
+     */
+    HttpResponse<T> ifSuccess(Consumer<HttpResponse<T>> consumer);
+
+    /**
+     * If the response was NOT a 200-series response or a mapping exception happened. Invoke this consumer
+     * can be chained with ifSuccess
+     * @param consumer a function to consume a HttpResponse
+     * @return the same response
+     */
+    HttpResponse<T> ifFailure(Consumer<HttpResponse<T>> consumer);
 }
