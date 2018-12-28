@@ -26,7 +26,7 @@
 
 package unirest;
 
-public class UnirestInstance {
+public class UnirestInstance implements AutoCloseable {
 
     private final Config config;
 
@@ -138,5 +138,14 @@ public class UnirestInstance {
      */
     public boolean isRunning() {
         return config.isRunning();
+    }
+    
+    /**
+     * Wraps shutdown and will automatically be called when UnirestInstance is
+     * used with try-with-resource. This will alleviate the need to manually
+     * call shutDown as it will be done automatically.
+     */
+    public void close() {
+        shutDown(true);
     }
 }
