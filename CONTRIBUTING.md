@@ -1,10 +1,10 @@
-# Contributing to Atom
+# Contributing to Open Unirest
 
 :+1::tada: First off, thanks for taking the time to contribute! :tada::+1:
 
 ## Code of Conduct
 
-This project and everyone participating in it is governed by the [Atom Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+This project and everyone participating in it is governed by the [Open Unirest Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 
 ## How Can I Contribute?
 
