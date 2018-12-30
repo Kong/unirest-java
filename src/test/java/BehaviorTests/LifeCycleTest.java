@@ -192,15 +192,4 @@ public class LifeCycleTest extends BddTest {
         });
         assertThat(ManagementFactory.getThreadMXBean().getThreadCount(), is(lessThan(startingCount + 10)));
     }
-
-    @Test
-    public void testUnirestInstanceIsShutdownWhenClosed() {
-        UnirestInstance reference;
-        try (UnirestInstance instance = new UnirestInstance(new Config().setDefaultHeader("foo", "bar"))) {
-            reference = instance;
-            assertEquals(1, reference.config().getDefaultHeaders().size());
-            assertEquals("bar", reference.config().getDefaultHeaders().get("foo").get(0));
-        }
-        assertEquals(0, reference.config().getDefaultHeaders().size());
-    }
 }
