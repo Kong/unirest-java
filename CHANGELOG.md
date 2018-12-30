@@ -1,3 +1,6 @@
+## 3.2.05
+* UnirestInstance is autoclosable
+
 ## 3.2.04
 * Adds chainable ifSuccess and ifFailure consumer methods to the response. Now you can handle the response like
 ```java
