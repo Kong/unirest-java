@@ -1,3 +1,6 @@
+## 3.2.06
+* access headers in order
+
 ## 3.2.05
 * UnirestInstance is autoclosable
 
