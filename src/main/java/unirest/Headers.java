@@ -26,16 +26,19 @@
 
 package unirest;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 public class Headers {
 
     private static final long serialVersionUID = 71310341388734766L;
-    private TreeMap<String, List<Entry>> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private List<Header> headers = new ArrayList<>();
 
     public Headers(){}
 
@@ -49,37 +52,40 @@ public class Headers {
 
     public void add(String name, Supplier<String> value) {
         if(Objects.nonNull(name)) {
-            headers.computeIfAbsent(name, k -> new ArrayList<>()).add(new Entry(name, value));
+            headers.add(new Entry(name, value));
         }
     }
 
     public void replace(String name, String value){
-        if(headers.containsKey(name)) {
-            List<Entry> repl = new ArrayList<>();
-            repl.add(new Entry(name, () -> value));
-            headers.replace(name.trim(), repl);
-        } else {
-            add(name, value);
-        }
+        remove(name);
+        add(name, value);
+    }
+
+    private void remove(String name) {
+        headers.removeIf(h -> isName(h, name));
     }
 
     public int size() {
-        return headers.size();
+        return headers.stream().map(Header::getName).collect(toSet()).size();
     }
 
     public List<String> get(String name) {
-        return headers.get(name)
-                .stream()
-                .map(Entry::getValue)
+        return headers.stream()
+                .filter(h -> isName(h, name))
+                .map(Header::getValue)
                 .collect(toList());
     }
 
+    private boolean isName(Header h, String name) {
+       return Util.nullToEmpty(name).equalsIgnoreCase(h.getName());
+    }
+
     public void putAll(Headers defaultHeaders) {
-        this.headers.putAll(defaultHeaders.headers);
+        this.headers.addAll(defaultHeaders.headers);
     }
 
     public boolean containsKey(String key) {
-        return this.headers.containsKey(key);
+        return this.headers.stream().anyMatch(h -> isName(h, key));
     }
 
     public void clear() {
@@ -87,19 +93,19 @@ public class Headers {
     }
 
     public String getFirst(String key) {
-        return headers.getOrDefault(key, Collections.emptyList())
+        return headers
                 .stream()
-                .map(e -> e.value)
-                .map(Supplier::get)
+                .filter(h -> isName(h, key))
                 .findFirst()
+                .map(Header::getValue)
                 .orElse("");
     }
 
-    Stream<Entry> stream() {
-        return this.headers.values().stream().flatMap(Collection::stream);
+    public List<Header> all() {
+        return this.headers;
     }
 
-    static class Entry {
+    static class Entry implements Header {
         private final String name;
         private final Supplier<String> value;
 
@@ -113,10 +119,12 @@ public class Headers {
             this.value = value;
         }
 
+        @Override
         public String getName() {
             return name;
         }
 
+        @Override
         public String getValue(){
             return value.get();
         }

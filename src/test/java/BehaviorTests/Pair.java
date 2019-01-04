@@ -24,30 +24,15 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package unirest;
+package BehaviorTests;
 
-import org.junit.Test;
+public class Pair<K,V> {
+    public final K key;
+    public final V value;
 
-import static org.junit.Assert.assertEquals;
+    public Pair(K key, V value){
 
-public class HeadersTest {
-
-    @Test
-    public void canGetApacheHeaders() {
-        Headers headers = new Headers();
-        headers.add("foo","bar");
-
-        Header h = headers.all().get(0);
-
-        assertEquals("foo", h.getName());
-        assertEquals("bar", h.getValue());
-    }
-
-    @Test
-    public void dontBombOnNull(){
-        Headers h = new Headers();
-        h.add(null, "foo");
-
-        assertEquals(0, h.size());
+        this.key = key;
+        this.value = value;
     }
 }

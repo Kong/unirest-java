@@ -26,28 +26,7 @@
 
 package unirest;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-
-public class HeadersTest {
-
-    @Test
-    public void canGetApacheHeaders() {
-        Headers headers = new Headers();
-        headers.add("foo","bar");
-
-        Header h = headers.all().get(0);
-
-        assertEquals("foo", h.getName());
-        assertEquals("bar", h.getValue());
-    }
-
-    @Test
-    public void dontBombOnNull(){
-        Headers h = new Headers();
-        h.add(null, "foo");
-
-        assertEquals(0, h.size());
-    }
+public interface Header {
+    String getName();
+    String getValue();
 }

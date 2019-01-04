@@ -52,28 +52,26 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 package BehaviorTests;
 
-import spark.utils.IOUtils;
-import unirest.JacksonObjectMapper;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
+import spark.utils.IOUtils;
+import unirest.JacksonObjectMapper;
 import unirest.TestUtil;
 
 import javax.servlet.ServletOutputStream;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import static spark.Spark.*;
 
 public class MockServer {
 
+	private static final List<Pair<String,String>> responseHeaders = new ArrayList<>();
     private static final JacksonObjectMapper om = new JacksonObjectMapper();
 	private static Object responseBody;
 	public static final int PORT = 4567;
@@ -98,6 +96,7 @@ public class MockServer {
 
 	public static void reset(){
 		responseBody = null;
+		responseHeaders.clear();
 	}
 
 	static {
@@ -170,6 +169,7 @@ public class MockServer {
 
 	private static Object jsonResponse(Request req, Response res) {
 		res.cookie("JSESSIONID", "ABC123");
+		responseHeaders.forEach(h -> res.header(h.key, h.value));
 		if(responseBody != null){
 			return responseBody;
 		}
@@ -184,5 +184,9 @@ public class MockServer {
 
 	public static void setStringResponse(String stringResponse) {
 		MockServer.responseBody = stringResponse;
+	}
+
+	public static void addResponseHeader(String key, String value) {
+		responseHeaders.add(new Pair<>(key, value));
 	}
 }

@@ -83,7 +83,7 @@ class RequestPrep {
 
         try {
             HttpRequestBase reqObj = FACTORIES.get(request.getHttpMethod()).apply(request.getUrl());
-            request.getHeaders().stream().map(this::toEntries).forEach(reqObj::addHeader);
+            request.getHeaders().all().stream().map(this::toEntries).forEach(reqObj::addHeader);
             return reqObj;
         }catch (RuntimeException e){
             throw new UnirestException(e);
@@ -91,7 +91,7 @@ class RequestPrep {
     }
 
 
-    private Header toEntries(Headers.Entry k) {
+    private Header toEntries(unirest.Header k) {
         return new BasicHeader(k.getName(), k.getValue());
     }
 
