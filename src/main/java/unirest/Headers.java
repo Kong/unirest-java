@@ -40,23 +40,39 @@ public class Headers {
     private static final long serialVersionUID = 71310341388734766L;
     private List<Header> headers = new ArrayList<>();
 
-    public Headers(){}
+    public Headers() {
+    }
 
-    public Headers(Collection<Entry> entries){
+    public Headers(Collection<Entry> entries) {
         entries.forEach(e -> add(e.name, e.value));
     }
 
+    /**
+     * Add a header element
+     * @param name the name of the header
+     * @param value the value for the header
+     */
     public void add(String name, String value) {
         add(name, () -> value);
     }
 
+    /**
+     * Add a header element with a supplier which will be evaluated on request
+     * @param name the name of the header
+     * @param value the value for the header
+     */
     public void add(String name, Supplier<String> value) {
-        if(Objects.nonNull(name)) {
+        if (Objects.nonNull(name)) {
             headers.add(new Entry(name, value));
         }
     }
 
-    public void replace(String name, String value){
+    /**
+     * Replace a header value. If there are multiple instances it will overwrite all of them
+     * @param name the name of the header
+     * @param value the value for the header
+     */
+    public void replace(String name, String value) {
         remove(name);
         add(name, value);
     }
@@ -65,10 +81,19 @@ public class Headers {
         headers.removeIf(h -> isName(h, name));
     }
 
+    /**
+     * Get the number of header keys.
+     * @return the size of the header keys
+     */
     public int size() {
         return headers.stream().map(Header::getName).collect(toSet()).size();
     }
 
+    /**
+     * Get all the values for a header name
+     * @param name name of the header element
+     * @return a list of values
+     */
     public List<String> get(String name) {
         return headers.stream()
                 .filter(h -> isName(h, name))
@@ -76,22 +101,34 @@ public class Headers {
                 .collect(toList());
     }
 
-    private boolean isName(Header h, String name) {
-       return Util.nullToEmpty(name).equalsIgnoreCase(h.getName());
+    /**
+     * Add a bunch of headers at once
+     * @param header a header
+     */
+    public void putAll(Headers header) {
+        this.headers.addAll(header.headers);
     }
 
-    public void putAll(Headers defaultHeaders) {
-        this.headers.addAll(defaultHeaders.headers);
-    }
-
+    /**
+     * Check if a header is present
+     * @param key a header
+     */
     public boolean containsKey(String key) {
         return this.headers.stream().anyMatch(h -> isName(h, key));
     }
 
+    /**
+     * Clear the headers!
+     */
     public void clear() {
         this.headers.clear();
     }
 
+    /**
+     * Get the first header value for a name
+     * @param key the name of the header
+     * @return the first value
+     */
     public String getFirst(String key) {
         return headers
                 .stream()
@@ -101,20 +138,29 @@ public class Headers {
                 .orElse("");
     }
 
+    /**
+     * Get all of the headers
+     * @return all the headers, in order
+     */
     public List<Header> all() {
         return this.headers;
     }
 
+    private boolean isName(Header h, String name) {
+        return Util.nullToEmpty(name).equalsIgnoreCase(h.getName());
+    }
+
     static class Entry implements Header {
+
         private final String name;
         private final Supplier<String> value;
 
-        public Entry(String name, String value){
+        public Entry(String name, String value) {
             this.name = name;
             this.value = () -> value;
         }
 
-        public Entry(String name, Supplier<String> value){
+        public Entry(String name, Supplier<String> value) {
             this.name = name;
             this.value = value;
         }
@@ -125,7 +171,7 @@ public class Headers {
         }
 
         @Override
-        public String getValue(){
+        public String getValue() {
             return value.get();
         }
     }
