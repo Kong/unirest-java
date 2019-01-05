@@ -32,7 +32,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 
 import java.io.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
@@ -55,9 +54,10 @@ class ApacheResponse implements RawResponse {
 
     @Override
     public Headers getHeaders(){
-        return new Headers(Stream.of(r.getAllHeaders())
-                .map(e -> new Headers.Entry(e.getName(), e.getValue()))
-                .collect(Collectors.toList()));
+        Headers h = new Headers();
+        Stream.of(r.getAllHeaders())
+                .forEachOrdered(e -> h.add(e.getName(), e.getValue()));
+        return h;
     }
 
     @Override
