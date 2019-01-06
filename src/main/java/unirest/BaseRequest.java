@@ -27,8 +27,6 @@
 package unirest;
 
 import org.apache.http.HttpHeaders;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
 
@@ -127,7 +125,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public HttpResponse<String> asString() throws UnirestException {
-        return request(StringResponse::new);
+        return config.getClient().request(this, StringResponse::new);
     }
 
     @Override
@@ -142,7 +140,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public HttpResponse<JsonNode> asJson() throws UnirestException {
-        return request(JsonResponse::new);
+        return config.getClient().request(this, JsonResponse::new);
     }
 
     @Override
@@ -157,17 +155,17 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public <T> HttpResponse<T> asObject(Class<? extends T> responseClass) throws UnirestException {
-        return request(r -> new ObjectResponse<T>(getObjectMapper(), r, responseClass));
+        return config.getClient().request(this, r -> new ObjectResponse<T>(getObjectMapper(), r, responseClass));
     }
 
     @Override
     public <T> HttpResponse<T> asObject(GenericType<T> genericType) throws UnirestException {
-        return request(r -> new ObjectResponse<T>(getObjectMapper(), r, genericType));
+        return config.getClient().request(this, r -> new ObjectResponse<T>(getObjectMapper(), r, genericType));
     }
 
     @Override
     public <T> HttpResponse<T> asObject(Function<RawResponse, T> function) {
-        return request(funcResponse(function));
+        return config.getClient().request(this, funcResponse(function));
     }
 
     @Override
@@ -201,7 +199,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public HttpResponse<InputStream> asBinary() throws UnirestException {
-        return request(BinaryResponse::new);
+        return config.getClient().request(this, BinaryResponse::new);
     }
 
     @Override
@@ -216,7 +214,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public void thenConsume(Consumer<RawResponse> consumer) {
-        request(getConsumer(consumer));
+        config.getClient().request(this, getConsumer(consumer));
     }
 
     @Override
@@ -226,7 +224,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public HttpResponse<File> asFile(String path) {
-        return request(r -> new FileResponse(r, path));
+        return config.getClient().request(this, r -> new FileResponse(r, path));
     }
 
     @Override
@@ -293,23 +291,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public Body getBody() {
         return null;
-    }
-
-    private <T> HttpResponse<T> request(Function<RawResponse, HttpResponse<T>> transformer) {
-
-        HttpRequestBase requestObj = new RequestPrep(this, false).prepare();
-        HttpClient client = config.getClient();
-
-        try {
-            org.apache.http.HttpResponse execute = client.execute(requestObj);
-            HttpResponse<T> httpResponse = transformer.apply(new ApacheResponse(execute));
-            requestObj.releaseConnection();
-            return httpResponse;
-        } catch (Exception e) {
-            throw new UnirestException(e);
-        } finally {
-            requestObj.releaseConnection();
-        }
     }
 
     private ObjectMapper getObjectMapper() {

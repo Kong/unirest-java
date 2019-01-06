@@ -27,12 +27,14 @@
 package unirest;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
 import java.io.Closeable;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class ApacheClient extends BaseApacheClient implements Client {
@@ -76,6 +78,23 @@ public class ApacheClient extends BaseApacheClient implements Client {
         this.client = httpc;
         this.manager = clientManager;
         this.syncMonitor = connMonitor;
+    }
+
+    @Override
+    public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
+
+        HttpRequestBase requestObj = new RequestPrep(request, false).prepare();
+
+        try {
+            org.apache.http.HttpResponse execute = client.execute(requestObj);
+            HttpResponse<T> httpResponse = transformer.apply(new ApacheResponse(execute));
+            requestObj.releaseConnection();
+            return httpResponse;
+        } catch (Exception e) {
+            throw new UnirestException(e);
+        } finally {
+            requestObj.releaseConnection();
+        }
     }
 
     @Override

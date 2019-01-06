@@ -28,10 +28,11 @@ package unirest;
 
 import org.apache.http.client.HttpClient;
 
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public interface Client {
     HttpClient getClient();
-
     Stream<Exception> close();
+    <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer);
 }

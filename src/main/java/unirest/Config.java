@@ -385,16 +385,16 @@ public class Config {
     }
 
     /**
-     * Return the current HttpClient. One will be build if it does
+     * Return the current Client. One will be build if it does
      * not yet exist.
      *
-     * @return  Apache HttpClient
+     * @return  A synchronous Client
      */
-    public HttpClient getClient() {
+    public Client getClient() {
         if (!client.isPresent()) {
             buildClient();
         }
-        return client.get().getClient();
+        return client.get();
     }
 
     private synchronized void buildClient() {
