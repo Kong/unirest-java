@@ -409,11 +409,11 @@ public class Config {
      *
      * @return  Apache HttpAsyncClient
      */
-    public HttpAsyncClient getAsyncHttpClient() {
+    public AsyncClient getAsyncClient() {
         if (!asyncClientIsReady()) {
             buildAsyncClient();
         }
-        return asyncClient.get().getClient();
+        return asyncClient.get();
     }
 
     private boolean asyncClientIsReady() {

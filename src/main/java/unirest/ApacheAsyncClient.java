@@ -26,6 +26,8 @@
 
 package unirest;
 
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
@@ -34,6 +36,8 @@ import org.apache.http.nio.client.HttpAsyncClient;
 import org.apache.http.nio.reactor.IOReactorException;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static unirest.Util.tryCast;
@@ -84,6 +88,35 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
         Objects.requireNonNull(client, "Client may not be null");
         this.client = client;
         this.manager = manager;
+    }
+
+    @Override
+    public <T> CompletableFuture<HttpResponse<T>> request(
+            HttpRequest request,
+            Function<RawResponse, HttpResponse<T>> transformer,
+            CompletableFuture<HttpResponse<T>> callback) {
+
+        Objects.requireNonNull(callback);
+
+        HttpUriRequest requestObj = new RequestPrep(request, true).prepare();
+
+        client.execute(requestObj, new FutureCallback<org.apache.http.HttpResponse>() {
+                    @Override
+                    public void completed(org.apache.http.HttpResponse httpResponse) {
+                        callback.complete(transformer.apply(new ApacheResponse(httpResponse)));
+                    }
+
+                    @Override
+                    public void failed(Exception e) {
+                        callback.completeExceptionally(e);
+                    }
+
+                    @Override
+                    public void cancelled() {
+                        callback.completeExceptionally(new UnirestException("canceled"));
+                    }
+                });
+        return callback;
     }
 
     @Override

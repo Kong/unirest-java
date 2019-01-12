@@ -188,7 +188,7 @@ public class LifeCycleTest extends BddTest {
         int startingCount = ManagementFactory.getThreadMXBean().getThreadCount();
         IntStream.range(0,100).forEach(i -> {
             Unirest.config().reset().getClient();
-            Unirest.config().getAsyncHttpClient();
+            Unirest.config().getAsyncClient();
         });
         assertThat(ManagementFactory.getThreadMXBean().getThreadCount(), is(lessThan(startingCount + 10)));
     }

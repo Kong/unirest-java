@@ -32,7 +32,22 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 public interface Client {
+    /**
+     * @return the apache HttpClient.
+     * @deprecated Eventually the apache implementation will be hidden and other implementation wi be available
+     */
     HttpClient getClient();
-    Stream<Exception> close();
+
+    /**
+     * Make a request
+     * @param request the prepared request object
+     * @param transformer the function to transform the response
+     * @return a HttpResponse with a transformed body
+     */
     <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer);
+
+    /**
+     * @return a stream of exceptions possibly thrown while closing all the things.
+     */
+    Stream<Exception> close();
 }

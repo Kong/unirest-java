@@ -73,19 +73,19 @@ public class DefectTest extends BddTest {
     public void issue_41_IllegalThreadStateExceptionUnderHighLoad() throws IOException {
         Unirest.get(MockServer.GET).asStringAsync();
 
-        HttpAsyncClient first = Unirest.config().getAsyncHttpClient();
+        HttpAsyncClient first = Unirest.config().getAsyncClient().getClient();
         IntStream.range(1, 50).forEach(i ->{
-            assertSame(first, Unirest.config().getAsyncHttpClient());
+            assertSame(first, Unirest.config().getAsyncClient().getClient());
         });
 
-        ((CloseableHttpAsyncClient)Unirest.config().getAsyncHttpClient()).close();
+        ((CloseableHttpAsyncClient)Unirest.config().getAsyncClient().getClient()).close();
         Unirest.get(MockServer.GET).asStringAsync();
 
-        HttpAsyncClient second = Unirest.config().getAsyncHttpClient();
+        HttpAsyncClient second = Unirest.config().getAsyncClient().getClient();
         assertNotSame(first, second);
 
         IntStream.range(1, 50).forEach(i ->{
-            assertSame(second, Unirest.config().getAsyncHttpClient());
+            assertSame(second, Unirest.config().getAsyncClient().getClient());
         });
     }
 

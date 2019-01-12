@@ -28,14 +28,38 @@ package unirest;
 
 import org.apache.http.nio.client.HttpAsyncClient;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public interface AsyncClient {
+    /**
+     * @return the apache HttpAsyncClient.
+     * @deprecated Eventually the apache implementation will be hidden and other implementation wi be available
+     */
+    @Deprecated
     HttpAsyncClient getClient();
+
+    /**
+     * Make a Async request
+     * @param request the prepared request object
+     * @param transformer the function to transform the response
+     * @param callback the CompletableFuture that will handle the eventual response
+     * @return a CompletableFuture of a response
+     */
+    <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, CompletableFuture<HttpResponse<T>> callback);
+
+    /**
+     * @return a stream of exceptions possibly thrown while closing all the things.
+     */
     default Stream<Exception> close() {
         return Stream.empty();
     }
-    default boolean isRunning(){
+
+    /**
+     * @return is the client running?
+     */
+    default boolean isRunning() {
         return true;
     }
 }

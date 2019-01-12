@@ -65,7 +65,7 @@ public class ClientFactoryTest {
 
         Unirest.shutDown(false);
 
-        assertNotEquals(c, Unirest.config().getAsyncHttpClient());
+        assertNotEquals(c, Unirest.config().getAsyncClient());
         assertEquals(i, Unirest.config().getInterceptors().get(0));
         assertEquals(4000, Unirest.config().getConnectionTimeout());
     }

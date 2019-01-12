@@ -83,13 +83,13 @@ public class ConfigTest {
         HttpAsyncClient c = mock(HttpAsyncClient.class);
         config.asyncClient(c);
 
-        assertSame(c, config.getAsyncHttpClient());
-        assertSame(c, config.getAsyncHttpClient());
+        assertSame(c, config.getAsyncClient().getClient());
+        assertSame(c, config.getAsyncClient().getClient());
     }
 
     @Test
     public void willRebuildIfEmpty() {
-        assertSame(config.getAsyncHttpClient(), config.getAsyncHttpClient());
+        assertSame(config.getAsyncClient(), config.getAsyncClient());
     }
 
     @Test
@@ -99,7 +99,7 @@ public class ConfigTest {
 
         config.asyncClient(c);
 
-        assertNotSame(c, config.getAsyncHttpClient());
+        assertNotSame(c, config.getAsyncClient());
     }
 
     @Test
@@ -109,7 +109,7 @@ public class ConfigTest {
         config.asyncClient(g -> c);
 
 
-        TestUtil.assertException(() -> config.getAsyncHttpClient(),
+        TestUtil.assertException(() -> config.getAsyncClient(),
                 UnirestConfigException.class,
                 "Attempted to get a new async client but it was not started. Please ensure it is");
     }
@@ -121,6 +121,6 @@ public class ConfigTest {
 
         config.asyncClient(c);
 
-        assertSame(c, config.getAsyncHttpClient());
+        assertSame(c, config.getAsyncClient().getClient());
     }
 }
