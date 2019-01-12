@@ -26,11 +26,10 @@
 
 package BehaviorTests;
 
-import unirest.HttpResponse;
-import unirest.JsonNode;
-import unirest.Unirest;
 import org.junit.Test;
+import unirest.HttpResponse;
 import unirest.TestUtil;
+import unirest.Unirest;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -99,5 +98,12 @@ public class AsStringTest extends BddTest {
                 });
 
         assertAsync();
+    }
+
+    @Test
+    public void unicodeResponse() {
+        MockServer.setStringResponse("ěščřžýáíé");
+
+        assertEquals("ěščřžýáíé", Unirest.get(MockServer.GET).asString().getBody());
     }
 }
