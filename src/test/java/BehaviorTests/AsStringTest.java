@@ -111,6 +111,12 @@ public class AsStringTest extends BddTest {
     public void unicodeResponseAsync() throws Exception {
         MockServer.setStringResponse("ěščřžýáíé");
 
-        assertEquals("ěščřžýáíé", Unirest.get(MockServer.GET).asStringAsync().get().getBody());
+        Unirest.get(MockServer.GET)
+                .asStringAsync(r -> {
+                    assertEquals("ěščřžýáíé", r.getBody());
+                    asyncSuccess();
+                });
+
+        assertAsync();
     }
 }
