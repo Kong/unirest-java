@@ -1,3 +1,20 @@
+## 3.3.00
+* Slight breaking change with regard to accessing Apache specific classes via the config
+   * getClient and getAsyncClient return the Unirest containers for clients. You can still get to the Apache client through that for now but this is also deprecated. Eventually Unirest will make Apache just one of several modules.
+   * Apache client wrappers are now package local.
+* Add support for overriding the default expected encoding both on a per-request basis and as a default int he config.
+```java
+// Changing the default from UTF-8 for all requests
+// Unirest will still honor content-encoding if defined in the response headers
+Unirest.config().setDefaultResponseEncoding("windows-1250");
+
+// Changing the default on a request. 
+// This will explicitly be used EVEN IF the headers define something else.
+Unirest.get("http://some.file.with.windows.encoding/file.txt")
+                .responseEncoding("windows-1250")
+                .asString();
+```
+
 ## 3.2.06
 * access headers in order
 
