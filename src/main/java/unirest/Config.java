@@ -38,6 +38,7 @@ import org.apache.http.nio.client.HttpAsyncClient;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -495,6 +496,7 @@ public class Config {
     }
 
     public void setDefaultResponseEncoding(String value) {
+        Objects.requireNonNull(value, "Encoding cannot be null");
         this.defaultResponseEncoding = value;
     }
 
