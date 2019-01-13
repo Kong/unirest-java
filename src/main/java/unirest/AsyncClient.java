@@ -42,6 +42,7 @@ public interface AsyncClient {
 
     /**
      * Make a Async request
+     * @param <T> The type of the body
      * @param request the prepared request object
      * @param transformer the function to transform the response
      * @param callback the CompletableFuture that will handle the eventual response

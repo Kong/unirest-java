@@ -40,6 +40,7 @@ public interface Client {
 
     /**
      * Make a request
+     * @param <T> The type of the body
      * @param request the prepared request object
      * @param transformer the function to transform the response
      * @return a HttpResponse with a transformed body

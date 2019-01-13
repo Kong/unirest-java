@@ -34,35 +34,134 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Collection;
 
+/**
+ * Represents a multi-part body builder for a request.
+ */
 public interface MultipartBody extends HttpRequest<MultipartBody>, Body {
+    /**
+     * add a simple field with a name and value
+     * @param name: the Name of the form field
+     * @param value: The string value for the field
+     * @return The same MultipartBody
+     */
     MultipartBody field(String name, String value);
 
+    /**
+     * add a simple field with a name and value
+     * @param name: the Name of the form field
+     * @param value: The string value for the field
+     * @param contentType: the content type of the value
+     * @return The same MultipartBody
+     */
     MultipartBody field(String name, String value, String contentType);
 
-    MultipartBody field(String name, Collection<?> collection);
+    /**
+     * add a simple field with a name and value
+     * @param name: the Name of the form field
+     * @param values: A collection of values for the same name.
+     * @return The same MultipartBody
+     */
+    MultipartBody field(String name, Collection<?> values);
 
+    /**
+     * add a simple field with a name and value
+     * @param name: the Name of the form field
+     * @param file: A File object.
+     * @return The same MultipartBody
+     */
     MultipartBody field(String name, File file);
 
+    /**
+     * add a simple field with a name and value
+     * @param name: the Name of the form field
+     * @param file: A File object.
+     * @param contentType: the content mime-type of the file
+     * @return The same MultipartBody
+     */
     MultipartBody field(String name, File file, String contentType);
 
-    @Deprecated // In version 4 Apache classes will be abstracted out
+    /**
+     * add a simple field with a name and value
+     * @param name: the Name of the form field
+     * @param value: A input stream
+     * @param contentType: the content mime-type of the file
+     * @deprecated org.apache.http.entity.ContentType will be replaced by a Unirest owned class that behaves similarly
+     * @return The same MultipartBody
+     */
+    @Deprecated
     MultipartBody field(String name, InputStream value, ContentType contentType);
 
+    /**
+     * add a simple field with a name and value
+     * @param name: the Name of the form field
+     * @param stream: A input stream
+     * @param contentType: the content mime-type of the file
+     * @param fileName: the name of the file which will be included in the file part header
+     * @deprecated org.apache.http.entity.ContentType will be replaced by a Unirest owned class that behaves similarly
+     * @return The same MultipartBody
+     */
     @Deprecated // In version 4 Apache classes will be abstracted out
     MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName);
 
+    /**
+     * add a simple field with a name and value
+     * @param name: the Name of the form field
+     * @param bytes: The raw bytes for the file
+     * @param contentType: the content mime-type of the file
+     * @param fileName: the name of the file which will be included in the file part header
+     * @deprecated org.apache.http.entity.ContentType will be replaced by a Unirest owned class that behaves similarly
+     * @return The same MultipartBody
+     */
     @Deprecated // In version 4 Apache classes will be abstracted out
     MultipartBody field(String name, byte[] bytes, ContentType contentType, String fileName);
 
+    /**
+     * add a simple field with a name and value
+     * @param name: the Name of the form field
+     * @param stream: The raw bytes for the file
+     * @param fileName: the name of the file which will be included in the file part header
+     * @return The same MultipartBody
+     */
     MultipartBody field(String name, InputStream stream, String fileName);
 
+    /**
+     * add a simple field with a name and value
+     * @param name: the Name of the form field
+     * @param bytes: The raw bytes for the file
+     * @param fileName: the name of the file which will be included in the file part header
+     * @return The same MultipartBody
+     */
     MultipartBody field(String name, byte[] bytes, String fileName);
 
+    /**
+     * Set the encoding of the request body
+     * @param charset the character set encoding of the body
+     * @return The same MultipartBody
+     */
     MultipartBody charset(Charset charset);
 
+    /**
+     * Set the mime-type of the request body
+     * @param mimeType the mime type of the body
+     * @return The same MultipartBody
+     */
     MultipartBody contentType(String mimeType);
 
+    /**
+     * Set the Apache Mode.
+     * @param value the string value of the mode
+     * @return The same MultipartBody
+     * @deprecated Apache will be made a module in the future.
+     * */
+    @Deprecated
     MultipartBody mode(String value);
 
+    /**
+     * Set the Apache Mode.
+     * @param value the value of the mode
+     * @return The same MultipartBody
+     * @deprecated Apache will be made a module in the future.
+     * */
+    @Deprecated
     MultipartBody mode(HttpMultipartMode value);
 }

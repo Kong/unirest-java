@@ -111,10 +111,11 @@ public class Headers {
 
     /**
      * Check if a header is present
-     * @param key a header
+     * @param name a header
+     * @return if the headers contain this name.
      */
-    public boolean containsKey(String key) {
-        return this.headers.stream().anyMatch(h -> isName(h, key));
+    public boolean containsKey(String name) {
+        return this.headers.stream().anyMatch(h -> isName(h, name));
     }
 
     /**
