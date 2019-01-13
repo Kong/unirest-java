@@ -36,6 +36,7 @@ public interface RawResponse {
     InputStream getContent();
     byte[] getContentAsBytes();
     String getContentAsString();
+    String getContentAsString(String charset);
     InputStreamReader getContentReader();
     boolean hasContent();
     String getContentType();

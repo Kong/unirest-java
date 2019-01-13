@@ -64,6 +64,13 @@ public interface HttpRequest<R extends HttpRequest> {
     R accept(String value);
 
     /**
+     * The encoding to expect the response to be for cases where the server fails to respond with the proper encoding
+     * @param encoding a valid mime type for the Accept header
+     * @return this request builder
+     */
+    R responseEncoding(String encoding);
+
+    /**
      * Add a http header, HTTP supports multiple of the same header. This will continue to append new values
      * @param name name of the header
      * @param value value for the header

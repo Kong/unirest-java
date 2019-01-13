@@ -42,13 +42,15 @@ import java.util.stream.Stream;
 
 import static unirest.Util.tryCast;
 
-public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
+class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
 
     private final HttpAsyncClient client;
-    private final PoolingNHttpClientConnectionManager manager;
     private final AsyncIdleConnectionMonitorThread syncMonitor;
+    private final PoolingNHttpClientConnectionManager manager;
+    private Config config;
 
-    public ApacheAsyncClient(Config config) {
+    ApacheAsyncClient(Config config) {
+        this.config = config;
         try {
             manager = new PoolingNHttpClientConnectionManager(new DefaultConnectingIOReactor());
             manager.setMaxTotal(config.getMaxConnections());
@@ -81,12 +83,14 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
         }
     }
 
-    public ApacheAsyncClient(HttpAsyncClient client,
-                             PoolingNHttpClientConnectionManager manager,
-                             AsyncIdleConnectionMonitorThread syncMonitor) {
-        this.syncMonitor = syncMonitor;
+    ApacheAsyncClient(HttpAsyncClient client,
+                      Config config,
+                      PoolingNHttpClientConnectionManager manager,
+                      AsyncIdleConnectionMonitorThread monitor) {
         Objects.requireNonNull(client, "Client may not be null");
+        this.config = config;
         this.client = client;
+        this.syncMonitor = monitor;
         this.manager = manager;
     }
 
@@ -103,7 +107,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
         client.execute(requestObj, new FutureCallback<org.apache.http.HttpResponse>() {
                     @Override
                     public void completed(org.apache.http.HttpResponse httpResponse) {
-                        callback.complete(transformer.apply(new ApacheResponse(httpResponse)));
+                        callback.complete(transformer.apply(new ApacheResponse(httpResponse, config)));
                     }
 
                     @Override

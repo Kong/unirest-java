@@ -26,35 +26,120 @@
 
 package unirest;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.entity.BasicHttpEntity;
 import org.junit.Test;
-import unirest.ResponseUtils;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ResponseUtilsTest {
+    @Mock
+    private Config config;
+    @InjectMocks
+    TestResponse test;
 
     @Test
     public void getCharsetDefaults() {
-        assertEquals("UTF-8", ResponseUtils.getCharSet(entity(null)));
-        assertEquals("UTF-8", ResponseUtils.getCharSet(entity("")));
-        assertEquals("UTF-8", ResponseUtils.getCharSet(entity("         ")));
-        assertEquals("UTF-8", ResponseUtils.getCharSet(mock(RawResponse.class)));
-        assertEquals("UTF-8", ResponseUtils.getCharSet(entity("Content-Type: text/html;")));
-        assertEquals("UTF-8", ResponseUtils.getCharSet(entity("Content-Type: text/html; charset=")));
+        defaultEncoding("UTF-8");
+
+        assertEquals("UTF-8", getCharSet(null));
+        assertEquals("UTF-8", getCharSet(""));
+        assertEquals("UTF-8", getCharSet("         "));
+        assertEquals("UTF-8", getCharSet("Content-Type: text/html;"));
+        assertEquals("UTF-8", getCharSet("Content-Type: text/html; charset="));
     }
 
     @Test
     public void contentTypeWhenYouGotIt() {
-        assertEquals("LATIN-1", ResponseUtils.getCharSet(entity("Content-Type: text/html; charset=latin-1")));
+        assertEquals("LATIN-1", getCharSet("Content-Type: text/html; charset=latin-1"));
     }
 
-    private RawResponse entity(String charset) {
-        RawResponse r = mock(RawResponse.class);
-        when(r.getContentType()).thenReturn(charset);
-        return r;
+    @Test
+    public void changeTheDefault() {
+        defaultEncoding("KINGON-1");
+        assertEquals("KINGON-1", getCharSet(null));
+        defaultEncoding("SINDARIN-42");
+        assertEquals("SINDARIN-42", getCharSet(null));
+    }
+
+    private void defaultEncoding(String t) {
+        when(config.getDefaultResponseEncoding()).thenReturn(t);
+    }
+
+    private String getCharSet(String content) {
+        test.type = content;
+        return test.getCharSet();
+    }
+
+    public static class TestResponse extends RawResponseBase {
+
+        public String type;
+
+        protected TestResponse(Config config) {
+            super(config);
+        }
+
+        @Override
+        public int getStatus() {
+            return 0;
+        }
+
+        @Override
+        public String getStatusText() {
+            return null;
+        }
+
+        @Override
+        public Headers getHeaders() {
+            return null;
+        }
+
+        @Override
+        public InputStream getContent() {
+            return null;
+        }
+
+        @Override
+        public byte[] getContentAsBytes() {
+            return new byte[0];
+        }
+
+        @Override
+        public String getContentAsString() {
+            return null;
+        }
+
+        @Override
+        public String getContentAsString(String charset) {
+            return null;
+        }
+
+        @Override
+        public InputStreamReader getContentReader() {
+            return null;
+        }
+
+        @Override
+        public boolean hasContent() {
+            return false;
+        }
+
+        @Override
+        public String getContentType() {
+            return type;
+        }
+
+        @Override
+        public String getEncoding() {
+            return null;
+        }
     }
 }

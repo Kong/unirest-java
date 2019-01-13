@@ -37,12 +37,14 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class ApacheClient extends BaseApacheClient implements Client {
+class ApacheClient extends BaseApacheClient implements Client {
     private final HttpClient client;
+    private final Config config;
     private final PoolingHttpClientConnectionManager manager;
     private final SyncIdleConnectionMonitorThread syncMonitor;
 
-    public ApacheClient(Config config) {
+    ApacheClient(Config config) {
+        this.config = config;
         manager = new PoolingHttpClientConnectionManager();
         syncMonitor = new SyncIdleConnectionMonitorThread(manager);
         syncMonitor.start();
@@ -66,19 +68,13 @@ public class ApacheClient extends BaseApacheClient implements Client {
         client = cb.build();
     }
 
-    public ApacheClient(HttpClient httpClient) {
+    ApacheClient(HttpClient httpClient, Config config, PoolingHttpClientConnectionManager clientManager, SyncIdleConnectionMonitorThread connMonitor) {
         this.client = httpClient;
-        this.manager = null;
-        this.syncMonitor = null;
-    }
-
-    public ApacheClient(HttpClient httpc,
-                        PoolingHttpClientConnectionManager clientManager,
-                        SyncIdleConnectionMonitorThread connMonitor) {
-        this.client = httpc;
+        this.config = config;
         this.manager = clientManager;
         this.syncMonitor = connMonitor;
     }
+
 
     @Override
     public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
@@ -87,7 +83,7 @@ public class ApacheClient extends BaseApacheClient implements Client {
 
         try {
             org.apache.http.HttpResponse execute = client.execute(requestObj);
-            HttpResponse<T> httpResponse = transformer.apply(new ApacheResponse(execute));
+            HttpResponse<T> httpResponse = transformer.apply(new ApacheResponse(execute, config));
             requestObj.releaseConnection();
             return httpResponse;
         } catch (Exception e) {

@@ -27,19 +27,38 @@
 package unirest;
 
 import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.apache.http.nio.client.HttpAsyncClient;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.io.IOException;
+
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigTest {
+
+    @Mock
+    private CloseableHttpClient httpc;
+    @Mock
+    private PoolingHttpClientConnectionManager clientManager;
+    @Mock
+    private SyncIdleConnectionMonitorThread connMonitor;
+    @Mock
+    private CloseableHttpAsyncClient asyncClient;
+    @Mock
+    private AsyncIdleConnectionMonitorThread asyncMonitor;
+    @Mock
+    private PoolingNHttpClientConnectionManager manager;
 
     @InjectMocks
     private Config config;
@@ -100,6 +119,66 @@ public class ConfigTest {
         config.asyncClient(c);
 
         assertNotSame(c, config.getAsyncClient());
+    }
+
+    @Test
+    public void testShutdown() throws IOException {
+        when(asyncClient.isRunning()).thenReturn(true);
+
+        Unirest.config()
+                .httpClient(new ApacheClient(httpc, null, clientManager, connMonitor))
+                .asyncClient(new ApacheAsyncClient(asyncClient, null, manager, asyncMonitor));
+
+        Unirest.shutDown();
+
+        verify(httpc).close();
+        verify(clientManager).close();
+        verify(connMonitor).interrupt();
+        verify(asyncClient).close();
+        verify(asyncMonitor).interrupt();
+    }
+
+    @Test
+    public void willPowerThroughErrors() throws IOException {
+        when(asyncClient.isRunning()).thenReturn(true);
+        doThrow(new IOException("1")).when(httpc).close();
+        doThrow(new RuntimeException("2")).when(clientManager).close();
+        doThrow(new RuntimeException("3")).when(connMonitor).interrupt();
+        doThrow(new IOException("4")).when(asyncClient).close();
+        doThrow(new RuntimeException("5")).when(asyncMonitor).interrupt();
+
+        Unirest.config()
+                .httpClient(new ApacheClient(httpc, null, clientManager, connMonitor))
+                .asyncClient(new ApacheAsyncClient(asyncClient,null, manager, asyncMonitor));
+
+
+        TestUtil.assertException(Unirest::shutDown,
+                UnirestException.class,
+                "java.io.IOException 1\n" +
+                        "java.lang.RuntimeException 2\n" +
+                        "java.lang.RuntimeException 3\n" +
+                        "java.io.IOException 4\n" +
+                        "java.lang.RuntimeException 5");
+
+        verify(httpc).close();
+        verify(clientManager).close();
+        verify(connMonitor).interrupt();
+        verify(asyncClient).close();
+        verify(asyncMonitor).interrupt();
+    }
+
+    @Test
+    public void doesNotBombOnNullOptions() throws IOException {
+        when(asyncClient.isRunning()).thenReturn(true);
+
+        Unirest.config()
+                .httpClient(new ApacheClient(httpc, null, null, null))
+                .asyncClient(new ApacheAsyncClient(asyncClient, null, null, null));
+
+        Unirest.shutDown();
+
+        verify(httpc).close();
+        verify(asyncClient).close();
     }
 
     @Test

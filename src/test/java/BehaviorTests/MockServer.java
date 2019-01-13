@@ -76,6 +76,7 @@ public class MockServer {
 	private static Object responseBody;
 	public static final int PORT = 4567;
 	public static final String HOST = "http://localhost:" + PORT;
+	public static final String WINDOWS_LATIN_1_FILE = HOST + "data/cp1250.txt";
 	public static final String REDIRECT = HOST + "/redirect";
 	public static final String BINARYFILE = HOST + "/binary";
 	public static final String NOBODY = HOST + "/nobody";
@@ -101,15 +102,16 @@ public class MockServer {
 
 	static {
 		port(PORT);
+		Spark.staticFileLocation("data");
 		delete("/delete", MockServer::jsonResponse);
 		post("/post", MockServer::jsonResponse);
-        get("/get", MockServer::jsonResponse);
-        get("/gzip", MockServer::gzipResponse);
-        get("/redirect", MockServer::redirect);
-        patch("/patch", MockServer::jsonResponse);
-        get("/invalid", MockServer::inValid);
-        options("/get", MockServer::jsonResponse);
-        get("/nobody", MockServer::nobody);
+		get("/get", MockServer::jsonResponse);
+		get("/gzip", MockServer::gzipResponse);
+		get("/redirect", MockServer::redirect);
+		patch("/patch", MockServer::jsonResponse);
+		get("/invalid", MockServer::inValid);
+		options("/get", MockServer::jsonResponse);
+		get("/nobody", MockServer::nobody);
 		head("/get", MockServer::jsonResponse);
 		put("/post", MockServer::jsonResponse);
 		get("/get/:p/passed", MockServer::jsonResponse);

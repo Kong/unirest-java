@@ -84,66 +84,6 @@ public class LifeCycleTest extends BddTest {
     }
 
     @Test
-    public void testShutdown() throws IOException {
-        when(asyncClient.isRunning()).thenReturn(true);
-
-        Unirest.config()
-                .httpClient(new ApacheClient(httpc, clientManager, connMonitor))
-                .asyncClient(new ApacheAsyncClient(asyncClient, manager, asyncMonitor));
-
-        Unirest.shutDown();
-
-        verify(httpc).close();
-        verify(clientManager).close();
-        verify(connMonitor).interrupt();
-        verify(asyncClient).close();
-        verify(asyncMonitor).interrupt();
-    }
-
-    @Test
-    public void willPowerThroughErrors() throws IOException {
-        when(asyncClient.isRunning()).thenReturn(true);
-        doThrow(new IOException("1")).when(httpc).close();
-        doThrow(new RuntimeException("2")).when(clientManager).close();
-        doThrow(new RuntimeException("3")).when(connMonitor).interrupt();
-        doThrow(new IOException("4")).when(asyncClient).close();
-        doThrow(new RuntimeException("5")).when(asyncMonitor).interrupt();
-
-        Unirest.config()
-                .httpClient(new ApacheClient(httpc, clientManager, connMonitor))
-                .asyncClient(new ApacheAsyncClient(asyncClient, manager, asyncMonitor));
-
-
-        TestUtil.assertException(Unirest::shutDown,
-                UnirestException.class,
-                "java.io.IOException 1\n" +
-                        "java.lang.RuntimeException 2\n" +
-                        "java.lang.RuntimeException 3\n" +
-                        "java.io.IOException 4\n" +
-                        "java.lang.RuntimeException 5");
-
-        verify(httpc).close();
-        verify(clientManager).close();
-        verify(connMonitor).interrupt();
-        verify(asyncClient).close();
-        verify(asyncMonitor).interrupt();
-    }
-
-    @Test
-    public void doesNotBombOnNullOptions() throws IOException {
-        when(asyncClient.isRunning()).thenReturn(true);
-
-        Unirest.config()
-                .httpClient(new ApacheClient(httpc, null, null))
-                .asyncClient(new ApacheAsyncClient(asyncClient, null, null));
-
-        Unirest.shutDown();
-
-        verify(httpc).close();
-        verify(asyncClient).close();
-    }
-
-    @Test
     public void willNotShutdownInactiveAsyncClient() throws IOException {
         CloseableHttpAsyncClient asyncClient = mock(CloseableHttpAsyncClient.class);
         when(asyncClient.isRunning()).thenReturn(false);

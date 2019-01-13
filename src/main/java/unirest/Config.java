@@ -35,6 +35,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.nio.client.HttpAsyncClient;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -65,6 +66,7 @@ public class Config {
     private boolean followRedirects;
     private boolean cookieManagement;
     private boolean useSystemProperties;
+    private String defaultResponseEncoding = StandardCharsets.UTF_8.name();
     private Function<Config, AsyncClient> asyncBuilder = ApacheAsyncClient::new;
     private Function<Config, Client> clientBuilder = ApacheClient::new;
 
@@ -91,7 +93,7 @@ public class Config {
      * @return this config object
      */
     public Config httpClient(HttpClient httpClient) {
-        client = Optional.of(new ApacheClient(httpClient));
+        client = Optional.of(new ApacheClient(httpClient, this, null, null));
         return this;
     }
 
@@ -124,7 +126,7 @@ public class Config {
      * @return this config object
      */
     public Config asyncClient(HttpAsyncClient value) {
-        this.asyncClient = Optional.of(new ApacheAsyncClient(value, null, null));
+        this.asyncClient = Optional.of(new ApacheAsyncClient(value, this, null, null));
         return this;
     }
 
@@ -490,5 +492,13 @@ public class Config {
 
     boolean useSystemProperties(){
         return this.useSystemProperties;
+    }
+
+    public void setDefaultResponseEncoding(String value) {
+        this.defaultResponseEncoding = value;
+    }
+
+    public String getDefaultResponseEncoding() {
+        return defaultResponseEncoding;
     }
 }

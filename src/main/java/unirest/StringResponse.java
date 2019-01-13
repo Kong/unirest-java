@@ -33,9 +33,9 @@ import java.io.InputStream;
 public class StringResponse extends BaseResponse<String> {
     private String body;
 
-    public StringResponse(RawResponse response) {
+    public StringResponse(RawResponse response, String encoding) {
         super(response);
-        body = response.getContentAsString();
+        body = response.getContentAsString(encoding);
     }
 
     @Override

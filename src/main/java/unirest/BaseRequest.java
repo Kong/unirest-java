@@ -38,6 +38,7 @@ import java.util.function.Function;
 abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     private Optional<ObjectMapper> objectMapper = Optional.empty();
+    private String responseEncoding;
     protected Headers headers = new Headers();
     protected final Config config;
     protected HttpMethod method;
@@ -72,6 +73,12 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public R accept(String value) {
         return header(HttpHeaders.ACCEPT, value);
+    }
+
+    @Override
+    public R responseEncoding(String encoding) {
+        this.responseEncoding = encoding;
+        return (R)this;
     }
 
     @Override
@@ -123,19 +130,19 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public HttpResponse<String> asString() throws UnirestException {
-        return config.getClient().request(this, StringResponse::new);
+        return config.getClient().request(this, r -> new StringResponse(r, responseEncoding));
     }
 
     @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync() {
 
-        return config.getAsyncClient().request(this, StringResponse::new, new CompletableFuture<>());
+        return config.getAsyncClient().request(this, r -> new StringResponse(r, responseEncoding), new CompletableFuture<>());
     }
 
     @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync(Callback<String> callback) {
 
-        return config.getAsyncClient().request(this, StringResponse::new, CallbackFuture.wrap(callback));
+        return config.getAsyncClient().request(this, r -> new StringResponse(r, responseEncoding), CallbackFuture.wrap(callback));
     }
 
     @Override

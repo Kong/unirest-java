@@ -29,17 +29,22 @@ package unirest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class ResponseUtils {
+abstract class RawResponseBase implements RawResponse {
 
     private static final Pattern CHARSET_PATTERN = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
+    protected Config config;
 
-    static String getCharSet(RawResponse responseEntity) {
-        String contentType = responseEntity.getContentType();
+    protected RawResponseBase(Config config){
+        this.config = config;
+    }
+
+    protected String getCharSet() {
+        String contentType = getContentType();
         String responseCharset = getCharsetFromContentType(contentType);
         if (responseCharset != null && !responseCharset.trim().equals("")) {
             return responseCharset;
         }
-        return "UTF-8";
+        return config.getDefaultResponseEncoding();
     }
 
     /**
@@ -48,7 +53,7 @@ class ResponseUtils {
      * @param contentType e.g. "text/html; charset=EUC-JP"
      * @return "EUC-JP", or null if not found. Charset is trimmed and uppercased.
      */
-    private static String getCharsetFromContentType(String contentType) {
+    private String getCharsetFromContentType(String contentType) {
         if (contentType == null) {
             return null;
         }
@@ -59,4 +64,5 @@ class ResponseUtils {
         }
         return null;
     }
+
 }

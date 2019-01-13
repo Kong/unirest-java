@@ -35,10 +35,11 @@ import java.io.*;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
-class ApacheResponse implements RawResponse {
+class ApacheResponse extends RawResponseBase {
     private final HttpResponse r;
 
-    public ApacheResponse(HttpResponse r){
+    public ApacheResponse(HttpResponse r, Config config){
+        super(config);
         this.r = r;
     }
 
@@ -93,15 +94,27 @@ class ApacheResponse implements RawResponse {
 
     @Override
     public String getContentAsString() {
+        return getContentAsString(null);
+    }
+
+    @Override
+    public String getContentAsString(String charset) {
         if(!hasContent()){
             return "";
         }
         try {
-            String charSet = ResponseUtils.getCharSet(this);
+            String charSet = getCharset(charset);
             return new String(getContentAsBytes(), charSet);
         } catch (IOException e) {
             throw new UnirestException(e);
         }
+    }
+
+    private String getCharset(String charset) {
+        if(Util.isNullOrEmpty(charset)){
+            return getCharSet();
+        }
+        return charset;
     }
 
     @Override

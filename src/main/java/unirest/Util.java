@@ -92,6 +92,10 @@ class Util {
         return new ByteArrayInputStream(new byte[0]);
     }
 
+    public static boolean isNullOrEmpty(String s) {
+        return s == null || s.trim().isEmpty();
+    }
+
 
     @FunctionalInterface
     public interface ExConsumer<T>{
