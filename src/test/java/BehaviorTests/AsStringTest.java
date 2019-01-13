@@ -26,13 +26,11 @@
 
 package BehaviorTests;
 
-import org.apache.commons.codec.binary.Hex;
 import org.junit.Test;
 import unirest.HttpResponse;
 import unirest.TestUtil;
 import unirest.Unirest;
 
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.Assert.assertEquals;
@@ -124,20 +122,16 @@ public class AsStringTest extends BddTest {
 
     @Test
     public void canSetExpectedCharsetOfResponse() {
-        HttpResponse<String> s = Unirest.get(MockServer.WINDOWS_LATIN_1_FILE)
+        assertEquals("šžýáíé", Unirest.get(MockServer.WINDOWS_LATIN_1_FILE)
                 .responseEncoding("windows-1250")
-                .asString();
-
-        assertEquals("šžýáíé", s.getBody());
+                .asString().getBody());
     }
 
     @Test
     public void canSetDefaultCharsetOfResponse() {
         Unirest.config().setDefaultResponseEncoding("windows-1250");
 
-        HttpResponse<String> s = Unirest.get(MockServer.WINDOWS_LATIN_1_FILE)
-                .asString();
-
-        assertEquals("šžýáíé", s.getBody());
+        assertEquals("šžýáíé", Unirest.get(MockServer.WINDOWS_LATIN_1_FILE)
+                .asString().getBody());
     }
 }
