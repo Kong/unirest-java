@@ -26,6 +26,43 @@
 
 package unirest;
 
-public enum HttpMethod {
-	GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+public class HttpMethod {
+	private static final Map<String, HttpMethod> REGISTRY = new HashMap<>();
+
+	public static final HttpMethod GET = valueOf("GET");
+	public static final HttpMethod POST = valueOf("POST");
+	public static final HttpMethod PUT = valueOf("PUT");
+	public static final HttpMethod DELETE = valueOf("DELETE");
+	public static final HttpMethod PATCH = valueOf("PATCH");
+	public static final HttpMethod HEAD = valueOf("HEAD");
+	public static final HttpMethod OPTIONS = valueOf("OPTIONS");
+	public static final HttpMethod TRACE = valueOf("TRACE");
+
+	private final String name;
+
+	private HttpMethod(String name){
+		this.name = name;
+	}
+
+	public static HttpMethod valueOf(String verb){
+		return REGISTRY.computeIfAbsent(verb, HttpMethod::new);
+	}
+
+	public Set<HttpMethod> all(){
+		return new HashSet<>(REGISTRY.values());
+	}
+
+	public String name() {
+		return name;
+	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 }

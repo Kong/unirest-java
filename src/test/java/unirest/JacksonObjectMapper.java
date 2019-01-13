@@ -35,11 +35,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
-import unirest.GenericType;
-import unirest.JsonPatch;
-import unirest.JsonPatchItem;
 import org.json.JSONObject;
-import unirest.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +52,8 @@ public class JacksonObjectMapper implements ObjectMapper {
 		simpleModule.addSerializer(JsonPatch.class, new JsonPatchSerializer());
 		simpleModule.addDeserializer(JsonPatchItem.class, new PatchDeserializer());
 		simpleModule.addDeserializer(JsonPatch.class, new JsonPatchDeSerializer());
+		simpleModule.addSerializer(HttpMethod.class, new HttpMethodSerializer());
+		simpleModule.addDeserializer(HttpMethod.class, new HttpMethodDeSerializer());
 		om.registerModule(simpleModule);
 	}
 
@@ -129,6 +127,21 @@ public class JacksonObjectMapper implements ObjectMapper {
 		public JsonPatchItem deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
 			String s = jsonParser.readValueAsTree().toString();
 			return new JsonPatchItem(new JSONObject(s));
+		}
+	}
+
+	public static class HttpMethodSerializer extends JsonSerializer<HttpMethod> {
+		@Override
+		public void serialize(HttpMethod httpMethod, JsonGenerator jgen, SerializerProvider serializerProvider) throws IOException {
+			jgen.writeString(httpMethod.name());
+		}
+	}
+
+	public static class HttpMethodDeSerializer extends JsonDeserializer<HttpMethod> {
+		@Override
+		public HttpMethod deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+			String s = jsonParser.readValueAs(String.class);
+			return HttpMethod.valueOf(s);
 		}
 	}
 }
