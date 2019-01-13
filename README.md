@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/OpenUnirest/unirest-java.svg?branch=master)](https://travis-ci.org/OpenUnirest/unirest-java)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.openunirest/open-unirest-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.openunirest/open-unirest-java)
 [![DepShield Badge](https://depshield.sonatype.org/badges/OpenUnirest/unirest-java/depshield.svg)](https://depshield.github.io)
+[![Javadocs](http://www.javadoc.io/badge/io.github.openunirest/open-unirest-java.svg)](http://www.javadoc.io/doc/io.github.openunirest/open-unirest-java)
 
 ## About This Repository
 This repo is an updated, maintained, and independent fork of the original Mashape/Kong Unirest-Java project. That project is no longer being maintained so this project was set up to keep it alive.
