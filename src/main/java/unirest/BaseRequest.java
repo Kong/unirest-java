@@ -26,8 +26,6 @@
 
 package unirest;
 
-import org.apache.http.HttpHeaders;
-
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
@@ -72,7 +70,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public R accept(String value) {
-        return header(HttpHeaders.ACCEPT, value);
+        return header(HeaderNames.ACCEPT, value);
     }
 
     @Override
