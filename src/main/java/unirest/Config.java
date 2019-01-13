@@ -336,6 +336,19 @@ public class Config {
     }
 
     /**
+     * Set the default encoding that will be used for serialization into Strings.
+     * The default-default is UTF-8
+     *
+     * @param value a bool is its true or not.
+     * @return this config object
+     */
+    public Config setDefaultResponseEncoding(String value) {
+        Objects.requireNonNull(value, "Encoding cannot be null");
+        this.defaultResponseEncoding = value;
+        return this;
+    }
+
+    /**
      * Return default headers that are added to every request
      *
      * @return Headers
@@ -495,12 +508,7 @@ public class Config {
         return this.useSystemProperties;
     }
 
-    public void setDefaultResponseEncoding(String value) {
-        Objects.requireNonNull(value, "Encoding cannot be null");
-        this.defaultResponseEncoding = value;
-    }
-
-    public String getDefaultResponseEncoding() {
+    String getDefaultResponseEncoding() {
         return defaultResponseEncoding;
     }
 }
