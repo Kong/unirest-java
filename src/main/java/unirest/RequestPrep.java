@@ -82,7 +82,8 @@ class RequestPrep {
         }
 
         try {
-            HttpRequestBase reqObj = FACTORIES.get(request.getHttpMethod()).apply(request.getUrl());
+            String url = request.getUrl();
+            HttpRequestBase reqObj = FACTORIES.computeIfAbsent(request.getHttpMethod(), this::register).apply(url);
             request.getHeaders().all().stream().map(this::toEntries).forEach(reqObj::addHeader);
             return reqObj;
         }catch (RuntimeException e){
@@ -90,6 +91,9 @@ class RequestPrep {
         }
     }
 
+    private Function<String, HttpRequestBase> register(HttpMethod method) {
+        return u -> new ApacheRequestWithBody(method, u);
+    }
 
     private Header toEntries(unirest.Header k) {
         return new BasicHeader(k.getName(), k.getValue());

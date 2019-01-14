@@ -83,4 +83,13 @@ public class VerbTest extends BddTest {
                 .getBody()
                 .asserMethod(HttpMethod.OPTIONS);
     }
+
+    @Test
+    public void weirdVerbs() {
+        Unirest.request("CHEESE", MockServer.CHEESE)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .asserMethod(HttpMethod.valueOf("CHEESE"))
+                .assertBody(null);
+    }
 }

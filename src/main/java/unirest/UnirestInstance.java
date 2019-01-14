@@ -131,6 +131,10 @@ public class UnirestInstance implements AutoCloseable {
         return new HttpRequestJsonPatch(config, url);
     }
 
+    public HttpRequestWithBody request(String method, String url) {
+        return new HttpRequestBody(config, HttpMethod.valueOf(method), url);
+    }
+
     /**
      * Does the config have currently running clients? Find out here.
      *
@@ -139,7 +143,7 @@ public class UnirestInstance implements AutoCloseable {
     public boolean isRunning() {
         return config.isRunning();
     }
-    
+
     /**
      * Wraps shutdown and will automatically be called when UnirestInstance is
      * used with try-with-resource. This will alleviate the need to manually

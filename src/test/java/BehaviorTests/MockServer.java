@@ -73,7 +73,7 @@ public class MockServer {
 
 	private static final List<Pair<String,String>> responseHeaders = new ArrayList<>();
     private static final JacksonObjectMapper om = new JacksonObjectMapper();
-	private static Object responseBody;
+    private static Object responseBody;
 	public static final int PORT = 4567;
 	public static final String HOST = "http://localhost:" + PORT;
 	public static final String WINDOWS_LATIN_1_FILE = HOST + "data/cp1250.txt";
@@ -88,6 +88,7 @@ public class MockServer {
 	public static final String PATCH = HOST + "/patch";
 	public static final String INVALID_REQUEST = HOST + "/invalid";
 	public static final String PASSED_PATH_PARAM = GET + "/{param}/passed";
+	public static final String CHEESE = HOST + "/cheese";
 	public static final String ALTGET = "http://127.0.0.1:" + PORT + "/get";
 
 
@@ -103,6 +104,7 @@ public class MockServer {
 	static {
 		port(PORT);
 		Spark.staticFileLocation("data");
+		Spark.notFound(MockServer::jsonResponse);
 		delete("/delete", MockServer::jsonResponse);
 		post("/post", MockServer::jsonResponse);
 		get("/get", MockServer::jsonResponse);

@@ -243,6 +243,10 @@ public class RequestCapture {
          return this;
     }
 
+    public void assertBody(String o) {
+        assertEquals(o, body);
+    }
+
     public static class File {
         public String fileName;
         public String type;

@@ -127,6 +127,10 @@ public class Unirest {
         return primaryInstance.jsonPatch(url);
     }
 
+    public static HttpRequestWithBody request(String method, String url) {
+        return primaryInstance.request(method, url);
+    }
+
     /**
      * Does the config have currently running clients? Find out here.
      *
