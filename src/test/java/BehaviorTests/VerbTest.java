@@ -90,6 +90,6 @@ public class VerbTest extends BddTest {
                 .asObject(RequestCapture.class)
                 .getBody()
                 .asserMethod(HttpMethod.valueOf("CHEESE"))
-                .assertBody(null);
+                .assertBody("");
     }
 }
