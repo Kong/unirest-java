@@ -247,6 +247,10 @@ public class RequestCapture {
         assertEquals(o, body);
     }
 
+    public void setStatus(int i) {
+        this.status = i;
+    }
+
     public static class File {
         public String fileName;
         public String type;

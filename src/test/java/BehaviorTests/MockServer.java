@@ -104,7 +104,7 @@ public class MockServer {
 	static {
 		port(PORT);
 		Spark.staticFileLocation("data");
-		Spark.notFound(MockServer::jsonResponse);
+		Spark.notFound(MockServer::notFound);
 		delete("/delete", MockServer::jsonResponse);
 		post("/post", MockServer::jsonResponse);
 		get("/get", MockServer::jsonResponse);
@@ -125,6 +125,12 @@ public class MockServer {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static Object notFound(Request req, Response res) {
+		RequestCapture value = getRequestCapture(req, res);
+		value.setStatus(404);
+		return om.writeValue(value);
 	}
 
 	private static Object file(Request request, Response response) throws Exception {
@@ -161,25 +167,28 @@ public class MockServer {
 	}
 
 	private static Object proxiedResponse(Request req, Response res) {
-		res.cookie("JSESSIONID", "ABC123");
 		if(responseBody != null){
 			return responseBody;
 		}
-		RequestCapture value = new RequestCapture(req);
-		value.writeBody(req);
+		RequestCapture value = getRequestCapture(req, res);
 		value.setIsProxied(true);
 		return om.writeValue(value);
 	}
 
 	private static Object jsonResponse(Request req, Response res) {
-		res.cookie("JSESSIONID", "ABC123");
-		responseHeaders.forEach(h -> res.header(h.key, h.value));
 		if(responseBody != null){
 			return responseBody;
 		}
-        RequestCapture value = new RequestCapture(req);
+		RequestCapture value = getRequestCapture(req, res);
+		return om.writeValue(value);
+	}
+
+	private static RequestCapture getRequestCapture(Request req, Response res) {
+		res.cookie("JSESSIONID", "ABC123");
+		responseHeaders.forEach(h -> res.header(h.key, h.value));
+		RequestCapture value = new RequestCapture(req);
 		value.writeBody(req);
-        return om.writeValue(value);
+		return value;
 	}
 
 	public static void shutdown() {
