@@ -1,4 +1,4 @@
-## 3.3.01
+## 3.3.02
 * Add the ability to make requests to non-standard web methods for things like WebDAV, SVN, or other horrible things.
 ```java
    Unirest.request("CHEESE", "http://some.cheesy.thing")
