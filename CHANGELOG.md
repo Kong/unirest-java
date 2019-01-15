@@ -1,3 +1,10 @@
+## 3.3.01
+* Add the ability to make requests to non-standard web methods for things like WebDAV, SVN, or other horrible things.
+```java
+   Unirest.request("CHEESE", "http://some.cheesy.thing")
+          .asString();
+```
+
 ## 3.3.00
 * Slight breaking change with regard to accessing Apache specific classes via the config
    * getClient and getAsyncClient return the Unirest containers for clients. You can still get to the Apache client through that for now but this is also deprecated. Eventually Unirest will make Apache just one of several modules.
