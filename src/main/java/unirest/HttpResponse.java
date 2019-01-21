@@ -106,4 +106,9 @@ public interface HttpResponse<T> {
      * @return the same response
      */
     HttpResponse<T> ifFailure(Consumer<HttpResponse<T>> consumer);
+
+     /**
+     * @return true if the response was a 200-series response and no mapping exception happened, else false
+     */
+    boolean isSuccess();
 }
