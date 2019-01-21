@@ -83,4 +83,35 @@ public class PostRequestHandlersTest extends BddTest {
         assertTrue(captured.getParsingError().isPresent());
         assertEquals("not what you expect", captured.getParsingError().get().getOriginalBody());
     }
+
+
+
+    @Test
+    public void onSuccessBeSuccessful() {
+        HttpResponse<RequestCapture> response = Unirest.get(MockServer.GET)
+            .queryString("foo", "bar")
+            .asObject(RequestCapture.class);
+
+        assertTrue(response.isSuccess());
+    }
+
+    @Test
+    public void onFailBeUnsuccessful() {
+        HttpResponse<RequestCapture> response = Unirest.get(MockServer.INVALID_REQUEST)
+            .queryString("foo", "bar")
+            .asObject(RequestCapture.class);
+
+        assertFalse(response.isSuccess());
+    }
+
+    @Test
+    public void beUnsuccessfulIfTheMapperFails() {
+        MockServer.setStringResponse("not what you expect");
+
+        HttpResponse<RequestCapture> response = Unirest.get(MockServer.GET)
+            .queryString("foo", "bar")
+            .asObject(RequestCapture.class);
+
+        assertFalse(response.isSuccess());
+    }
 }

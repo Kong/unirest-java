@@ -100,7 +100,8 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
         return this;
     }
 
-    private boolean isSuccess() {
+    @Override
+    public boolean isSuccess() {
         return getStatus() >= 200 && getStatus() < 300 && !getParsingError().isPresent();
     }
 }
