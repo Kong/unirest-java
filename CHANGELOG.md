@@ -1,3 +1,6 @@
+## 3.3.03
+* Pulled isSuccess() up to the response interface so it can be used and enjoyed by everyone.
+
 ## 3.3.02
 * Add the ability to make requests to non-standard web methods for things like WebDAV, SVN, or other horrible things.
 ```java
