@@ -1,3 +1,7 @@
+# Call for Maintainers
+
+We are looking for official maintainers, check out issue [#252](https://github.com/Kong/unirest-java/issues/252)
+
 # Unirest for Java [![Build Status][travis-image]][travis-url]
 
 ![][unirest-logo]
