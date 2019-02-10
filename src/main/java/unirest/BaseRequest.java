@@ -251,6 +251,8 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         return config.getAsyncClient().request(this, r -> new FileResponse(r, path), CallbackFuture.wrap(callback));
     }
 
+
+
     private Function<RawResponse, HttpResponse<Object>> getConsumer(Consumer<RawResponse> consumer) {
         return r -> {
             consumer.accept(r);
@@ -280,5 +282,18 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     private ObjectMapper getObjectMapper() {
         return objectMapper.orElseGet(config::getObjectMapper);
+    }
+
+    @Override
+    public <T> PagedList<T> asPaged(Function<HttpResponse<T>, String> linkExtractor, Function<HttpRequest, HttpResponse> mappingFunction) {
+        PagedList<T> all = new PagedList<>();
+        String nextLink = this.getUrl();
+        do {
+            this.url = new Path(nextLink);
+            HttpResponse<T> next = mappingFunction.apply(this);
+            all.add(next);
+            nextLink = linkExtractor.apply(next);
+        }while (!Util.isNullOrEmpty(nextLink));
+        return all;
     }
 }

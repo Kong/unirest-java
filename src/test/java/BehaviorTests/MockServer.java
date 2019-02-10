@@ -70,16 +70,18 @@ import java.util.concurrent.TimeUnit;
 import static spark.Spark.*;
 
 public class MockServer {
-
-	private static final List<Pair<String,String>> responseHeaders = new ArrayList<>();
-    private static final JacksonObjectMapper om = new JacksonObjectMapper();
-    private static Object responseBody;
+	private static int pages = 1;
+	private static int onPage = 1;
+    private static final List<Pair<String,String>> responseHeaders = new ArrayList<>();
+	private static final JacksonObjectMapper om = new JacksonObjectMapper();
+	private static Object responseBody;
 	public static final int PORT = 4567;
 	public static final String HOST = "http://localhost:" + PORT;
 	public static final String WINDOWS_LATIN_1_FILE = HOST + "data/cp1250.txt";
 	public static final String REDIRECT = HOST + "/redirect";
 	public static final String BINARYFILE = HOST + "/binary";
 	public static final String NOBODY = HOST + "/nobody";
+	public static final String PAGED = HOST + "/paged";
 	public static final String PROXY = "localhost:4567";
 	public static final String POST = HOST + "/post";
 	public static final String GET = HOST + "/get";
@@ -99,6 +101,8 @@ public class MockServer {
 	public static void reset(){
 		responseBody = null;
 		responseHeaders.clear();
+		pages = 1;
+		onPage = 1;
 	}
 
 	static {
@@ -119,12 +123,21 @@ public class MockServer {
 		get("/get/:p/passed", MockServer::jsonResponse);
 		get("/proxy", MockServer::proxiedResponse);
 		get("/binary", MockServer::file);
+		get("/paged", MockServer::paged);
         Runtime.getRuntime().addShutdownHook(new Thread(Spark::stop));
 		try {
 			new CountDownLatch(1).await(2, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static Object paged(Request request, Response response) {
+		if(pages > onPage){
+			onPage++;
+			response.header("nextPage", PAGED + "?page=" + onPage);
+		}
+		return jsonResponse(request, response);
 	}
 
 	private static Object notFound(Request req, Response res) {
@@ -201,5 +214,9 @@ public class MockServer {
 
 	public static void addResponseHeader(String key, String value) {
 		responseHeaders.add(new Pair<>(key, value));
+	}
+
+	public static void expectedPages(int expected) {
+		pages = expected;
 	}
 }

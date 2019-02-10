@@ -281,6 +281,9 @@ public interface HttpRequest<R extends HttpRequest> {
     @Deprecated
     CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback);
 
+    <T> PagedList<T> asPaged(Function<HttpResponse<T>, String> linkExtractor,
+                             Function<HttpRequest, HttpResponse> mappingFunction);
+
     /**
      * Execute the request asynchronously and pass the raw response to a consumer.
      * This raw response contains the original InputStream and is suitable for
