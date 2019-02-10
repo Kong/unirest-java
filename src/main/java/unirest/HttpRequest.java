@@ -265,6 +265,17 @@ public interface HttpRequest<R extends HttpRequest> {
     CompletableFuture<HttpResponse<File>> asFileAsync(String path, Callback<File> callback);
 
     /**
+     * Allows for following paging links common in many APIs.
+     * Each request will result in the same request (headers, etc) but will use the "next" link provided by the extract function.
+     * 
+     * @param mappingFunction a function to return the desired return type leveraging one of the as* methods (asString, asObject, etc).
+     * @param linkExtractor a function to extract a "next" link to follow. Retuning a null or empty string ends the paging
+     * @return a PagedList of your type
+     */
+    <T> PagedList<T> asPaged(Function<HttpRequest, HttpResponse> mappingFunction,
+                             Function<HttpResponse<T>, String> linkExtractor);
+
+    /**
      * Executes the request asynchronously and returns a copy of the original InputStream
      * @deprecated This method returns a copy of the original stream and is not suitable for streaming. Use asObjectAsync(Function&lt;RawResponse, T&gt; function)
      * @return a CompletableFuture of a HttpResponse with a InputStream
@@ -280,9 +291,6 @@ public interface HttpRequest<R extends HttpRequest> {
      */
     @Deprecated
     CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback);
-
-    <T> PagedList<T> asPaged(Function<HttpResponse<T>, String> linkExtractor,
-                             Function<HttpRequest, HttpResponse> mappingFunction);
 
     /**
      * Execute the request asynchronously and pass the raw response to a consumer.

@@ -285,7 +285,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
-    public <T> PagedList<T> asPaged(Function<HttpResponse<T>, String> linkExtractor, Function<HttpRequest, HttpResponse> mappingFunction) {
+    public <T> PagedList<T> asPaged(Function<HttpRequest, HttpResponse> mappingFunction, Function<HttpResponse<T>, String> linkExtractor) {
         PagedList<T> all = new PagedList<>();
         String nextLink = this.getUrl();
         do {
