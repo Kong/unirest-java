@@ -1,8 +1,7 @@
 /**
  * The MIT License
  *
- * Copyright for portions of OpenUnirest/uniresr-java are held by Mashape (c) 2013 as part of Kong/unirest-java.
- * All other copyright for OpenUnirest/unirest-java are held by OpenUnirest (c) 2018.
+ * Copyright for portions of OpenUnirest/uniresr-java by OpenUnirest (c) 2018.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
