@@ -25,8 +25,10 @@
 
 package unirest;
 
+import com.google.common.base.Strings;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,9 +52,51 @@ public class PagedListTest {
         assertEquals(Arrays.asList("foo","bar","baz"), bodies);
     }
 
+    @Test
+    public void bodiesMustBeSucessful() {
+        PagedList<String> list = new PagedList<>();
+        list.addAll(asList(
+                mkRequest("foo"),
+                mkRequest(null),
+                mkRequest("baz")
+        ));
+
+        List<String> bodies = list.getBodies();
+        assertEquals(Arrays.asList("foo","baz"), bodies);
+    }
+
+    @Test
+    public void canProcessSuccessfullResuls() {
+        PagedList<String> list = new PagedList<>();
+        list.addAll(asList(
+                mkRequest("foo"),
+                mkRequest(null),
+                mkRequest("baz")
+        ));
+
+        final List<String> processed = new ArrayList<>();
+        list.ifSuccess(e -> processed.add(e.getBody()));
+        assertEquals(Arrays.asList("foo","baz"), processed);
+    }
+
+    @Test
+    public void canProcessFailed() {
+        PagedList<String> list = new PagedList<>();
+        list.addAll(asList(
+                mkRequest("foo"),
+                mkRequest(null),
+                mkRequest("baz")
+        ));
+
+        final List<String> processed = new ArrayList<>();
+        list.ifFailure(e -> processed.add(e.getBody()));
+        assertEquals(null, processed.get(0));
+    }
+
     private HttpResponse<String> mkRequest(String foo) {
         HttpResponse<String> r = mock(HttpResponse.class);
         when(r.getBody()).thenReturn(foo);
+        when(r.isSuccess()).thenReturn(!Strings.isNullOrEmpty(foo));
         return r;
     }
 }

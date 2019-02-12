@@ -27,13 +27,40 @@ package unirest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class PagedList<T> extends ArrayList<HttpResponse<T>> {
 
+    /**
+     * @return Returns all successful bodies
+     */
     public List<T> getBodies() {
         return stream()
+                .filter(HttpResponse::isSuccess)
                 .map(HttpResponse::getBody)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * For each successful response If the response was a 200-series response. Invoke this consumer
+     * can be chained with ifFailure
+     * @param consumer a function to consume a HttpResponse
+     * @return the same paged list
+     */
+    public PagedList<T> ifSuccess(Consumer<HttpResponse<T>> consumer) {
+        stream().filter(HttpResponse::isSuccess).forEach(consumer);
+        return this;
+    }
+
+    /**
+     * For each failed response if the response was NOT a 200-series response or a mapping exception happened. Invoke this consumer
+     * can be chained with ifSuccess
+     * @param consumer a function to consume a HttpResponse
+     * @return the same paged list
+     */
+    public PagedList<T> ifFailure(Consumer<HttpResponse<T>> consumer) {
+        stream().filter(r -> !r.isSuccess()).forEach(consumer);
+        return this;
     }
 }
