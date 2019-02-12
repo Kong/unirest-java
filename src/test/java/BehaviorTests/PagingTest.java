@@ -40,9 +40,22 @@ public class PagingTest extends BddTest {
 
         PagedList<RequestCapture> result =  Unirest.get(MockServer.PAGED)
                 .asPaged(
-                        r -> r.asObject(RequestCapture.class), r -> r.getHeaders().getFirst("nextPage")
+                        r -> r.asObject(RequestCapture.class),
+                        r -> r.getHeaders().getFirst("nextPage")
                 );
 
         assertEquals(10, result.size());
+    }
+
+    @Test
+    public void willReturnOnePageIfthereWasNoPaging() {
+
+        PagedList<RequestCapture> result =  Unirest.get(MockServer.PAGED)
+                .asPaged(
+                        r -> r.asObject(RequestCapture.class),
+                        r -> null
+                );
+
+        assertEquals(1, result.size());
     }
 }

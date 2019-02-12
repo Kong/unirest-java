@@ -1,3 +1,13 @@
+## 3.3.04
+* Add the ability to follow a paged response by providing a lambda for the response type and one for getting the next page. It will stop once the next link is null or empty
+```java
+PagedList<JsonNode> result =  Unirest.get("http://and.pagey")
+                .asPaged(
+                        r -> r.asJson(),
+                        r -> r.getHeaders().getFirst("nextPage")
+                );
+```
+
 ## 3.3.03
 * Pulled isSuccess() up to the response interface so it can be used and enjoyed by everyone.
 
