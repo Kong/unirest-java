@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 # Unirest for Java 
+=======
+# Call for Maintainers
+
+We are looking for official maintainers, check out issue [#252](https://github.com/Kong/unirest-java/issues/252)
+
+# Unirest for Java [![Build Status][travis-image]][travis-url]
 
 [![Build Status](https://travis-ci.org/OpenUnirest/unirest-java.svg?branch=master)](https://travis-ci.org/OpenUnirest/unirest-java)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.openunirest/open-unirest-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.openunirest/open-unirest-java)
@@ -37,6 +44,71 @@ Because 3.0 made several very not backwards compatible changes the artifactID wa
 * Automatic JSON parsing into a native object for JSON responses
 * Customizable binding, with mapping from response body to java Object 
 
+## Installing
+Is easy as pie. Kidding. It's about as easy as doing these little steps:
+
+### With Maven
+
+You can use Maven by including the library:
+
+```xml
+<dependency>
+    <groupId>com.mashape.unirest</groupId>
+    <artifactId>unirest-java</artifactId>
+    <version>1.4.9</version>
+</dependency>
+```
+
+There are dependencies for Unirest-Java, these should be already installed, and they are as follows:
+
+```xml
+<dependency>
+  <groupId>org.apache.httpcomponents</groupId>
+  <artifactId>httpclient</artifactId>
+  <version>4.3.6</version>
+</dependency>
+<dependency>
+  <groupId>org.apache.httpcomponents</groupId>
+  <artifactId>httpasyncclient</artifactId>
+  <version>4.0.2</version>
+</dependency>
+<dependency>
+  <groupId>org.apache.httpcomponents</groupId>
+  <artifactId>httpmime</artifactId>
+  <version>4.3.6</version>
+</dependency>
+<dependency>
+  <groupId>org.json</groupId>
+  <artifactId>json</artifactId>
+  <version>20140107</version>
+</dependency>
+```
+
+If you would like to run tests, also add the following dependency along with the others:
+
+```xml
+<dependency>
+  <groupId>junit</groupId>
+  <artifactId>junit</artifactId>
+  <version>4.12</version>
+  <scope>test</scope>
+</dependency>
+<dependency>
+  <groupId>commons-io</groupId>
+  <artifactId>commons-io</artifactId>
+  <version>2.4</version>
+  <scope>test</scope>
+</dependency>
+```
+
+### Without Maven
+
+Alternatively if you don't use Maven, you can directly include the JAR file in the classpath: http://oss.sonatype.org/content/repositories/releases/com/mashape/unirest/unirest-java/1.4.9/unirest-java-1.4.9.jar
+
+Don't forget to also install the dependencies ([`org.json`](http://www.json.org/java/), [`httpclient 4.3.6`](http://hc.apache.org/downloads.cgi), [`httpmime 4.3.6`](http://hc.apache.org/downloads.cgi), [`httpasyncclient 4.0.2`](http://hc.apache.org/downloads.cgi)) in the classpath too.
+
+There is also a way to generate a Unirest-Java JAR file that already includes the required dependencies, but you will need Maven to generate it. Follow the instructions at http://blog.mashape.com/post/69117323931/installing-unirest-java-with-the-maven-assembly-plugin
+>>>>>>> bf4e031140464930bc05f3a8e2d9f3f02a72d551
 
 ## Creating Request
 So you're probably wondering how using Unirest makes creating requests in Java easier, here is a basic POST request that will explain everything:
