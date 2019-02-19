@@ -1,5 +1,12 @@
+## 3.3.05
+* Add a noop response type when you just don't care about the body.
+```java
+   HttpResponse re = Unirest.get("http://no.body.knows").asEmpty();
+```
+
 ## 3.3.04
-* Add the ability to follow a paged response by providing a lambda for the response type and one for getting the next page. It will stop once the next link is null or empty
+* Add the ability to follow a paged response by providing a lambda for the response type and one for getting the next page. It will stop once the next link is null or empty.
+* The PagedList has handy dandy methods to pass consumers to all success and failure responses.
 ```java
 PagedList<JsonNode> result =  Unirest.get("http://and.pagey")
                 .asPaged(
@@ -7,6 +14,7 @@ PagedList<JsonNode> result =  Unirest.get("http://and.pagey")
                         r -> r.getHeaders().getFirst("nextPage")
                 );
 ```
+
 
 ## 3.3.03
 * Pulled isSuccess() up to the response interface so it can be used and enjoyed by everyone.
@@ -22,7 +30,7 @@ PagedList<JsonNode> result =  Unirest.get("http://and.pagey")
 * Slight breaking change with regard to accessing Apache specific classes via the config
    * getClient and getAsyncClient return the Unirest containers for clients. You can still get to the Apache client through that for now but this is also deprecated. Eventually Unirest will make Apache just one of several modules.
    * Apache client wrappers are now package local.
-* Add support for overriding the default expected encoding both on a per-request basis and as a default int he config.
+* Add support for overriding the default expected encoding both on a per-request basis and as a default in the config.
 ```java
 // Changing the default from UTF-8 for all requests
 // Unirest will still honor content-encoding if defined in the response headers

@@ -294,6 +294,26 @@ public interface HttpRequest<R extends HttpRequest> {
     CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback);
 
     /**
+     * Executes the request and returns the response without parsing the body
+     * @return the basic HttpResponse
+     */
+    HttpResponse asEmpty();
+
+    /**
+     * Executes the request asynchronously and returns the response without parsing the body
+     * @return a CompletableFuture of a HttpResponse
+     */
+    CompletableFuture<HttpResponse<Empty>> asEmptyAsync();
+
+    /**
+     * Executes the request asynchronously and returns a empty response which is passed to a callback
+     * @param callback the callback* Executes the request asynchronously and returns the response without parsing the body
+     * @return a CompletableFuture of a HttpResponse
+     */
+    CompletableFuture<HttpResponse<Empty>> asEmptyAsync(Callback<Empty> callback);
+
+
+    /**
      * Execute the request asynchronously and pass the raw response to a consumer.
      * This raw response contains the original InputStream and is suitable for
      * reading large responses

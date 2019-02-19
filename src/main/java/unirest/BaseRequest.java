@@ -127,20 +127,37 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
+    public HttpResponse asEmpty() {
+        return config.getClient().request(this, EmptyResponse::new);
+    }
+
+    @Override
+    public CompletableFuture<HttpResponse<Empty>> asEmptyAsync() {
+        return config.getAsyncClient()
+                .request(this, EmptyResponse::new, new CompletableFuture<>());
+    }
+
+    @Override
+    public CompletableFuture<HttpResponse<Empty>> asEmptyAsync(Callback<Empty> callback) {
+        return config.getAsyncClient()
+                .request(this, EmptyResponse::new, CallbackFuture.wrap(callback));
+    }
+
+    @Override
     public HttpResponse<String> asString() throws UnirestException {
         return config.getClient().request(this, r -> new StringResponse(r, responseEncoding));
     }
 
     @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync() {
-
-        return config.getAsyncClient().request(this, r -> new StringResponse(r, responseEncoding), new CompletableFuture<>());
+        return config.getAsyncClient()
+                .request(this, r -> new StringResponse(r, responseEncoding), new CompletableFuture<>());
     }
 
     @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync(Callback<String> callback) {
-
-        return config.getAsyncClient().request(this, r -> new StringResponse(r, responseEncoding), CallbackFuture.wrap(callback));
+        return config.getAsyncClient()
+                .request(this, r -> new StringResponse(r, responseEncoding), CallbackFuture.wrap(callback));
     }
 
     @Override
