@@ -55,8 +55,8 @@ import spark.Request;
 import spark.Response;
 import spark.Spark;
 import spark.utils.IOUtils;
-import unirest.JacksonObjectMapper;
-import unirest.TestUtil;
+import kong.unirest.JacksonObjectMapper;
+import kong.unirest.TestUtil;
 
 import javax.servlet.ServletOutputStream;
 import java.io.File;

@@ -25,12 +25,10 @@
 
 package BehaviorTests;
 
-import unirest.HttpMethod;
-import unirest.HttpResponse;
-import unirest.Unirest;
+import kong.unirest.HttpMethod;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
 import org.junit.Test;
-
-import java.io.InputStream;
 
 import static org.junit.Assert.assertEquals;
 

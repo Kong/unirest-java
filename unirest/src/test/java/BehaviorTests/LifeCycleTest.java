@@ -26,12 +26,12 @@
 package BehaviorTests;
 
 import com.github.paweladamski.httpclientmock.HttpClientMock;
+import kong.unirest.*;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import unirest.*;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.junit.Test;

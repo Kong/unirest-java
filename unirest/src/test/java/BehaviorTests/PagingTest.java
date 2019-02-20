@@ -26,8 +26,8 @@
 package BehaviorTests;
 
 import org.junit.Test;
-import unirest.PagedList;
-import unirest.Unirest;
+import kong.unirest.PagedList;
+import kong.unirest.Unirest;
 
 import static org.junit.Assert.assertEquals;
 

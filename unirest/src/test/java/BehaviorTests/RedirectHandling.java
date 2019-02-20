@@ -25,8 +25,8 @@
 
 package BehaviorTests;
 
-import unirest.HttpResponse;
-import unirest.Unirest;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutionException;

@@ -26,9 +26,9 @@
 package BehaviorTests;
 
 import org.junit.Test;
-import unirest.HttpResponse;
-import unirest.TestUtil;
-import unirest.Unirest;
+import kong.unirest.HttpResponse;
+import kong.unirest.TestUtil;
+import kong.unirest.Unirest;
 
 import java.util.concurrent.CompletableFuture;
 

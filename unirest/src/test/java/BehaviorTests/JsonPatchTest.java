@@ -26,16 +26,16 @@
 package BehaviorTests;
 
 import com.google.common.collect.ImmutableMap;
-import unirest.Unirest;
+import kong.unirest.Unirest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
-import unirest.TestUtil;
+import kong.unirest.TestUtil;
 
 import java.io.IOException;
 
-import static unirest.JsonPatchOperation.*;
+import static kong.unirest.JsonPatchOperation.*;
 
 public class JsonPatchTest extends BddTest {
 

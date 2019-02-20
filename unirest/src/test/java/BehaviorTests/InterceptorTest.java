@@ -25,7 +25,7 @@
 
 package BehaviorTests;
 
-import unirest.Unirest;
+import kong.unirest.Unirest;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;

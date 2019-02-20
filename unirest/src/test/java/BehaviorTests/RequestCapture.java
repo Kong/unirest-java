@@ -27,14 +27,14 @@ package BehaviorTests;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.*;
-import unirest.JsonPatch;
-import unirest.JsonPatchItem;
-import unirest.JsonPatchOperation;
+import kong.unirest.JsonPatch;
+import kong.unirest.JsonPatchItem;
+import kong.unirest.JsonPatchOperation;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
 import spark.Request;
-import unirest.HttpMethod;
-import unirest.TestUtil;
+import kong.unirest.HttpMethod;
+import kong.unirest.TestUtil;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
@@ -44,7 +44,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static unirest.JsonPatchRequest.CONTENT_TYPE;
+import static kong.unirest.JsonPatchRequest.CONTENT_TYPE;
 import static java.lang.System.getProperty;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.hasItem;

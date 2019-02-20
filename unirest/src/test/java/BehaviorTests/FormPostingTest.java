@@ -25,7 +25,10 @@
 
 package BehaviorTests;
 
-import unirest.*;
+import kong.unirest.HttpRequest;
+import kong.unirest.MockCallback;
+import kong.unirest.TestUtil;
+import kong.unirest.Unirest;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
@@ -40,7 +43,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
-import static unirest.TestUtil.rezFile;
+import static kong.unirest.TestUtil.rezFile;
 
 public class FormPostingTest extends BddTest {
     @Test

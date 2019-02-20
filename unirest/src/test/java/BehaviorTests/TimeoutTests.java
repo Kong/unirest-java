@@ -27,9 +27,9 @@
 
 package BehaviorTests;
 
-import unirest.Config;
-import unirest.Unirest;
-import unirest.UnirestException;
+import kong.unirest.Config;
+import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.junit.Ignore;

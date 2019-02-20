@@ -25,9 +25,9 @@
 
 package BehaviorTests;
 
-import unirest.HttpResponse;
-import unirest.JsonNode;
-import unirest.Unirest;
+import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
 import org.junit.Test;
 
 import java.util.Arrays;

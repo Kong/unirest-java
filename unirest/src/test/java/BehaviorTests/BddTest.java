@@ -25,17 +25,18 @@
 
 package BehaviorTests;
 
+import kong.unirest.HttpResponse;
+import kong.unirest.JacksonObjectMapper;
+import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
 import org.junit.After;
-import unirest.*;
 import org.junit.Before;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static unirest.TestUtil.read;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static kong.unirest.TestUtil.read;
+import static org.junit.Assert.*;
 
 public class BddTest {
     private JacksonObjectMapper objectMapper = new JacksonObjectMapper();

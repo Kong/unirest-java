@@ -27,7 +27,7 @@ package BehaviorTests;
 
 import org.junit.After;
 import org.junit.Test;
-import unirest.Unirest;
+import kong.unirest.Unirest;
 
 import static org.junit.Assert.assertEquals;
 

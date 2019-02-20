@@ -25,9 +25,9 @@
 
 package BehaviorTests;
 
-import unirest.GsonObjectMapper;
-import unirest.Unirest;
-import unirest.GenericType;
+import kong.unirest.GsonObjectMapper;
+import kong.unirest.Unirest;
+import kong.unirest.GenericType;
 import org.junit.Test;
 
 import java.util.Arrays;

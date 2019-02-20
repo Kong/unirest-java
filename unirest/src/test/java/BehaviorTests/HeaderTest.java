@@ -25,13 +25,16 @@
 
 package BehaviorTests;
 
+import kong.unirest.GetRequest;
+import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
 import org.junit.Ignore;
 import org.junit.Test;
-import unirest.*;
 
 import static org.junit.Assert.assertEquals;
-import static unirest.TestUtil.assertBasicAuth;
-import static unirest.TestUtil.mapOf;
+import static kong.unirest.TestUtil.assertBasicAuth;
+import static kong.unirest.TestUtil.mapOf;
 
 public class HeaderTest extends BddTest {
     private String value = "one";

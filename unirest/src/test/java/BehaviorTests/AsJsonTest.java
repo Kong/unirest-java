@@ -25,14 +25,13 @@
 
 package BehaviorTests;
 
-import unirest.HttpResponse;
-import unirest.JsonNode;
-import unirest.Unirest;
+import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
 import org.junit.Test;
-import unirest.MockCallback;
-import unirest.TestUtil;
+import kong.unirest.MockCallback;
+import kong.unirest.TestUtil;
 
-import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.Assert.assertEquals;

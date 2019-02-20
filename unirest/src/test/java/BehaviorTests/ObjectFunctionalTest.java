@@ -25,15 +25,12 @@
 
 package BehaviorTests;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import org.junit.Test;
-import unirest.Unirest;
+import kong.unirest.Unirest;
 
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static org.junit.Assert.assertEquals;

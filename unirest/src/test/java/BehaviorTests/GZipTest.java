@@ -25,7 +25,7 @@
 
 package BehaviorTests;
 
-import unirest.Unirest;
+import kong.unirest.Unirest;
 import org.junit.Test;
 
 public class GZipTest extends BddTest {

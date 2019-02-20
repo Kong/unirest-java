@@ -26,9 +26,9 @@
 package BehaviorTests;
 
 import org.junit.Test;
-import unirest.JacksonObjectMapper;
-import unirest.TestUtil;
-import unirest.Unirest;
+import kong.unirest.JacksonObjectMapper;
+import kong.unirest.TestUtil;
+import kong.unirest.Unirest;
 
 import java.io.File;
 import java.nio.file.Files;

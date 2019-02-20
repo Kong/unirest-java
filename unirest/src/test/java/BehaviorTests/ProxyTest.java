@@ -29,8 +29,8 @@ import org.apache.http.HttpHost;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
-import unirest.HttpResponse;
-import unirest.Unirest;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
 
 import static org.junit.Assert.assertTrue;
 

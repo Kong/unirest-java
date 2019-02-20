@@ -26,9 +26,9 @@
 package BehaviorTests;
 
 import org.junit.Test;
-import unirest.Header;
-import unirest.Headers;
-import unirest.Unirest;
+import kong.unirest.Header;
+import kong.unirest.Headers;
+import kong.unirest.Unirest;
 
 import static org.junit.Assert.assertEquals;
 

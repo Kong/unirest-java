@@ -25,15 +25,15 @@
 
 package BehaviorTests;
 
-import unirest.JsonNode;
-import unirest.Unirest;
-import unirest.UnirestConfigException;
+import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
+import kong.unirest.UnirestConfigException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
-import unirest.MockCallback;
+import kong.unirest.MockCallback;
 
-import static unirest.TestUtil.assertException;
+import static kong.unirest.TestUtil.assertException;
 
 public class SendBodyTest extends BddTest {
     @Test

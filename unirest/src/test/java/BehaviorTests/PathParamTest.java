@@ -25,10 +25,10 @@
 
 package BehaviorTests;
 
-import unirest.Unirest;
-import unirest.UnirestException;
+import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
 import org.junit.Test;
-import unirest.TestUtil;
+import kong.unirest.TestUtil;
 
 public class PathParamTest extends BddTest {
 

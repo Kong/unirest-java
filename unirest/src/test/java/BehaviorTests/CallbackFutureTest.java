@@ -25,11 +25,11 @@
 
 package BehaviorTests;
 
-import unirest.Unirest;
-import unirest.NoopCallback;
+import kong.unirest.Unirest;
+import kong.unirest.NoopCallback;
 import org.junit.Test;
 
-import static unirest.MockCallback.json;
+import static kong.unirest.MockCallback.json;
 
 public class CallbackFutureTest extends BddTest {
 
