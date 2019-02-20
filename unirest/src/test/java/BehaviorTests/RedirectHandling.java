@@ -46,7 +46,7 @@ public class RedirectHandling extends BddTest {
     @Test
     public void canDisableRedirects(){
         Unirest.config().followRedirects(false);
-        HttpResponse response = Unirest.get(MockServer.REDIRECT).asBinary();
+        HttpResponse response = Unirest.get(MockServer.REDIRECT).asEmpty();
 
         assertEquals(301, response.getStatus());
     }
@@ -61,9 +61,9 @@ public class RedirectHandling extends BddTest {
     }
 
     @Test
-    public void canDisableRedirectsAsync() throws ExecutionException, InterruptedException {
+    public void canDisableRedirectsAsync() throws Exception {
         Unirest.config().followRedirects(false);
-        HttpResponse response = Unirest.get(MockServer.REDIRECT).asBinaryAsync().get();
+        HttpResponse response = Unirest.get(MockServer.REDIRECT).asEmptyAsync().get();
 
         assertEquals(301, response.getStatus());
     }

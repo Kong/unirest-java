@@ -69,7 +69,7 @@ public class VerbTest extends BddTest {
 
     @Test
     public void head() {
-        HttpResponse<InputStream> response = Unirest.head(MockServer.GET).asBinary();
+        HttpResponse response = Unirest.head(MockServer.GET).asEmpty();
 
         assertEquals(200, response.getStatus());
         assertEquals("text/html;charset=utf-8", response.getHeaders().getFirst("Content-Type"));

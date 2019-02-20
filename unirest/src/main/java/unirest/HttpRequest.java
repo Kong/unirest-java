@@ -26,7 +26,6 @@
 package unirest;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -234,14 +233,6 @@ public interface HttpRequest<R extends HttpRequest> {
     <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Function<RawResponse, T> function);
 
     /**
-     * Executes the request and returns a copy of the original InputStream
-     * @deprecated This method returns a copy of the original stream and is not suitable for streaming. Use asObject(Function&lt;RawResponse, T&gt; function)
-     * @return a HttpResponse with a InputStream
-     */
-    @Deprecated
-    HttpResponse<InputStream> asBinary();
-
-    /**
      * Executes the request and writes the contents into a file
      * @param path The path to the file.
      * @return a file containing the results
@@ -274,24 +265,6 @@ public interface HttpRequest<R extends HttpRequest> {
      */
     <T> PagedList<T> asPaged(Function<HttpRequest, HttpResponse> mappingFunction,
                              Function<HttpResponse<T>, String> linkExtractor);
-
-    /**
-     * Executes the request asynchronously and returns a copy of the original InputStream
-     * @deprecated This method returns a copy of the original stream and is not suitable for streaming. Use asObjectAsync(Function&lt;RawResponse, T&gt; function)
-     * @return a CompletableFuture of a HttpResponse with a InputStream
-     */
-    @Deprecated
-    CompletableFuture<HttpResponse<InputStream>> asBinaryAsync();
-
-    /**
-     * Executes the request asynchronously and returns a copy of the original InputStream which is passed to a callback
-     * @param callback the callback
-     * @deprecated This method returns a copy of the original stream and is not suitable for streaming. Use asObjectAsync(Function&lt;RawResponse, T&gt; function)
-     * @return a CompletableFuture of a HttpResponse with a InputStream
-     */
-    @Deprecated
-    CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback);
-
     /**
      * Executes the request and returns the response without parsing the body
      * @return the basic HttpResponse

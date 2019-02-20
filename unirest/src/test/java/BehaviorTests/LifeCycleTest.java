@@ -96,13 +96,13 @@ public class LifeCycleTest extends BddTest {
 
     @Test
     public void canDetectIfSystemIsRunning() {
-        Unirest.get(MockServer.GET).asBinary();
+        Unirest.get(MockServer.GET).asEmpty();
         assertTrue(Unirest.isRunning());
 
         Unirest.shutDown();
         assertFalse(Unirest.isRunning());
 
-        Unirest.get(MockServer.GET).asBinary();
+        Unirest.get(MockServer.GET).asEmpty();
         assertTrue(Unirest.isRunning());
     }
 
@@ -111,7 +111,7 @@ public class LifeCycleTest extends BddTest {
         Unirest.shutDown();
         assertFalse(Unirest.isRunning());
 
-        Unirest.get(MockServer.GET).asBinary();
+        Unirest.get(MockServer.GET).asEmpty();
         assertTrue(Unirest.isRunning());
     }
 

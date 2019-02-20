@@ -70,7 +70,7 @@ public class PathParamTest extends BddTest {
                         Unirest.get(MockServer.HOST + "/{method}")
                         .routeParam("method222", "get")
                         .queryString("name", "Mark")
-                        .asBinary(),
+                        .asEmpty(),
                 UnirestException.class,
                 "Can't find route parameter name \"method222\"");
     }
@@ -80,7 +80,7 @@ public class PathParamTest extends BddTest {
         TestUtil.assertException(() ->
                         Unirest.get(MockServer.HOST + "/{method}")
                                 .queryString("name", "Mark")
-                                .asBinary(),
+                                .asEmpty(),
                 UnirestException.class,
                 "java.lang.IllegalArgumentException: Illegal character in path at index 22: http://localhost:4567/{method}?name=Mark");
     }

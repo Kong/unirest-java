@@ -26,7 +26,6 @@
 package unirest;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -223,23 +222,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     private <T> Function<RawResponse, HttpResponse<T>> funcResponse(Function<RawResponse, T> function) {
         return r -> new BasicResponse<>(r, function.apply(r));
-    }
-
-    @Override
-    public HttpResponse<InputStream> asBinary() throws UnirestException {
-        return config.getClient().request(this, BinaryResponse::new);
-    }
-
-    @Override
-    public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync() {
-
-        return config.getAsyncClient().request(this, BinaryResponse::new, new CompletableFuture<>());
-    }
-
-    @Override
-    public CompletableFuture<HttpResponse<InputStream>> asBinaryAsync(Callback<InputStream> callback) {
-
-        return config.getAsyncClient().request(this, BinaryResponse::new, CallbackFuture.wrap(callback));
     }
 
     @Override
