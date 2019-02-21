@@ -30,32 +30,37 @@ import java.nio.charset.StandardCharsets;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
-public enum ContentType {
-    APPLICATION_ATOM_XML("application/atom+xml", ISO_8859_1),
-    APPLICATION_FORM_URLENCODED("application/x-www-form-urlencoded", ISO_8859_1),
-    APPLICATION_JSON("application/json", StandardCharsets.UTF_8),
-    APPLICATION_OCTET_STREAM("application/octet-stream"),
-    APPLICATION_SVG_XML("application/svg+xml", ISO_8859_1),
-    APPLICATION_XHTML_XML("application/xhtml+xml", ISO_8859_1),
-    APPLICATION_XML("application/xml", ISO_8859_1),
-    IMAGE_BMP("image/bmp"),
-    IMAGE_GIF("image/gif"),
-    IMAGE_JPEG("image/jpeg"),
-    IMAGE_PNG("image/png"),
-    IMAGE_SVG("image/svg+xml"),
-    IMAGE_TIFF("image/tiff"),
-    IMAGE_WEBP("image/webp"),
-    MULTIPART_FORM_DATA("multipart/form-data", ISO_8859_1),
-    TEXT_HTML("text/html", ISO_8859_1),
-    TEXT_PLAIN("text/plain", ISO_8859_1),
-    TEXT_XML("text/xml", ISO_8859_1),
-    WILDCARD("*/*");
-
+public class ContentType {
+    public static final ContentType APPLICATION_ATOM_XML = create("application/atom+xml", ISO_8859_1);
+    public static final ContentType APPLICATION_FORM_URLENCODED = create("application/x-www-form-urlencoded", ISO_8859_1);
+    public static final ContentType APPLICATION_JSON = create("application/json", StandardCharsets.UTF_8);
+    public static final ContentType APPLICATION_OCTET_STREAM = create("application/octet-stream");
+    public static final ContentType APPLICATION_SVG_XML = create("application/svg+xml", ISO_8859_1);
+    public static final ContentType APPLICATION_XHTML_XML = create("application/xhtml+xml", ISO_8859_1);
+    public static final ContentType APPLICATION_XML = create("application/xml", ISO_8859_1);
+    public static final ContentType IMAGE_BMP = create("image/bmp");
+    public static final ContentType IMAGE_GIF = create("image/gif");
+    public static final ContentType IMAGE_JPEG = create("image/jpeg");
+    public static final ContentType IMAGE_PNG = create("image/png");
+    public static final ContentType IMAGE_SVG = create("image/svg+xml");
+    public static final ContentType IMAGE_TIFF = create("image/tiff");
+    public static final ContentType IMAGE_WEBP = create("image/webp");
+    public static final ContentType MULTIPART_FORM_DATA = create("multipart/form-data", ISO_8859_1);
+    public static final ContentType TEXT_HTML = create("text/html", ISO_8859_1);
+    public static final ContentType TEXT_PLAIN = create("text/plain", ISO_8859_1);
+    public static final ContentType TEXT_XML = create("text/xml", ISO_8859_1);
+    public static final ContentType WILDCARD = create("*/*");
     private final String mimeType;
+
     private final Charset encoding;
 
-    ContentType(String mimeType){
-        this(mimeType, null);
+
+    public static ContentType create(String mimeType) {
+        return new ContentType(mimeType, null);
+    }
+
+    public static ContentType create(String mimeType, Charset charset) {
+        return new ContentType(mimeType, charset);
     }
 
     ContentType(String mimeType, Charset encoding) {
