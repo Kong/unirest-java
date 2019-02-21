@@ -25,17 +25,14 @@
 
 package kong.unirest;
 
-import org.apache.http.client.HttpClient;
-
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 public interface Client {
     /**
-     * @return the apache HttpClient.
-     * @deprecated Eventually the apache implementation will be hidden and other implementation wi be available
+     * @return the underlying client if this instance is wrapping another library (like Apache).
      */
-    HttpClient getClient();
+    Object getClient();
 
     /**
      * Make a request

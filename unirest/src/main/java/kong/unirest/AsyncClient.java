@@ -25,7 +25,7 @@
 
 package kong.unirest;
 
-import org.apache.http.nio.client.HttpAsyncClient;
+
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -33,11 +33,9 @@ import java.util.stream.Stream;
 
 public interface AsyncClient {
     /**
-     * @return the apache HttpAsyncClient.
-     * @deprecated Eventually the apache implementation will be hidden and other implementation wi be available
-     */
-    @Deprecated
-    HttpAsyncClient getClient();
+     * @return the underlying client if this instance is wrapping another library (like Apache).
+      */
+    <T> T getClient();
 
     /**
      * Make a Async request
