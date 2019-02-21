@@ -80,4 +80,8 @@ public class ContentType {
     public String getMimeType() {
         return mimeType;
     }
+
+    public ContentType withCharset(Charset charset) {
+        return new ContentType(mimeType, charset);
+    }
 }

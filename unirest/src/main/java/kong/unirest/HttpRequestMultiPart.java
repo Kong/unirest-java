@@ -30,8 +30,6 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.ByteArrayBody;
-import org.apache.http.entity.mime.content.InputStreamBody;
 
 import java.io.File;
 import java.io.InputStream;
@@ -71,7 +69,7 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
 
     @Override
     public MultipartBody field(String name, InputStream value, ContentType contentType) {
-        addPart(name, new InputStreamBody(value, toApache(contentType)), contentType);
+        addPart(name, new InputStreamPart(value, contentType.toString()), contentType);
         return this;
     }
 
@@ -89,28 +87,28 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
 
     @Override
     public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
-        addPart(name, new InputStreamBody(stream, toApache(contentType), fileName), contentType);
+        addPart(name, new InputStreamPart(stream, contentType.toString(), fileName), contentType);
 
         return this;
     }
 
     @Override
     public MultipartBody field(String name, InputStream stream, String fileName) {
-        addPart(name, new InputStreamBody(stream, org.apache.http.entity.ContentType.APPLICATION_OCTET_STREAM, fileName), ContentType.APPLICATION_OCTET_STREAM);
+        addPart(name, new InputStreamPart(stream, ContentType.APPLICATION_OCTET_STREAM.toString(), fileName), ContentType.APPLICATION_OCTET_STREAM);
 
         return this;
     }
 
     @Override
     public MultipartBody field(String name, byte[] bytes, ContentType contentType, String fileName) {
-        addPart(name, new ByteArrayBody(bytes, toApache(contentType), fileName), contentType);
+        addPart(name, new ByteArrayPart(bytes, contentType, fileName), contentType);
 
         return this;
     }
 
     @Override
     public MultipartBody field(String name, byte[] bytes, String fileName) {
-        addPart(name, new ByteArrayBody(bytes, org.apache.http.entity.ContentType.APPLICATION_OCTET_STREAM, fileName), ContentType.APPLICATION_OCTET_STREAM);
+        addPart(name, new ByteArrayPart(bytes, ContentType.APPLICATION_OCTET_STREAM, fileName), ContentType.APPLICATION_OCTET_STREAM);
 
         return this;
     }
@@ -177,23 +175,12 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
     }
 
     private void addPart(String name, Object value, String type) {
-        parameters.add(new FormPart(name, value, tryParse(type)));
+        parameters.add(new FormPart(name, value, type));
         Collections.sort(parameters);
-    }
-
-    private org.apache.http.entity.ContentType toApache(ContentType contentType) {
-        return org.apache.http.entity.ContentType.parse(contentType.toString());
     }
 
     private void addPart(String name, Object value) {
         addPart(name, value, (String)null);
     }
 
-    private org.apache.http.entity.ContentType tryParse(String contentType) {
-        if (contentType != null && contentType.length() > 0) {
-            return org.apache.http.entity.ContentType.parse(contentType);
-        } else {
-            return null;
-        }
-    }
 }

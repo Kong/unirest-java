@@ -25,7 +25,7 @@
 
 package kong.unirest;
 
-import org.apache.http.entity.ContentType;
+
 import org.apache.http.entity.mime.content.*;
 
 import java.io.File;
@@ -34,9 +34,9 @@ import java.nio.charset.StandardCharsets;
 class FormPart implements Comparable {
     private final String name;
     private final Object value;
-    private final ContentType contentType;
+    private final String contentType;
 
-    FormPart(String name, Object value, ContentType contentType) {
+    FormPart(String name, Object value, String contentType) {
         this.name = name;
         this.value = value;
         this.contentType = contentType;
@@ -46,12 +46,12 @@ class FormPart implements Comparable {
         return value;
     }
 
-    private ContentType getContentType() {
+    private String getContentType() {
         if(contentType == null){
             if(isFile()){
-                return ContentType.APPLICATION_OCTET_STREAM;
+                return ContentType.APPLICATION_OCTET_STREAM.toString();
             }
-            return ContentType.APPLICATION_FORM_URLENCODED.withCharset(StandardCharsets.UTF_8);
+            return ContentType.APPLICATION_FORM_URLENCODED.withCharset(StandardCharsets.UTF_8).toString();
         }
         return contentType;
     }
@@ -59,14 +59,24 @@ class FormPart implements Comparable {
     ContentBody toApachePart() {
         if (value instanceof File) {
             File file = (File) value;
-            return new FileBody(file, getContentType(), file.getName());
-        } else if (value instanceof InputStreamBody) {
-            return (ContentBody) value;
-        } else if (value instanceof ByteArrayBody) {
-            return (ContentBody) value;
+            return new FileBody(file, toApacheType(getContentType()), file.getName());
+        } else if (value instanceof InputStreamPart) {
+            InputStreamPart part = (InputStreamPart)value;
+            return new InputStreamBody(part.getInputStream(),
+                    toApacheType(part.getContentType()),
+                    part.getFileName());
+        } else if (value instanceof ByteArrayPart) {
+            ByteArrayPart part = (ByteArrayPart)value;
+            return new ByteArrayBody(part.getBytes(),
+                    toApacheType(part.getContentType()),
+                    part.getFileName());
         } else {
-            return new StringBody(value.toString(), getContentType());
+            return new StringBody(value.toString(), toApacheType(getContentType()));
         }
+    }
+
+    private org.apache.http.entity.ContentType toApacheType(String type) {
+        return org.apache.http.entity.ContentType.parse(type);
     }
 
     public String getName() {
@@ -83,7 +93,7 @@ class FormPart implements Comparable {
 
     public boolean isFile(){
         return     value instanceof File
-                || value instanceof InputStreamBody
-                || value instanceof ByteArrayBody;
+                || value instanceof InputStreamPart
+                || value instanceof ByteArrayPart;
     }
 }
