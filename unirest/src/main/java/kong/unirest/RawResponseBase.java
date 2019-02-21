@@ -28,7 +28,7 @@ package kong.unirest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-abstract class RawResponseBase implements RawResponse {
+public abstract class RawResponseBase implements RawResponse {
 
     private static final Pattern CHARSET_PATTERN = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
     protected Config config;

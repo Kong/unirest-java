@@ -23,8 +23,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
+package kong.unirest.apache;
 
+import kong.unirest.*;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -67,7 +68,7 @@ class ApacheResponse extends RawResponseBase {
             if(entity != null) {
                 return entity.getContent();
             }
-            return Util.emptyStream();
+            return new ByteArrayInputStream(new byte[0]);
         } catch (IOException e) {
             throw new UnirestException(e);
         }
@@ -110,7 +111,7 @@ class ApacheResponse extends RawResponseBase {
     }
 
     private String getCharset(String charset) {
-        if(Util.isNullOrEmpty(charset)){
+        if(charset == null || charset.trim().isEmpty()){
             return getCharSet();
         }
         return charset;

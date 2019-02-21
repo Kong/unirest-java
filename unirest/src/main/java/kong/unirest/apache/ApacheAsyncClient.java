@@ -23,8 +23,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
+package kong.unirest.apache;
 
+import kong.unirest.*;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
@@ -39,16 +40,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static kong.unirest.Util.tryCast;
 
-class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
+public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
 
     private final HttpAsyncClient client;
     private final AsyncIdleConnectionMonitorThread syncMonitor;
     private final PoolingNHttpClientConnectionManager manager;
     private Config config;
 
-    ApacheAsyncClient(Config config) {
+    public ApacheAsyncClient(Config config) {
         this.config = config;
         try {
             manager = new PoolingNHttpClientConnectionManager(new DefaultConnectingIOReactor());
@@ -82,7 +82,7 @@ class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
         }
     }
 
-    ApacheAsyncClient(HttpAsyncClient client,
+    public ApacheAsyncClient(HttpAsyncClient client,
                       Config config,
                       PoolingNHttpClientConnectionManager manager,
                       AsyncIdleConnectionMonitorThread monitor) {
@@ -124,7 +124,7 @@ class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
 
     @Override
     public boolean isRunning() {
-        return tryCast(client, CloseableHttpAsyncClient.class)
+        return Util.tryCast(client, CloseableHttpAsyncClient.class)
                 .map(CloseableHttpAsyncClient::isRunning)
                 .orElse(true);
     }
@@ -144,4 +144,6 @@ class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
                 Util.tryDo(manager, m -> m.shutdown()),
                 Util.tryDo(syncMonitor, m -> m.interrupt()));
     }
+
+
 }

@@ -23,22 +23,23 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
+package kong.unirest.apache;
 
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.RedirectStrategy;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.protocol.HttpContext;
+import kong.unirest.Config;
+import org.apache.http.HttpHost;
+import org.apache.http.client.config.RequestConfig;
 
-class NoRedirects implements RedirectStrategy {
-    @Override
-    public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) {
-        return false;
-    }
+abstract class BaseApacheClient {
 
-    @Override
-    public HttpUriRequest getRedirect(HttpRequest request, HttpResponse response, HttpContext context) {
-        return null;
+    protected RequestConfig getRequestConfig(Config config) {
+        Integer connectionTimeout = config.getConnectionTimeout();
+        Integer socketTimeout = config.getSocketTimeout();
+        HttpHost proxy = config.getProxy();
+        return RequestConfig.custom()
+                .setConnectTimeout(connectionTimeout)
+                .setSocketTimeout(socketTimeout)
+                .setConnectionRequestTimeout(socketTimeout)
+                .setProxy(proxy)
+                .build();
     }
 }

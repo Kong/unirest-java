@@ -25,6 +25,8 @@
 
 package kong.unirest;
 
+import kong.unirest.apache.ApacheAsyncClient;
+import kong.unirest.apache.ApacheClient;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;

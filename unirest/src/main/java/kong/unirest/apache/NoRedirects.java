@@ -23,21 +23,22 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
+package kong.unirest.apache;
 
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.RedirectStrategy;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.protocol.HttpContext;
 
-import java.net.URI;
-
-public class ApacheRequestWithBody extends HttpEntityEnclosingRequestBase {
-    private HttpMethod method;
-
-    public ApacheRequestWithBody(HttpMethod method, String uri){
-        this.method = method;
-        setURI(URI.create(uri));
-    }
+class NoRedirects implements RedirectStrategy {
     @Override
-    public String getMethod() {
-        return method.name();
+    public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) {
+        return false;
+    }
+
+    @Override
+    public HttpUriRequest getRedirect(HttpRequest request, HttpResponse response, HttpContext context) {
+        return null;
     }
 }

@@ -23,50 +23,42 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
+package kong.unirest.apache;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 class Util {
+    static <T, M extends T> Optional<M> tryCast(T original, Class<M> too) {
+        if (original != null && too.isAssignableFrom(original.getClass())) {
+            return Optional.of((M) original);
+        }
+        return Optional.empty();
+    }
+
+    static Stream<Exception> collectExceptions(Optional<Exception>... ex) {
+        return Stream.of(ex).flatMap(Util::stream);
+    }
 
     //In Java 9 this has been added as Optional::stream. Remove this whenever we get there.
     static <T> Stream<T> stream(Optional<T> opt) {
         return opt.map(Stream::of).orElseGet(Stream::empty);
     }
 
-    static String nullToEmpty(Object v) {
-        if(v == null){
-            return "";
-        }
-        return String.valueOf(v);
-    }
-
-    static String encode(String input) {
+    static <T> Optional<Exception> tryDo(T c, ExConsumer<T> consumer) {
         try {
-            return URLEncoder.encode(input, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new UnirestException(e);
+            if (Objects.nonNull(c)) {
+                consumer.accept(c);
+            }
+            return Optional.empty();
+        } catch (Exception e) {
+            return Optional.of(e);
         }
     }
 
-    static List<NameValuePair> getList(Collection<FormPart> parameters) {
-        List<NameValuePair> result = new ArrayList<>();
-        for (FormPart entry : parameters) {
-            result.add(new BasicNameValuePair(entry.getName(), entry.getValue().toString()));
-        }
-        return result;
-    }
-
-    static boolean isNullOrEmpty(String s) {
-        return s == null || s.trim().isEmpty();
+    @FunctionalInterface
+    public interface ExConsumer<T>{
+        void accept(T t) throws Exception;
     }
 }

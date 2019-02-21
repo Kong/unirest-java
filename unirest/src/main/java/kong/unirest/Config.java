@@ -25,6 +25,8 @@
 
 package kong.unirest;
 
+import kong.unirest.apache.ApacheAsyncClient;
+import kong.unirest.apache.ApacheClient;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.auth.AuthScope;
@@ -453,32 +455,31 @@ public class Config {
 
 
     // Accessors for unirest.
-
-    boolean getEnabledCookieManagement() {
+    public boolean getEnabledCookieManagement() {
         return cookieManagement;
     }
 
-    boolean getFollowRedirects() {
+    public boolean getFollowRedirects() {
         return followRedirects;
     }
 
-    int getMaxConnections() {
+    public int getMaxConnections() {
         return maxTotal;
     }
 
-    int getMaxPerRoutes() {
+    public int getMaxPerRoutes() {
         return maxPerRoute;
     }
 
-    int getConnectionTimeout() {
+    public int getConnectionTimeout() {
         return connectionTimeout;
     }
 
-    int getSocketTimeout() {
+    public int getSocketTimeout() {
         return socketTimeout;
     }
 
-    ObjectMapper getObjectMapper() {
+    public ObjectMapper getObjectMapper() {
         return objectMapper.orElseThrow(() -> new UnirestException("No Object Mapper Configured. Please config one with Unirest.config().setObjectMapper"));
     }
 
@@ -491,23 +492,23 @@ public class Config {
         }
     }
 
-    List<HttpRequestInterceptor> getInterceptors() {
+    public List<HttpRequestInterceptor> getInterceptors() {
         return interceptors;
     }
 
-    HttpHost getProxy() {
+    public HttpHost getProxy() {
         return proxy;
     }
 
-    CredentialsProvider getProxyCreds(){
+    public CredentialsProvider getProxyCreds(){
         return proxyCreds;
     }
 
-    boolean useSystemProperties(){
+    public boolean useSystemProperties(){
         return this.useSystemProperties;
     }
 
-    String getDefaultResponseEncoding() {
+    public String getDefaultResponseEncoding() {
         return defaultResponseEncoding;
     }
 }

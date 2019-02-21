@@ -23,8 +23,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
+package kong.unirest.apache;
 
+import kong.unirest.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -36,13 +37,13 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-class ApacheClient extends BaseApacheClient implements Client {
+public class ApacheClient extends BaseApacheClient implements Client {
     private final HttpClient client;
     private final Config config;
     private final PoolingHttpClientConnectionManager manager;
     private final SyncIdleConnectionMonitorThread syncMonitor;
 
-    ApacheClient(Config config) {
+    public ApacheClient(Config config) {
         this.config = config;
         manager = new PoolingHttpClientConnectionManager();
         syncMonitor = new SyncIdleConnectionMonitorThread(manager);
@@ -67,7 +68,7 @@ class ApacheClient extends BaseApacheClient implements Client {
         client = cb.build();
     }
 
-    ApacheClient(HttpClient httpClient, Config config, PoolingHttpClientConnectionManager clientManager, SyncIdleConnectionMonitorThread connMonitor) {
+    public ApacheClient(HttpClient httpClient, Config config, PoolingHttpClientConnectionManager clientManager, SyncIdleConnectionMonitorThread connMonitor) {
         this.client = httpClient;
         this.config = config;
         this.manager = clientManager;

@@ -23,22 +23,22 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
+package kong.unirest.apache;
 
-import org.apache.http.HttpHost;
-import org.apache.http.client.config.RequestConfig;
+import kong.unirest.HttpMethod;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 
-abstract class BaseApacheClient {
+import java.net.URI;
 
-    protected RequestConfig getRequestConfig(Config config) {
-        Integer connectionTimeout = config.getConnectionTimeout();
-        Integer socketTimeout = config.getSocketTimeout();
-        HttpHost proxy = config.getProxy();
-        return RequestConfig.custom()
-                .setConnectTimeout(connectionTimeout)
-                .setSocketTimeout(socketTimeout)
-                .setConnectionRequestTimeout(socketTimeout)
-                .setProxy(proxy)
-                .build();
+class ApacheRequestWithBody extends HttpEntityEnclosingRequestBase {
+    private HttpMethod method;
+
+    public ApacheRequestWithBody(HttpMethod method, String uri){
+        this.method = method;
+        setURI(URI.create(uri));
+    }
+    @Override
+    public String getMethod() {
+        return method.name();
     }
 }
