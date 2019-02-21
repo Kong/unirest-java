@@ -25,7 +25,6 @@
 
 package kong.unirest;
 
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 
 import java.io.File;
@@ -84,10 +83,8 @@ public interface MultipartBody extends HttpRequest<MultipartBody>, Body {
      * @param name: the Name of the form field
      * @param value: A input stream
      * @param contentType: the content mime-type of the file
-     * @deprecated org.apache.http.entity.ContentType will be replaced by a Unirest owned class that behaves similarly
      * @return The same MultipartBody
      */
-    @Deprecated
     MultipartBody field(String name, InputStream value, ContentType contentType);
 
     /**
@@ -96,10 +93,8 @@ public interface MultipartBody extends HttpRequest<MultipartBody>, Body {
      * @param stream: A input stream
      * @param contentType: the content mime-type of the file
      * @param fileName: the name of the file which will be included in the file part header
-     * @deprecated org.apache.http.entity.ContentType will be replaced by a Unirest owned class that behaves similarly
      * @return The same MultipartBody
      */
-    @Deprecated // In version 4 Apache classes will be abstracted out
     MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName);
 
     /**
@@ -108,10 +103,8 @@ public interface MultipartBody extends HttpRequest<MultipartBody>, Body {
      * @param bytes: The raw bytes for the file
      * @param contentType: the content mime-type of the file
      * @param fileName: the name of the file which will be included in the file part header
-     * @deprecated org.apache.http.entity.ContentType will be replaced by a Unirest owned class that behaves similarly
      * @return The same MultipartBody
      */
-    @Deprecated // In version 4 Apache classes will be abstracted out
     MultipartBody field(String name, byte[] bytes, ContentType contentType, String fileName);
 
     /**

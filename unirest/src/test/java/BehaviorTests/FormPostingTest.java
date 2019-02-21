@@ -25,12 +25,8 @@
 
 package BehaviorTests;
 
-import kong.unirest.HttpRequest;
-import kong.unirest.MockCallback;
-import kong.unirest.TestUtil;
-import kong.unirest.Unirest;
+import kong.unirest.*;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.junit.Test;
 

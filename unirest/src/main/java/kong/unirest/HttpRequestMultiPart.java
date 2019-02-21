@@ -28,7 +28,6 @@ package kong.unirest;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.ByteArrayBody;
@@ -58,21 +57,21 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
 
     @Override
     public MultipartBody field(String name, String value, String contentType) {
-        addPart(name, value, tryParse(contentType));
+        addPart(name, value, contentType);
         return this;
     }
 
     @Override
     public MultipartBody field(String name, Collection<?> collection) {
         for (Object current: collection) {
-            addPart(name, current, null);
+            addPart(name, current, (String)null);
         }
         return this;
     }
 
     @Override
     public MultipartBody field(String name, InputStream value, ContentType contentType) {
-        addPart(name, new InputStreamBody(value, contentType), contentType);
+        addPart(name, new InputStreamBody(value, toApache(contentType)), contentType);
         return this;
     }
 
@@ -84,35 +83,34 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
 
     @Override
     public MultipartBody field(String name, File file, String contentType) {
-        addPart(name, file, tryParse(contentType));
-
+        addPart(name, file, contentType);
         return this;
     }
 
     @Override
     public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
-        addPart(name, new InputStreamBody(stream, contentType, fileName), contentType);
+        addPart(name, new InputStreamBody(stream, toApache(contentType), fileName), contentType);
 
         return this;
     }
 
     @Override
     public MultipartBody field(String name, InputStream stream, String fileName) {
-        addPart(name, new InputStreamBody(stream, ContentType.APPLICATION_OCTET_STREAM, fileName), ContentType.APPLICATION_OCTET_STREAM);
+        addPart(name, new InputStreamBody(stream, org.apache.http.entity.ContentType.APPLICATION_OCTET_STREAM, fileName), ContentType.APPLICATION_OCTET_STREAM);
 
         return this;
     }
 
     @Override
     public MultipartBody field(String name, byte[] bytes, ContentType contentType, String fileName) {
-        addPart(name, new ByteArrayBody(bytes, contentType, fileName), contentType);
+        addPart(name, new ByteArrayBody(bytes, toApache(contentType), fileName), contentType);
 
         return this;
     }
 
     @Override
     public MultipartBody field(String name, byte[] bytes, String fileName) {
-        addPart(name, new ByteArrayBody(bytes, ContentType.APPLICATION_OCTET_STREAM, fileName), ContentType.APPLICATION_OCTET_STREAM);
+        addPart(name, new ByteArrayBody(bytes, org.apache.http.entity.ContentType.APPLICATION_OCTET_STREAM, fileName), ContentType.APPLICATION_OCTET_STREAM);
 
         return this;
     }
@@ -175,17 +173,25 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
     }
 
     private void addPart(String name, Object value, ContentType type) {
-        parameters.add(new FormPart(name, value, type));
+        addPart(name, value, type.toString());
+    }
+
+    private void addPart(String name, Object value, String type) {
+        parameters.add(new FormPart(name, value, tryParse(type)));
         Collections.sort(parameters);
     }
 
-    private void addPart(String name, Object value) {
-        addPart(name, value, null);
+    private org.apache.http.entity.ContentType toApache(ContentType contentType) {
+        return org.apache.http.entity.ContentType.parse(contentType.toString());
     }
 
-    private ContentType tryParse(String contentType) {
+    private void addPart(String name, Object value) {
+        addPart(name, value, (String)null);
+    }
+
+    private org.apache.http.entity.ContentType tryParse(String contentType) {
         if (contentType != null && contentType.length() > 0) {
-            return ContentType.parse(contentType);
+            return org.apache.http.entity.ContentType.parse(contentType);
         } else {
             return null;
         }

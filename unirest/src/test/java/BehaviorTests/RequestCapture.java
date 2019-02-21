@@ -27,14 +27,9 @@ package BehaviorTests;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.*;
-import kong.unirest.JsonPatch;
-import kong.unirest.JsonPatchItem;
-import kong.unirest.JsonPatchOperation;
+import kong.unirest.*;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.entity.ContentType;
 import spark.Request;
-import kong.unirest.HttpMethod;
-import kong.unirest.TestUtil;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;

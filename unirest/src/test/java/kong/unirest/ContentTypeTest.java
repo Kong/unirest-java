@@ -25,45 +25,36 @@
 
 package kong.unirest;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.junit.Test;
 
-import java.io.File;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.Collection;
-import java.util.Map;
+import static org.junit.Assert.*;
 
-public interface HttpRequestWithBody extends HttpRequest<HttpRequestWithBody> {
-    HttpRequestWithBody charset(Charset charset);
+public class ContentTypeTest {
 
-    MultipartBody field(String name, Collection<?> value);
+    @Test
+    public void contentTypeWithEncoding() {
+        verifySame(org.apache.http.entity.ContentType.APPLICATION_ATOM_XML,
+                ContentType.APPLICATION_ATOM_XML);
+    }
 
-    MultipartBody field(String name, File file);
+    @Test
+    public void imageTypes() {
+        verifySame(org.apache.http.entity.ContentType.IMAGE_GIF,
+                ContentType.IMAGE_GIF);
+    }
 
-    MultipartBody field(String name, File file, String contentType);
+    @Test
+    public void wildCard() {
+        verifySame(org.apache.http.entity.ContentType.WILDCARD,
+                ContentType.WILDCARD);
+    }
 
-    MultipartBody field(String name, Object value);
-
-    MultipartBody field(String name, Object value, String contentType);
-
-    MultipartBody fields(Map<String, Object> parameters);
-
-    MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName);
-
-    MultipartBody field(String name, InputStream stream, String fileName);
-
-    RequestBodyEntity body(JsonNode body);
-
-    RequestBodyEntity body(String body);
-
-    RequestBodyEntity body(Object body);
-
-    RequestBodyEntity body(byte[] body);
-
-    RequestBodyEntity body(JSONObject body);
-
-    RequestBodyEntity body(JSONArray body);
-
-    Charset getCharset();
+    private void verifySame(org.apache.http.entity.ContentType apache, ContentType unirest) {
+        assertEquals(
+                apache.toString(),
+                unirest.toString()
+        );
+        assertEquals(apache.toString(),
+                org.apache.http.entity.ContentType.parse(unirest.toString()).toString());
+    }
 }

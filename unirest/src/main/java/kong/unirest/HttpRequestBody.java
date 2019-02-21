@@ -25,7 +25,6 @@
 
 package kong.unirest;
 
-import org.apache.http.entity.ContentType;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
