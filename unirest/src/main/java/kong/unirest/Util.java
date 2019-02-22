@@ -25,14 +25,8 @@
 
 package kong.unirest;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -56,14 +50,6 @@ class Util {
         } catch (UnsupportedEncodingException e) {
             throw new UnirestException(e);
         }
-    }
-
-    static List<NameValuePair> getList(Collection<FormPart> parameters) {
-        List<NameValuePair> result = new ArrayList<>();
-        for (FormPart entry : parameters) {
-            result.add(new BasicNameValuePair(entry.getName(), entry.getValue().toString()));
-        }
-        return result;
     }
 
     static boolean isNullOrEmpty(String s) {

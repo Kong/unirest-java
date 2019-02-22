@@ -48,7 +48,7 @@ import static org.junit.Assert.*;
 public class RequestCapture {
     public ListMultimap<String, String> headers = LinkedListMultimap.create();
     public List<File> files = new ArrayList<>();
-    public Multimap<String, String> params = HashMultimap.create();
+    public ArrayListMultimap<String, String> params = ArrayListMultimap.create();
     public String body;
     public String url;
     public String queryString;

@@ -25,31 +25,11 @@
 
 package kong.unirest;
 
-import java.io.InputStream;
-
-public class InputStreamPart extends BodyPart {
-    private String fileName;
-
-    InputStreamPart(String name, InputStream value) {
-        super(value, name, null);
-    }
-
-    InputStreamPart(String name, InputStream value, String contentType) {
-        super(value, name, contentType);
-    }
-
-    InputStreamPart(String name, InputStream value, String contentType, String fileName) {
-        super(value, name, contentType);
-        this.fileName = fileName;
-    }
-
-    @Override
-    public String getFileName() {
-        return fileName;
-    }
-
-    @Override
-    public boolean isFile() {
-        return true;
-    }
+public enum MultipartMode {
+    /** RFC 822, RFC 2045, RFC 2046 compliant */
+    STRICT,
+    /** browser-compatible mode, i.e. only write Content-Disposition; use content charset */
+    BROWSER_COMPATIBLE,
+    /** RFC 6532 compliant */
+    RFC6532
 }

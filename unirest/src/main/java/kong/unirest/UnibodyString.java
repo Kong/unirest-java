@@ -25,31 +25,15 @@
 
 package kong.unirest;
 
-import java.io.InputStream;
+import java.nio.charset.Charset;
 
-public class InputStreamPart extends BodyPart {
-    private String fileName;
-
-    InputStreamPart(String name, InputStream value) {
-        super(value, name, null);
-    }
-
-    InputStreamPart(String name, InputStream value, String contentType) {
-        super(value, name, contentType);
-    }
-
-    InputStreamPart(String name, InputStream value, String contentType, String fileName) {
-        super(value, name, contentType);
-        this.fileName = fileName;
-    }
-
-    @Override
-    public String getFileName() {
-        return fileName;
+class UnibodyString extends BodyPart {
+    UnibodyString(String bodyAsString, Charset charset) {
+        super(bodyAsString, null, null);
     }
 
     @Override
     public boolean isFile() {
-        return true;
+        return false;
     }
 }

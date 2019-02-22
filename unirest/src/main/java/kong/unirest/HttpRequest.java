@@ -28,6 +28,7 @@ package kong.unirest;
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -317,9 +318,9 @@ public interface HttpRequest<R extends HttpRequest> {
     Headers getHeaders();
 
     /**
-     * Deprecated because it exposes Apache
-     * @return The current body object.
+     * @return if the request has a body it will be here.
      */
-    @Deprecated
-    Body getBody();
+    default Optional<Body> getBody(){
+        return Optional.empty();
+    }
 }

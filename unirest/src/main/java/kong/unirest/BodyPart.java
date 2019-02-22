@@ -25,28 +25,30 @@
 
 package kong.unirest;
 
-
-import org.apache.http.entity.mime.content.*;
-
-import java.io.File;
 import java.nio.charset.StandardCharsets;
 
-class FormPart implements Comparable {
+public abstract class BodyPart<T> implements Comparable { ;
     private final String name;
-    private final Object value;
+    private final T value;
     private final String contentType;
+    private final Class<?> partType;
 
-    FormPart(String name, Object value, String contentType) {
+    protected BodyPart(T value, String name, String contentType) {
         this.name = name;
         this.value = value;
         this.contentType = contentType;
+        this.partType = value.getClass();
     }
 
-    public Object getValue() {
+    public T getValue() {
         return value;
     }
 
-    private String getContentType() {
+    public Class<?> getPartType(){
+        return partType;
+    }
+
+    public String getContentType() {
         if(contentType == null){
             if(isFile()){
                 return ContentType.APPLICATION_OCTET_STREAM.toString();
@@ -56,44 +58,22 @@ class FormPart implements Comparable {
         return contentType;
     }
 
-    ContentBody toApachePart() {
-        if (value instanceof File) {
-            File file = (File) value;
-            return new FileBody(file, toApacheType(getContentType()), file.getName());
-        } else if (value instanceof InputStreamPart) {
-            InputStreamPart part = (InputStreamPart)value;
-            return new InputStreamBody(part.getInputStream(),
-                    toApacheType(part.getContentType()),
-                    part.getFileName());
-        } else if (value instanceof ByteArrayPart) {
-            ByteArrayPart part = (ByteArrayPart)value;
-            return new ByteArrayBody(part.getBytes(),
-                    toApacheType(part.getContentType()),
-                    part.getFileName());
-        } else {
-            return new StringBody(value.toString(), toApacheType(getContentType()));
-        }
-    }
-
-    private org.apache.http.entity.ContentType toApacheType(String type) {
-        return org.apache.http.entity.ContentType.parse(type);
-    }
-
     public String getName() {
         return name == null ? "" : name;
     }
 
+    public String getFileName(){
+        return null;
+    }
+
     @Override
     public int compareTo(Object o) {
-        if(o instanceof FormPart){
-            return getName().compareTo(((FormPart)o).getName());
+        if(o instanceof BodyPart){
+            return getName().compareTo(((BodyPart)o).getName());
         }
         return 0;
     }
 
-    public boolean isFile(){
-        return     value instanceof File
-                || value instanceof InputStreamPart
-                || value instanceof ByteArrayPart;
-    }
+
+    abstract public boolean isFile();
 }

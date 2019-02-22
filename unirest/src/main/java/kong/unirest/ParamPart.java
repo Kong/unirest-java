@@ -25,31 +25,17 @@
 
 package kong.unirest;
 
-import java.io.InputStream;
-
-public class InputStreamPart extends BodyPart {
-    private String fileName;
-
-    InputStreamPart(String name, InputStream value) {
-        super(value, name, null);
+public class ParamPart extends BodyPart {
+    ParamPart(String name, String value) {
+        this(name, value, null);
     }
 
-    InputStreamPart(String name, InputStream value, String contentType) {
+    ParamPart(String name, String value, String contentType) {
         super(value, name, contentType);
-    }
-
-    InputStreamPart(String name, InputStream value, String contentType, String fileName) {
-        super(value, name, contentType);
-        this.fileName = fileName;
-    }
-
-    @Override
-    public String getFileName() {
-        return fileName;
     }
 
     @Override
     public boolean isFile() {
-        return true;
+        return false;
     }
 }

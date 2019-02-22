@@ -25,11 +25,28 @@
 
 package kong.unirest;
 
-import org.apache.http.HttpEntity;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.Collections;
 
 public interface Body {
+    boolean isMultiPart();
 
-	@Deprecated // In version 4 Apache classes will be abstracted out
-	HttpEntity getEntity();
+    default Charset getCharset(){
+        return StandardCharsets.UTF_8;
+    }
 
+    default Collection<BodyPart> multiParts(){
+        return Collections.emptyList();
+    }
+
+    default BodyPart uniPart(){
+        return null;
+    }
+
+    default MultipartMode getMode(){
+        return MultipartMode.BROWSER_COMPATIBLE;
+    }
 }

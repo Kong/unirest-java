@@ -26,8 +26,7 @@
 package BehaviorTests;
 
 import kong.unirest.*;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.entity.mime.HttpMultipartMode;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -38,7 +37,6 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
 import static kong.unirest.TestUtil.rezFile;
 
 public class FormPostingTest extends BddTest {
@@ -132,11 +130,10 @@ public class FormPostingTest extends BddTest {
         stream.close();
 
         Unirest.post(MockServer.POST)
-                .field("name", "Mark")
+                .field("boot","boot")
                 .field("file", bytes, "image.jpg")
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertParam("name", "Mark")
                 .getFile("image.jpg")
                 .assertFileType("application/octet-stream");
     }
@@ -247,19 +244,6 @@ public class FormPostingTest extends BddTest {
                 .getBody()
                 .assertParam("name", "Mark")
                 .assertParam("name", "Tom");
-    }
-
-    @Test
-    public void testPostProvidesSortedParams() throws Exception {
-        // Verify that fields are encoded into the body in sorted order.
-        HttpRequest httpRequest = Unirest.post("test")
-                .field("z", "Z")
-                .field("y", "Y")
-                .field("x", "X");
-
-        InputStream content = httpRequest.getBody().getEntity().getContent();
-        String body = IOUtils.toString(content, "UTF-8");
-        assertEquals("x=X&y=Y&z=Z", body);
     }
 
     @Test
@@ -417,7 +401,7 @@ public class FormPostingTest extends BddTest {
 
         Unirest.post(MockServer.POST)
                 .field("file", fileData, filename)
-                .mode(HttpMultipartMode.STRICT)
+                .mode(MultipartMode.STRICT)
                 .asObject(RequestCapture.class)
                 .getBody()
                 .getFile("file???.p?f")

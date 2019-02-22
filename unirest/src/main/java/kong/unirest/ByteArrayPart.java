@@ -26,26 +26,21 @@
 package kong.unirest;
 
 
-class ByteArrayPart {
-    private final byte[] bytes;
-    private final String contentType;
+public class ByteArrayPart extends BodyPart {
     private final String fileName;
 
-    ByteArrayPart(byte[] bytes, ContentType contentType, String fileName) {
-        this.bytes = bytes;
-        this.contentType = contentType.toString();
+    ByteArrayPart(String name, byte[] bytes, ContentType contentType, String fileName) {
+        super(bytes, name, contentType.toString());
         this.fileName = fileName;
     }
 
-    public byte[] getBytes() {
-        return bytes;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
+    @Override
     public String getFileName() {
         return fileName;
+    }
+
+    @Override
+    public boolean isFile() {
+        return true;
     }
 }

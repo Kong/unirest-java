@@ -35,5 +35,4 @@ public interface RequestBodyEntity extends HttpRequest<RequestBodyEntity>, Body 
     RequestBodyEntity body(JsonNode jsonBody);
 
     RequestBodyEntity charset(Charset charset);
-
 }

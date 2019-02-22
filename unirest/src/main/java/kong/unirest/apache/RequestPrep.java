@@ -58,12 +58,12 @@ class RequestPrep {
         FACTORIES.put(HttpMethod.HEAD, HttpHead::new);
     }
 
-    RequestPrep(HttpRequest request, boolean async){
+    RequestPrep(HttpRequest request, boolean async) {
         this.request = request;
         this.async = async;
     }
 
-    HttpRequestBase prepare(){
+    HttpRequestBase prepare() {
         HttpRequestBase reqObj = getHttpRequestBase();
 
         setBody(reqObj);
@@ -84,7 +84,7 @@ class RequestPrep {
             HttpRequestBase reqObj = FACTORIES.computeIfAbsent(request.getHttpMethod(), this::register).apply(url);
             request.getHeaders().all().stream().map(this::toEntries).forEach(reqObj::addHeader);
             return reqObj;
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             throw new UnirestException(e);
         }
     }
@@ -98,24 +98,23 @@ class RequestPrep {
     }
 
     private void setBody(HttpRequestBase reqObj) {
-        if (!(request.getHttpMethod() == HttpMethod.GET || request.getHttpMethod() == HttpMethod.HEAD)) {
-            if (request.getBody() != null) {
-                HttpEntity entity = request.getBody().getEntity();
-                if (async) {
-                    if (reqObj.getHeaders(CONTENT_TYPE) == null || reqObj.getHeaders(CONTENT_TYPE).length == 0) {
-                        reqObj.setHeader(entity.getContentType());
-                    }
-                    try {
-                        ByteArrayOutputStream output = new ByteArrayOutputStream();
-                        entity.writeTo(output);
-                        NByteArrayEntity en = new NByteArrayEntity(output.toByteArray());
-                        ((HttpEntityEnclosingRequestBase) reqObj).setEntity(en);
-                    } catch (IOException e) {
-                        throw new UnirestException(e);
-                    }
-                } else {
-                    ((HttpEntityEnclosingRequestBase) reqObj).setEntity(entity);
+        if (request.getBody().isPresent()) {
+            ApacheBodyMapper mapper = new ApacheBodyMapper(request);
+            HttpEntity entity = mapper.apply();
+            if (async) {
+                if (reqObj.getHeaders(CONTENT_TYPE) == null || reqObj.getHeaders(CONTENT_TYPE).length == 0) {
+                    reqObj.setHeader(entity.getContentType());
                 }
+                try {
+                    ByteArrayOutputStream output = new ByteArrayOutputStream();
+                    entity.writeTo(output);
+                    NByteArrayEntity en = new NByteArrayEntity(output.toByteArray());
+                    ((HttpEntityEnclosingRequestBase) reqObj).setEntity(en);
+                } catch (IOException e) {
+                    throw new UnirestException(e);
+                }
+            } else {
+                ((HttpEntityEnclosingRequestBase) reqObj).setEntity(entity);
             }
         }
     }

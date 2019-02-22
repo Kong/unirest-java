@@ -25,17 +25,12 @@
 
 package kong.unirest;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.StringEntity;
-
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.function.Supplier;
+import java.util.Optional;
 
 class HttpRequestUniBody extends BaseRequest<RequestBodyEntity> implements RequestBodyEntity {
 
-	private Supplier<HttpEntity> body = () -> new StringEntity("", StandardCharsets.UTF_8);
+	private BodyPart body;
 	private Charset charSet;
 
 	HttpRequestUniBody(HttpRequestBody httpRequest) {
@@ -44,20 +39,20 @@ class HttpRequestUniBody extends BaseRequest<RequestBodyEntity> implements Reque
 	}
 
 	@Override
-	public RequestBodyEntity body(byte[] bodyBytes) {
-		this.body = () -> new ByteArrayEntity(bodyBytes);
-		return this;
+	public RequestBodyEntity body(JsonNode jsonBody) {
+		return body(jsonBody.toString());
 	}
 
 	@Override
 	public RequestBodyEntity body(String bodyAsString) {
-		this.body = () -> new StringEntity(bodyAsString, charSet);
+		this.body = new UnibodyString(bodyAsString, charSet);
 		return this;
 	}
 
 	@Override
-	public RequestBodyEntity body(JsonNode jsonBody) {
-		return body(jsonBody.toString());
+	public RequestBodyEntity body(byte[] bodyBytes) {
+		this.body = new UniByteArrayBody(bodyBytes);
+		return this;
 	}
 
 	@Override
@@ -67,12 +62,22 @@ class HttpRequestUniBody extends BaseRequest<RequestBodyEntity> implements Reque
 	}
 
 	@Override
-	public HttpEntity getEntity() {
-		return body.get();
+	public Optional<Body> getBody() {
+		return Optional.of(this);
 	}
 
 	@Override
-	public Body getBody() {
-		return this;
+	public Charset getCharset() {
+		return charSet;
+	}
+
+	@Override
+	public boolean isMultiPart() {
+		return false;
+	}
+
+	@Override
+	public BodyPart uniPart() {
+		return body;
 	}
 }

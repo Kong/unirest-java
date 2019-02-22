@@ -273,11 +273,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         return headers;
     }
 
-    @Override
-    public Body getBody() {
-        return null;
-    }
-
     private ObjectMapper getObjectMapper() {
         return objectMapper.orElseGet(config::getObjectMapper);
     }

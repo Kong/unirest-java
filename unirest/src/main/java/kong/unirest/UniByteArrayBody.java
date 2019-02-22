@@ -25,31 +25,13 @@
 
 package kong.unirest;
 
-import java.io.InputStream;
-
-public class InputStreamPart extends BodyPart {
-    private String fileName;
-
-    InputStreamPart(String name, InputStream value) {
-        super(value, name, null);
-    }
-
-    InputStreamPart(String name, InputStream value, String contentType) {
-        super(value, name, contentType);
-    }
-
-    InputStreamPart(String name, InputStream value, String contentType, String fileName) {
-        super(value, name, contentType);
-        this.fileName = fileName;
-    }
-
-    @Override
-    public String getFileName() {
-        return fileName;
+class UniByteArrayBody extends BodyPart {
+    UniByteArrayBody(byte[] bodyBytes) {
+        super(bodyBytes, null, null);
     }
 
     @Override
     public boolean isFile() {
-        return true;
+        return false;
     }
 }

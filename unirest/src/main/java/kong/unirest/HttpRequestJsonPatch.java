@@ -25,10 +25,8 @@
 
 package kong.unirest;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.entity.BasicHttpEntity;
-
-import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 class HttpRequestJsonPatch extends BaseRequest<JsonPatchRequest> implements JsonPatchRequest {
 
@@ -76,14 +74,18 @@ class HttpRequestJsonPatch extends BaseRequest<JsonPatchRequest> implements Json
     }
 
     @Override
-    public Body getBody() {
-        return this;
+    public Optional<Body> getBody() {
+        return Optional.of(this);
     }
 
     @Override
-    public HttpEntity getEntity() {
-        BasicHttpEntity e = new BasicHttpEntity();
-        e.setContent(new ByteArrayInputStream(items.toString().getBytes()));
-        return e;
+    public BodyPart uniPart() {
+        String bodyAsString = items.toString();
+        return new UnibodyString(bodyAsString, StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public boolean isMultiPart() {
+        return false;
     }
 }

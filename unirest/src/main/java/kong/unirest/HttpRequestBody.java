@@ -34,6 +34,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRequestWithBody {
 
@@ -138,5 +139,10 @@ class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRe
 
 	void setCharset(Charset charset) {
 		this.charSet = charset;
+	}
+
+	@Override
+	public Optional<Body> getBody() {
+		return Optional.empty();
 	}
 }

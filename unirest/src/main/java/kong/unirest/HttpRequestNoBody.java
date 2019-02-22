@@ -25,8 +25,15 @@
 
 package kong.unirest;
 
+import java.util.Optional;
+
 class HttpRequestNoBody extends BaseRequest<GetRequest> implements GetRequest {
 	HttpRequestNoBody(Config config, HttpMethod method, String url) {
 		super(config, method, url);
+	}
+
+	@Override
+	public Optional<Body> getBody() {
+		return Optional.empty();
 	}
 }

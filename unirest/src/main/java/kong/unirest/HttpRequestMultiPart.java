@@ -25,11 +25,7 @@
 
 package kong.unirest;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
 
 import java.io.File;
 import java.io.InputStream;
@@ -37,9 +33,9 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements MultipartBody {
-    private List<FormPart> parameters = new ArrayList<>();
+    private List<BodyPart> parameters = new ArrayList<>();
 
-    private HttpMultipartMode mode = HttpMultipartMode.BROWSER_COMPATIBLE;
+    private MultipartMode mode = MultipartMode.BROWSER_COMPATIBLE;
     private Charset charSet;
 
     HttpRequestMultiPart(HttpRequestBody httpRequest) {
@@ -49,67 +45,64 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
 
     @Override
     public MultipartBody field(String name, String value) {
-        addPart(name, value);
+        addPart(new ParamPart(name, value));
         return this;
     }
 
     @Override
     public MultipartBody field(String name, String value, String contentType) {
-        addPart(name, value, contentType);
+        addPart(new ParamPart(name, value, contentType));
         return this;
     }
 
     @Override
     public MultipartBody field(String name, Collection<?> collection) {
         for (Object current: collection) {
-            addPart(name, current, (String)null);
+            addPart(name, current);
         }
         return this;
     }
 
     @Override
     public MultipartBody field(String name, InputStream value, ContentType contentType) {
-        addPart(name, new InputStreamPart(value, contentType.toString()), contentType);
+        addPart(new InputStreamPart(name, value, contentType.toString()));
         return this;
     }
 
     @Override
     public MultipartBody field(String name, File file) {
-        addPart(name, file);
+        addPart(new FilePart(file, name));
         return this;
     }
 
     @Override
     public MultipartBody field(String name, File file, String contentType) {
-        addPart(name, file, contentType);
+        addPart(new FilePart(file, name, contentType));
         return this;
     }
 
     @Override
     public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
-        addPart(name, new InputStreamPart(stream, contentType.toString(), fileName), contentType);
+        addPart(new InputStreamPart(name, stream, contentType.toString(), fileName));
 
         return this;
     }
 
     @Override
     public MultipartBody field(String name, InputStream stream, String fileName) {
-        addPart(name, new InputStreamPart(stream, ContentType.APPLICATION_OCTET_STREAM.toString(), fileName), ContentType.APPLICATION_OCTET_STREAM);
-
+        addPart(new InputStreamPart(name, stream, ContentType.APPLICATION_OCTET_STREAM.toString(), fileName));
         return this;
     }
 
     @Override
     public MultipartBody field(String name, byte[] bytes, ContentType contentType, String fileName) {
-        addPart(name, new ByteArrayPart(bytes, contentType, fileName), contentType);
-
+        addPart(new ByteArrayPart(name, bytes, contentType, fileName));
         return this;
     }
 
     @Override
     public MultipartBody field(String name, byte[] bytes, String fileName) {
-        addPart(name, new ByteArrayPart(bytes, ContentType.APPLICATION_OCTET_STREAM, fileName), ContentType.APPLICATION_OCTET_STREAM);
-
+        addPart(new ByteArrayPart(name, bytes, ContentType.APPLICATION_OCTET_STREAM, fileName));
         return this;
     }
 
@@ -126,15 +119,25 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
     }
 
     @Override
+    public Collection<BodyPart> getParts() {
+        return new ArrayList<>(parameters);
+    }
+
+    @Override
     public MultipartBody mode(String value) {
-        this.mode = HttpMultipartMode.valueOf(value);
+        this.mode = MultipartMode.valueOf(value);
         return this;
     }
 
     @Override
-    public MultipartBody mode(HttpMultipartMode value) {
+    public MultipartBody mode(MultipartMode value) {
         this.mode = value;
         return this;
+    }
+
+    @Override
+    public Charset getCharset() {
+        return this.charSet;
     }
 
     public MultipartBody fields(Map<String, Object> fields) {
@@ -150,37 +153,38 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
         return this;
     }
 
-    @Override
-    public HttpEntity getEntity() {
-        if (parameters.stream().anyMatch(FormPart::isFile)) {
-            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-            builder.setCharset(charSet);
-            builder.setMode(mode);
-            for (FormPart key : parameters) {
-                builder.addPart(key.getName(), key.toApachePart());
-            }
-            return builder.build();
+    private void addPart(String name, Object value) {
+        if(value instanceof InputStream){
+            addPart(new InputStreamPart(name, (InputStream)value));
+        } else if (value instanceof File) {
+            addPart(new FilePart((File)value, name));
         } else {
-            return new UrlEncodedFormEntity(Util.getList(parameters), charSet);
+            addPart(new ParamPart(name, String.valueOf(value)));
         }
     }
 
-    @Override
-    public Body getBody() {
-        return this;
-    }
-
-    private void addPart(String name, Object value, ContentType type) {
-        addPart(name, value, type.toString());
-    }
-
-    private void addPart(String name, Object value, String type) {
-        parameters.add(new FormPart(name, value, type));
+    private void addPart(BodyPart value) {
+        parameters.add(value);
         Collections.sort(parameters);
     }
 
-    private void addPart(String name, Object value) {
-        addPart(name, value, (String)null);
+    @Override
+    public Optional<Body> getBody() {
+        return Optional.of(this);
     }
 
+    @Override
+    public boolean isMultiPart() {
+        return true;
+    }
+
+    @Override
+    public Collection<BodyPart> multiParts() {
+        return new ArrayList<>(parameters);
+    }
+
+    @Override
+    public MultipartMode getMode() {
+        return mode;
+    }
 }

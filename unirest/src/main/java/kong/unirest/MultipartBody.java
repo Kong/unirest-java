@@ -25,8 +25,6 @@
 
 package kong.unirest;
 
-import org.apache.http.entity.mime.HttpMultipartMode;
-
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -139,21 +137,20 @@ public interface MultipartBody extends HttpRequest<MultipartBody>, Body {
      */
     MultipartBody contentType(String mimeType);
 
+
+    Collection<BodyPart> getParts();
+
     /**
      * Set the Apache Mode.
      * @param value the string value of the mode
      * @return The same MultipartBody
-     * @deprecated Apache will be made a module in the future.
      * */
-    @Deprecated
     MultipartBody mode(String value);
 
     /**
      * Set the Apache Mode.
      * @param value the value of the mode
      * @return The same MultipartBody
-     * @deprecated Apache will be made a module in the future.
      * */
-    @Deprecated
-    MultipartBody mode(HttpMultipartMode value);
+    MultipartBody mode(MultipartMode value);
 }
