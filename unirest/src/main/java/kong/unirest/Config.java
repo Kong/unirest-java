@@ -27,13 +27,8 @@ package kong.unirest;
 
 import kong.unirest.apache.ApacheAsyncClient;
 import kong.unirest.apache.ApacheClient;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.nio.client.HttpAsyncClient;
 
 import java.nio.charset.StandardCharsets;
@@ -59,8 +54,7 @@ public class Config {
 
     private List<HttpRequestInterceptor> interceptors = new ArrayList<>();
     private Headers defaultHeaders;
-    private HttpHost proxy;
-    private CredentialsProvider proxyCreds;
+    private Proxy proxy;
     private int connectionTimeout;
     private int socketTimeout;
     private int maxTotal;
@@ -160,7 +154,7 @@ public class Config {
      * @param value Proxy settings object.
      * @return this config object
      */
-    public Config proxy(HttpHost value) {
+    public Config proxy(Proxy value) {
         validateClientsNotRunning();
         this.proxy = value;
         return this;
@@ -174,7 +168,7 @@ public class Config {
      * @return this config object
      */
     public Config proxy(String host, int port) {
-        return proxy(new HttpHost(host, port));
+        return proxy(new Proxy(host, port));
     }
 
     /**
@@ -187,10 +181,7 @@ public class Config {
      * @return this config object
      */
     public Config proxy(String host, int port, String username, String password) {
-        proxyCreds = new BasicCredentialsProvider();
-        proxyCreds.setCredentials(new AuthScope(host, port),
-                new UsernamePasswordCredentials(username, password));
-        return proxy(new HttpHost(host, port));
+        return proxy(new Proxy(host, port, username, password));
     }
 
     /**
@@ -496,12 +487,8 @@ public class Config {
         return interceptors;
     }
 
-    public HttpHost getProxy() {
+    public Proxy getProxy() {
         return proxy;
-    }
-
-    public CredentialsProvider getProxyCreds(){
-        return proxyCreds;
     }
 
     public boolean useSystemProperties(){

@@ -25,6 +25,7 @@
 
 package BehaviorTests;
 
+import kong.unirest.Proxy;
 import org.apache.http.HttpHost;
 import org.junit.After;
 import org.junit.Ignore;
@@ -48,7 +49,7 @@ public class ProxyTest extends BddTest {
     public void canUseNonAuthProxy() {
         JankyProxy.runServer("localhost", 4567, 7777);
 
-        Unirest.config().proxy(new HttpHost("localhost", 7777));
+        Unirest.config().proxy(new Proxy("localhost", 7777));
 
         Unirest.get(MockServer.GET)
                 .asObject(RequestCapture.class)

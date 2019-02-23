@@ -58,7 +58,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
             HttpAsyncClientBuilder ab = HttpAsyncClientBuilder.create()
                     .setDefaultRequestConfig(getRequestConfig(config))
                     .setConnectionManager(manager)
-                    .setDefaultCredentialsProvider(config.getProxyCreds())
+                    .setDefaultCredentialsProvider(toApacheCreds(config.getProxy()))
                     .useSystemProperties();
 
             if(config.useSystemProperties()){

@@ -205,4 +205,23 @@ public class ConfigTest {
 
         assertSame(c, config.getAsyncClient().getClient());
     }
+
+    @Test
+    public void canSetProxyViaSetter() {
+        config.proxy(new Proxy("localhost", 8080, "ryan", "password"));
+        assertProxy("localhost", 8080, "ryan", "password");
+
+        config.proxy("local2", 8888);
+        assertProxy("local2", 8888, null, null);
+
+        config.proxy("local3", 7777, "barb", "12345");
+        assertProxy("local3", 7777, "barb", "12345");
+    }
+
+    private void assertProxy(String host, Integer port, String username, String password) {
+        assertEquals(host, config.getProxy().getHost());
+        assertEquals(port, config.getProxy().getPort());
+        assertEquals(username, config.getProxy().getUsername());
+        assertEquals(password, config.getProxy().getPassword());
+    }
 }
