@@ -137,9 +137,6 @@ public interface MultipartBody extends HttpRequest<MultipartBody>, Body {
      */
     MultipartBody contentType(String mimeType);
 
-
-    Collection<BodyPart> getParts();
-
     /**
      * Set the Apache Mode.
      * @param value the string value of the mode

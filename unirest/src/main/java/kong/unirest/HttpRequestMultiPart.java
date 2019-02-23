@@ -119,11 +119,6 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
     }
 
     @Override
-    public Collection<BodyPart> getParts() {
-        return new ArrayList<>(parameters);
-    }
-
-    @Override
     public MultipartBody mode(String value) {
         this.mode = MultipartMode.valueOf(value);
         return this;

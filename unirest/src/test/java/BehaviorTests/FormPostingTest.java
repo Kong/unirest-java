@@ -268,6 +268,30 @@ public class FormPostingTest extends BddTest {
     }
 
     @Test
+    public void multiPartInputStreamAsFile() throws FileNotFoundException {
+        Unirest.post(MockServer.POST)
+                .field("foo", "bar")
+                .field("filecontents", new FileInputStream(rezFile("/image.jpg")), "image.jpg")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertParam("foo", "bar")
+                .getFileByInput("filecontents")
+                .assertFileType(ContentType.APPLICATION_OCTET_STREAM)
+                .assertFileName("image.jpg");
+    }
+
+    @Test
+    public void multiPartInputStream() throws FileNotFoundException {
+        Unirest.post(MockServer.POST)
+                .field("foo", "bar")
+                .field("filecontents", new FileInputStream(rezFile("/test")), ContentType.WILDCARD)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertParam("foo", "bar")
+                .assertParam("filecontents", "This is a test file");
+    }
+
+    @Test
     public void postFileWithContentType() throws Exception {
         File file = getImageFile();
         Unirest.post(MockServer.POST)
