@@ -292,4 +292,14 @@ public class HeaderTest extends BddTest {
                 .getBody()
                 .assertHeader("trace", "two");
     }
+
+    @Test
+    public void nullTests() {
+        Unirest.get(MockServer.GET)
+                .header("foo","bar")
+                .headers(null)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("foo","bar");
+    }
 }

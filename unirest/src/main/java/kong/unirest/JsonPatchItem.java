@@ -40,8 +40,8 @@ public class JsonPatchItem {
         this.value = value;
     }
 
-    public JsonPatchItem(JsonPatchOperation remove, String path) {
-        this(remove, path, null);
+    public JsonPatchItem(JsonPatchOperation op, String path) {
+        this(op, path, null);
     }
 
     public JsonPatchItem(JSONObject row) {

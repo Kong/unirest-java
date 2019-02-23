@@ -91,7 +91,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public R headers(Map<String, String> headerMap) {
-        if (headers != null) {
+        if (headerMap != null) {
             for (Map.Entry<String, String> entry : headerMap.entrySet()) {
                 header(entry.getKey(), entry.getValue());
             }
