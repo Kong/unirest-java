@@ -38,7 +38,7 @@ import java.nio.file.Paths;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class AsFileTests extends BddTest {
+public class AsFileTest extends BddTest {
 
     private Path test = Paths.get("results.json");
     private JacksonObjectMapper om = new JacksonObjectMapper();

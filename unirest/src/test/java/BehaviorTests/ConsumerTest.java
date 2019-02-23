@@ -31,7 +31,7 @@ import kong.unirest.Unirest;
 
 import static org.junit.Assert.assertEquals;
 
-public class ConsumerTests extends BddTest {
+public class ConsumerTest extends BddTest {
 
     private int status;
 
