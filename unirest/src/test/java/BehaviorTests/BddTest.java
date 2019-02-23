@@ -25,21 +25,18 @@
 
 package BehaviorTests;
 
-import kong.unirest.HttpResponse;
-import kong.unirest.JacksonObjectMapper;
-import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
+import kong.unirest.*;
 import org.junit.After;
 import org.junit.Before;
 
+import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static kong.unirest.TestUtil.read;
 import static org.junit.Assert.*;
 
 public class BddTest {
-    private JacksonObjectMapper objectMapper = new JacksonObjectMapper();
+    private static JacksonObjectMapper objectMapper = new JacksonObjectMapper();
     private CountDownLatch lock;
     private boolean status;
     private String fail;
@@ -86,6 +83,6 @@ public class BddTest {
 
     public static RequestCapture parse(HttpResponse<JsonNode> response) {
         assertEquals(200, response.getStatus());
-        return read(response, RequestCapture.class);
+        return objectMapper.readValue(response.getBody().toString(), RequestCapture.class);
     }
 }

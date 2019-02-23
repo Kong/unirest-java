@@ -25,8 +25,6 @@
 
 package kong.unirest;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -65,14 +63,6 @@ class ObjectResponse<T> extends BaseResponse<T> {
             setParsingException(b, e);
             return null;
         }
-    }
-
-    @Override
-    public InputStream getRawBody() {
-        if(body == null){
-            return new ByteArrayInputStream(new byte[0]);
-        }
-        return new ByteArrayInputStream(om.writeValue(body).getBytes());
     }
 
     @Override

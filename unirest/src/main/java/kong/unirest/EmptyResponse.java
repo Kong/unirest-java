@@ -25,16 +25,9 @@
 
 package kong.unirest;
 
-import java.io.InputStream;
-
 class EmptyResponse extends BaseResponse<Empty> {
     EmptyResponse(RawResponse response) {
         super(response);
-    }
-
-    @Override
-    public InputStream getRawBody() {
-        return null;
     }
 
     @Override

@@ -25,7 +25,6 @@
 
 package kong.unirest;
 
-import java.io.InputStream;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -52,16 +51,6 @@ public interface HttpResponse<T> {
     Headers getHeaders();
 
     /**
-     * This method is a lie. You never get the real raw response from it
-     * you only get a copy, or worse, the body transformed BACK to a stream
-     * If you want to use raw content use the new functional methods
-     * @deprecated this method is redundant and not the original stream. Use the functional asObject methods.
-     * @return a copy of the input stream
-     * */
-    @Deprecated
-    InputStream getRawBody();
-
-    /**
      * @return the body
      */
     T getBody();
@@ -78,17 +67,6 @@ public interface HttpResponse<T> {
      * @return the return type
      */
     <V> V mapBody(Function<T, V> func);
-
-    /**
-     * This method is a lie. You never get the real raw response from it
-     * you only get a copy, or worse, the body transformed BACK to a stream
-     * If you want to use raw content use the new functional methods
-     * @param func a function to map a inputstream to a new body
-     * @param <V> the return type
-     * @return the return type
-     */
-    @Deprecated
-    <V> V mapRawBody(Function<InputStream, V> func);
 
     /**
      * If the response was a 200-series response. Invoke this consumer

@@ -25,13 +25,10 @@
 
 package kong.unirest;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.Objects;
 
 public class JsonResponse extends BaseResponse<JsonNode> {
     private JsonNode node;
-    private InputStream errorStream;
 
     protected JsonResponse(RawResponse response) {
         super(response);
@@ -52,17 +49,8 @@ public class JsonResponse extends BaseResponse<JsonNode> {
             return new JsonNode(json);
         } catch (RuntimeException e) {
             super.setParsingException(json, e);
-            errorStream = new ByteArrayInputStream(json.getBytes());
             return null;
         }
-    }
-
-    @Override
-    public InputStream getRawBody() {
-        if (errorStream != null) {
-            return errorStream;
-        }
-        return new ByteArrayInputStream(node.toString().getBytes());
     }
 
     @Override

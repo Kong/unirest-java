@@ -25,19 +25,12 @@
 
 package kong.unirest;
 
-import java.io.InputStream;
-
 class BasicResponse<T> extends BaseResponse<T> {
     private final T body;
 
     public BasicResponse(RawResponse httpResponse, T body) {
         super(httpResponse);
         this.body = body;
-    }
-
-    @Override
-    public InputStream getRawBody() {
-        return null;
     }
 
     @Override

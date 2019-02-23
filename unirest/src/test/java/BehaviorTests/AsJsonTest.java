@@ -94,7 +94,7 @@ public class AsJsonTest extends BddTest {
                 .asJsonAsync(new MockCallback<>(this, response -> {
                     assertEquals(400, response.getStatus());
                     assertNull(response.getBody());
-                    assertEquals("You did something bad", TestUtil.toString(response.getRawBody()));
+                    assertEquals(null, response.getBody());
                     assertEquals("org.json.JSONException: A JSONArray text must start with '[' at 1 [character 2 line 1]",
                             response.getParsingError().get().getMessage());
 

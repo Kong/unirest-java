@@ -25,10 +25,8 @@
 
 package kong.unirest;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,11 +43,6 @@ public class FileResponse extends BaseResponse<File> {
         } catch (IOException e) {
             throw new UnirestException(e);
         }
-    }
-
-    @Override
-    public InputStream getRawBody() {
-        return new ByteArrayInputStream(new byte[0]);
     }
 
     @Override

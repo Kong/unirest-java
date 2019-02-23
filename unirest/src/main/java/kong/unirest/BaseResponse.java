@@ -25,7 +25,6 @@
 
 package kong.unirest;
 
-import java.io.InputStream;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -59,9 +58,6 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     }
 
     @Override
-    public abstract InputStream getRawBody();
-
-    @Override
     public abstract T getBody();
 
     @Override
@@ -72,11 +68,6 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     @Override
     public <V> V mapBody(Function<T, V> func){
         return func.apply(getBody());
-    }
-
-    @Override
-    public <V> V mapRawBody(Function<InputStream, V> func) {
-        return func.apply(getRawBody());
     }
 
     protected void setParsingException(String originalBody, RuntimeException e) {

@@ -121,14 +121,6 @@ public class TestUtil {
         }
     }
 
-    public static <T> T read(HttpResponse r, Class<T> as) {
-        try {
-            return om.readValue(r.getRawBody(), as);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static void assertBasicAuth(String raw, String username, String password) {
         assertNotNull("Authorization Header Missing", raw);
         String credentials = raw.replace("Basic ","");
