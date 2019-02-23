@@ -93,7 +93,7 @@ public class ConfigTest {
 
         TestUtil.assertException(() -> config.socketTimeout(533),
                 UnirestConfigException.class,
-                "Http Clients are already build in order to build a new config execute Unirest.config().reset() " +
+                "Http Clients are already built in order to build a new config execute Unirest.config().reset() " +
                         "before changing settings. \n" +
                         "This should be done rarely.");
 
@@ -204,6 +204,25 @@ public class ConfigTest {
         config.asyncClient(c);
 
         assertSame(c, config.getAsyncClient().getClient());
+    }
+
+    @Test
+    public void provideYourOwnClientBuilder() {
+        Client cli = mock(Client.class);
+
+        config.httpClient(c -> cli);
+
+        assertSame(cli, config.getClient());
+    }
+
+    @Test
+    public void provideYourOwnAsyncClientBuilder() {
+        AsyncClient cli = mock(AsyncClient.class);
+        when(cli.isRunning()).thenReturn(true);
+
+        config.asyncClient(c -> cli);
+
+        assertSame(cli, config.getAsyncClient());
     }
 
     @Test

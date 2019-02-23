@@ -45,24 +45,25 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class TimeoutTests extends BddTest {
+public class TimeoutTest extends BddTest {
 
     @Test
-    public void testSetTimeouts() throws IOException {
-        String address = "http://" + findAvailableIpAddress() + "/";
+    public void testSetTimeouts() {
+        String address = MockServer.GET;
         long start = System.currentTimeMillis();
         try {
-            Unirest.get("http://" + address + "/").asString();
+            Unirest.get(address).asString();
         } catch (Exception e) {
             if (System.currentTimeMillis() - start > Config.DEFAULT_CONNECTION_TIMEOUT + 100) { // Add 100ms for code execution
                 fail();
             }
         }
+        Unirest.config().reset();
         Unirest.config().connectTimeout(2000).socketTimeout(10000);
 
         start = System.currentTimeMillis();
         try {
-            Unirest.get("http://" + address + "/").asString();
+            Unirest.get(address).asString();
         } catch (Exception e) {
             if (System.currentTimeMillis() - start > 2100) { // Add 100ms for code execution
                 fail();

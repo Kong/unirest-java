@@ -33,7 +33,7 @@ import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertEquals;
 
-public class RedirectHandling extends BddTest {
+public class RedirectHandlingTest extends BddTest {
 
     @Test
     public void willFollowRedirectsByDefault() {

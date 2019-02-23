@@ -477,7 +477,7 @@ public class Config {
     private void validateClientsNotRunning() {
         if (client.isPresent() || asyncClient.isPresent()) {
             throw new UnirestConfigException(
-                    "Http Clients are already build in order to build a new config execute Unirest.config().reset() before changing settings. \n" +
+                    "Http Clients are already built in order to build a new config execute Unirest.config().reset() before changing settings. \n" +
                             "This should be done rarely."
             );
         }
