@@ -65,9 +65,9 @@ class Path {
             queryString.append("?");
         }
         try {
-            queryString.append(URLEncoder.encode(name));
+            queryString.append(URLEncoder.encode(name, "UTF-8"));
             if(value != null) {
-                queryString.append("=").append(URLEncoder.encode(value.toString(), "UTF-8"));
+                queryString.append("=").append(URLEncoder.encode(String.valueOf(value), "UTF-8"));
             }
         } catch (UnsupportedEncodingException e) {
             throw new UnirestException(e);
@@ -78,13 +78,7 @@ class Path {
     public void queryString(Map<String, Object> parameters) {
         if (parameters != null) {
             for (Map.Entry<String, Object> param : parameters.entrySet()) {
-                if (param.getValue() instanceof String || param.getValue() instanceof Number || param.getValue() instanceof Boolean || param.getValue() == null) {
-                    queryString(param.getKey(), param.getValue());
-                } else {
-                    throw new UnirestException("Parameter \"" + param.getKey() +
-                            "\" can't be sent with a GET request because of type: "
-                            + param.getValue().getClass().getName());
-                }
+                queryString(param.getKey(), param.getValue());
             }
         }
     }
