@@ -173,6 +173,12 @@ public class RequestCapture {
                 .orElseThrow(() -> new RuntimeException("No File from form: " + input));
     }
 
+    public List<File> getAllFilesByInput(String input){
+        return files.stream()
+                .filter(f -> Objects.equals(f.inputName, input))
+                .collect(Collectors.toList());
+    }
+
     public RequestCapture assertFileContent(String input, String content) {
         assertEquals(content, getFileByInput(input).body);
         return this;

@@ -29,15 +29,15 @@ import kong.unirest.*;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 
+import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.rezFile;
+import static org.junit.Assert.assertEquals;
 
 public class FormPostingTest extends BddTest {
     @Test
@@ -239,11 +239,32 @@ public class FormPostingTest extends BddTest {
     @Test
     public void testPostCollection() {
         Unirest.post(MockServer.POST)
-                .field("name", Arrays.asList("Mark", "Tom"))
+                .field("name", asList("Mark", "Tom"))
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertParam("name", "Mark")
                 .assertParam("name", "Tom");
+    }
+
+    @Test
+    public void testPostMulipleFIles() {
+        RequestCapture cap = Unirest.post(MockServer.POST)
+                .field("name", asList(rezFile("/test"), rezFile("/test2")))
+                .asObject(RequestCapture.class)
+                .getBody();
+
+        cap.getFile("test").assertBody("This is a test file");
+        cap.getFile("test2").assertBody("this is another test");
+    }
+
+    @Test
+    public void testMultipeInputStreams() throws FileNotFoundException {
+        Unirest.post(MockServer.POST)
+                .field("name", asList(new FileInputStream(rezFile("/test")), new FileInputStream(rezFile("/test2"))))
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertParam("name", "This is a test file")
+                .assertParam("name", "this is another test");
     }
 
     @Test
@@ -408,8 +429,7 @@ public class FormPostingTest extends BddTest {
                 .assertFileName("file???.p?f");
     }
 
-
-    private File getImageFile() throws URISyntaxException {
+    private File getImageFile() {
         return rezFile("/image.jpg");
     }
 }
