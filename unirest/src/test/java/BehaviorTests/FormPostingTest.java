@@ -124,10 +124,7 @@ public class FormPostingTest extends BddTest {
 
     @Test
     public void testMultipartByteContentType() throws Exception {
-        final InputStream stream = new FileInputStream(rezFile("/image.jpg"));
-        final byte[] bytes = new byte[stream.available()];
-        stream.read(bytes);
-        stream.close();
+        final byte[] bytes = getFileBytes("/image.jpg");
 
         Unirest.post(MockServer.POST)
                 .field("boot","boot")
@@ -140,10 +137,7 @@ public class FormPostingTest extends BddTest {
 
     @Test
     public void testMultipartByteContentTypeAsync() throws Exception {
-        final InputStream stream = new FileInputStream(rezFile("/test"));
-        final byte[] bytes = new byte[stream.available()];
-        stream.read(bytes);
-        stream.close();
+        final byte[] bytes = getFileBytes("/test");
 
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
@@ -277,6 +271,19 @@ public class FormPostingTest extends BddTest {
                 .assertParam("foo", "bar")
                 .getFileByInput("filecontents")
                 .assertFileType(ContentType.APPLICATION_OCTET_STREAM)
+                .assertFileName("image.jpg");
+    }
+
+    @Test
+    public void passFileAsByteArray() {
+        Unirest.post(MockServer.POST)
+                .field("foo", "bar")
+                .field("filecontents", getFileBytes("/image.jpg"), ContentType.IMAGE_JPEG, "image.jpg")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertParam("foo", "bar")
+                .getFileByInput("filecontents")
+                .assertFileType(ContentType.IMAGE_JPEG)
                 .assertFileName("image.jpg");
     }
 
@@ -455,5 +462,17 @@ public class FormPostingTest extends BddTest {
 
     private File getImageFile() {
         return rezFile("/image.jpg");
+    }
+
+    private byte[] getFileBytes(String s) {
+        try {
+            final InputStream stream = new FileInputStream(rezFile(s));
+            final byte[] bytes = new byte[stream.available()];
+            stream.read(bytes);
+            stream.close();
+            return bytes;
+        }catch (IOException e){
+            throw new RuntimeException(e);
+        }
     }
 }

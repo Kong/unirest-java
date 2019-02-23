@@ -139,13 +139,6 @@ public interface MultipartBody extends HttpRequest<MultipartBody>, Body {
 
     /**
      * Set the Apache Mode.
-     * @param value the string value of the mode
-     * @return The same MultipartBody
-     * */
-    MultipartBody mode(String value);
-
-    /**
-     * Set the Apache Mode.
      * @param value the value of the mode
      * @return The same MultipartBody
      * */
