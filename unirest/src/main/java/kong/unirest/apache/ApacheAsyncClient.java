@@ -65,7 +65,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
                 ab.useSystemProperties();
             }
             if (!config.getFollowRedirects()) {
-                ab.setRedirectStrategy(new NoRedirects());
+                ab.setRedirectStrategy(new ApacheNoRedirectStrategy());
             }
             if (!config.getEnabledCookieManagement()) {
                 ab.disableCookieManagement();

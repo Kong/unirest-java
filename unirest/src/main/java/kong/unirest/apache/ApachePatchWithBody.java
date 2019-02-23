@@ -29,14 +29,14 @@ import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 
 import java.net.URI;
 
-class HttpPatchWithBody extends HttpEntityEnclosingRequestBase {
+class ApachePatchWithBody extends HttpEntityEnclosingRequestBase {
 	private static final String METHOD_NAME = "PATCH";
 
 	public String getMethod() {
 		return METHOD_NAME;
 	}
 
-	HttpPatchWithBody(final String uri) {
+	ApachePatchWithBody(final String uri) {
 		super();
 		setURI(URI.create(uri));
 	}

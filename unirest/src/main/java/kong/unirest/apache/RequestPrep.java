@@ -52,8 +52,8 @@ class RequestPrep {
         FACTORIES.put(HttpMethod.GET, HttpGet::new);
         FACTORIES.put(HttpMethod.POST, HttpPost::new);
         FACTORIES.put(HttpMethod.PUT, HttpPut::new);
-        FACTORIES.put(HttpMethod.DELETE, HttpDeleteWithBody::new);
-        FACTORIES.put(HttpMethod.PATCH, HttpPatchWithBody::new);
+        FACTORIES.put(HttpMethod.DELETE, ApacheDeleteWithBody::new);
+        FACTORIES.put(HttpMethod.PATCH, ApachePatchWithBody::new);
         FACTORIES.put(HttpMethod.OPTIONS, HttpOptions::new);
         FACTORIES.put(HttpMethod.HEAD, HttpHead::new);
     }
