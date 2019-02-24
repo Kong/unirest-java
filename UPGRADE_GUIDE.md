@@ -8,7 +8,7 @@ All main classes are now in the ```kong.unirest``` package. Classes related to t
 * ```.asBinary()``` and ```.getRawResponse()```  methods have been removed. These have been replaced by consumer methods which allow you to read the InputStream directly and not a copy. (see ```HttpRequest::thenConsume(Consumer<RawResponse> consumer)```
 * Removal of all Apache classes in the non-config interfaces. These have ben replaced by Unirest native interfaces.
   Typically these interfaces are very similar to the older Apache classes and so updating shouldn't be a problem.
-  
+
 
 
 ### Configuration
