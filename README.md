@@ -1,16 +1,13 @@
-<<<<<<< HEAD
 # Unirest for Java 
-=======
-# Call for Maintainers
 
 We are looking for official maintainers, check out issue [#252](https://github.com/Kong/unirest-java/issues/252)
 
 # Unirest for Java [![Build Status][travis-image]][travis-url]
 
-[![Build Status](https://travis-ci.org/OpenUnirest/unirest-java.svg?branch=master)](https://travis-ci.org/OpenUnirest/unirest-java)
+[![Build Status](https://travis-ci.org/Kong/unirest-java.svg?branch=master)](https://travis-ci.org/Kong/unirest-java)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.kong/open-unirest-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kong/open-unirest-java)
-[![DepShield Badge](https://depshield.sonatype.org/badges/OpenUnirest/unirest-java/depshield.svg)](https://depshield.github.io)
-[![Javadocs](http://www.javadoc.io/badge/com.kong/open-unirest-java.svg)](http://www.javadoc.io/doc/com.kong/open-unirest-java)
+[![DepShield Badge](https://depshield.sonatype.org/badges/Kong/unirest-java/depshield.svg)](https://depshield.github.io)
+[![Javadocs](http://www.javadoc.io/badge/com.kong/unirest-java.svg)](http://www.javadoc.io/doc/com.kong/unirest-java)
 
 ## About This Repository
 This repo is an updated, maintained, and independent fork of the original Mashape/Kong Unirest-Java project. That project is no longer being maintained so this project was set up to keep it alive.
@@ -21,14 +18,13 @@ This repo is an updated, maintained, and independent fork of the original Mashap
 ```
 <dependency>
     <groupId>com.kong</groupId>
-    <artifactId>open-unirest-java</artifactId>
-    <version>3.3.03</version>
+    <artifactId>unirest-java</artifactId>
+    <version>2.0.00</version>
 </dependency>
 ```
 
-#### Note on 2.x 
-Because 3.0 made several very not backwards compatible changes the artifactID was changed. The 2.0 line is still available [Here](https://mvnrepository.com/artifact/com.kong/unirest-java). Security patches and major defects will still be patched on it until 2020.
-
+#### Upgrading from Previous Versions 
+See the [Upgrade Guide](UPGRADE_GUIDE.md)
 
 ## Features
 

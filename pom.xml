@@ -7,7 +7,7 @@
     <version>3.3.06-SNAPSHOT</version>
     <name>unirest</name>
     <description>Simplified, lightweight HTTP client library.</description>
-    <url>http://github.com/OpenUnirest/</url>
+    <url>http://github.com/Kong/unirest-java/</url>
     
     <licenses>
         <license>
@@ -28,9 +28,9 @@
     </properties>
     
     <scm>
-        <url>https://github.com/OpenUnirest/unirest-java</url>
-        <connection>scm:git:git@github.com:OpenUnirest/unirest-java.git</connection>
-        <developerConnection>scm:git:git@github.com:OpenUnirest/unirest-java.git</developerConnection>
+        <url>https://github.com/Kong/unirest-java</url>
+        <connection>scm:git:git@github.com:Kong/unirest-java.git</connection>
+        <developerConnection>scm:git:git@github.com:Kong/unirest-java.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 

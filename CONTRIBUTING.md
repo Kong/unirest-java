@@ -1,4 +1,4 @@
-# Contributing to Open Unirest
+# Contributing to Unirest
 
 :+1::tada: First off, thanks for taking the time to contribute! :tada::+1:
 
@@ -30,5 +30,5 @@ Include details about your configuration and environment:
    * All code should follow style guidelines enforced by the checkstyle and other static analysis.
    * All code should have tests.
       * Unit tests
-      * Behavioral tests (see https://github.com/OpenUnirest/unirest-java/tree/master/src/test/java/BehaviorTests)
+      * Behavioral tests (see https://github.com/Kong/unirest-java/tree/master/src/test/java/BehaviorTests)
   * You should have run verify before submitting and the PR needs to have passed TravisCI before being merged.
