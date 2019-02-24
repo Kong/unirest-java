@@ -1,11 +1,20 @@
-## Upgrading to Open Unirest 3.0 from previous versions
+## Upgrading to Unirest 2.0 from previous versions
 
 ### Package
-Inspired by the "Java Spark" project, all classes are now in the ```unirest``` package. This project only has 45 files, it really doesn't need anything more complicated than that.
+All main classes are now in the ```kong.unirest``` package. Classes related to the underlying Apache Http client that powers unirest are kept in ```kong.unirest.apache``` This project doesn't have many files, it really doesn't need anything more complicated than that.
+
+### Removed Methods and Java Requirements
+* Java 8: Java 8 is now required for Unirest due to extensive lambda support.
+* ```.asBinary()``` and ```.getRawResponse()```  methods have been removed. These have been replaced by consumer methods which allow you to read the InputStream directly and not a copy. (see ```HttpRequest::thenConsume(Consumer<RawResponse> consumer)```
+* Removal of all Apache classes in the non-config interfaces. These have ben replaced by Unirest native interfaces.
+  Typically these interfaces are very similar to the older Apache classes and so updating shouldn't be a problem.
+  
+
 
 ### Configuration
-Previous versions of unirest had configuration split across several different places. Sometimes it was done on ```Unirest```, sometimes it was done on ```Option```, sometimes it was somewhere else. 
+Previous versions of unirest had configuration split across several different places. Sometimes it was done on ```Unirest```, sometimes it was done on ```Option```, sometimes it was somewhere else.
 All configuration is now done through ```Unirest.config()```
+
 
 #### Unirest.config()
 Unirest config allows easy access to build a configuration just like you would build a request:
@@ -15,7 +24,7 @@ Unirest config allows easy access to build a configuration just like you would b
            .socketTimeout(500)
            .connectTimeout(1000)
            .concurrency(10, 5)
-           .proxy(new HttpHost("https://proxy"))
+           .proxy(new Proxy("https://proxy"))
            .setDefaultHeader("Accept", "application/json")
            .followRedirects(false)
            .enableCookieManagement(false)
