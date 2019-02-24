@@ -8,26 +8,26 @@ We are looking for official maintainers, check out issue [#252](https://github.c
 # Unirest for Java [![Build Status][travis-image]][travis-url]
 
 [![Build Status](https://travis-ci.org/OpenUnirest/unirest-java.svg?branch=master)](https://travis-ci.org/OpenUnirest/unirest-java)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.openunirest/open-unirest-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.openunirest/open-unirest-java)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.kong/open-unirest-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kong/open-unirest-java)
 [![DepShield Badge](https://depshield.sonatype.org/badges/OpenUnirest/unirest-java/depshield.svg)](https://depshield.github.io)
-[![Javadocs](http://www.javadoc.io/badge/io.github.openunirest/open-unirest-java.svg)](http://www.javadoc.io/doc/io.github.openunirest/open-unirest-java)
+[![Javadocs](http://www.javadoc.io/badge/com.kong/open-unirest-java.svg)](http://www.javadoc.io/doc/com.kong/open-unirest-java)
 
 ## About This Repository
 This repo is an updated, maintained, and independent fork of the original Mashape/Kong Unirest-Java project. That project is no longer being maintained so this project was set up to keep it alive.
 
 ##### See the [UPGRADE_GUIDE](UPGRADE_GUIDE.md) for differences between this library and last kong release.
 
-## Install With [Maven](https://mvnrepository.com/artifact/io.github.openunirest/open-unirest-java)
+## Install With [Maven](https://mvnrepository.com/artifact/com.kong/open-unirest-java)
 ```
 <dependency>
-    <groupId>io.github.openunirest</groupId>
+    <groupId>com.kong</groupId>
     <artifactId>open-unirest-java</artifactId>
     <version>3.3.03</version>
 </dependency>
 ```
 
 #### Note on 2.x 
-Because 3.0 made several very not backwards compatible changes the artifactID was changed. The 2.0 line is still available [Here](https://mvnrepository.com/artifact/io.github.openunirest/unirest-java). Security patches and major defects will still be patched on it until 2020.
+Because 3.0 made several very not backwards compatible changes the artifactID was changed. The 2.0 line is still available [Here](https://mvnrepository.com/artifact/com.kong/unirest-java). Security patches and major defects will still be patched on it until 2020.
 
 
 ## Features
@@ -158,7 +158,7 @@ will send a request with a body of
 ## Advanced Object Mapping with Jackson, GSON, JAX-B or others
 Before an `asObject(Class)` or a `.body(Object)` invokation, is necessary to provide a custom implementation of the `ObjectMapper` interface.
 This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
-Open Unirest offers a few plug-ins implementing popular object mappers like Jackson and Gson. See [mvn central](https://mvnrepository.com/artifact/io.github.openunirest) for details.
+Open Unirest offers a few plug-ins implementing popular object mappers like Jackson and Gson. See [mvn central](https://mvnrepository.com/artifact/com.kong) for details.
 
 For example, serializing Json from\to Object using the popular Jackson ObjectMapper takes only few lines of code.
 
