@@ -5,7 +5,7 @@ We are looking for official maintainers, check out issue [#252](https://github.c
 # Unirest for Java [![Build Status][travis-image]][travis-url]
 
 [![Build Status](https://travis-ci.org/Kong/unirest-java.svg?branch=master)](https://travis-ci.org/Kong/unirest-java)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.kong/open-unirest-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kong/open-unirest-java)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.kong/unirest-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kong/unirest-java)
 [![DepShield Badge](https://depshield.sonatype.org/badges/Kong/unirest-java/depshield.svg)](https://depshield.github.io)
 [![Javadocs](http://www.javadoc.io/badge/com.kong/unirest-java.svg)](http://www.javadoc.io/doc/com.kong/unirest-java)
 
@@ -14,12 +14,12 @@ This repo is an updated, maintained, and independent fork of the original Mashap
 
 ##### See the [UPGRADE_GUIDE](UPGRADE_GUIDE.md) for differences between this library and last kong release.
 
-## Install With [Maven](https://mvnrepository.com/artifact/com.kong/open-unirest-java)
+## Install With [Maven](https://mvnrepository.com/artifact/com.kong/unirest-java)
 ```
 <dependency>
     <groupId>com.kong</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>2.0.00</version>
+    <version>2.0.01</version>
 </dependency>
 ```
 
@@ -154,7 +154,7 @@ will send a request with a body of
 ## Advanced Object Mapping with Jackson, GSON, JAX-B or others
 Before an `asObject(Class)` or a `.body(Object)` invokation, is necessary to provide a custom implementation of the `ObjectMapper` interface.
 This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
-Open Unirest offers a few plug-ins implementing popular object mappers like Jackson and Gson. See [mvn central](https://mvnrepository.com/artifact/com.kong) for details.
+Unirest offers a few plug-ins implementing popular object mappers like Jackson and Gson. See [mvn central](https://mvnrepository.com/artifact/com.kong) for details.
 
 For example, serializing Json from\to Object using the popular Jackson ObjectMapper takes only few lines of code.
 
