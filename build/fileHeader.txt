@@ -1,6 +1,6 @@
 The MIT License
 
- * Copyright for portions of unirest-java are held by Kong Inc (c) 2013-2019.
+Copyright for portions of unirest-java are held by Kong Inc (c) 2013.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

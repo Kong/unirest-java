@@ -1,32 +1,35 @@
-# Call for Maintainers
+# Unirest for Java 
 
 We are looking for official maintainers, check out issue [#252](https://github.com/Kong/unirest-java/issues/252)
 
 # Unirest for Java [![Build Status][travis-image]][travis-url]
 
-![][unirest-logo]
+[![Build Status](https://travis-ci.org/Kong/unirest-java.svg?branch=master)](https://travis-ci.org/Kong/unirest-java)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.kong/unirest-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kong/unirest-java)
+[![DepShield Badge](https://depshield.sonatype.org/badges/Kong/unirest-java/depshield.svg)](https://depshield.github.io)
+[![Javadocs](http://www.javadoc.io/badge/com.kong/unirest-java.svg)](http://www.javadoc.io/doc/com.kong/unirest-java)
 
+## About This Repository
+This repo is an updated, maintained, and independent fork of the original Mashape/Kong Unirest-Java project. That project is no longer being maintained so this project was set up to keep it alive.
 
-[Unirest](http://unirest.io) is a set of lightweight HTTP libraries available in multiple languages, built and maintained by [Mashape](https://github.com/Mashape), who also maintain the open-source API Gateway [Kong](https://github.com/Mashape/kong). 
+##### See the [UPGRADE_GUIDE](UPGRADE_GUIDE.md) for differences between this library and last kong release.
 
-Do yourself a favor, and start making HTTP requests like this:
-
-```java
-Unirest.post("http://httpbin.org/post")
-  .queryString("name", "Mark")
-  .field("last", "Polo")
-  .asJson()
+## Install With [Maven](https://mvnrepository.com/artifact/com.kong/unirest-java)
+```
+<dependency>
+    <groupId>com.kong</groupId>
+    <artifactId>unirest-java</artifactId>
+    <version>2.0.01</version>
+</dependency>
 ```
 
-[![License][license-image]][license-url]  |
-[![version][maven-version]][maven-url]  |
-[![Gitter][gitter-image]][gitter-url]
-
+#### Upgrading from Previous Versions 
+See the [Upgrade Guide](UPGRADE_GUIDE.md)
 
 ## Features
 
 * Make `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS` requests
-* Both syncronous and asynchronous (non-blocking) requests
+* Both synchronous and asynchronous (non-blocking) requests
 * It supports form parameters, file uploads and custom body entities
 * Easily add route parameters without ugly string concatenations
 * Supports gzip
@@ -101,17 +104,18 @@ Alternatively if you don't use Maven, you can directly include the JAR file in t
 Don't forget to also install the dependencies ([`org.json`](http://www.json.org/java/), [`httpclient 4.3.6`](http://hc.apache.org/downloads.cgi), [`httpmime 4.3.6`](http://hc.apache.org/downloads.cgi), [`httpasyncclient 4.0.2`](http://hc.apache.org/downloads.cgi)) in the classpath too.
 
 There is also a way to generate a Unirest-Java JAR file that already includes the required dependencies, but you will need Maven to generate it. Follow the instructions at http://blog.mashape.com/post/69117323931/installing-unirest-java-with-the-maven-assembly-plugin
+>>>>>>> bf4e031140464930bc05f3a8e2d9f3f02a72d551
 
 ## Creating Request
 So you're probably wondering how using Unirest makes creating requests in Java easier, here is a basic POST request that will explain everything:
 
 ```java
-HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
-  .header("accept", "application/json")
-  .queryString("apiKey", "123")
-  .field("parameter", "value")
-  .field("foo", "bar")
-  .asJson();
+HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post")
+      .header("accept", "application/json")
+      .queryString("apiKey", "123")
+      .field("parameter", "value")
+      .field("foo", "bar")
+      .asJson();
 ```
 
 Requests are made when `as[Type]()` is invoked, possible types include `Json`, `Binary`, `String`, `Object`.
@@ -122,55 +126,61 @@ If you already have a map of parameters or do not wish to use seperate field met
 
 `.headers(Map<String, String> headers)` is also supported in replacement of multiple header methods.
 
-## Serialization
+## JSON Patch Requests
+Unirest has full native support for JSON Patch requests
+```java
+     Unirest.jsonPatch(MockServer.PATCH)
+            .add("/fruits/-", "Apple")
+            .remove("/bugs")
+            .replace("/lastname", "Flintstone")
+            .test("/firstname", "Fred")
+            .move("/old/location", "/new/location")
+            .copy("/original/location", "/new/location")
+            .asJson();
+```
+will send a request with a body of
+```json
+  [
+     {"op":"add","path":"/fruits/-","value":"Apple"},
+     {"op":"remove","path":"/bugs"},
+     {"op":"replace","path":"/lastname","value":"Flintstone"},
+     {"op":"test","path":"/firstname","value":"Fred"},
+     {"op":"move","path":"/new/location","from":"/old/location"},
+     {"op":"copy","path":"/new/location","from":"/original/location"}
+  ]
+
+```
+
+## Advanced Object Mapping with Jackson, GSON, JAX-B or others
 Before an `asObject(Class)` or a `.body(Object)` invokation, is necessary to provide a custom implementation of the `ObjectMapper` interface.
 This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
+Unirest offers a few plug-ins implementing popular object mappers like Jackson and Gson. See [mvn central](https://mvnrepository.com/artifact/com.kong) for details.
 
 For example, serializing Json from\to Object using the popular Jackson ObjectMapper takes only few lines of code.
 
 ```java
 // Only one time
-Unirest.setObjectMapper(new ObjectMapper() {
-    private com.fasterxml.jackson.databind.ObjectMapper jacksonObjectMapper
-                = new com.fasterxml.jackson.databind.ObjectMapper();
-    
-    public <T> T readValue(String value, Class<T> valueType) {
-        try {
-            return jacksonObjectMapper.readValue(value, valueType);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public String writeValue(Object value) {
-        try {
-            return jacksonObjectMapper.writeValueAsString(value);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-});
+Unirest.config().setObjectMapper(new JacksonObjectMapper());
 
 // Response to Object
-HttpResponse<Book> bookResponse = Unirest.get("http://httpbin.org/books/1").asObject(Book.class);
-Book bookObject = bookResponse.getBody();
+Book book = Unirest.get("http://httpbin.org/books/1")
+                   .asObject(Book.class)
+                   .getBody();
 
-HttpResponse<Author> authorResponse = Unirest.get("http://httpbin.org/books/{id}/author")
-    .routeParam("id", bookObject.getId())
-    .asObject(Author.class);
-    
-Author authorObject = authorResponse.getBody();
+Author author = Unirest.get("http://httpbin.org/books/{id}/author")
+                       .routeParam("id", bookObject.getId())
+                       .asObject(Author.class)
+                       .getBody();
 
-// Object to Json
-HttpResponse<JsonNode> postResponse = Unirest.post("http://httpbin.org/authors/post")
+// Sending a JSON object
+Unirest.post("http://httpbin.org/authors/post")
         .header("accept", "application/json")
         .header("Content-Type", "application/json")
-        .body(authorObject)
+        .body(author)
         .asJson();
 ```
 
 ### Route Parameters
-
 Sometimes you want to add dynamic parameters in the URL, you can easily do that by adding a placeholder in the URL, and then by setting the route parameters with the `routeParam` function, like:
 
 ```java
@@ -187,28 +197,37 @@ The placeholder's format is as easy as: `{custom_name}`
 Sometimes, well most of the time, you want your application to be asynchronous and not block, Unirest supports this in Java using anonymous callbacks, or direct method placement:
 
 ```java
-Future<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.org/post")
+CompletableFuture<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.org/post")
   .header("accept", "application/json")
   .field("param1", "value1")
   .field("param2", "value2")
-  .asJsonAsync(new Callback<JsonNode>() {
+  .asJsonAsync(response -> {
+        int code = response.getStatus();
+        JsonNode body = response.getBody();
+    });
+```
 
-	public void failed(UnirestException e) {
-		System.out.println("The request has failed");
-	}
+## Custom mappings and handling large responses
+Most response methods (```asString```, ```asJson```, and even ```asBinary```) read the entire
+response stream into memory. In order to read the original stream and handle large responses you
+can use several functional methods like:
 
-	public void completed(HttpResponse<JsonNode> response) {
-		 int code = response.getStatus();
-	     Map<String, String> headers = response.getHeaders();
-	     JsonNode body = response.getBody();
-	     InputStream rawBody = response.getRawBody();
-	}
+```java
+   Map r = Unirest.get(MockServer.GET)
+                .queryString("foo", "bar")
+                .asObject(i -> new Gson().fromJson(i.getContentReader(), HashMap.class))
+                .getBody();
 
-	public void cancelled() {
-		System.out.println("The request has been cancelled");
-	}
+```
 
-});
+or consumers:
+
+```java
+
+         Unirest.get(MockServer.GET)
+                .thenConsumeAsync(r -> {
+                       // something like writing a file to disk
+                });
 ```
 
 ## File Uploads
@@ -231,112 +250,70 @@ HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
   .asJson();
 ```
 
-## Byte Stream as Entity Body
-
-```java
-final InputStream stream = new FileInputStream(new File(getClass().getResource("/image.jpg").toURI()));
-final byte[] bytes = new byte[stream.available()];
-stream.read(bytes);
-stream.close();
-final HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
-  .field("name", "Mark")
-  .field("file", bytes, "image.jpg")
-  .asJson();
-```
-
-## InputStream as Entity Body
-
-```java
-HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
-  .field("name", "Mark")
-  .field("file", new FileInputStream(new File(getClass().getResource("/image.jpg").toURI())), ContentType.APPLICATION_OCTET_STREAM, "image.jpg")
-  .asJson();
-```
-
 ## Basic Authentication
 Authenticating the request with basic authentication can be done by calling the `basicAuth(username, password)` function:
 ```java
-HttpResponse<JsonNode> response = Unirest.get("http://httpbin.org/headers").basicAuth("username", "password").asJson();
+ Unirest.get("http://httpbin.org/headers")
+        .basicAuth("username", "password")
+        .asJson();
 ```
 
-# Request
+# Configuration
+Previous versions of unirest had configuration split across several different places. Sometimes it was done on ```Unirest```, sometimes it was done on ```Option```, sometimes it was somewhere else. 
+All configuration is now done through ```Unirest.config()```
 
-The Java Unirest library follows the builder style conventions. You start building your request by creating a `HttpRequest` object using one of the following:
+#### Unirest.config()
+Unirest config allows easy access to build a configuration just like you would build a request:
 
 ```java
-GetRequest request = Unirest.get(String url);
-GetRequest request = Unirest.head(String url);
-HttpRequestWithBody request = Unirest.post(String url);
-HttpRequestWithBody request = Unirest.put(String url);
-HttpRequestWithBody request = Unirest.patch(String url);
-HttpRequestWithBody request = Unirest.options(String url);
-HttpRequestWithBody request = Unirest.delete(String url);
+    Unirest.config()
+           .socketTimeout(500)
+           .connectTimeout(1000)
+           .concurrency(10, 5)
+           .proxy(new HttpHost("https://proxy"))
+           .setDefaultHeader("Accept", "application/json")
+           .followRedirects(false)
+           .enableCookieManagement(false)
+           .addInterceptor(new MyCustomInterceptor());
 ```
 
-# Response
+##### Changing the config
+Changing Unirest's config should ideally be done once, or rarely. There are several background threads spawned by both Unirest itself and Apache HttpAsyncClient. Once Unirest has been activated configuration options that are involved in creating the client cannot be changed without an explicit shutdown or reset.
 
-Upon recieving a response Unirest returns the result in the form of an Object, this object should always have the same keys for each language regarding to the response details.
+```Java
+     Unirest.config()
+            .reset()
+            .connectTimeout(5000)
+```
 
-- `.getStatus()` - HTTP Response Status Code (Example: 200)
-- `.getStatusText()` - HTTP Response Status Text (Example: "OK")
-- `.getHeaders()` - HTTP Response Headers
-- `.getBody()` - Parsed response body where applicable, for example JSON responses are parsed to Objects / Associative Arrays.
-- `.getRawBody()` - Un-parsed response body
-
-# Advanced Configuration
-
-You can set some advanced configuration to tune Unirest-Java:
-
-### Custom HTTP clients
-
-You can explicitly set your own `HttpClient` and `HttpAsyncClient` implementations by using the following methods:
+##### Setting custom Apache Client
+You can set your own custom Apache HttpClient and HttpAsyncClient. Note that Unirest settings like timeouts or interceptors are not applied to custom clients.
 
 ```java
-Unirest.setHttpClient(httpClient);
-Unirest.setAsyncHttpClient(asyncHttpClient);
+     Unirest.config()
+            .httpClient(myClient)
+            .asyncClient(myAsyncClient)
 ```
-### Timeouts
 
-You can set custom connection and socket timeout values (in **milliseconds**):
+#### Multiple Configuration Instances
+As usual, Unirest maintains a primary single instance. Sometimes you might want different configurations for different systems. You might also want an instance rather than a static context for testing purposes.
 
 ```java
-Unirest.setTimeouts(long connectionTimeout, long socketTimeout);
+
+    // this returns the same instance used by Unirest.get("http://somewhere/")
+    UnirestInstance unirest = Unirest.primaryInstance(); 
+    // It can be configured and used just like the static context
+    unirest.config().connectTimeout(5000);
+    String result = unirest.get("http://foo").asString().getBody();
+    
+    // You can also get a whole new instance
+    UnirestInstance unirest = Unirest.spawnInstance();
 ```
 
-By default the connection timeout (the time it takes to connect to a server) is `10000`, and the socket timeout (the time it takes to receive data) is `60000`. You can set any of these timeouts to zero to disable the timeout.
+**WARNING!** If you get a new instance of unirest YOU are responsible for shutting it down when the JVM shuts down. It is not tracked or shut down by ```Unirest.shutDown();```
 
-### Default Request Headers
 
-You can set default headers that will be sent on every request:
 
-```java
-Unirest.setDefaultHeader("Header1", "Value1");
-Unirest.setDefaultHeader("Header2", "Value2");
-```
-
-You can clear the default headers anytime with:
-
-```java
-Unirest.clearDefaultHeaders();
-```
-
-### Concurrency
-
-You can set custom concurrency levels if you need to tune the performance of the syncronous or asyncronous client:
-
-```java
-Unirest.setConcurrency(int maxTotal, int maxPerRoute);
-```
-
-By default the maxTotal (overall connection limit in the pool) is `200`, and the maxPerRoute (connection limit per target host) is `20`.
-
-### Proxy
-
-You can set a proxy by invoking:
-
-```java
-Unirest.setProxy(new HttpHost("127.0.0.1", 8000));
-```
 
 # Exiting an application
 
@@ -346,24 +323,6 @@ Unirest starts a background event loop and your Java application won't be able t
 Unirest.shutdown();
 ```
 
-----
-
-Made with &#9829; from the [Mashape](https://www.mashape.com/) team
-
-[unirest-logo]: http://cl.ly/image/2P373Y090s2O/Image%202015-10-12%20at%209.48.06%20PM.png
+Once shutdown, using Unirest again will re-init the system
 
 
-[license-url]: https://github.com/Mashape/unirest-java/blob/master/LICENSE
-[license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat
-
-[gitter-url]: https://gitter.im/Mashape/unirest-java
-[gitter-image]: https://img.shields.io/badge/Gitter-Join%20Chat-blue.svg?style=flat
-
-[travis-url]: https://travis-ci.org/Mashape/unirest-java
-[travis-image]: https://img.shields.io/travis/Mashape/unirest-java.svg?style=flat
-
-[maven-url]: http://search.maven.org/#browse%7C1262490619
-[maven-version]: https://img.shields.io/maven-central/v/com.mashape.unirest/unirest-java.svg?style=flat
-
-[versioneye-url]: https://www.versioneye.com/user/projects/54b83a12050646ca5c0001fc
-[versioneye-image]: https://www.versioneye.com/user/projects/54b83a12050646ca5c0001fc/badge.svg?style=flat

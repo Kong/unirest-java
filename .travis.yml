@@ -1,10 +1,17 @@
 language: java
 
 jdk:
-  - openjdk6
-  - openjdk7
-  - oraclejdk7
   - oraclejdk8
 
 os:
   - linux
+
+cache:
+  directories:
+  - .autoconf
+  - $HOME/.m2
+
+# blocklist
+branches:
+  except:
+  - v3
