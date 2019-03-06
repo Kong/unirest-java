@@ -1,9 +1,7 @@
 # Unirest for Java 
 
 [![Build Status](https://travis-ci.org/Kong/unirest-java.svg?branch=master)](https://travis-ci.org/Kong/unirest-java)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.kong/unirest-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kong/unirest-java)
-[![DepShield Badge](https://depshield.sonatype.org/badges/Kong/unirest-java/depshield.svg)](https://depshield.github.io)
-[![Javadocs](http://www.javadoc.io/badge/com.kong/unirest-java.svg)](http://www.javadoc.io/doc/com.kong/unirest-java)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.konghq/unirest-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kong/unirest-java)
 
 We are looking for official maintainers, check out issue [#252](https://github.com/Kong/unirest-java/issues/252)
 
