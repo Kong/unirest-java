@@ -40,6 +40,15 @@ public class HeaderTest extends BddTest {
     private String value = "one";
 
     @Test
+    public void contentLengthIsSetWithBodies() {
+        Unirest.post(MockServer.POST)
+                .body("do do do do")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("Content-Length", "11");
+    }
+
+    @Test
     public void testHeadersOnGetRequests() {
         Unirest.get(MockServer.GET)
                 .header("user-agent", "hello-world")
