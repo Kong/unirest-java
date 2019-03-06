@@ -33,6 +33,18 @@ import kong.unirest.TestUtil;
 public class PathParamTest extends BddTest {
 
     @Test
+    public void properlyDealsWithPlusInPAth() {
+        String param = "jack+4@email.com";
+
+        Unirest.get(MockServer.PASSED_PATH_PARAM)
+                .routeParam("param", param)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertUrl("http://localhost:4567/get/jack%2B4%40email.com/passed")
+                .assertPathParam(param);
+    }
+
+    @Test
     public void testPathParameters() {
         Unirest.get(MockServer.HOST + "/{method}")
                 .routeParam("method", "get")
