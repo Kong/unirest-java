@@ -216,6 +216,14 @@ public class ConfigTest {
     }
 
     @Test
+    public void canDisableGZipencoding() {
+        assertTrue(config.isRequestCompressionOn());
+        config.requestCompression(false);
+        assertFalse(config.isRequestCompressionOn());
+
+    }
+
+    @Test
     public void provideYourOwnAsyncClientBuilder() {
         AsyncClient cli = mock(AsyncClient.class);
         when(cli.isRunning()).thenReturn(true);

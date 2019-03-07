@@ -101,7 +101,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
 
         Objects.requireNonNull(callback);
 
-        HttpUriRequest requestObj = new RequestPrep(request, true).prepare();
+        HttpUriRequest requestObj = new RequestPrep(request, config, true).prepare();
 
         client.execute(requestObj, new FutureCallback<org.apache.http.HttpResponse>() {
                     @Override

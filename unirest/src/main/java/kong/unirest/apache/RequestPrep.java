@@ -45,6 +45,7 @@ class RequestPrep {
     private static final String USER_AGENT = "unirest-java/3.0.00";
     private static final Map<HttpMethod, Function<String, HttpRequestBase>> FACTORIES;
     private final HttpRequest request;
+    private Config config;
     private final boolean async;
 
     static {
@@ -58,8 +59,9 @@ class RequestPrep {
         FACTORIES.put(HttpMethod.HEAD, HttpHead::new);
     }
 
-    RequestPrep(HttpRequest request, boolean async) {
+    RequestPrep(HttpRequest request, Config config, boolean async) {
         this.request = request;
+        this.config = config;
         this.async = async;
     }
 
@@ -75,7 +77,7 @@ class RequestPrep {
         if (!request.getHeaders().containsKey(USER_AGENT_HEADER)) {
             request.header(USER_AGENT_HEADER, USER_AGENT);
         }
-        if (!request.getHeaders().containsKey(ACCEPT_ENCODING_HEADER)) {
+        if (!request.getHeaders().containsKey(ACCEPT_ENCODING_HEADER) && config.isRequestCompressionOn()) {
             request.header(ACCEPT_ENCODING_HEADER, "gzip");
         }
 

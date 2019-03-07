@@ -35,7 +35,8 @@ public class GZipTest extends BddTest {
                 .queryString("zipme", "up")
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertParam("zipme", "up");
+                .assertParam("zipme", "up")
+                .assertHeader("Accept-Encoding","gzip");
     }
 
     @Test
@@ -45,6 +46,18 @@ public class GZipTest extends BddTest {
                 .asObjectAsync(RequestCapture.class)
                 .get()
                 .getBody()
-                .assertParam("zipme", "up");
+                .assertParam("zipme", "up")
+                .assertHeader("Accept-Encoding","gzip");
+    }
+
+    @Test
+    public void canDisableGZip() throws Exception {
+        Unirest.config().requestCompression(false);
+
+        Unirest.get(MockServer.GET)
+                .asObjectAsync(RequestCapture.class)
+                .get()
+                .getBody()
+                .assertNoHeader("Accept-Encoding");
     }
 }

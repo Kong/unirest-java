@@ -55,6 +55,9 @@ public class ApacheClient extends BaseApacheClient implements Client {
                 .setConnectionManager(manager)
                 .useSystemProperties();
 
+        if(!config.isRequestCompressionOn()) {
+            cb.disableContentCompression();
+        }
         if(config.useSystemProperties()){
             cb.useSystemProperties();
         }
@@ -79,7 +82,7 @@ public class ApacheClient extends BaseApacheClient implements Client {
     @Override
     public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
 
-        HttpRequestBase requestObj = new RequestPrep(request, false).prepare();
+        HttpRequestBase requestObj = new RequestPrep(request, config, false).prepare();
 
         try {
             org.apache.http.HttpResponse execute = client.execute(requestObj);

@@ -65,6 +65,7 @@ public class Config {
     private String defaultResponseEncoding = StandardCharsets.UTF_8.name();
     private Function<Config, AsyncClient> asyncBuilder = ApacheAsyncClient::new;
     private Function<Config, Client> clientBuilder = ApacheClient::new;
+    private boolean requestCompressionOn = true;
 
     public Config() {
         setDefaults();
@@ -80,6 +81,7 @@ public class Config {
         maxPerRoute = DEFAULT_MAX_PER_ROUTE;
         followRedirects = true;
         cookieManagement = true;
+        requestCompressionOn = true;
     }
 
     /**
@@ -497,5 +499,13 @@ public class Config {
 
     public String getDefaultResponseEncoding() {
         return defaultResponseEncoding;
+    }
+
+    public boolean isRequestCompressionOn() {
+        return requestCompressionOn;
+    }
+
+    public void requestCompression(boolean value) {
+        this.requestCompressionOn = value;
     }
 }
