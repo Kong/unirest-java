@@ -330,6 +330,18 @@ public class Config {
     }
 
     /**
+     * Turn on or off requesting all content as compressed. (GZIP encoded)
+     * Default is true
+     *
+     * @param value a bool is its true or not.
+     * @return this config object
+     */
+    public Config requestCompression(boolean value) {
+        this.requestCompressionOn = value;
+        return this;
+    }
+
+    /**
      * Set the default encoding that will be used for serialization into Strings.
      * The default-default is UTF-8
      *
@@ -503,9 +515,5 @@ public class Config {
 
     public boolean isRequestCompressionOn() {
         return requestCompressionOn;
-    }
-
-    public void requestCompression(boolean value) {
-        this.requestCompressionOn = value;
     }
 }
