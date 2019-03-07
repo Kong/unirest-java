@@ -39,6 +39,10 @@ class Path {
         this.url = url;
     }
 
+    public void param(Map<String, Object> params) {
+        params.forEach((key, value) -> param(key, String.valueOf(value)));
+    }
+
     public void param(String name, String value) {
         Matcher matcher = Pattern.compile("\\{" + name + "\\}").matcher(url);
         int count = 0;

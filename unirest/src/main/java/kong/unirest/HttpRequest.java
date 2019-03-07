@@ -48,6 +48,18 @@ public interface HttpRequest<R extends HttpRequest> {
     R routeParam(String name, String value);
 
     /**
+     * add a route param map that replaces the matching {name}
+     * For example routeParam(Map.of("name", "fred")) will replace {name} in
+     * https://localhost/users/{user}
+     * to
+     * https://localhost/users/fred
+     *
+     * @param params a map of path params
+     * @return this request builder
+     */
+    R routeParam(Map<String, Object> params);
+
+    /**
      * Basic auth credentials
      * @param username the username
      * @param password the password

@@ -61,6 +61,12 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
+    public R routeParam(Map<String, Object> params) {
+        url.param(params);
+        return (R)this;
+    }
+
+    @Override
     public R basicAuth(String username, String password) {
         header("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
         return (R)this;

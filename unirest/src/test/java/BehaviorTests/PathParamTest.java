@@ -25,6 +25,7 @@
 
 package BehaviorTests;
 
+import com.google.common.collect.ImmutableMap;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
 import org.junit.Test;
@@ -33,15 +34,28 @@ import kong.unirest.TestUtil;
 public class PathParamTest extends BddTest {
 
     @Test
+    public void canAddRouteParamsAsMap() {
+        String param = "Hamberders";
+
+        Unirest.get(MockServer.PASSED_PATH_PARAM_MULTI)
+                .routeParam(ImmutableMap.of("params", param, "another", 42))
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertUrl("http://localhost:4567/get/Hamberders/passed/42")
+                .assertPathParam("params", param)
+                .assertPathParam("another", "42");
+    }
+
+    @Test
     public void properlyDealsWithPlusInPAth() {
         String param = "jack+4@email.com";
 
         Unirest.get(MockServer.PASSED_PATH_PARAM)
-                .routeParam("param", param)
+                .routeParam("params", param)
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertUrl("http://localhost:4567/get/jack%2B4%40email.com/passed")
-                .assertPathParam(param);
+                .assertPathParam("params", param);
     }
 
     @Test
@@ -102,10 +116,10 @@ public class PathParamTest extends BddTest {
         String value = "/?ЊЯЯ";
 
         Unirest.get(MockServer.PASSED_PATH_PARAM)
-                .routeParam("param", value)
+                .routeParam("params", value)
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertUrl("http://localhost:4567/get/%2F%3F%D0%8A%D0%AF%D0%AF/passed")
-                .assertPathParam(value);
+                .assertPathParam("params", value);
     }
 }

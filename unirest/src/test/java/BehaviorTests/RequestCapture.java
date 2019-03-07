@@ -53,7 +53,7 @@ public class RequestCapture {
     public String url;
     public String queryString;
     public HttpMethod method;
-    public String param;
+    public HashMap<String,String> routeParams = new HashMap<>();
     public String contentType;
     public JsonPatch jsonPatches;
     public Integer status;
@@ -69,9 +69,13 @@ public class RequestCapture {
         method = HttpMethod.valueOf(req.requestMethod());
         writeHeaders(req);
         writeQuery(req);
-        param = req.params("p");
+        populateParams(req);
         contentType = req.contentType();
         status = 200;
+    }
+
+    private void populateParams(Request req) {
+        routeParams.putAll(req.params());
     }
 
     public void writeBody(Request req) {
@@ -200,8 +204,8 @@ public class RequestCapture {
         return this;
     }
 
-    public RequestCapture assertPathParam(String value) {
-        assertEquals(value, param);
+    public RequestCapture assertPathParam(String name, String value) {
+        assertEquals(value, routeParams.get(":" + name));
         return this;
     }
 

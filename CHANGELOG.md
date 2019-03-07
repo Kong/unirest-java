@@ -1,4 +1,11 @@
-## 2.0.00
+# 2.0.02
+* Pass route params as a map
+```java
+Unirest.get("http://example")
+       .routeParam(ImmutableMap.of("cheese", "cheddar", "age", 42))
+```
+
+## 2.0.01: Legacy + Merger With OpenUnirest Fork
 * Add a noop response type when you just don't care about the body.
 ```java
    HttpResponse re = Unirest.get("http://no.body.knows").asEmpty();
