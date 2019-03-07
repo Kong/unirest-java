@@ -1,4 +1,11 @@
-# 2.0.02
+## 2.0.03
+* Make sure the GzipInputStream gets closed.
+* Support disabling compressed results which is asked for by default
+```java
+Unirest.config().requestCompression(false);
+```
+
+## 2.0.02
 * Pass route params as a map
 ```java
 Unirest.get("http://example")
