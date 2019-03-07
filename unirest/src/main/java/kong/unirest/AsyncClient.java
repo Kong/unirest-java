@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 
 public interface AsyncClient {
     /**
+     * @param <T> the underlying client
      * @return the underlying client if this instance is wrapping another library (like Apache).
       */
     <T> T getClient();
