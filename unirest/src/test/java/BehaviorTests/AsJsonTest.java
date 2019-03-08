@@ -25,12 +25,8 @@
 
 package BehaviorTests;
 
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
+import kong.unirest.*;
 import org.junit.Test;
-import kong.unirest.MockCallback;
-import kong.unirest.TestUtil;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -83,9 +79,11 @@ public class AsJsonTest extends BddTest {
 
         assertEquals(400, response.getStatus());
         assertNull(response.getBody());
-        assertEquals("You did something bad", response.getParsingError().get().getOriginalBody());
+        UnirestParsingException ex = response.getParsingError().get();
+        assertEquals("You did something bad", ex.getOriginalBody());
         assertEquals("org.json.JSONException: A JSONArray text must start with '[' at 1 [character 2 line 1]",
                 response.getParsingError().get().getMessage());
+
     }
 
     @Test

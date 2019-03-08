@@ -74,6 +74,19 @@ If you already have a map of parameters or do not wish to use seperate field met
 
 `.headers(Map<String, String> headers)` is also supported in replacement of multiple header methods.
 
+### Route Parameters
+Sometimes you want to add dynamic parameters in the URL, you can easily do that by adding a placeholder in the URL, and then by setting the route parameters with the `routeParam` function, like:
+
+```java
+Unirest.get("http://httpbin.org/{method}")
+  .routeParam("method", "get")
+  .queryString("name", "Mark")
+  .asJson();
+```
+In the example above the final URL will be `http://httpbin.org/get` - Basically the placeholder `{method}` will be replaced with `get`.
+
+The placeholder's format is as easy as: `{custom_name}`
+
 ## JSON Patch Requests
 Unirest has full native support for JSON Patch requests
 ```java
@@ -100,7 +113,7 @@ will send a request with a body of
 ```
 
 ## Advanced Object Mapping with Jackson, GSON, JAX-B or others
-Before an `asObject(Class)` or a `.body(Object)` invokation, is necessary to provide a custom implementation of the `ObjectMapper` interface.
+Before an `asObject(Class)` or a `.body(Object)` invocation, is necessary to provide a custom implementation of the `ObjectMapper` interface.
 This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
 Unirest offers a few plug-ins implementing popular object mappers like Jackson and Gson. See [mvn central](https://mvnrepository.com/artifact/com.kong) for details.
 
@@ -128,18 +141,17 @@ Unirest.post("http://httpbin.org/authors/post")
         .asJson();
 ```
 
-### Route Parameters
-Sometimes you want to add dynamic parameters in the URL, you can easily do that by adding a placeholder in the URL, and then by setting the route parameters with the `routeParam` function, like:
+#### Errors in Object or JSON parsing
+You can't always get what you want. And sometimes results you get from web services will not map into what you expect them to.
+When this happens with a ```asObject``` or ```asJson``` request the resulting body will be null, but the response object will contain a ParsingException that allows you to get the error and the original body for inspection.
 
 ```java
-Unirest.get("http://httpbin.org/{method}")
-  .routeParam("method", "get")
-  .queryString("name", "Mark")
-  .asJson();
-```
-In the example above the final URL will be `http://httpbin.org/get` - Basically the placeholder `{method}` will be replaced with `get`.
+UnirestParsingException ex = response.getParsingError().get();
 
-The placeholder's format is as easy as: `{custom_name}`
+ex.getOriginalBody(); // Has the original body as a string.
+ex.getMessage(); // Will have the parsing exception.
+ex.getCause(); // of course will have the original parsing exception itself.
+```
 
 ## Asynchronous Requests
 Sometimes, well most of the time, you want your application to be asynchronous and not block, Unirest supports this in Java using anonymous callbacks, or direct method placement:
