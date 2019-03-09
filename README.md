@@ -13,12 +13,12 @@ This repo is an updated, maintained, and independent fork of the original Mashap
 
 ##### See the [UPGRADE_GUIDE](UPGRADE_GUIDE.md) for differences between this library and last kong release.
 
-## Install With [Maven](https://mvnrepository.com/artifact/com.konghq/unirest-java)
+## Install With [Maven](https://mvnrepository.com/artifact/com.konghq/unirest-java)[:](https://repo.maven.apache.org/maven2/com/konghq/unirest-java/)
 ```xml
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>2.0.03</version>
+    <version>2.0.04</version>
 </dependency>
 ```
 

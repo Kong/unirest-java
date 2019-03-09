@@ -1,4 +1,4 @@
-## 2.0.04 (pending)
+## 2.0.04
 * Disable SSL validation with ```Unirest.config().verifySsl(false)```. PLEASE DO NOT DO THIS IN PRODUCTION
 * Disable Automatic retries with ```Unirest.config().automaticRetries(false)```
 
