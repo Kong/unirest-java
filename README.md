@@ -35,7 +35,6 @@ See the [Upgrade Guide](UPGRADE_GUIDE.md)
 * Supports Basic Authentication natively
 * Customizable timeout, concurrency levels and proxy settings
 * Customizable default headers for every request (DRY)
-* Customizable `HttpClient` and `HttpAsyncClient` implementation
 * Automatic JSON parsing into a native object for JSON responses
 * Customizable binding, with mapping from response body to java Object 
 
@@ -60,7 +59,7 @@ If you already have a map of parameters or do not wish to use seperate field met
 
 `.headers(Map<String, String> headers)` is also supported in replacement of multiple header methods.
 
-### Route Parameters
+#### Route Parameters
 Sometimes you want to add dynamic parameters in the URL, you can easily do that by adding a placeholder in the URL, and then by setting the route parameters with the `routeParam` function, like:
 
 ```java
@@ -73,32 +72,7 @@ In the example above the final URL will be `http://httpbin.org/get` - Basically 
 
 The placeholder's format is as easy as: `{custom_name}`
 
-## JSON Patch Requests
-Unirest has full native support for JSON Patch requests
-```java
-     Unirest.jsonPatch(MockServer.PATCH)
-            .add("/fruits/-", "Apple")
-            .remove("/bugs")
-            .replace("/lastname", "Flintstone")
-            .test("/firstname", "Fred")
-            .move("/old/location", "/new/location")
-            .copy("/original/location", "/new/location")
-            .asJson();
-```
-will send a request with a body of
-```json
-  [
-     {"op":"add","path":"/fruits/-","value":"Apple"},
-     {"op":"remove","path":"/bugs"},
-     {"op":"replace","path":"/lastname","value":"Flintstone"},
-     {"op":"test","path":"/firstname","value":"Fred"},
-     {"op":"move","path":"/new/location","from":"/old/location"},
-     {"op":"copy","path":"/new/location","from":"/original/location"}
-  ]
-
-```
-
-## Advanced Object Mapping with Jackson, GSON, JAX-B or others
+#### Advanced Object Mapping with Jackson, GSON, JAX-B or others
 Before an `asObject(Class)` or a `.body(Object)` invocation, is necessary to provide a custom implementation of the `ObjectMapper` interface.
 This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
 Unirest offers a few plug-ins implementing popular object mappers like Jackson and Gson. See [mvn central](https://mvnrepository.com/artifact/com.kong) for details.
@@ -139,7 +113,7 @@ ex.getMessage(); // Will have the parsing exception.
 ex.getCause(); // of course will have the original parsing exception itself.
 ```
 
-## Asynchronous Requests
+#### Asynchronous Requests
 Sometimes, well most of the time, you want your application to be asynchronous and not block, Unirest supports this in Java using anonymous callbacks, or direct method placement:
 
 ```java
@@ -153,7 +127,7 @@ CompletableFuture<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.
     });
 ```
 
-## Custom mappings and handling large responses
+#### Custom mappings and handling large responses
 Most response methods (```asString```, ```asJson```, and even ```asBinary```) read the entire
 response stream into memory. In order to read the original stream and handle large responses you
 can use several functional methods like:
@@ -176,7 +150,7 @@ or consumers:
                 });
 ```
 
-## File Uploads
+#### File Uploads
 Creating `multipart` requests with Java is trivial, simply pass along a `File` or an InputStream Object as a field:
 
 ```java
@@ -187,7 +161,7 @@ HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
   .asJson();
 ```
 
-## Custom Entity Body
+#### Custom Entity Body
 
 ```java
 HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
@@ -196,7 +170,32 @@ HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
   .asJson();
 ```
 
-## Basic Authentication
+#### JSON Patch Requests
+Unirest has full native support for JSON Patch requests
+```java
+     Unirest.jsonPatch(MockServer.PATCH)
+            .add("/fruits/-", "Apple")
+            .remove("/bugs")
+            .replace("/lastname", "Flintstone")
+            .test("/firstname", "Fred")
+            .move("/old/location", "/new/location")
+            .copy("/original/location", "/new/location")
+            .asJson();
+```
+will send a request with a body of
+```json
+  [
+     {"op":"add","path":"/fruits/-","value":"Apple"},
+     {"op":"remove","path":"/bugs"},
+     {"op":"replace","path":"/lastname","value":"Flintstone"},
+     {"op":"test","path":"/firstname","value":"Fred"},
+     {"op":"move","path":"/new/location","from":"/old/location"},
+     {"op":"copy","path":"/new/location","from":"/original/location"}
+  ]
+
+```
+
+#### Basic Authentication
 Authenticating the request with basic authentication can be done by calling the `basicAuth(username, password)` function:
 ```java
  Unirest.get("http://httpbin.org/headers")
@@ -241,7 +240,7 @@ Unirest config allows easy access to build a configuration just like you would b
 
 
 
-##### Changing the config
+#### Changing the config
 Changing Unirest's config should ideally be done once, or rarely. There are several background threads spawned by both Unirest itself and Apache HttpAsyncClient. Once Unirest has been activated configuration options that are involved in creating the client cannot be changed without an explicit shutdown or reset.
 
 ```Java
@@ -250,7 +249,7 @@ Changing Unirest's config should ideally be done once, or rarely. There are seve
             .connectTimeout(5000)
 ```
 
-##### Setting custom Apache Client
+#### Setting custom Apache Client
 You can set your own custom Apache HttpClient and HttpAsyncClient. Note that Unirest settings like timeouts or interceptors are not applied to custom clients.
 
 ```java
@@ -279,7 +278,7 @@ As usual, Unirest maintains a primary single instance. Sometimes you might want 
 
 
 
-# Exiting an application
+## Exiting an application
 
 Unirest starts a background event loop and your Java application won't be able to exit until you manually shutdown all the threads by invoking:
 
