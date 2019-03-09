@@ -14,7 +14,7 @@ This repo is an updated, maintained, and independent fork of the original Mashap
 ##### See the [UPGRADE_GUIDE](UPGRADE_GUIDE.md) for differences between this library and last kong release.
 
 ## Install With [Maven](https://mvnrepository.com/artifact/com.konghq/unirest-java)
-```
+```xml
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java</artifactId>
@@ -39,20 +39,6 @@ See the [Upgrade Guide](UPGRADE_GUIDE.md)
 * Automatic JSON parsing into a native object for JSON responses
 * Customizable binding, with mapping from response body to java Object 
 
-## Installing
-Is easy as pie. Kidding. It's about as easy as doing these little steps:
-
-### With Maven
-
-You can use Maven by including the library:
-
-```xml
-<dependency>
-    <groupId>com.mashape.unirest</groupId>
-    <artifactId>unirest-java</artifactId>
-    <version>1.4.9</version>
-</dependency>
-```
 
 ## Creating Request
 So you're probably wondering how using Unirest makes creating requests in Java easier, here is a basic POST request that will explain everything:
