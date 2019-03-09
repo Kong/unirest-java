@@ -55,6 +55,9 @@ public class ApacheClient extends BaseApacheClient implements Client {
                 .setConnectionManager(manager)
                 .useSystemProperties();
 
+        if(!config.isAutomaticRetries()){
+            cb.disableAutomaticRetries();
+        }
         if(!config.isRequestCompressionOn()) {
             cb.disableContentCompression();
         }

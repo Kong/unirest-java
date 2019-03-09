@@ -41,6 +41,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+
 public class Config {
     public static final int DEFAULT_CONNECTION_TIMEOUT = 10000;
     public static final int DEFAULT_MAX_CONNECTIONS = 200;
@@ -53,7 +54,7 @@ public class Config {
     private Optional<ObjectMapper> objectMapper = Optional.empty();
 
     private List<HttpRequestInterceptor> interceptors = new ArrayList<>();
-    private Headers defaultHeaders;
+    private Headers ers;
     private Proxy proxy;
     private int connectionTimeout;
     private int socketTimeout;
@@ -66,6 +67,7 @@ public class Config {
     private Function<Config, AsyncClient> asyncBuilder = ApacheAsyncClient::new;
     private Function<Config, Client> clientBuilder = ApacheClient::new;
     private boolean requestCompressionOn = true;
+    private boolean automaticRetries;
 
     public Config() {
         setDefaults();
@@ -74,7 +76,7 @@ public class Config {
     private void setDefaults(){
         interceptors.clear();
         proxy = null;
-        defaultHeaders = new Headers();
+        ers = new Headers();
         connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
         socketTimeout = DEFAULT_SOCKET_TIMEOUT;
         maxTotal = DEFAULT_MAX_CONNECTIONS;
@@ -82,6 +84,7 @@ public class Config {
         followRedirects = true;
         cookieManagement = true;
         requestCompressionOn = true;
+        automaticRetries = true;
     }
 
     /**
@@ -240,7 +243,7 @@ public class Config {
      * @return this config object
      */
     public Config clearDefaultHeaders() {
-        defaultHeaders.clear();
+        ers.clear();
         return this;
     }
 
@@ -252,7 +255,7 @@ public class Config {
      * @return this config object
      */
     public Config setDefaultHeader(String name, String value) {
-        defaultHeaders.replace(name, value);
+        ers.replace(name, value);
         return this;
     }
 
@@ -265,7 +268,7 @@ public class Config {
      * @return this config object
      */
     public Config setDefaultHeader(String name, Supplier<String> value) {
-        defaultHeaders.add(name, value);
+        ers.add(name, value);
         return this;
     }
 
@@ -277,7 +280,7 @@ public class Config {
      * @return this config object
      */
     public Config addDefaultHeader(String name, String value) {
-        defaultHeaders.add(name, value);
+        ers.add(name, value);
         return this;
     }
 
@@ -342,6 +345,19 @@ public class Config {
     }
 
     /**
+     * Automaticly retry certain recoverable errors like socket timeouts. Up to 4 times
+     * Note that currently this only works on synchronous calls.
+     * Default is true
+     *
+     * @param value a bool is its true or not.
+     * @return this config object
+     */
+    public Config automaticRetries(boolean value) {
+         automaticRetries = value;
+         return this;
+    }
+
+    /**
      * Set the default encoding that will be used for serialization into Strings.
      * The default-default is UTF-8
      *
@@ -360,7 +376,7 @@ public class Config {
      * @return Headers
      */
     public Headers getDefaultHeaders() {
-        return defaultHeaders;
+        return ers;
     }
 
     /**
@@ -381,6 +397,8 @@ public class Config {
         shutDown(false);
         return this;
     }
+
+
 
     /**
      * Shut down the configuration and its clients.
@@ -515,5 +533,9 @@ public class Config {
 
     public boolean isRequestCompressionOn() {
         return requestCompressionOn;
+    }
+
+    public boolean isAutomaticRetries() {
+        return automaticRetries;
     }
 }

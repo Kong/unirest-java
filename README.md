@@ -13,12 +13,12 @@ This repo is an updated, maintained, and independent fork of the original Mashap
 
 ##### See the [UPGRADE_GUIDE](UPGRADE_GUIDE.md) for differences between this library and last kong release.
 
-## Install With [Maven](https://mvnrepository.com/artifact/com.kong/unirest-java)
+## Install With [Maven](https://mvnrepository.com/artifact/com.konghq/unirest-java)
 ```
 <dependency>
-    <groupId>com.kong</groupId>
+    <groupId>com.konghq</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>2.0.01</version>
+    <version>2.0.03</version>
 </dependency>
 ```
 
@@ -230,12 +230,30 @@ Unirest config allows easy access to build a configuration just like you would b
            .socketTimeout(500)
            .connectTimeout(1000)
            .concurrency(10, 5)
-           .proxy(new HttpHost("https://proxy"))
+           .proxy(new Proxy("https://proxy"))
            .setDefaultHeader("Accept", "application/json")
            .followRedirects(false)
            .enableCookieManagement(false)
            .addInterceptor(new MyCustomInterceptor());
 ```
+
+#### Config Options
+
+| Builder Method  | Impact | Default |
+| ------------- | ------------- | ------------- |
+| ```socketTimeout(int)``` | Sets the socket timeout for all requests in millis  | 60000 |
+| ```connectTimeout(int)``` | Sets the connection timeout for all requests in millis  | 10000 |
+| ```concurrency(int, int)``` | Sets concurrency rates; max total, max per route  | 200, 20 |
+| ```proxy(proxy)``` | Sets a proxy object for negotiating proxy servers. Can include auth credentials  |  |
+| ```setDefaultHeader(String, String)``` | Sets  a default header. Will overwrite if it exists  |  |
+| ```setDefaultHeader(String, Supplier<String>)``` | Sets a default header by supplier. Good for setting trace tokens for microservice architectures. Will overwrite if it exists  |  |
+| ```addDefaultHeader(String, String)``` | Adds a default header. Multiple for the same name can exist  |  |
+| ```addDefaultHeader(String, Supplier<String>)``` | Add a default header by supplier. Good for setting trace tokens for microservice architectures.  |  |
+| ```followRedirects(boolean)``` | toggle following redirects | true |
+| ```enableCookieManagement(boolean)``` | toggle accepting and storing cookies | true |
+| ```automaticRetries(boolean)``` | toggle disabling automatic retries (up to 4 times) for socket timeouts | true |
+
+
 
 ##### Changing the config
 Changing Unirest's config should ideally be done once, or rarely. There are several background threads spawned by both Unirest itself and Apache HttpAsyncClient. Once Unirest has been activated configuration options that are involved in creating the client cannot be changed without an explicit shutdown or reset.

@@ -224,6 +224,13 @@ public class ConfigTest {
     }
 
     @Test
+    public void canDisableAuthRetry() {
+        assertTrue(config.isAutomaticRetries());
+        config.automaticRetries(false);
+        assertFalse(config.isAutomaticRetries());
+    }
+
+    @Test
     public void provideYourOwnAsyncClientBuilder() {
         AsyncClient cli = mock(AsyncClient.class);
         when(cli.isRunning()).thenReturn(true);
