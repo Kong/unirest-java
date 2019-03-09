@@ -28,9 +28,16 @@ package kong.unirest.apache;
 import kong.unirest.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.ssl.SSLContextBuilder;
 
 import java.io.Closeable;
 import java.util.Optional;
@@ -45,7 +52,7 @@ public class ApacheClient extends BaseApacheClient implements Client {
 
     public ApacheClient(Config config) {
         this.config = config;
-        manager = new PoolingHttpClientConnectionManager();
+        manager = createManager();
         syncMonitor = new SyncIdleConnectionMonitorThread(manager);
         syncMonitor.start();
 
@@ -55,6 +62,9 @@ public class ApacheClient extends BaseApacheClient implements Client {
                 .setConnectionManager(manager)
                 .useSystemProperties();
 
+        if(!config.isVerifySsl()){
+            disableSsl(cb);
+        }
         if(!config.isAutomaticRetries()){
             cb.disableAutomaticRetries();
         }
@@ -72,6 +82,34 @@ public class ApacheClient extends BaseApacheClient implements Client {
         }
         config.getInterceptors().stream().forEach(cb::addInterceptorFirst);
         client = cb.build();
+    }
+
+    private PoolingHttpClientConnectionManager createManager() {
+        try {
+            if (config.isVerifySsl()) {
+                return new PoolingHttpClientConnectionManager();
+            }
+            return new PoolingHttpClientConnectionManager(
+                    RegistryBuilder.<ConnectionSocketFactory>create()
+                            .register("http", PlainConnectionSocketFactory.INSTANCE)
+                            .register("https", new SSLConnectionSocketFactory(new SSLContextBuilder()
+                                    .loadTrustMaterial(null, (x509CertChain, authType) -> true)
+                                    .build(),
+                                    NoopHostnameVerifier.INSTANCE))
+                            .build()
+            );
+        }catch (Exception e){
+            throw new UnirestConfigException(e);
+        }
+    }
+
+    private void disableSsl(HttpClientBuilder cb)  {
+        try {
+            cb.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+            cb.setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, (TrustStrategy) (arg0, arg1) -> true).build());
+        }catch (Exception e){
+            throw new UnirestConfigException(e);
+        }
     }
 
     public ApacheClient(HttpClient httpClient, Config config, PoolingHttpClientConnectionManager clientManager, SyncIdleConnectionMonitorThread connMonitor) {

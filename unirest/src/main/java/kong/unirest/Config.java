@@ -68,6 +68,7 @@ public class Config {
     private Function<Config, Client> clientBuilder = ApacheClient::new;
     private boolean requestCompressionOn = true;
     private boolean automaticRetries;
+    private boolean verifySsl = true;
 
     public Config() {
         setDefaults();
@@ -85,6 +86,7 @@ public class Config {
         cookieManagement = true;
         requestCompressionOn = true;
         automaticRetries = true;
+        verifySsl = true;
     }
 
     /**
@@ -322,6 +324,17 @@ public class Config {
     }
 
     /**
+     * Toggle verifying SSL/TLS certificates. Defaults to TRUE
+     *
+     * @param value a bool is its true or not.
+     * @return this config object
+     */
+    public Config verifySsl(boolean value) {
+        this.verifySsl = value;
+        return this;
+    }
+
+    /**
      * Tell the HttpClients to use the system properties for things like proxies
      *
      * @param value a bool is its true or not.
@@ -537,5 +550,9 @@ public class Config {
 
     public boolean isAutomaticRetries() {
         return automaticRetries;
+    }
+
+    public boolean isVerifySsl() {
+        return verifySsl;
     }
 }

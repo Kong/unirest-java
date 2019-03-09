@@ -31,6 +31,7 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 
+import javax.net.ssl.SSLPeerUnverifiedException;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.util.Base64;
@@ -69,6 +70,18 @@ public class TestUtil {
         } catch (Exception e){
             if (!e.getClass().isAssignableFrom(exClass)) {
                 fail("Expected wrong exception type \n Expected: " + exClass + "\n but got " + e.getClass());
+            }
+            assertEquals("Wrong Error Message", message, e.getMessage());
+        }
+    }
+
+    public static void assertExceptionUnwrapped(Runnable runnable, Class<? extends Throwable> exClass, String message) {
+        try{
+            runnable.run();
+            fail("Expected exception but got none. \nExpected " + exClass);
+        } catch (Exception e){
+            if (!e.getCause().getClass().isAssignableFrom(exClass)) {
+                fail("Expected wrong exception type \n Expected: " + exClass + "\n but got " + e.getCause().getClass());
             }
             assertEquals("Wrong Error Message", message, e.getMessage());
         }
@@ -138,4 +151,6 @@ public class TestUtil {
             throw new RuntimeException(e);
         }
     }
+
+
 }
