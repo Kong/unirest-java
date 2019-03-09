@@ -27,11 +27,14 @@ package BehaviorTests;
 
 import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLPeerUnverifiedException;
+
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -69,8 +72,43 @@ public class DisableSecurityTest extends BddTest {
         canCall("https://self-signed.badssl.com/");
     }
 
+    @Test
+    public void badNameAsync() {
+        failsAsync("https://wrong.host.badssl.com/",
+                SSLPeerUnverifiedException.class,
+                "javax.net.ssl.SSLPeerUnverifiedException: " +
+                        "Host name 'wrong.host.badssl.com' does not match the certificate subject provided by the peer " +
+                        "(CN=*.badssl.com, O=Lucas Garron, L=Walnut Creek, ST=California, C=US)");
+        disableSsl();
+        canCallAsync("https://wrong.host.badssl.com/");
+    }
+
+    @Test
+    public void expiredAsync() {
+        failsAsync("https://expired.badssl.com/",
+                SSLHandshakeException.class,
+                "javax.net.ssl.SSLHandshakeException: General SSLEngine problem");
+        disableSsl();
+        canCallAsync("https://expired.badssl.com/");
+    }
+
+    @Test
+    public void selfSignedAsync() {
+        failsAsync("https://self-signed.badssl.com/",
+                SSLHandshakeException.class,
+                "javax.net.ssl.SSLHandshakeException: General SSLEngine problem");
+        disableSsl();
+        canCallAsync("https://self-signed.badssl.com/");
+    }
+
     private void disableSsl() {
         Unirest.config().reset().verifySsl(false);
+    }
+
+    private void failsAsync(String url, Class<? extends Throwable> exClass, String error) {
+        TestUtil.assertExceptionUnwrapped(() -> Unirest.get(url).asEmptyAsync().get(),
+                exClass,
+                error);
     }
 
     private void fails(String url, Class<? extends Throwable> exClass, String error) {
@@ -81,5 +119,13 @@ public class DisableSecurityTest extends BddTest {
 
     private void canCall(String url) {
         assertEquals(200, Unirest.get(url).asEmpty().getStatus());
+    }
+
+    private void canCallAsync(String url) {
+        try {
+            assertEquals(200, Unirest.get(url).asEmptyAsync().get().getStatus());
+        } catch (Exception e) {
+            Assert.fail(e.getMessage());
+        }
     }
 }

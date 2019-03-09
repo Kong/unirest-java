@@ -28,12 +28,19 @@ package kong.unirest.apache;
 import kong.unirest.*;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
 import org.apache.http.nio.client.HttpAsyncClient;
-import org.apache.http.nio.reactor.IOReactorException;
+import org.apache.http.nio.conn.NoopIOSessionStrategy;
+import org.apache.http.nio.conn.SchemeIOSessionStrategy;
+import org.apache.http.nio.conn.ssl.SSLIOSessionStrategy;
+import org.apache.http.ssl.SSLContextBuilder;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -51,7 +58,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
     public ApacheAsyncClient(Config config) {
         this.config = config;
         try {
-            manager = new PoolingNHttpClientConnectionManager(new DefaultConnectingIOReactor());
+            manager = createConnectionManager();
             manager.setMaxTotal(config.getMaxConnections());
             manager.setDefaultMaxPerRoute(config.getMaxPerRoutes());
 
@@ -61,23 +68,53 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
                     .setDefaultCredentialsProvider(toApacheCreds(config.getProxy()))
                     .useSystemProperties();
 
-            if(config.useSystemProperties()){
-                ab.useSystemProperties();
-            }
-            if (!config.getFollowRedirects()) {
-                ab.setRedirectStrategy(new ApacheNoRedirectStrategy());
-            }
-            if (!config.getEnabledCookieManagement()) {
-                ab.disableCookieManagement();
-            }
-            config.getInterceptors().forEach(ab::addInterceptorFirst);
+            setOptions(ab);
 
             CloseableHttpAsyncClient build = ab.build();
             build.start();
             syncMonitor = new AsyncIdleConnectionMonitorThread(manager);
             syncMonitor.tryStart();
             client = build;
-        } catch (IOReactorException e) {
+        } catch (Exception e) {
+            throw new UnirestConfigException(e);
+        }
+    }
+
+    private void setOptions(HttpAsyncClientBuilder ab) {
+        if(!config.isVerifySsl()){
+            disableSsl(ab);
+        }
+        if(config.useSystemProperties()){
+            ab.useSystemProperties();
+        }
+        if (!config.getFollowRedirects()) {
+            ab.setRedirectStrategy(new ApacheNoRedirectStrategy());
+        }
+        if (!config.getEnabledCookieManagement()) {
+            ab.disableCookieManagement();
+        }
+        config.getInterceptors().forEach(ab::addInterceptorFirst);
+    }
+
+    private PoolingNHttpClientConnectionManager createConnectionManager() throws Exception {
+        if(config.isVerifySsl()) {
+            return new PoolingNHttpClientConnectionManager(new DefaultConnectingIOReactor());
+        }
+        Registry<SchemeIOSessionStrategy> registry = RegistryBuilder.<SchemeIOSessionStrategy>create()
+                .register("http", NoopIOSessionStrategy.INSTANCE)
+                .register("https", new SSLIOSessionStrategy(new SSLContextBuilder()
+                        .loadTrustMaterial(null, (x509Certificates, s) -> true)
+                        .build(), NoopHostnameVerifier.INSTANCE))
+                .build();
+
+        return new PoolingNHttpClientConnectionManager(new DefaultConnectingIOReactor(), registry);
+    }
+
+    private void disableSsl(HttpAsyncClientBuilder ab) {
+        try {
+            ab.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+            ab.setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, (TrustStrategy) (arg0, arg1) -> true).build());
+        }catch (Exception e){
             throw new UnirestConfigException(e);
         }
     }

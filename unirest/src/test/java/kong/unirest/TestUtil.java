@@ -63,7 +63,7 @@ public class TestUtil {
         }
     }
 
-    public static void assertException(Runnable runnable, Class<? extends Throwable> exClass, String message) {
+    public static void assertException(ExRunnable runnable, Class<? extends Throwable> exClass, String message) {
         try{
             runnable.run();
             fail("Expected exception but got none. \nExpected " + exClass);
@@ -75,7 +75,7 @@ public class TestUtil {
         }
     }
 
-    public static void assertExceptionUnwrapped(Runnable runnable, Class<? extends Throwable> exClass, String message) {
+    public static void assertExceptionUnwrapped(ExRunnable runnable, Class<? extends Throwable> exClass, String message) {
         try{
             runnable.run();
             fail("Expected exception but got none. \nExpected " + exClass);
@@ -152,5 +152,20 @@ public class TestUtil {
         }
     }
 
+    @FunctionalInterface
+    public interface ExRunnable {
+        /**
+         * When an object implementing interface <code>Runnable</code> is used
+         * to create a thread, starting the thread causes the object's
+         * <code>run</code> method to be called in that separately executing
+         * thread.
+         * <p>
+         * The general contract of the method <code>run</code> is that it may
+         * take any action whatsoever.
+         *
+         * @see     java.lang.Thread#run()
+         */
+        public abstract void run() throws Exception;
+    }
 
 }
