@@ -237,6 +237,7 @@ Unirest config allows easy access to build a configuration just like you would b
 | ```followRedirects(boolean)``` | toggle following redirects | true |
 | ```enableCookieManagement(boolean)``` | toggle accepting and storing cookies | true |
 | ```automaticRetries(boolean)``` | toggle disabling automatic retries (up to 4 times) for socket timeouts | true |
+| ```verifySsl(boolean)``` |toggle enforcing SSL | true |
 
 
 

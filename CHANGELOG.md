@@ -1,3 +1,7 @@
+## 2.0.04 (pending)
+* Disable SSL validation with ```Unirest.config().verifySsl(false)```. PLEASE DO NOT DO THIS IN PRODUCTION
+* Disable Automatic retries with ```Unirest.config().automaticRetries(false)```
+
 ## 2.0.03
 * Make sure the GzipInputStream gets closed.
 * Support disabling compressed results which is asked for by default
