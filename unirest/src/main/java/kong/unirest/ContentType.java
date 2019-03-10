@@ -34,6 +34,7 @@ public class ContentType {
     public static final ContentType APPLICATION_ATOM_XML = create("application/atom+xml", ISO_8859_1);
     public static final ContentType APPLICATION_FORM_URLENCODED = create("application/x-www-form-urlencoded", ISO_8859_1);
     public static final ContentType APPLICATION_JSON = create("application/json", StandardCharsets.UTF_8);
+    public static final ContentType APPLICATION_JSON_PATCH = create("application/json-patch+json");
     public static final ContentType APPLICATION_OCTET_STREAM = create("application/octet-stream");
     public static final ContentType APPLICATION_SVG_XML = create("application/svg+xml", ISO_8859_1);
     public static final ContentType APPLICATION_XHTML_XML = create("application/xhtml+xml", ISO_8859_1);
