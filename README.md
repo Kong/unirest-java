@@ -18,7 +18,7 @@ This repo is an updated, maintained, and independent fork of the original Mashap
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>2.0.04</version>
+    <version>2.0.05</version>
 </dependency>
 ```
 

@@ -1,4 +1,4 @@
-## 2.0.05 (pending)
+## 2.0.05
 * #118 enable overriding socket and connection timeouts per request
 * #72 enable passing a proxy per request. Only works with simple proxies for now.
 
