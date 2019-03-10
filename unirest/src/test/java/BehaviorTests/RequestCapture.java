@@ -25,6 +25,7 @@
 
 package BehaviorTests;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.*;
@@ -39,6 +40,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static kong.unirest.JsonPatchRequest.CONTENT_TYPE;
 import static java.lang.System.getProperty;
@@ -47,7 +49,7 @@ import static org.junit.Assert.*;
 
 public class RequestCapture {
     public ListMultimap<String, String> headers = LinkedListMultimap.create();
-    public List<File> files = new ArrayList<>();
+    public List<FormPart> files = new ArrayList<>();
     public ArrayListMultimap<String, String> params = ArrayListMultimap.create();
     public String body;
     public String url;
@@ -123,14 +125,23 @@ public class RequestCapture {
     }
 
     public void buildFilePart(Part part) throws IOException {
-        File file = new File();
+        FormPart file = new FormPart();
         file.fileName = part.getSubmittedFileName();
         file.type = part.getContentType();
         file.inputName = part.getName();
         file.fileType = part.getContentType();
         file.body = TestUtil.toString(part.getInputStream());
+        file.headers = extractHeaders(part);
 
         files.add(file);
+    }
+
+    private ListMultimap<String, String> extractHeaders(Part part) {
+        ListMultimap<String, String> h = LinkedListMultimap.create();
+        for(String header : part.getHeaderNames()){
+            h.putAll(header, part.getHeaders(header));
+        }
+        return h;
     }
 
     private void writeQuery(Request req) {
@@ -163,23 +174,28 @@ public class RequestCapture {
         return this;
     }
 
-    public File getFile(String fileName) {
-        return files.stream()
+    public FormPart getFile(String fileName) {
+        return getFileStream()
                 .filter(f -> Objects.equals(f.fileName, fileName))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("\nNo File With Name: " + fileName + "\n"
-                        + "Found: " + files.stream().map(f -> f.fileName).collect(Collectors.joining(" "))));
+                        + "Found: " + getFileStream().map(f -> f.fileName).collect(Collectors.joining(" "))));
     }
 
-    public File getFileByInput(String input) {
+    private Stream<FormPart> getFileStream() {
         return files.stream()
+                .filter(f -> f.isFile());
+    }
+
+    public FormPart getFileByInput(String input) {
+        return getFileStream()
                 .filter(f -> Objects.equals(f.inputName, input))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No File from form: " + input));
     }
 
-    public List<File> getAllFilesByInput(String input) {
-        return files.stream()
+    public List<FormPart> getAllFilesByInput(String input) {
+        return getFileStream()
                 .filter(f -> Objects.equals(f.inputName, input))
                 .collect(Collectors.toList());
     }
@@ -274,30 +290,40 @@ public class RequestCapture {
         return assertContentType("application/x-www-form-urlencoded; charset=UTF-8");
     }
 
-    public static class File {
+    public static class FormPart {
+        public String contentType;
+        public ListMultimap<String, String> headers = LinkedListMultimap.create();
+        public String content;
         public String fileName;
         public String type;
         public String inputName;
         public String body;
         public String fileType;
 
-        public File assertBody(String content) {
+
+        @JsonIgnore
+        public boolean isFile(){
+            return fileName != null;
+        }
+
+        public FormPart assertBody(String content) {
             assertEquals(content, body);
             return this;
         }
 
-        public File assertFileType(String type) {
+        public FormPart assertFileType(String type) {
             assertEquals(type, this.fileType);
             return this;
         }
 
-        public File assertFileType(ContentType imageJpeg) {
+        public FormPart assertFileType(ContentType imageJpeg) {
             return assertFileType(imageJpeg.toString());
         }
 
-        public File assertFileName(String s) {
+        public FormPart assertFileName(String s) {
             assertEquals(s, fileName);
             return this;
         }
     }
+
 }
