@@ -69,6 +69,20 @@ public class BaseRequestTest {
         assertEquals(222, copy.getConnectTimeout());
     }
 
+    @Test
+    public void canPassABasicProxyPerRequest() {
+        Config config = new Config();
+        Proxy cp = new Proxy("foo", 8080, "username", "password");
+        config.proxy(cp);
+
+        HttpRequest request = new TestRequest(config);
+
+        assertEquals(cp, request.getProxy());
+        request.proxy("bar", 7979);
+        assertEquals("bar", request.getProxy().getHost());
+        assertEquals(7979, request.getProxy().getPort().intValue());
+    }
+
     private class TestRequest extends BaseRequest<TestRequest> {
         TestRequest(BaseRequest httpRequest) {
             super(httpRequest);

@@ -152,6 +152,14 @@ public interface HttpRequest<R extends HttpRequest> {
     R connectTimeout(int millies);
 
     /**
+     * Set a proxy for this request. Only basic proxies are supported.
+     * @param host the host url
+     * @param port the proxy port
+     * @return this request builder
+     */
+    R proxy(String host, int port);
+
+    /**
      * Executes the request and returns the response with the body mapped into a String
      * @return response
      */
@@ -359,4 +367,9 @@ public interface HttpRequest<R extends HttpRequest> {
      * @return the connect timeout for this request
      */
     int getConnectTimeout();
+
+    /**
+     * @return the proxy for this request
+     */
+    Proxy getProxy();
 }

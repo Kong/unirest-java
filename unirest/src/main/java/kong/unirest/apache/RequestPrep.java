@@ -98,7 +98,7 @@ class RequestPrep {
                 .setConnectTimeout(request.getConnectTimeout())
                 .setSocketTimeout(request.getSocketTimeout())
                 .setConnectionRequestTimeout(request.getSocketTimeout())
-                .setProxy(RequestOptions.toApacheProxy(config.getProxy()))
+                .setProxy(RequestOptions.toApacheProxy(request.getProxy()))
                 .build();
     }
 
