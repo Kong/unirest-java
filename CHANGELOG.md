@@ -1,5 +1,6 @@
 ## 2.0.05 (pending)
 * #118 enable overriding socket and connection timeouts per request
+* #72 enable passing a proxy per request. Only works with simple proxies for now.
 
 ## 2.0.04
 * Disable SSL validation with ```Unirest.config().verifySsl(false)```. PLEASE DO NOT DO THIS IN PRODUCTION
