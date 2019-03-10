@@ -152,6 +152,22 @@ public class TestUtil {
         }
     }
 
+    public static byte[] getFileBytes(String s) {
+        try {
+            final InputStream stream = new FileInputStream(rezFile(s));
+            final byte[] bytes = new byte[stream.available()];
+            stream.read(bytes);
+            stream.close();
+            return bytes;
+        }catch (IOException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static File getImageFile() {
+        return rezFile("/image.jpg");
+    }
+
     @FunctionalInterface
     public interface ExRunnable {
         /**

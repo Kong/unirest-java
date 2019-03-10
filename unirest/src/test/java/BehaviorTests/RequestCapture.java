@@ -25,6 +25,7 @@
 
 package BehaviorTests;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.*;
 import kong.unirest.*;
@@ -41,8 +42,7 @@ import java.util.stream.Collectors;
 
 import static kong.unirest.JsonPatchRequest.CONTENT_TYPE;
 import static java.lang.System.getProperty;
-import static org.hamcrest.CoreMatchers.endsWith;
-import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 public class RequestCapture {
@@ -53,7 +53,7 @@ public class RequestCapture {
     public String url;
     public String queryString;
     public HttpMethod method;
-    public HashMap<String,String> routeParams = new HashMap<>();
+    public HashMap<String, String> routeParams = new HashMap<>();
     public String contentType;
     public JsonPatch jsonPatches;
     public Integer status;
@@ -79,7 +79,7 @@ public class RequestCapture {
     }
 
     public void writeBody(Request req) {
-        if(Strings.nullToEmpty(req.contentType()).equals(CONTENT_TYPE)){
+        if (Strings.nullToEmpty(req.contentType()).equals(CONTENT_TYPE)) {
             String body = req.body();
             jsonPatches = new JsonPatch(body);
             this.body = jsonPatches.toString();
@@ -90,7 +90,7 @@ public class RequestCapture {
     }
 
     private void parseBodyToFormParams() {
-        URLEncodedUtils.parse(this.body , Charset.forName("UTF-8"))
+        URLEncodedUtils.parse(this.body, Charset.forName("UTF-8"))
                 .forEach(p -> {
                     params.put(p.getName(), p.getValue());
                 });
@@ -107,7 +107,7 @@ public class RequestCapture {
                     buildFormPart(p);
                 }
             }
-        } catch (ServletException e){
+        } catch (ServletException e) {
             this.body = req.body();
             parseBodyToFormParams();
         } catch (Exception e) {
@@ -153,7 +153,8 @@ public class RequestCapture {
     }
 
     public RequestCapture assertHeader(String key, String value) {
-        assertThat("Expected Header Failed", headers.get(key), hasItem(value));
+        assertTrue("Expect Header But None Was Present", headers.containsKey(key));
+        assertThat("Expected Header Value Failed", headers.get(key), hasItem(value));
         return this;
     }
 
@@ -177,7 +178,7 @@ public class RequestCapture {
                 .orElseThrow(() -> new RuntimeException("No File from form: " + input));
     }
 
-    public List<File> getAllFilesByInput(String input){
+    public List<File> getAllFilesByInput(String input) {
         return files.stream()
                 .filter(f -> Objects.equals(f.inputName, input))
                 .collect(Collectors.toList());
@@ -229,8 +230,8 @@ public class RequestCapture {
     }
 
     public RequestCapture assertStatus(Integer i) {
-         assertEquals(i, status);
-         return this;
+        assertEquals(i, status);
+        return this;
     }
 
     public void setIsProxied(boolean b) {
@@ -243,8 +244,8 @@ public class RequestCapture {
     }
 
     public RequestCapture assertHeaderSize(String foo, int size) {
-         assertEquals(size, headers.get(foo).size());
-         return this;
+        assertEquals(size, headers.get(foo).size());
+        return this;
     }
 
     public void assertBody(String o) {
@@ -255,6 +256,24 @@ public class RequestCapture {
         this.status = i;
     }
 
+    public RequestCapture assertContentType(String content) {
+        return assertHeader("Content-Type", content);
+    }
+
+    public RequestCapture assertMultiPartContentType() {
+        List<String> h = headers.get("Content-Type");
+        assertEquals("Expected exactly 1 Content-Type header", 1, h.size());
+        List<String> parts = Splitter.on(";").trimResults().splitToList(h.get(0));
+        assertEquals("multipart/form-data", parts.get(0));
+        assertThat(parts.get(1), startsWith("boundary="));
+        assertEquals("charset=UTF-8", parts.get(2));
+        return this;
+    }
+
+    public RequestCapture assertUrlEncodedContent() {
+        return assertContentType("application/x-www-form-urlencoded; charset=UTF-8");
+    }
+
     public static class File {
         public String fileName;
         public String type;
@@ -262,12 +281,12 @@ public class RequestCapture {
         public String body;
         public String fileType;
 
-        public File assertBody(String content){
+        public File assertBody(String content) {
             assertEquals(content, body);
             return this;
         }
 
-        public File assertFileType(String type){
+        public File assertFileType(String type) {
             assertEquals(type, this.fileType);
             return this;
         }

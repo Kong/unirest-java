@@ -26,20 +26,18 @@
 package BehaviorTests;
 
 import kong.unirest.*;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
 
 import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.rezFile;
 import static org.junit.Assert.assertEquals;
 
 public class FormPostingTest extends BddTest {
+
     @Test
     public void testFormFields() {
         Unirest.post(MockServer.POST)
@@ -49,7 +47,8 @@ public class FormPostingTest extends BddTest {
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertParam("param1", "value1")
-                .assertParam("param2", "bye");
+                .assertParam("param2", "bye")
+                .assertUrlEncodedContent();
     }
 
     @Test
@@ -62,108 +61,8 @@ public class FormPostingTest extends BddTest {
                     RequestCapture req = parse(r);
                     req.assertParam("param1", "value1");
                     req.assertParam("param2", "bye");
+                    req.assertUrlEncodedContent();
                 }));
-
-        assertAsync();
-    }
-
-    @Test
-    public void testMultipart() throws Exception {
-        Unirest.post(MockServer.POST)
-                .field("name", "Mark")
-                .field("file", rezFile("/test"))
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertParam("name", "Mark")
-                .getFile("test")
-                .assertBody("This is a test file")
-                .assertFileType("application/octet-stream");
-    }
-
-    @Test
-    public void testMultipartContentType() throws Exception {
-         Unirest.post(MockServer.POST)
-                .field("name", "Mark")
-                .field("file", rezFile("/image.jpg"), "image/jpeg")
-                 .asObject(RequestCapture.class)
-                 .getBody()
-                 .assertParam("name", "Mark")
-                 .getFile("image.jpg")
-                    .assertFileType("image/jpeg");
-    }
-
-    @Test
-    public void testMultipartInputStreamContentType() throws Exception {
-        FileInputStream stream = new FileInputStream(rezFile("/image.jpg"));
-
-        Unirest.post(MockServer.POST)
-                .header("accept", ContentType.MULTIPART_FORM_DATA.toString())
-                .field("name", "Mark")
-                .field("file", stream, ContentType.APPLICATION_OCTET_STREAM, "image.jpg")
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertHeader("Accept", ContentType.MULTIPART_FORM_DATA.toString())
-                .assertParam("name", "Mark")
-                .getFile("image.jpg")
-                .assertFileType("application/octet-stream");
-    }
-
-    @Test
-    public void testMultipartInputStreamContentTypeAsync() throws Exception {
-        Unirest.post(MockServer.POST)
-                .field("name", "Mark")
-                .field("file", new FileInputStream(rezFile("/test")), ContentType.APPLICATION_OCTET_STREAM, "test")
-                .asJsonAsync(new MockCallback<>(this, r -> parse(r)
-                        .assertParam("name", "Mark")
-                        .getFile("test")
-                        .assertFileType("application/octet-stream"))
-                );
-
-        assertAsync();
-    }
-
-    @Test
-    public void testMultipartByteContentType() throws Exception {
-        final byte[] bytes = getFileBytes("/image.jpg");
-
-        Unirest.post(MockServer.POST)
-                .field("boot","boot")
-                .field("file", bytes, "image.jpg")
-                .asObject(RequestCapture.class)
-                .getBody()
-                .getFile("image.jpg")
-                .assertFileType("application/octet-stream");
-    }
-
-    @Test
-    public void testMultipartByteContentTypeAsync() throws Exception {
-        final byte[] bytes = getFileBytes("/test");
-
-        Unirest.post(MockServer.POST)
-                .field("name", "Mark")
-                .field("file", bytes, "test")
-                .asJsonAsync(new MockCallback<>(this, r ->
-                        parse(r)
-                                .assertParam("name", "Mark")
-                                .getFile("test")
-                                .assertFileType("application/octet-stream"))
-                );
-
-        assertAsync();
-    }
-
-    @Test
-    public void testMultipartAsync() throws Exception {
-        Unirest.post(MockServer.POST)
-                .field("name", "Mark")
-                .field("file", rezFile("/test"))
-                .asJsonAsync(new MockCallback<>(this, r ->
-                        parse(r)
-                                .assertParam("name", "Mark")
-                                .getFile("test")
-                                .assertFileType("application/octet-stream")
-                                .assertBody("This is a test file"))
-                );
 
         assertAsync();
     }
@@ -178,23 +77,10 @@ public class FormPostingTest extends BddTest {
                 .asJsonAsync(new MockCallback<>(this, r -> parse(r)
                         .assertParam("name", "Mark")
                         .assertParam("hello", "world")
-                        .assertHeader("Content-Type", "application/x-www-form-urlencoded")
+                        .assertContentType("application/x-www-form-urlencoded")
                 ));
 
         assertAsync();
-    }
-
-    @Test
-    public void testPostMultipleFiles()throws Exception {
-        Unirest.post(MockServer.POST)
-                .field("param3", "wot")
-                .field("file1", rezFile("/test"))
-                .field("file2", rezFile("/test"))
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertParam("param3", "wot")
-                .assertFileContent("file1", "This is a test file")
-                .assertFileContent("file2", "This is a test file");
     }
 
     @Test
@@ -204,6 +90,7 @@ public class FormPostingTest extends BddTest {
                 .field("name", "Tom")
                 .asObject(RequestCapture.class)
                 .getBody()
+                .assertUrlEncodedContent()
                 .assertParam("name", "Mark")
                 .assertParam("name", "Tom");
     }
@@ -215,19 +102,8 @@ public class FormPostingTest extends BddTest {
                 .field("param3", "こんにちは")
                 .asObject(RequestCapture.class)
                 .getBody()
+                .assertUrlEncodedContent()
                 .assertParam("param3", "こんにちは");
-    }
-
-    @Test
-    public void testPostBinaryUTF8() throws Exception {
-        Unirest.post(MockServer.POST)
-                .header("Accept", ContentType.MULTIPART_FORM_DATA.getMimeType())
-                .field("param3", "こんにちは")
-                .field("file", rezFile("/test"))
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertParam("param3", "こんにちは")
-                .assertFileContent("file", "This is a test file");
     }
 
     @Test
@@ -236,112 +112,9 @@ public class FormPostingTest extends BddTest {
                 .field("name", asList("Mark", "Tom"))
                 .asObject(RequestCapture.class)
                 .getBody()
+                .assertUrlEncodedContent()
                 .assertParam("name", "Mark")
                 .assertParam("name", "Tom");
-    }
-
-    @Test
-    public void testPostMulipleFIles() {
-        RequestCapture cap = Unirest.post(MockServer.POST)
-                .field("name", asList(rezFile("/test"), rezFile("/test2")))
-                .asObject(RequestCapture.class)
-                .getBody();
-
-        cap.getFile("test").assertBody("This is a test file");
-        cap.getFile("test2").assertBody("this is another test");
-    }
-
-    @Test
-    public void testMultipeInputStreams() throws FileNotFoundException {
-        Unirest.post(MockServer.POST)
-                .field("name", asList(new FileInputStream(rezFile("/test")), new FileInputStream(rezFile("/test2"))))
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertParam("name", "This is a test file")
-                .assertParam("name", "this is another test");
-    }
-
-    @Test
-    public void multiPartInputStreamAsFile() throws FileNotFoundException {
-        Unirest.post(MockServer.POST)
-                .field("foo", "bar")
-                .field("filecontents", new FileInputStream(rezFile("/image.jpg")), "image.jpg")
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertParam("foo", "bar")
-                .getFileByInput("filecontents")
-                .assertFileType(ContentType.APPLICATION_OCTET_STREAM)
-                .assertFileName("image.jpg");
-    }
-
-    @Test
-    public void passFileAsByteArray() {
-        Unirest.post(MockServer.POST)
-                .field("foo", "bar")
-                .field("filecontents", getFileBytes("/image.jpg"), ContentType.IMAGE_JPEG, "image.jpg")
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertParam("foo", "bar")
-                .getFileByInput("filecontents")
-                .assertFileType(ContentType.IMAGE_JPEG)
-                .assertFileName("image.jpg");
-    }
-
-    @Test
-    public void multiPartInputStream() throws FileNotFoundException {
-        Unirest.post(MockServer.POST)
-                .field("foo", "bar")
-                .field("filecontents", new FileInputStream(rezFile("/test")), ContentType.WILDCARD)
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertParam("foo", "bar")
-                .assertParam("filecontents", "This is a test file");
-    }
-
-    @Test
-    public void postFileWithContentType() throws Exception {
-        File file = getImageFile();
-        Unirest.post(MockServer.POST)
-                .field("testfile", file, ContentType.IMAGE_JPEG.getMimeType())
-                .asObject(RequestCapture.class)
-                .getBody()
-                .getFile("image.jpg")
-                .assertFileType(ContentType.IMAGE_JPEG);
-    }
-
-    @Test
-    public void nullFileResultsInEmptyPost() {
-        Unirest.post(MockServer.POST)
-                .field("testfile", (Object)null, ContentType.IMAGE_JPEG.getMimeType())
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertParam("testfile", "");
-    }
-
-    @Test
-    public void postFileWithoutContentType() throws URISyntaxException {
-        File file = getImageFile();
-        Unirest.post(MockServer.POST)
-                .field("testfile", file)
-                .asObject(RequestCapture.class)
-                .getBody()
-                .getFile("image.jpg")
-                .assertFileType("application/octet-stream");
-    }
-
-    @Test
-    public void postFieldsAsMap() throws URISyntaxException {
-        File file = getImageFile();
-
-        Unirest.post(MockServer.POST)
-                .fields(TestUtil.mapOf("big", "bird", "charlie", 42, "testfile", file, "gonzo", null))
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertParam("big", "bird")
-                .assertParam("charlie", "42")
-                .assertParam("gonzo", "")
-                .getFile("image.jpg")
-                .assertFileType("application/octet-stream");
     }
 
     @Test
@@ -351,31 +124,8 @@ public class FormPostingTest extends BddTest {
                 .fields(null)
                 .asObject(RequestCapture.class)
                 .getBody()
+                .assertUrlEncodedContent()
                 .assertParam("foo", "bar");
-    }
-
-    @Test
-    public void canPostInputStream() throws Exception {
-        File file = getImageFile();
-        Unirest.post(MockServer.POST)
-                .field("testfile", new FileInputStream(file), "image.jpg")
-                .asObject(RequestCapture.class)
-                .getBody()
-                .getFileByInput("testfile")
-                .assertFileName("image.jpg")
-                .assertFileType("application/octet-stream");
-    }
-
-    @Test
-    public void canPostInputStreamWithContentType() throws Exception {
-        File file = getImageFile();
-        Unirest.post(MockServer.POST)
-                .field("testfile", new FileInputStream(file), ContentType.IMAGE_JPEG, "image.jpg")
-                .asObject(RequestCapture.class)
-                .getBody()
-                .getFileByInput("testfile")
-                .assertFileName("image.jpg")
-                .assertFileType("image/jpeg");
     }
 
     @Test
@@ -385,6 +135,7 @@ public class FormPostingTest extends BddTest {
                 .field("foo", "bar")
                 .asObject(RequestCapture.class)
                 .getBody()
+                .assertUrlEncodedContent()
                 .assertParam("name", "mark")
                 .assertParam("foo", "bar");
     }
@@ -396,6 +147,7 @@ public class FormPostingTest extends BddTest {
                 .field("foo", "bar")
                 .asObject(RequestCapture.class)
                 .getBody()
+                .assertContentType("application/x-www-form-urlencoded; charset=US-ASCII")
                 .assertParam("foo", "bar")
                 .assertCharset(StandardCharsets.US_ASCII);
     }
@@ -407,72 +159,9 @@ public class FormPostingTest extends BddTest {
                 .charset(StandardCharsets.US_ASCII)
                 .asObject(RequestCapture.class)
                 .getBody()
+                .assertContentType("application/x-www-form-urlencoded; charset=US-ASCII")
                 .assertParam("foo", "bar")
                 .assertCharset(StandardCharsets.US_ASCII);
     }
 
-    @Test
-    public void canSetCharsetOfBody(){
-        Unirest.post(MockServer.POST)
-                .charset(StandardCharsets.US_ASCII)
-                .body("foo")
-                .asObject(RequestCapture.class)
-                .getBody()
-                .asserBody("foo")
-                .assertCharset(StandardCharsets.US_ASCII);
-    }
-
-    @Test
-    public void canSetCharsetOfBodyAfterMovingToBody(){
-        Unirest.post(MockServer.POST)
-                .body("foo")
-                .charset(StandardCharsets.US_ASCII)
-                .asObject(RequestCapture.class)
-                .getBody()
-                .asserBody("foo")
-                .assertCharset(StandardCharsets.US_ASCII);
-    }
-
-    @Test
-    public void utf8FileNames() {
-        InputStream fileData = new ByteArrayInputStream(new byte[] {'t', 'e', 's', 't'});
-        final String filename = "fileäöü.pöf";
-
-        Unirest.post(MockServer.POST)
-                .field("file", fileData, filename)
-                .asObject(RequestCapture.class)
-                .getBody()
-                .getFile(filename)
-                .assertFileName(filename);
-    }
-
-    @Test
-    public void canSetModeToStrictForLegacySupport() {
-        InputStream fileData = new ByteArrayInputStream(new byte[] {'t', 'e', 's', 't'});
-        final String filename = "fileäöü.pöf";
-
-        Unirest.post(MockServer.POST)
-                .field("file", fileData, filename)
-                .mode(MultipartMode.STRICT)
-                .asObject(RequestCapture.class)
-                .getBody()
-                .getFile("file???.p?f")
-                .assertFileName("file???.p?f");
-    }
-
-    private File getImageFile() {
-        return rezFile("/image.jpg");
-    }
-
-    private byte[] getFileBytes(String s) {
-        try {
-            final InputStream stream = new FileInputStream(rezFile(s));
-            final byte[] bytes = new byte[stream.available()];
-            stream.read(bytes);
-            stream.close();
-            return bytes;
-        }catch (IOException e){
-            throw new RuntimeException(e);
-        }
-    }
 }
