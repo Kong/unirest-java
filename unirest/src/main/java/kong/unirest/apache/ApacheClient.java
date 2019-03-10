@@ -57,7 +57,7 @@ public class ApacheClient extends BaseApacheClient implements Client {
         syncMonitor.start();
 
         HttpClientBuilder cb = HttpClientBuilder.create()
-                .setDefaultRequestConfig(getRequestConfig(config))
+                .setDefaultRequestConfig(RequestOptions.toRequestConfig(config))
                 .setDefaultCredentialsProvider(toApacheCreds(config.getProxy()))
                 .setConnectionManager(manager)
                 .useSystemProperties();

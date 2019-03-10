@@ -35,7 +35,7 @@ import kong.unirest.Unirest;
 
 import static org.junit.Assert.assertTrue;
 
-@Ignore
+@Ignore // The Janky Proxy is pretty janky and isn't entirely stable in CI
 public class ProxyTest extends BddTest {
 
     @After @Override
@@ -105,9 +105,10 @@ public class ProxyTest extends BddTest {
         assertTrue(JankyProxy.wasUsed());
     }
 
-    @Test @Ignore
+    @Test @Ignore // https://free-proxy-list.net/
     public void callSomethingRealThroughARealProxy() {
-        Unirest.config().proxy("proxyv.local.com",81, "myuser","pass1!");
+        Unirest.config().proxy("18.222.230.116",8080);
+        //Unirest.config().proxy("34.73.62.46",3128, "myuser","pass1!");
         HttpResponse<String> r = Unirest.get("https://twitter.com/ryber").asString();
         System.out.println("status = " + r.getStatus());
         System.out.println("body= " + r.getBody());

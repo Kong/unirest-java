@@ -138,6 +138,20 @@ public interface HttpRequest<R extends HttpRequest> {
     R withObjectMapper(ObjectMapper mapper);
 
     /**
+     * Set a socket timeout for this request
+     * @param millies the time in millies
+     * @return this request builder
+     */
+    R socketTimeout(int millies);
+
+    /**
+     * Set a connect timeout for this request
+     * @param millies the time in millies
+     * @return this request builder
+     */
+    R connectTimeout(int millies);
+
+    /**
      * Executes the request and returns the response with the body mapped into a String
      * @return response
      */
@@ -335,4 +349,14 @@ public interface HttpRequest<R extends HttpRequest> {
     default Optional<Body> getBody(){
         return Optional.empty();
     }
+
+    /**
+     * @return socket timeout for this request
+     */
+    int getSocketTimeout();
+
+    /**
+     * @return the connect timeout for this request
+     */
+    int getConnectTimeout();
 }

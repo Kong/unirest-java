@@ -25,21 +25,28 @@
 
 package kong.unirest.apache;
 
+import kong.unirest.Config;
 import kong.unirest.Proxy;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.HttpHost;
+import org.apache.http.client.config.RequestConfig;
 
-abstract class BaseApacheClient {
+class RequestOptions {
+    static RequestConfig toRequestConfig(Config config) {
+        Integer connectionTimeout = config.getConnectionTimeout();
+        Integer socketTimeout = config.getSocketTimeout();
+        HttpHost proxy = toApacheProxy(config.getProxy());
+        return RequestConfig.custom()
+                .setConnectTimeout(connectionTimeout)
+                .setSocketTimeout(socketTimeout)
+                .setConnectionRequestTimeout(socketTimeout)
+                .setProxy(proxy)
+                .build();
+    }
 
-    protected CredentialsProvider toApacheCreds(Proxy proxy) {
-        if(proxy != null && proxy.isAuthenticated()) {
-            CredentialsProvider proxyCreds = new BasicCredentialsProvider();
-            proxyCreds.setCredentials(new AuthScope(proxy.getHost(), proxy.getPort()),
-                    new UsernamePasswordCredentials(proxy.getUsername(), proxy.getPassword()));
-            return proxyCreds;
+    public static HttpHost toApacheProxy(Proxy proxy){
+        if(proxy == null){
+            return null;
         }
-        return null;
+        return new HttpHost(proxy.getHost(), proxy.getPort());
     }
 }

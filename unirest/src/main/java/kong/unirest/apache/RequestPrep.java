@@ -28,6 +28,7 @@ package kong.unirest.apache;
 import kong.unirest.*;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.*;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.nio.entity.NByteArrayEntity;
@@ -85,10 +86,20 @@ class RequestPrep {
             String url = request.getUrl();
             HttpRequestBase reqObj = FACTORIES.computeIfAbsent(request.getHttpMethod(), this::register).apply(url);
             request.getHeaders().all().stream().map(this::toEntries).forEach(reqObj::addHeader);
+            reqObj.setConfig(overrideConfig());
             return reqObj;
         } catch (RuntimeException e) {
             throw new UnirestException(e);
         }
+    }
+
+    private RequestConfig overrideConfig() {
+        return RequestConfig.custom()
+                .setConnectTimeout(request.getConnectTimeout())
+                .setSocketTimeout(request.getSocketTimeout())
+                .setConnectionRequestTimeout(request.getSocketTimeout())
+                .setProxy(RequestOptions.toApacheProxy(config.getProxy()))
+                .build();
     }
 
     private Function<String, HttpRequestBase> register(HttpMethod method) {

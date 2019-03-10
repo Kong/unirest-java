@@ -63,7 +63,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
             manager.setDefaultMaxPerRoute(config.getMaxPerRoutes());
 
             HttpAsyncClientBuilder ab = HttpAsyncClientBuilder.create()
-                    .setDefaultRequestConfig(getRequestConfig(config))
+                    .setDefaultRequestConfig(RequestOptions.toRequestConfig(config))
                     .setConnectionManager(manager)
                     .setDefaultCredentialsProvider(toApacheCreds(config.getProxy()))
                     .useSystemProperties();

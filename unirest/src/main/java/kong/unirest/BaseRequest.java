@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
@@ -39,12 +40,16 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     protected final Config config;
     protected HttpMethod method;
     protected Path url;
+    private Integer socketTimeout;
+    private Integer connectTimeout;
 
     BaseRequest(BaseRequest httpRequest) {
         this.config = httpRequest.config;
         this.method = httpRequest.method;
         this.url = httpRequest.url;
         this.headers.putAll(httpRequest.headers);
+        this.socketTimeout = httpRequest.socketTimeout;
+        this.connectTimeout = httpRequest.connectTimeout;
     }
 
     BaseRequest(Config config, HttpMethod method, String url) {
@@ -120,6 +125,18 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public R queryString(Map<String, Object> parameters) {
        url.queryString(parameters);
+        return (R)this;
+    }
+
+    @Override
+    public R socketTimeout(int millies) {
+        this.socketTimeout = millies;
+        return (R)this;
+    }
+
+    @Override
+    public R connectTimeout(int millies) {
+        this.connectTimeout = millies;
         return (R)this;
     }
 
@@ -255,6 +272,19 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         return config.getAsyncClient().request(this, r -> new FileResponse(r, path), CallbackFuture.wrap(callback));
     }
 
+    @Override
+    public <T> PagedList<T> asPaged(Function<HttpRequest, HttpResponse> mappingFunction, Function<HttpResponse<T>, String> linkExtractor) {
+        PagedList<T> all = new PagedList<>();
+        String nextLink = this.getUrl();
+        do {
+            this.url = new Path(nextLink);
+            HttpResponse<T> next = mappingFunction.apply(this);
+            all.add(next);
+            nextLink = linkExtractor.apply(next);
+        }while (!Util.isNullOrEmpty(nextLink));
+        return all;
+    }
+
 
 
     private Function<RawResponse, HttpResponse<Object>> getConsumer(Consumer<RawResponse> consumer) {
@@ -284,15 +314,19 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
-    public <T> PagedList<T> asPaged(Function<HttpRequest, HttpResponse> mappingFunction, Function<HttpResponse<T>, String> linkExtractor) {
-        PagedList<T> all = new PagedList<>();
-        String nextLink = this.getUrl();
-        do {
-            this.url = new Path(nextLink);
-            HttpResponse<T> next = mappingFunction.apply(this);
-            all.add(next);
-            nextLink = linkExtractor.apply(next);
-        }while (!Util.isNullOrEmpty(nextLink));
-        return all;
+    public int getSocketTimeout() {
+        return valueOr(socketTimeout, config::getSocketTimeout);
+    }
+
+    @Override
+    public int getConnectTimeout() {
+        return valueOr(connectTimeout, config::getConnectionTimeout);
+    }
+
+    private <T> T valueOr(T x, Supplier<T> o){
+        if(x != null){
+            return x;
+        }
+        return o.get();
     }
 }

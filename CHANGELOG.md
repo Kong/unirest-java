@@ -1,3 +1,6 @@
+## 2.0.05 (pending)
+* #118 enable overriding socket and connection timeouts per request
+
 ## 2.0.04
 * Disable SSL validation with ```Unirest.config().verifySsl(false)```. PLEASE DO NOT DO THIS IN PRODUCTION
 * Disable Automatic retries with ```Unirest.config().automaticRetries(false)```
