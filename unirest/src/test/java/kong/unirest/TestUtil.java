@@ -140,8 +140,12 @@ public class TestUtil {
         assertEquals(username + ":" + password, new String(Base64.getDecoder().decode(credentials)));
     }
 
-    public static String getResource(String resourceName) throws IOException {
-        return Resources.toString(Resources.getResource(resourceName), Charsets.UTF_8);
+    public static String getResource(String resourceName){
+        try {
+            return Resources.toString(Resources.getResource(resourceName), Charsets.UTF_8);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static File rezFile(String name) {

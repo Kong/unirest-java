@@ -106,7 +106,7 @@ public class RequestCapture {
                 if (!Strings.isNullOrEmpty(p.getSubmittedFileName())) {
                     buildFilePart(p);
                 } else {
-                    buildFormPart(p);
+                    buildUrlEncodedParamPart(p);
                 }
             }
         } catch (ServletException e) {
@@ -118,7 +118,7 @@ public class RequestCapture {
         }
     }
 
-    private void buildFormPart(Part p) throws IOException {
+    private void buildUrlEncodedParamPart(Part p) throws IOException {
         java.util.Scanner s = new Scanner(p.getInputStream()).useDelimiter("\\A");
         String value = s.hasNext() ? s.next() : "";
         params.put(p.getName(), value);

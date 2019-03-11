@@ -34,12 +34,14 @@ import java.net.URISyntaxException;
 import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.getFileBytes;
 import static kong.unirest.TestUtil.rezFile;
+import static org.junit.Assert.assertEquals;
 
 public class MultiPartFormPostingTest extends BddTest {
     @Test
     public void testMultipart() throws Exception {
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
+                .field("funky","bunch")
                 .field("file", rezFile("/test"))
                 .asObject(RequestCapture.class)
                 .getBody()
@@ -342,4 +344,22 @@ public class MultiPartFormPostingTest extends BddTest {
                 .assertContentType("application/x-www-form-urlencoded; charset=UTF-8")
                 .assertParam("testfile", "");
     }
+
+    @Test
+    public void rawInspection() {
+        String body = Unirest.post(MockServer.ECHO_RAW)
+                .field("marky","mark")
+                .field("funky","bunch")
+                .field("file", rezFile("/test"))
+                .asString()
+                .getBody();
+
+        String expected = TestUtil.getResource("rawPost.txt").replaceAll("\r","").trim();
+
+        String id = body.substring(2, body.indexOf("\n") -1);
+        body = body.replaceAll(id, "IDENTIFIER").replaceAll("\r","").trim();
+
+        assertEquals(expected, body);
+    }
+
 }

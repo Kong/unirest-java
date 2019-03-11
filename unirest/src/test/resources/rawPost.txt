@@ -1,0 +1,14 @@
+--IDENTIFIER
+Content-Disposition: form-data; name="file"; filename="test"
+Content-Type: application/octet-stream
+
+This is a test file
+--IDENTIFIER
+Content-Disposition: form-data; name="funky"
+
+bunch
+--IDENTIFIER
+Content-Disposition: form-data; name="marky"
+
+mark
+--IDENTIFIER--

@@ -36,6 +36,7 @@ import kong.unirest.TestUtil;
 import javax.servlet.ServletOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -67,6 +68,7 @@ public class MockServer {
 	public static final String PASSED_PATH_PARAM_MULTI = PASSED_PATH_PARAM + "/{another}";
 	public static final String CHEESE = HOST + "/cheese";
 	public static final String ALTGET = "http://127.0.0.1:" + PORT + "/get";
+	public static final String ECHO_RAW = HOST + "/raw";
 
 
 	public static void setJsonAsResponse(Object o){
@@ -100,12 +102,17 @@ public class MockServer {
 		get("/proxy", MockServer::proxiedResponse);
 		get("/binary", MockServer::file);
 		get("/paged", MockServer::paged);
+		post("/raw", MockServer::echo);
         Runtime.getRuntime().addShutdownHook(new Thread(Spark::stop));
 		try {
 			new CountDownLatch(1).await(2, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static Object echo(Request request, Response response) {
+		return request.body();
 	}
 
 	private static Object paged(Request request, Response response) {
@@ -194,5 +201,9 @@ public class MockServer {
 
 	public static void expectedPages(int expected) {
 		pages = expected;
+	}
+
+	public static void main(String[] args){
+		
 	}
 }
