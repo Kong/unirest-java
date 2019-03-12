@@ -7,12 +7,6 @@
 
 We are looking for official maintainers, check out issue [#252](https://github.com/Kong/unirest-java/issues/252)
 
-
-## About This Repository
-This repo is an updated, maintained, and independent fork of the original Mashape/Kong Unirest-Java project. That project is no longer being maintained so this project was set up to keep it alive.
-
-##### See the [UPGRADE_GUIDE](UPGRADE_GUIDE.md) for differences between this library and last kong release.
-
 ## Install With [Maven](https://mvnrepository.com/artifact/com.konghq/unirest-java)[:](https://repo.maven.apache.org/maven2/com/konghq/unirest-java/)
 ```xml
 <dependency>
@@ -22,7 +16,7 @@ This repo is an updated, maintained, and independent fork of the original Mashap
 </dependency>
 ```
 
-#### Upgrading from Previous Versions 
+### Upgrading from Previous Versions 
 See the [Upgrade Guide](UPGRADE_GUIDE.md)
 
 ## Features
@@ -51,28 +45,22 @@ HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post")
       .asJson();
 ```
 
-Requests are made when `as[Type]()` is invoked, possible types include `Json`, `Binary`, `String`, `Object`.
+Requests are made when `as[Type]()` is invoked, possible types include `Json`, `String`, `Object` `Empty` and `File`.
 
-If the request supports and it is of type `HttpRequestWithBody`, a body it can be passed along with `.body(String|JsonNode|Object)`. For using `.body(Object)` some pre-configuration is needed (see below).
 
-If you already have a map of parameters or do not wish to use seperate field methods for each one there is a `.fields(Map<String, Object> fields)` method that will serialize each key - value to form parameters on your request.
-
-`.headers(Map<String, String> headers)` is also supported in replacement of multiple header methods.
-
-#### Route Parameters
+### Route Parameters
 Sometimes you want to add dynamic parameters in the URL, you can easily do that by adding a placeholder in the URL, and then by setting the route parameters with the `routeParam` function, like:
 
 ```java
 Unirest.get("http://httpbin.org/{method}")
   .routeParam("method", "get")
-  .queryString("name", "Mark")
   .asJson();
 ```
 In the example above the final URL will be `http://httpbin.org/get` - Basically the placeholder `{method}` will be replaced with `get`.
 
 The placeholder's format is as easy as: `{custom_name}`
 
-#### Advanced Object Mapping with Jackson, GSON, JAX-B or others
+### Advanced Object Mapping with Jackson, GSON, JAX-B or others
 Before an `asObject(Class)` or a `.body(Object)` invocation, is necessary to provide a custom implementation of the `ObjectMapper` interface.
 This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
 Unirest offers a few plug-ins implementing popular object mappers like Jackson and Gson. See [mvn central](https://mvnrepository.com/artifact/com.kong) for details.
