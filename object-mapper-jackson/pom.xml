@@ -4,7 +4,7 @@
 
     <groupId>com.konghq</groupId>
     <artifactId>unirest-objectmapper-jackson</artifactId>
-    <version>2.0.00-SNAPSHOT</version>
+    <version>2.0.05-SNAPSHOT</version>
     <name>unirest-objectmapper-jackson</name>
     <description>Jackson based object mapper for Open Unirest</description>
     <url>http://github.com/OpenUnirest/</url>
@@ -21,7 +21,7 @@
         <url>https://github.com/OpenUnirest/object-mappers-jackson</url>
         <connection>scm:git:git@github.com:OpenUnirest/object-mappers-jackson.git</connection>
         <developerConnection>scm:git:git@github.com:OpenUnirest/object-mappers-jackson.git</developerConnection>
-        <tag>v3.0.01</tag>
+        <tag>v2.0.05</tag>
     </scm>
 
     <developers>
@@ -159,7 +159,7 @@
                 <version>2.5</version>
                 <configuration>
                     <arguments>maven.test.skip=true</arguments>
-                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <tagNameFormat>{project.artifactId}-v@{project.version}</tagNameFormat>
                 </configuration>
             </plugin>
             <plugin>
