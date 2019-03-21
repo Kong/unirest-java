@@ -63,9 +63,9 @@ The placeholder's format is as easy as: `{custom_name}`
 ### Advanced Object Mapping with Jackson, GSON, JAX-B or others
 Before an `asObject(Class)` or a `.body(Object)` invocation, is necessary to provide a custom implementation of the `ObjectMapper` interface.
 This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
-Unirest offers a few plug-ins implementing popular object mappers like Jackson and Gson. See [mvn central](https://mvnrepository.com/artifact/com.kong) for details.
-
-For example, serializing Json from\to Object using the popular Jackson ObjectMapper takes only few lines of code.
+Unirest offers a few plug-ins implementing popular object mappers like Jackson and Gson. See [mvn central](https://mvnrepository.com/artifact/com.konghq) for details.
+nes of code.
+For example, serializing Json from\to Object using the popular Jackson ObjectMapper takes only few li
 
 ```java
 // Only one time
