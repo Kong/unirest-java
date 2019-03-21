@@ -53,7 +53,23 @@ public class MultiPartFormPostingTest extends BddTest {
     }
 
     @Test
-    public void testMultipartContentType() throws Exception {
+    public void fileSizeDoesntChange() throws Exception {
+        File file = rezFile("/image.jpg");
+        long size = file.length();
+
+        RequestCapture capture = Unirest.post(MockServer.POST)
+                .field("file", file)
+                .field("file2", new FileInputStream(file), "file2.jpg")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertMultiPartContentType();
+
+        capture.getFile("image.jpg").assertSize(size);
+        capture.getFile("file2.jpg").assertSize(size);
+    }
+
+    @Test
+    public void testMultipartContentType() {
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
                 .field("file", rezFile("/image.jpg"), "image/jpeg")

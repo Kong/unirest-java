@@ -130,6 +130,7 @@ public class RequestCapture {
         file.type = part.getContentType();
         file.inputName = part.getName();
         file.fileType = part.getContentType();
+        file.size = part.getSize();
         file.body = TestUtil.toString(part.getInputStream());
         file.headers = extractHeaders(part);
 
@@ -299,6 +300,7 @@ public class RequestCapture {
         public String inputName;
         public String body;
         public String fileType;
+        public long size;
 
 
         @JsonIgnore
@@ -323,6 +325,10 @@ public class RequestCapture {
         public FormPart assertFileName(String s) {
             assertEquals(s, fileName);
             return this;
+        }
+
+        public void assertSize(long expected) {
+            assertEquals(expected, this.size);
         }
     }
 
