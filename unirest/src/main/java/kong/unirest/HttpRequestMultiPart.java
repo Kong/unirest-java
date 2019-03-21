@@ -37,6 +37,7 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
 
     private MultipartMode mode = MultipartMode.BROWSER_COMPATIBLE;
     private Charset charSet;
+    private boolean forceMulti = false;
 
     HttpRequestMultiPart(HttpRequestBody httpRequest) {
         super(httpRequest);
@@ -164,7 +165,12 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
 
     @Override
     public boolean isMultiPart() {
-        return true;
+        return forceMulti || multiParts().stream().anyMatch(BodyPart::isFile);
+    }
+
+    @Override
+    public boolean isEntityBody() {
+        return false;
     }
 
     @Override
@@ -175,5 +181,10 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
     @Override
     public MultipartMode getMode() {
         return mode;
+    }
+
+    MultipartBody forceMultiPart(boolean value) {
+        forceMulti = value;
+        return this;
     }
 }

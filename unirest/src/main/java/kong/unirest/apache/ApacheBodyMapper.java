@@ -39,6 +39,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -60,17 +61,19 @@ class ApacheBodyMapper {
     }
 
     private HttpEntity applyBody(Body o) {
-        if(o.isMultiPart()){
-            return mapToMultipart(o);
-        }else {
+        if(o.isEntityBody()){
             return mapToUniBody(o);
+        }else {
+            return mapToMultipart(o);
         }
     }
 
 
     private HttpEntity mapToUniBody(Body b) {
         BodyPart bodyPart = b.uniPart();
-        if(String.class.isAssignableFrom(bodyPart.getPartType())){
+        if(bodyPart == null){
+            return new StringEntity("", StandardCharsets.UTF_8);
+        } else if(String.class.isAssignableFrom(bodyPart.getPartType())){
             return new StringEntity((String) bodyPart.getValue(), b.getCharset());
         } else {
             return new ByteArrayEntity((byte[])bodyPart.getValue());
@@ -78,7 +81,7 @@ class ApacheBodyMapper {
     }
 
     private HttpEntity mapToMultipart(Body body) {
-        if (body.multiParts().stream().anyMatch(BodyPart::isFile)) {
+        if (body.isMultiPart()) {
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             builder.setCharset(body.getCharset());
             builder.setMode(HttpMultipartMode.valueOf(body.getMode().name()));

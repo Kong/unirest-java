@@ -88,4 +88,9 @@ class HttpRequestJsonPatch extends BaseRequest<JsonPatchRequest> implements Json
     public boolean isMultiPart() {
         return false;
     }
+
+    @Override
+    public boolean isEntityBody() {
+        return true;
+    }
 }

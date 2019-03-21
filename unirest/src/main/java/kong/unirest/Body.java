@@ -34,6 +34,8 @@ import java.util.Collections;
 public interface Body {
     boolean isMultiPart();
 
+    boolean isEntityBody();
+
     default Charset getCharset(){
         return StandardCharsets.UTF_8;
     }

@@ -164,7 +164,7 @@ public class RequestCapture {
     }
 
     public RequestCapture assertHeader(String key, String value) {
-        assertTrue("Expect Header But None Was Present", headers.containsKey(key));
+        assertTrue(String.format("Expect header of '%s' but none was present", key), headers.containsKey(key));
         assertThat("Expected Header Value Failed", headers.get(key), hasItem(value));
         return this;
     }

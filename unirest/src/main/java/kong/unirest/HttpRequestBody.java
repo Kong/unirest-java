@@ -80,6 +80,11 @@ class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRe
 	}
 
 	@Override
+	public MultipartBody multiPartContent() {
+		return new HttpRequestMultiPart(this).forceMultiPart(true);
+	}
+
+	@Override
 	public MultipartBody field(String name, InputStream stream, String fileName) {
 		return field(name, stream, ContentType.APPLICATION_OCTET_STREAM, fileName);
 	}

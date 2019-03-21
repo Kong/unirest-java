@@ -37,6 +37,12 @@ import java.util.Map;
 public interface HttpRequestWithBody extends HttpRequest<HttpRequestWithBody> {
     HttpRequestWithBody charset(Charset charset);
 
+    /**
+     * Forces the request to send as multipart even if all params are simple
+     * @return The same MultipartBody
+     */
+    MultipartBody multiPartContent();
+
     MultipartBody field(String name, Collection<?> value);
 
     MultipartBody field(String name, File file);

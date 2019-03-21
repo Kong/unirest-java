@@ -346,6 +346,17 @@ public class MultiPartFormPostingTest extends BddTest {
     }
 
     @Test
+    public void canForceIntoMultiPart() {
+        Unirest.post(MockServer.POST)
+                .multiPartContent()
+                .field("foo", "bar")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertMultiPartContentType()
+                .assertParam("foo", "bar");
+    }
+
+    @Test
     public void rawInspection() {
         String body = Unirest.post(MockServer.ECHO_RAW)
                 .field("marky","mark")

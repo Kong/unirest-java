@@ -1,5 +1,6 @@
-## 2.0.06 (pending)
+## 2.1.00 (pending)
 * #259 optionally flag the config to auto register the clients with shutdownhooks.
+* #165 allow forcing a simple url-encoded param POST/PUT to be multipart. This adds a new method to the body interface so bumping the minor.
 
 ## 2.0.05
 * #118 enable overriding socket and connection timeouts per request

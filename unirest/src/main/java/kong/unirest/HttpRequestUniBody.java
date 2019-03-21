@@ -77,6 +77,11 @@ class HttpRequestUniBody extends BaseRequest<RequestBodyEntity> implements Reque
 	}
 
 	@Override
+	public boolean isEntityBody() {
+		return true;
+	}
+
+	@Override
 	public BodyPart uniPart() {
 		return body;
 	}
