@@ -69,6 +69,7 @@ public class Config {
     private boolean requestCompressionOn = true;
     private boolean automaticRetries;
     private boolean verifySsl = true;
+    private boolean addShutdownHook = false;
 
     public Config() {
         setDefaults();
@@ -384,6 +385,18 @@ public class Config {
     }
 
     /**
+     * Register the client with a system shutdown hook. Note that this creates up to two threads
+     * (depending on if you use both sync and async clients). default is false
+     *
+     * @param value a bool is its true or not.
+     * @return this config object
+     */
+    public Config addShutdownHook(boolean value) {
+        this.addShutdownHook = value;
+        return this;
+    }
+
+    /**
      * Return default headers that are added to every request
      *
      * @return Headers
@@ -554,5 +567,9 @@ public class Config {
 
     public boolean isVerifySsl() {
         return verifySsl;
+    }
+
+    public boolean shouldAddShutdownHook() {
+        return addShutdownHook;
     }
 }

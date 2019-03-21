@@ -62,6 +62,11 @@ public class ApacheClient extends BaseApacheClient implements Client {
                 .setConnectionManager(manager)
                 .useSystemProperties();
 
+        setOptions(cb);
+        client = cb.build();
+    }
+
+    private void setOptions(HttpClientBuilder cb) {
         if(!config.isVerifySsl()){
             disableSsl(cb);
         }
@@ -81,7 +86,9 @@ public class ApacheClient extends BaseApacheClient implements Client {
             cb.disableCookieManagement();
         }
         config.getInterceptors().stream().forEach(cb::addInterceptorFirst);
-        client = cb.build();
+        if(config.shouldAddShutdownHook()){
+            Runtime.getRuntime().addShutdownHook(new Thread(this::close, "Unirest Apache Client Shutdown Hook"));
+        }
     }
 
     private PoolingHttpClientConnectionManager createManager() {

@@ -1,3 +1,6 @@
+## 2.0.06 (pending)
+* #259 optionally flag the config to auto register the clients with shutdownhooks.
+
 ## 2.0.05
 * #118 enable overriding socket and connection timeouts per request
 * #72 enable passing a proxy per request. Only works with simple proxies for now.

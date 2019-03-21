@@ -75,6 +75,9 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
             syncMonitor = new AsyncIdleConnectionMonitorThread(manager);
             syncMonitor.tryStart();
             client = build;
+            if(config.shouldAddShutdownHook()){
+                Runtime.getRuntime().addShutdownHook(new Thread(this::close, "Unirest Apache Async Client Shutdown Hook"));
+            }
         } catch (Exception e) {
             throw new UnirestConfigException(e);
         }

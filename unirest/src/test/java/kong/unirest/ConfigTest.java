@@ -216,6 +216,13 @@ public class ConfigTest {
     }
 
     @Test
+    public void canSignalForShutdownHook() {
+        assertFalse(config.shouldAddShutdownHook());
+        config.addShutdownHook(true);
+        assertTrue(config.shouldAddShutdownHook());
+    }
+
+    @Test
     public void canDisableGZipencoding() {
         assertTrue(config.isRequestCompressionOn());
         config.requestCompression(false);

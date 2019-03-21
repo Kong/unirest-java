@@ -40,8 +40,12 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.IntStream;
 
+import static java.lang.Thread.getAllStackTraces;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.*;
@@ -71,6 +75,21 @@ public class LifeCycleTest extends BddTest {
         HttpResponse<String> result =  Unirest.get("http://localhost/getme").asString();
         assertEquals(202, result.getStatus());
         assertEquals("Howdy Ho!", result.getBody());
+    }
+
+    @Test
+    public void canAddShutdownHooks() throws Exception {
+        Unirest.config().addShutdownHook(true).getClient();
+        Unirest.config().addShutdownHook(true).getAsyncClient();
+
+        // oh this is so dirty and horrible. Set to @Ignore if it starts to be a problem.
+        Class clazz = Class.forName("java.lang.ApplicationShutdownHooks");
+        Field field = clazz.getDeclaredField("hooks");
+        field.setAccessible(true);
+        Set<Thread> threads = ((Map<Thread, Thread>)field.get(null)).keySet();
+
+        assertTrue(threads.stream().anyMatch(t -> "Unirest Apache Client Shutdown Hook".equals(t.getName())));
+        assertTrue(threads.stream().anyMatch(t -> "Unirest Apache Async Client Shutdown Hook".equals(t.getName())));
     }
 
     @Test
