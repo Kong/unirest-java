@@ -226,6 +226,7 @@ Unirest config allows easy access to build a configuration just like you would b
 | ```enableCookieManagement(boolean)``` | toggle accepting and storing cookies | true |
 | ```automaticRetries(boolean)``` | toggle disabling automatic retries (up to 4 times) for socket timeouts | true |
 | ```verifySsl(boolean)``` |toggle enforcing SSL | true |
+| ```addShutdownHook(boolean)``` | toggle to add the clients to the system shutdown hooks automatically | false |
 
 
 
