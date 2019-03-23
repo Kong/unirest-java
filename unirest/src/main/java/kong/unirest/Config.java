@@ -251,6 +251,17 @@ public class Config {
     }
 
     /**
+     * Default basic auth credentials
+     * @param username the username
+     * @param password the password
+     * @return this config object
+     */
+    public Config setDefaultBasicAuth(String username, String password) {
+        ers.add("Authorization", Util.toBasicAuthValue(username, password));
+        return this;
+    }
+
+    /**
      * Set default header to appear on all requests
      *
      * @param name  The name of the header.

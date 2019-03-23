@@ -27,6 +27,7 @@ package kong.unirest;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Base64;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -54,5 +55,9 @@ class Util {
 
     static boolean isNullOrEmpty(String s) {
         return s == null || s.trim().isEmpty();
+    }
+
+    public static String toBasicAuthValue(String username, String password) {
+        return "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
     }
 }

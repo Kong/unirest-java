@@ -164,6 +164,35 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
+    public void canSetDefaultBasicAuth() {
+        Unirest.config().setDefaultBasicAuth("user", "test");
+
+        Unirest.post(MockServer.POST)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("Authorization", "Basic dXNlcjp0ZXN0")
+                .assertBasicAuth("user", "test");
+    }
+
+    @Test
+    public void canOverrideDefaultBasicAuth() {
+        Unirest.config().setDefaultBasicAuth("bob", "pass");
+
+        Unirest.post(MockServer.POST)
+                .basicAuth("user", "test")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("Authorization", "Basic dXNlcjp0ZXN0")
+                .assertBasicAuth("user", "test");
+
+        Unirest.post(MockServer.POST)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("Authorization", "Basic Ym9iOnBhc3M=")
+                .assertBasicAuth("bob", "pass");
+    }
+
+    @Test
     public void willNotCacheBasicAuth() {
         Unirest.get(MockServer.GET)
                 .basicAuth("george","guitar")

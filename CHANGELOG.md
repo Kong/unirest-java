@@ -1,4 +1,7 @@
-## 2.1.00 (pending)
+## 2.1.01
+* #260 add option to configure a default basic auth header
+
+## 2.1.00
 * #259 optionally flag the config to auto register the clients with shutdownhooks.
 * #165 allow forcing a simple url-encoded param POST/PUT to be multipart. This adds a new method to the body interface so bumping the minor.
 

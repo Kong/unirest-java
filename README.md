@@ -222,6 +222,7 @@ Unirest config allows easy access to build a configuration just like you would b
 | ```setDefaultHeader(String, Supplier<String>)``` | Sets a default header by supplier. Good for setting trace tokens for microservice architectures. Will overwrite if it exists  |  |
 | ```addDefaultHeader(String, String)``` | Adds a default header. Multiple for the same name can exist  |  |
 | ```addDefaultHeader(String, Supplier<String>)``` | Add a default header by supplier. Good for setting trace tokens for microservice architectures.  |  |
+| ```setDefaultBasicAuth(String, String)``` | Add a default Basic Auth Header |  |
 | ```followRedirects(boolean)``` | toggle following redirects | true |
 | ```enableCookieManagement(boolean)``` | toggle accepting and storing cookies | true |
 | ```automaticRetries(boolean)``` | toggle disabling automatic retries (up to 4 times) for socket timeouts | true |

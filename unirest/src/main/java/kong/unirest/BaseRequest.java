@@ -75,7 +75,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public R basicAuth(String username, String password) {
-        header("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
+        this.headers.replace("Authorization", Util.toBasicAuthValue(username, password));
         return (R)this;
     }
 
