@@ -28,16 +28,10 @@ package kong.unirest.apache;
 import kong.unirest.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.ssl.SSLContextBuilder;
 
 import java.io.Closeable;
 import java.util.Optional;
@@ -49,14 +43,16 @@ public class ApacheClient extends BaseApacheClient implements Client {
     private final Config config;
     private final PoolingHttpClientConnectionManager manager;
     private final SyncIdleConnectionMonitorThread syncMonitor;
+    private final SecurityConfig security;
 
     public ApacheClient(Config config) {
         this.config = config;
-        manager = createManager();
+        security = new SecurityConfig(config);
+        manager = security.createManager();
         syncMonitor = new SyncIdleConnectionMonitorThread(manager);
         syncMonitor.start();
 
-        HttpClientBuilder cb = HttpClientBuilder.create()
+        HttpClientBuilder cb = HttpClients.custom()
                 .setDefaultRequestConfig(RequestOptions.toRequestConfig(config))
                 .setDefaultCredentialsProvider(toApacheCreds(config.getProxy()))
                 .setConnectionManager(manager)
@@ -66,17 +62,16 @@ public class ApacheClient extends BaseApacheClient implements Client {
         client = cb.build();
     }
 
+
     private void setOptions(HttpClientBuilder cb) {
-        if(!config.isVerifySsl()){
-            disableSsl(cb);
-        }
-        if(!config.isAutomaticRetries()){
+        security.configureSecurity(cb);
+        if (!config.isAutomaticRetries()) {
             cb.disableAutomaticRetries();
         }
-        if(!config.isRequestCompressionOn()) {
+        if (!config.isRequestCompressionOn()) {
             cb.disableContentCompression();
         }
-        if(config.useSystemProperties()){
+        if (config.useSystemProperties()) {
             cb.useSystemProperties();
         }
         if (!config.getFollowRedirects()) {
@@ -86,41 +81,14 @@ public class ApacheClient extends BaseApacheClient implements Client {
             cb.disableCookieManagement();
         }
         config.getInterceptors().stream().forEach(cb::addInterceptorFirst);
-        if(config.shouldAddShutdownHook()){
+        if (config.shouldAddShutdownHook()) {
             Runtime.getRuntime().addShutdownHook(new Thread(this::close, "Unirest Apache Client Shutdown Hook"));
-        }
-    }
-
-    private PoolingHttpClientConnectionManager createManager() {
-        try {
-            if (config.isVerifySsl()) {
-                return new PoolingHttpClientConnectionManager();
-            }
-            return new PoolingHttpClientConnectionManager(
-                    RegistryBuilder.<ConnectionSocketFactory>create()
-                            .register("http", PlainConnectionSocketFactory.INSTANCE)
-                            .register("https", new SSLConnectionSocketFactory(new SSLContextBuilder()
-                                    .loadTrustMaterial(null, (x509CertChain, authType) -> true)
-                                    .build(),
-                                    NoopHostnameVerifier.INSTANCE))
-                            .build()
-            );
-        }catch (Exception e){
-            throw new UnirestConfigException(e);
-        }
-    }
-
-    private void disableSsl(HttpClientBuilder cb)  {
-        try {
-            cb.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
-            cb.setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, (TrustStrategy) (arg0, arg1) -> true).build());
-        }catch (Exception e){
-            throw new UnirestConfigException(e);
         }
     }
 
     public ApacheClient(HttpClient httpClient, Config config, PoolingHttpClientConnectionManager clientManager, SyncIdleConnectionMonitorThread connMonitor) {
         this.client = httpClient;
+        this.security = new SecurityConfig(config);
         this.config = config;
         this.manager = clientManager;
         this.syncMonitor = connMonitor;

@@ -27,19 +27,97 @@ package BehaviorTests;
 
 import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.ssl.SSLContexts;
+import org.apache.http.util.EntityUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLPeerUnverifiedException;
 
-import java.util.concurrent.ExecutionException;
+import java.io.InputStream;
+import java.security.KeyStore;
 
 import static org.junit.Assert.assertEquals;
 
-@Ignore // dont normally run these because they depend on badssl.com
+//@Ignore // dont normally run these because they depend on badssl.com
 public class CertificateTests extends BddTest {
+
+    @Test
+    public void canDoClientCertificates() throws Exception {
+        Unirest.config().clientCertificateStore(readStore(), "badssl.com");
+
+        Unirest.get("https://client.badssl.com/")
+                .asString()
+                .ifFailure(r -> Assert.fail(r.getStatus() + " request failed " + r.getBody()))
+                .ifSuccess(r -> System.out.println(" woot "));;
+    }
+
+    @Test
+    public void rawApacheClientCert() throws Exception {
+        SSLContext sslContext = SSLContexts.custom()
+                .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
+                .build();
+
+        HttpClient httpClient = HttpClients.custom().setSSLContext(sslContext).build();
+
+        HttpResponse response = httpClient.execute(new HttpGet("https://client.badssl.com/"));
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        HttpEntity entity = response.getEntity();
+
+        System.out.println("----------------------------------------");
+        System.out.println(response.getStatusLine());
+        EntityUtils.consume(entity);
+    }
+
+    @Test
+    public void rawApacheWithConnectionManager() throws Exception {
+        SSLContext sc = SSLContexts.custom()
+                .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
+                .build();
+
+        SSLConnectionSocketFactory sslSocketFactory =
+                new SSLConnectionSocketFactory(sc, new NoopHostnameVerifier());
+
+
+        Registry<ConnectionSocketFactory> socketFactoryRegistry =
+                RegistryBuilder.<ConnectionSocketFactory>create()
+                        .register("https", sslSocketFactory)
+                        .register("http", PlainConnectionSocketFactory.INSTANCE)
+                        .build();
+
+        PoolingHttpClientConnectionManager cm =
+                new PoolingHttpClientConnectionManager(socketFactoryRegistry);
+
+        CloseableHttpClient httpClient =
+                HttpClients.custom()
+                        .setSSLSocketFactory(sslSocketFactory)
+                        .setConnectionManager(cm)
+                        .build();
+
+        Unirest.config().httpClient(httpClient);
+
+        Unirest.get("https://client.badssl.com/")
+                .asString()
+                .ifFailure(r -> Assert.fail(r.getStatus() + " request failed " + r.getBody()))
+                .ifSuccess(r -> System.out.println(" woot "));
+
+    }
+
     @Test
     public void badName() {
         fails("https://wrong.host.badssl.com/",
@@ -126,6 +204,14 @@ public class CertificateTests extends BddTest {
             assertEquals(200, Unirest.get(url).asEmptyAsync().get().getStatus());
         } catch (Exception e) {
             Assert.fail(e.getMessage());
+        }
+    }
+
+    private KeyStore readStore() throws Exception {
+        try (InputStream keyStoreStream = this.getClass().getResourceAsStream("/certs/badssl.com-client.p12")) {
+            KeyStore keyStore = KeyStore.getInstance("PKCS12");
+            keyStore.load(keyStoreStream, "badssl.com".toCharArray());
+            return keyStore;
         }
     }
 }

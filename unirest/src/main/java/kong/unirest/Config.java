@@ -32,6 +32,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.nio.client.HttpAsyncClient;
 
 import java.nio.charset.StandardCharsets;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -70,6 +71,8 @@ public class Config {
     private boolean automaticRetries;
     private boolean verifySsl = true;
     private boolean addShutdownHook = false;
+    private KeyStore keystore;
+    private String keystorePassword;
 
     public Config() {
         setDefaults();
@@ -200,6 +203,18 @@ public class Config {
      */
     public Config setObjectMapper(ObjectMapper om) {
         this.objectMapper = Optional.ofNullable(om);
+        return this;
+    }
+
+    /**
+     * Set a custom keystore
+     *
+     * @param store the keystore to use for a custom ssl context
+     * @return this config object
+     */
+    public Config clientCertificateStore(KeyStore store, String password) {
+        this.keystore = store;
+        this.keystorePassword = password;
         return this;
     }
 
@@ -513,8 +528,8 @@ public class Config {
         }
     }
 
-
     // Accessors for unirest.
+
     public boolean getEnabledCookieManagement() {
         return cookieManagement;
     }
@@ -537,6 +552,14 @@ public class Config {
 
     public int getSocketTimeout() {
         return socketTimeout;
+    }
+
+    public KeyStore getKeystore() {
+        return this.keystore;
+    }
+
+    public String getKeyStorePassword(){
+        return this.keystorePassword;
     }
 
     public ObjectMapper getObjectMapper() {
