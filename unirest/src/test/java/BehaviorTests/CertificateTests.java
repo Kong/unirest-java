@@ -39,7 +39,7 @@ import java.util.concurrent.ExecutionException;
 import static org.junit.Assert.assertEquals;
 
 @Ignore // dont normally run these because they depend on badssl.com
-public class DisableSecurityTest extends BddTest {
+public class CertificateTests extends BddTest {
     @Test
     public void badName() {
         fails("https://wrong.host.badssl.com/",
