@@ -25,10 +25,17 @@
 
 package BehaviorTests;
 
+import kong.unirest.JsonNode;
+import kong.unirest.MockCallback;
 import kong.unirest.Unirest;
+import kong.unirest.UnirestConfigException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
+
+import static kong.unirest.TestUtil.assertException;
 
 public class UniBodyPostingTest extends BddTest {
     @Test
@@ -53,5 +60,101 @@ public class UniBodyPostingTest extends BddTest {
                 .assertContentType("text/plain; charset=US-ASCII")
                 .asserBody("foo")
                 .assertCharset(StandardCharsets.US_ASCII);
+    }
+
+    @Test
+    public void testPostRawBody() {
+        String sourceString = "'\"@こんにちは-test-123-" + Math.random();
+        byte[] sentBytes = sourceString.getBytes();
+
+        Unirest.post(MockServer.POST)
+                .body(sentBytes)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .asserBody(sourceString);
+    }
+
+    @Test
+    public void testAsyncCustomContentType() {
+        Unirest.post(MockServer.POST)
+                .header("accept", "application/json")
+                .header("Content-Type", "application/json")
+                .body("{\"hello\":\"world\"}")
+                .asJsonAsync(new MockCallback<>(this, r -> parse(r)
+                        .asserBody("{\"hello\":\"world\"}")
+                        .assertHeader("Content-Type", "application/json"))
+                );
+
+        assertAsync();
+    }
+
+
+    @Test
+    public void postAPojoObjectUsingTheMapper() {
+        GetResponse postResponseMock = new GetResponse();
+        postResponseMock.setUrl(MockServer.POST);
+
+        Unirest.post(postResponseMock.getUrl())
+                .header("accept", "application/json")
+                .header("Content-Type", "application/json")
+                .body(postResponseMock)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .asserBody("{\"url\":\"http://localhost:4567/post\"}");
+    }
+
+    @Test
+    public void testDeleteBody() {
+        String body = "{\"jsonString\":{\"members\":\"members1\"}}";
+        Unirest.delete(MockServer.DELETE)
+                .body(body)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .asserBody(body);
+    }
+
+    @Test
+    public void postBodyAsJson() {
+        JSONObject body = new JSONObject();
+        body.put("krusty","krab");
+
+        Unirest.post(MockServer.POST)
+                .body(body)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .asserBody("{\"krusty\":\"krab\"}");
+    }
+
+    @Test
+    public void postBodyAsJsonArray() {
+        JSONArray body = new JSONArray();
+        body.put(0, "krusty");
+        body.put(1, "krab");
+
+        Unirest.post(MockServer.POST)
+                .body(body)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .asserBody("[\"krusty\",\"krab\"]");
+    }
+
+    @Test
+    public void postBodyAsJsonNode() {
+        JsonNode body = new JsonNode("{\"krusty\":\"krab\"}");
+
+        Unirest.post(MockServer.POST)
+                .body(body)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .asserBody("{\"krusty\":\"krab\"}");
+    }
+
+    @Test
+    public void cantPostObjectWithoutObjectMapper(){
+        Unirest.config().setObjectMapper(null);
+
+        assertException(() -> Unirest.post(MockServer.POST).body(new Foo("die")),
+                UnirestConfigException.class,
+                "No Object Mapper Configured. Please config one with Unirest.config().setObjectMapper");
     }
 }
