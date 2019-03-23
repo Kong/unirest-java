@@ -54,7 +54,7 @@ public class Config {
     private Optional<ObjectMapper> objectMapper = Optional.empty();
 
     private List<HttpRequestInterceptor> interceptors = new ArrayList<>();
-    private Headers ers;
+    private Headers headers;
     private Proxy proxy;
     private int connectionTimeout;
     private int socketTimeout;
@@ -78,7 +78,7 @@ public class Config {
     private void setDefaults(){
         interceptors.clear();
         proxy = null;
-        ers = new Headers();
+        headers = new Headers();
         connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
         socketTimeout = DEFAULT_SOCKET_TIMEOUT;
         maxTotal = DEFAULT_MAX_CONNECTIONS;
@@ -246,7 +246,7 @@ public class Config {
      * @return this config object
      */
     public Config clearDefaultHeaders() {
-        ers.clear();
+        headers.clear();
         return this;
     }
 
@@ -257,7 +257,7 @@ public class Config {
      * @return this config object
      */
     public Config setDefaultBasicAuth(String username, String password) {
-        ers.add("Authorization", Util.toBasicAuthValue(username, password));
+        headers.replace("Authorization", Util.toBasicAuthValue(username, password));
         return this;
     }
 
@@ -269,7 +269,7 @@ public class Config {
      * @return this config object
      */
     public Config setDefaultHeader(String name, String value) {
-        ers.replace(name, value);
+        headers.replace(name, value);
         return this;
     }
 
@@ -282,7 +282,7 @@ public class Config {
      * @return this config object
      */
     public Config setDefaultHeader(String name, Supplier<String> value) {
-        ers.add(name, value);
+        headers.add(name, value);
         return this;
     }
 
@@ -294,7 +294,7 @@ public class Config {
      * @return this config object
      */
     public Config addDefaultHeader(String name, String value) {
-        ers.add(name, value);
+        headers.add(name, value);
         return this;
     }
 
@@ -413,7 +413,7 @@ public class Config {
      * @return Headers
      */
     public Headers getDefaultHeaders() {
-        return ers;
+        return headers;
     }
 
     /**

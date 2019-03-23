@@ -165,6 +165,7 @@ public class HeaderTest extends BddTest {
 
     @Test
     public void canSetDefaultBasicAuth() {
+        Unirest.config().setDefaultBasicAuth("bob", "pass");
         Unirest.config().setDefaultBasicAuth("user", "test");
 
         Unirest.post(MockServer.POST)
