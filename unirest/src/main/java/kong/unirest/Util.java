@@ -25,6 +25,8 @@
 
 package kong.unirest;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Base64;
@@ -59,5 +61,13 @@ class Util {
 
     public static String toBasicAuthValue(String username, String password) {
         return "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+    }
+
+    static FileInputStream getFileInputStream(String location){
+        try {
+            return new FileInputStream(location);
+        } catch (FileNotFoundException e) {
+            throw new UnirestConfigException(e);
+        }
     }
 }

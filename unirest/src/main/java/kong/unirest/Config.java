@@ -31,6 +31,7 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.HttpClient;
 import org.apache.http.nio.client.HttpAsyncClient;
 
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.util.ArrayList;
@@ -91,6 +92,8 @@ public class Config {
         requestCompressionOn = true;
         automaticRetries = true;
         verifySsl = true;
+        keystore = null;
+        keystorePassword = null;
     }
 
     /**
@@ -210,11 +213,30 @@ public class Config {
      * Set a custom keystore
      *
      * @param store the keystore to use for a custom ssl context
+     * @param password the password for the store
      * @return this config object
      */
     public Config clientCertificateStore(KeyStore store, String password) {
         this.keystore = store;
         this.keystorePassword = password;
+        return this;
+    }
+
+    /**
+     * Set a custom keystore via a file path. Must be a valid PKCS12 file
+     *
+     * @param fileLocation the path keystore to use for a custom ssl context
+     * @param password the password for the store
+     * @return this config object
+     */
+    public Config clientCertificateStore(String fileLocation, String password) {
+        try (InputStream keyStoreStream = Util.getFileInputStream(fileLocation)) {
+            this.keystorePassword = password;
+            this.keystore  = KeyStore.getInstance("PKCS12");
+            this.keystore.load(keyStoreStream, keystorePassword.toCharArray());
+        } catch (Exception e) {
+            throw new UnirestConfigException(e);
+        }
         return this;
     }
 

@@ -49,6 +49,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLPeerUnverifiedException;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
 
@@ -60,6 +62,16 @@ public class CertificateTests extends BddTest {
     @Test
     public void canDoClientCertificates() throws Exception {
         Unirest.config().clientCertificateStore(readStore(), "badssl.com");
+
+        Unirest.get("https://client.badssl.com/")
+                .asString()
+                .ifFailure(r -> Assert.fail(r.getStatus() + " request failed " + r.getBody()))
+                .ifSuccess(r -> System.out.println(" woot "));;
+    }
+
+    @Test
+    public void canLoadKeyStoreByPath() {
+        Unirest.config().clientCertificateStore("src/test/resources/certs/badssl.com-client.p12", "badssl.com");
 
         Unirest.get("https://client.badssl.com/")
                 .asString()
