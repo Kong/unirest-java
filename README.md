@@ -12,7 +12,7 @@ We are looking for official maintainers, check out issue [#252](https://github.c
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>2.1.00</version>
+    <version>2.1.02</version>
 </dependency>
 ```
 
@@ -228,6 +228,8 @@ Unirest config allows easy access to build a configuration just like you would b
 | ```automaticRetries(boolean)``` | toggle disabling automatic retries (up to 4 times) for socket timeouts | true |
 | ```verifySsl(boolean)``` |toggle enforcing SSL | true |
 | ```addShutdownHook(boolean)``` | toggle to add the clients to the system shutdown hooks automatically | false |
+| ```clientCertificateStore(String,String)``` | Add a PKCS12 KeyStore by path for doing client certificates |  |
+| ```clientCertificateStore(KeyStore,String)``` | Add a PKCS12 KeyStore for doing client certificates |  |
 
 
 
