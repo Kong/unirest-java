@@ -25,35 +25,7 @@
 
 package kong.unirest;
 
-
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Collections;
-
-public interface Body {
-    boolean isMultiPart();
-
-    boolean isEntityBody();
-
-    default Charset getCharset(){
-        return StandardCharsets.UTF_8;
-    }
-
-    default Collection<BodyPart> multiParts(){
-        return Collections.emptyList();
-    }
-
-    default BodyPart uniPart(){
-        return null;
-    }
-
-    default MultipartMode getMode(){
-        return MultipartMode.BROWSER_COMPATIBLE;
-    }
-
-    default ProgressMonitor getMonitor(){
-        return null;
-    }
-
+@FunctionalInterface
+public interface ProgressMonitor {
+    void accept(Long bytesWritten, Long totalBytes);
 }

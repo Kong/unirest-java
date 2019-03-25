@@ -86,7 +86,7 @@ class ApacheBodyMapper {
             builder.setCharset(body.getCharset());
             builder.setMode(HttpMultipartMode.valueOf(body.getMode().name()));
             for (BodyPart key : body.multiParts()) {
-                builder.addPart(key.getName(), apply(key));
+                builder.addPart(key.getName(), apply(key, body));
             }
             return builder.build();
         } else {
@@ -94,10 +94,10 @@ class ApacheBodyMapper {
         }
     }
 
-    private ContentBody apply(BodyPart value) {
+    private ContentBody apply(BodyPart value, Body body) {
         if (is(value, File.class)) {
             File file = (File)value.getValue();
-            return new FileBody(file, toApacheType(value.getContentType()));
+            return new MonitoringFileBody(file, toApacheType(value.getContentType()), body.getMonitor());
         } else if (is(value, InputStream.class)) {
             InputStream part = (InputStream)value.getValue();
             return new InputStreamBody(part,

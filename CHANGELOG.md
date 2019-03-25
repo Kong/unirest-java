@@ -1,3 +1,6 @@
+## 2.1.03 (pending)
+* Finally address #26 You can add a file upload progress monitor
+
 ## 2.1.02
 * #120 support client certificates. You can pass in an entire keystore or just the path to it in the config.
 * part of #260: only support a single basic auth header.

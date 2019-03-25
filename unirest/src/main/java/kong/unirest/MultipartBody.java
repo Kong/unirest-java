@@ -143,4 +143,7 @@ public interface MultipartBody extends HttpRequest<MultipartBody>, Body {
      * @return The same MultipartBody
      * */
     MultipartBody mode(MultipartMode value);
+
+
+    MultipartBody uploadMonitor(ProgressMonitor listener);
 }

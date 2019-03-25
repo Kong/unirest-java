@@ -38,6 +38,7 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
     private MultipartMode mode = MultipartMode.BROWSER_COMPATIBLE;
     private Charset charSet;
     private boolean forceMulti = false;
+    private ProgressMonitor monitor;
 
     HttpRequestMultiPart(HttpRequestBody httpRequest) {
         super(httpRequest);
@@ -126,6 +127,12 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
     }
 
     @Override
+    public MultipartBody uploadMonitor(ProgressMonitor uploadMonitor) {
+        this.monitor  = uploadMonitor;
+        return this;
+    }
+
+    @Override
     public Charset getCharset() {
         return this.charSet;
     }
@@ -182,6 +189,12 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
     public MultipartMode getMode() {
         return mode;
     }
+
+    @Override
+    public ProgressMonitor getMonitor() {
+        return monitor;
+    }
+
 
     MultipartBody forceMultiPart(boolean value) {
         forceMulti = value;
