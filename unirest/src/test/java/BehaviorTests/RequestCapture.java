@@ -330,6 +330,10 @@ public class RequestCapture {
         public void assertSize(long expected) {
             assertEquals(expected, this.size);
         }
+
+        public void exists() {
+            assertTrue(this.size > 0);
+        }
     }
 
 }

@@ -93,6 +93,19 @@ public class MultiPartFormPostingTest extends BddTest {
     }
 
     @Test
+    public void multipleFiles_sameField() {
+        RequestCapture body = Unirest.post(MockServer.POST)
+                .field("file", rezFile("/image.jpg"))
+                .field("file", rezFile("/spidey.jpg"))
+                .asObject(RequestCapture.class)
+                .getBody();
+
+        body.getFile("image.jpg").exists();
+        body.getFile("spidey.jpg").exists();
+        assertEquals(2, body.getAllFilesByInput("file").size());
+    }
+
+    @Test
     public void testMultipartInputStreamContentType() throws Exception {
         FileInputStream stream = new FileInputStream(rezFile("/image.jpg"));
 
