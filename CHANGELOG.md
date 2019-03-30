@@ -3,7 +3,7 @@
 ``` java
     Unirest.post("http://someplace")
            .field("myFile", new File("/file/somthing.tar")
-           .uploadMonitor((name, bytesWritten, totalBytes) -> {
+           .uploadMonitor((fieldName, fileName, bytesWritten, totalBytes) -> {
                 // draw a upload progress bar or something
            })
            .asEmpty()
