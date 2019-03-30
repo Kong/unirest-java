@@ -26,6 +26,7 @@
 package BehaviorTests;
 
 import kong.unirest.ProgressMonitor;
+import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
 import org.junit.Test;
 
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
+import static kong.unirest.TestUtil.defaultIfNull;
 import static kong.unirest.TestUtil.rezFile;
 import static org.junit.Assert.assertEquals;
 
@@ -45,17 +47,17 @@ public class UploadProgressTest extends BddTest {
 
         @Override
         public void accept(String file, Long bytesWritten, Long totalBytes) {
-            stats.computeIfAbsent(file, f -> new Stats());
-            stats.compute(file, (f,s) -> {
-               s.progress.add(bytesWritten);
-               s.timesCalled++;
-               s.total = totalBytes;
-               return s;
+            stats.compute(file, (f, s) -> {
+                s = defaultIfNull(s, Stats::new);
+                s.progress.add(bytesWritten);
+                s.timesCalled++;
+                s.total = totalBytes;
+                return s;
             });
         }
 
-        public Stats get(String spidey) {
-            return stats.getOrDefault(spidey, new Stats());
+        public Stats get(String fineName) {
+            return stats.getOrDefault(fineName, new Stats());
         }
 
         static class Stats {
@@ -108,7 +110,16 @@ public class UploadProgressTest extends BddTest {
                 .getBody();
 
         assertSpideyFileUpload(cap);
+        assertOtherFileUpload(cap);
 
+    }
+
+    private void assertOtherFileUpload(RequestCapture capture) {
+        Monitor.Stats stat = monitor.get("test");
+        assertEquals(1, stat.timesCalled);
+        assertEquals(asList(19L), stat.progress);
+        assertEquals(19L, stat.total);
+        capture.getFile("test").assertSize(19L);
     }
 
     private void assertSpideyFileUpload(RequestCapture capture) {

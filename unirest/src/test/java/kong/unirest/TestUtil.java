@@ -26,6 +26,7 @@
 package kong.unirest;
 
 import BehaviorTests.MockServer;
+import BehaviorTests.UploadProgressTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Charsets;
@@ -37,6 +38,7 @@ import java.net.URISyntaxException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -170,6 +172,13 @@ public class TestUtil {
 
     public static File getImageFile() {
         return rezFile("/image.jpg");
+    }
+
+    public static <T> T defaultIfNull(T t, Supplier<T> supplier) {
+        if(t == null){
+            return supplier.get();
+        }
+        return t;
     }
 
     @FunctionalInterface
