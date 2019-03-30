@@ -53,7 +53,6 @@ class ApacheBodyMapper {
         this.request = request;
     }
 
-
     HttpEntity apply() {
         Optional<Body> body = request.getBody();
         return body.map(this::applyBody).orElseGet(BasicHttpEntity::new);
@@ -67,8 +66,7 @@ class ApacheBodyMapper {
             return mapToMultipart(o);
         }
     }
-
-
+    
     private HttpEntity mapToUniBody(Body b) {
         BodyPart bodyPart = b.uniPart();
         if(bodyPart == null){
@@ -96,21 +94,37 @@ class ApacheBodyMapper {
 
     private ContentBody apply(BodyPart value, Body body) {
         if (is(value, File.class)) {
-            File file = (File)value.getValue();
-            return new MonitoringFileBody(file, toApacheType(value.getContentType()), body.getMonitor());
+            return toFileBody(value, body);
         } else if (is(value, InputStream.class)) {
-            InputStream part = (InputStream)value.getValue();
-            return new InputStreamBody(part,
-                    toApacheType(value.getContentType()),
-                    value.getFileName());
+            return toInputStreamBody(value);
         } else if (is(value, byte[].class)) {
-            byte[] part = (byte[])value.getValue();
-            return new ByteArrayBody(part,
-                    toApacheType(value.getContentType()),
-                    value.getFileName());
+            return toByteArrayBody(value);
         } else {
-            return new StringBody(String.valueOf(value.getValue()), toApacheType(value.getContentType()));
+            return toStringBody(value);
         }
+    }
+
+    private ContentBody toFileBody(BodyPart value, Body body) {
+        File file = (File)value.getValue();
+        return new MonitoringFileBody(file, toApacheType(value.getContentType()), body.getMonitor());
+    }
+
+    private ContentBody toInputStreamBody(BodyPart value) {
+        InputStream part = (InputStream)value.getValue();
+        return new InputStreamBody(part,
+                toApacheType(value.getContentType()),
+                value.getFileName());
+    }
+
+    private ContentBody toByteArrayBody(BodyPart value) {
+        byte[] part = (byte[])value.getValue();
+        return new ByteArrayBody(part,
+                toApacheType(value.getContentType()),
+                value.getFileName());
+    }
+
+    private ContentBody toStringBody(BodyPart value) {
+        return new StringBody(String.valueOf(value.getValue()), toApacheType(value.getContentType()));
     }
 
     private boolean is(BodyPart value, Class<?> cls) {
