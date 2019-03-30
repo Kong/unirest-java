@@ -92,8 +92,7 @@ public class UploadProgressTest extends BddTest {
         Unirest.post(MockServer.POST)
                 .field("spidey", this.spidey)
                 .uploadMonitor(monitor)
-                .asObject(RequestCapture.class)
-                .getBody();
+                .asEmpty();
 
         assertSpideyFileUpload("spidey.jpg");
     }
@@ -103,9 +102,7 @@ public class UploadProgressTest extends BddTest {
         Unirest.post(MockServer.POST)
                 .field("spidey", spidey)
                 .uploadMonitor(monitor)
-                .asObjectAsync(RequestCapture.class)
-                .get()
-                .getBody();
+                .asEmpty();
 
         assertSpideyFileUpload("spidey.jpg");
     }
@@ -116,8 +113,7 @@ public class UploadProgressTest extends BddTest {
                 .field("spidey", this.spidey)
                 .field("other", rezFile("/test"))
                 .uploadMonitor(monitor)
-                .asObject(RequestCapture.class)
-                .getBody();
+                .asEmpty();
 
         assertSpideyFileUpload("spidey.jpg");
         assertOtherFileUpload();
@@ -128,8 +124,7 @@ public class UploadProgressTest extends BddTest {
         Unirest.post(MockServer.POST)
                 .field("spidey", new FileInputStream(spidey))
                 .uploadMonitor(monitor)
-                .asObject(RequestCapture.class)
-                .getBody();
+                .asEmpty();
 
         assertSpideyFileUpload("spidey");
     }
