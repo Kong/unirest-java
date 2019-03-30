@@ -8,6 +8,7 @@
            })
            .asEmpty()
 ```
+* Fix an issue where when using generic methods that take object, passing in complex objects like InputStreams would not get send as the correct type.
 
 ## 2.1.02
 * #120 support client certificates. You can pass in an entire keystore or just the path to it in the config.
