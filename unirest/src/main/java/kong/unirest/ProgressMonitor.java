@@ -27,5 +27,5 @@ package kong.unirest;
 
 @FunctionalInterface
 public interface ProgressMonitor {
-    void accept(Long bytesWritten, Long totalBytes);
+    void accept(String file, Long bytesWritten, Long totalBytes);
 }

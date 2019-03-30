@@ -37,11 +37,13 @@ import java.util.Objects;
 public class MonitoringFileBody extends FileBody {
     private final ProgressMonitor monitor;
     private long length;
+    private String name;
 
     public MonitoringFileBody(File file, ContentType contentType, ProgressMonitor monitor) {
         super(file, contentType);
         this.monitor = monitor;
         this.length = file.length();
+        this.name = file.getName();
     }
 
     @Override
@@ -68,21 +70,21 @@ public class MonitoringFileBody extends FileBody {
         public void write(int b) throws IOException {
             out.write(b);
             written++;
-            monitor.accept(written, length);
+            monitor.accept(name, written, length);
         }
 
         @Override
         public void write(byte[] b) throws IOException {
             out.write(b);
             written += b.length;
-            monitor.accept(written, length);
+            monitor.accept(name, written, length);
         }
 
         @Override
         public void write(byte[] b, int off, int len) throws IOException {
             out.write(b, off, len);
             written += len;
-            monitor.accept(written, length);
+            monitor.accept(name, written, length);
         }
 
         @Override

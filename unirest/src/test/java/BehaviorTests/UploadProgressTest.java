@@ -25,29 +25,53 @@
 
 package BehaviorTests;
 
+import kong.unirest.ProgressMonitor;
 import kong.unirest.Unirest;
 import org.junit.Test;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.rezFile;
 import static org.junit.Assert.assertEquals;
 
 public class UploadProgressTest extends BddTest {
-    private List<Long> progress;
-    private long total;
-    private long timesCalled;
+    private static class Monitor implements ProgressMonitor {
+        private Map<String, Stats> stats = new HashMap<>();
+
+        @Override
+        public void accept(String file, Long bytesWritten, Long totalBytes) {
+            stats.computeIfAbsent(file, f -> new Stats());
+            stats.compute(file, (f,s) -> {
+               s.progress.add(bytesWritten);
+               s.timesCalled++;
+               s.total = totalBytes;
+               return s;
+            });
+        }
+
+        public Stats get(String spidey) {
+            return stats.getOrDefault(spidey, new Stats());
+        }
+
+        static class Stats {
+            List<Long> progress = new ArrayList<>();
+            long total;
+            long timesCalled;
+        }
+    }
+
+    private Monitor monitor;
     private File spidey;
 
     @Override
     public void setUp() {
         super.setUp();
-        progress = new ArrayList<>();
-        total = 0L;
-        timesCalled = 0;
+        this.monitor = new Monitor();
         spidey = rezFile("/spidey.jpg");
     }
 
@@ -55,11 +79,7 @@ public class UploadProgressTest extends BddTest {
     public void canAddUploadProgress() {
         RequestCapture cap = Unirest.post(MockServer.POST)
                 .field("spidey", this.spidey)
-                .uploadMonitor((p, t) -> {
-                    timesCalled++;
-                    progress.add(p);
-                    total = t;
-                })
+                .uploadMonitor(monitor)
                 .asObject(RequestCapture.class)
                 .getBody();
 
@@ -70,11 +90,7 @@ public class UploadProgressTest extends BddTest {
     public void canAddUploadProgressAsync() throws Exception {
         RequestCapture cap = Unirest.post(MockServer.POST)
                 .field("spidey", spidey)
-                .uploadMonitor((p, t) -> {
-                    timesCalled++;
-                    progress.add(p);
-                    total = t;
-                })
+                .uploadMonitor(monitor)
                 .asObjectAsync(RequestCapture.class)
                 .get()
                 .getBody();
@@ -82,11 +98,25 @@ public class UploadProgressTest extends BddTest {
         assertSpideyFileUpload(cap);
     }
 
+    @Test
+    public void canKeepTrackOfMultipleFiles() {
+        RequestCapture cap = Unirest.post(MockServer.POST)
+                .field("spidey", this.spidey)
+                .field("other", rezFile("/test"))
+                .uploadMonitor(monitor)
+                .asObject(RequestCapture.class)
+                .getBody();
+
+        assertSpideyFileUpload(cap);
+
+    }
+
     private void assertSpideyFileUpload(RequestCapture capture) {
-        assertEquals(12, timesCalled);
+        Monitor.Stats stat = monitor.get(spidey.getName());
+        assertEquals(12, stat.timesCalled);
         assertEquals(asList(4096L, 8192L, 12288L, 16384L, 20480L, 24576L, 28672L,
-                32768L, 36864L, 40960L, 45056L, 46246L), progress);
-        assertEquals(spidey.length(), total);
-        capture.getFile("spidey.jpg").assertSize(spidey.length());
+                32768L, 36864L, 40960L, 45056L, 46246L), stat.progress);
+        assertEquals(this.spidey.length(), stat.total);
+        capture.getFile("spidey.jpg").assertSize(this.spidey.length());
     }
 }
