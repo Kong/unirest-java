@@ -82,6 +82,17 @@ public class MultiPartFormPostingTest extends BddTest {
     }
 
     @Test
+    public void canSendRawInputStreamsWithoutAFileName()  throws Exception {
+        FileInputStream stream = new FileInputStream(rezFile("/test"));
+
+        Unirest.post(MockServer.POST)
+                .field("file", stream)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertParam("file", "This is a test file");
+    }
+
+    @Test
     public void testMultipartInputStreamContentType() throws Exception {
         FileInputStream stream = new FileInputStream(rezFile("/image.jpg"));
 
