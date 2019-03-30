@@ -1,5 +1,13 @@
 ## 2.1.03 (pending)
-* Finally address #26 You can add a file upload progress monitor
+* Finally address #26 You can add a file upload progress monitor. This monitor will get called for each file in a multipart file upload by name.
+``` java
+    Unirest.post("http://someplace")
+           .field("myFile", new File("/file/somthing.tar")
+           .uploadMonitor((name, bytesWritten, totalBytes) -> {
+                // draw a upload progress bar or something
+           })
+           .asEmpty()
+```
 
 ## 2.1.02
 * #120 support client certificates. You can pass in an entire keystore or just the path to it in the config.

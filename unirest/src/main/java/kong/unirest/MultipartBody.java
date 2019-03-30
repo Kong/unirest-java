@@ -145,5 +145,10 @@ public interface MultipartBody extends HttpRequest<MultipartBody>, Body {
     MultipartBody mode(MultipartMode value);
 
 
-    MultipartBody uploadMonitor(ProgressMonitor listener);
+    /**
+     * Set a file Progress upload monitor suitable for drawing progress bars and whatnot.
+     * @param monitor a monitor
+     * @return The same MultipartBody
+     * */
+    MultipartBody uploadMonitor(ProgressMonitor monitor);
 }
