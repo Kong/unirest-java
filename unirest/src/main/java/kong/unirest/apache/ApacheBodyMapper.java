@@ -96,7 +96,7 @@ class ApacheBodyMapper {
         if (is(value, File.class)) {
             return toFileBody(value, body);
         } else if (is(value, InputStream.class)) {
-            return toInputStreamBody(value);
+            return toInputStreamBody(value, body);
         } else if (is(value, byte[].class)) {
             return toByteArrayBody(value);
         } else {
@@ -106,15 +106,19 @@ class ApacheBodyMapper {
 
     private ContentBody toFileBody(BodyPart value, Body body) {
         File file = (File)value.getValue();
-        return new MonitoringFileBody(file, toApacheType(value.getContentType()), body.getMonitor());
+        return new MonitoringFileBody(value.getName(), file, toApacheType(value.getContentType()), body.getMonitor());
     }
 
-    private ContentBody toInputStreamBody(BodyPart value) {
+    private ContentBody toInputStreamBody(BodyPart value, Body body) {
         InputStream part = (InputStream)value.getValue();
-        return new InputStreamBody(part,
+        return new MonitoringStreamBody(part,
                 toApacheType(value.getContentType()),
-                value.getFileName());
+                value.getFileName(),
+                value.getName(),
+                body.getMonitor());
     }
+
+
 
     private ContentBody toByteArrayBody(BodyPart value) {
         byte[] part = (byte[])value.getValue();

@@ -61,4 +61,8 @@ class Util {
     public interface ExConsumer<T>{
         void accept(T t) throws Exception;
     }
+
+    static boolean isNullOrEmpty(String s) {
+        return s == null || s.trim().isEmpty();
+    }
 }

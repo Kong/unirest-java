@@ -38,9 +38,10 @@ package kong.unirest;
 public interface ProgressMonitor {
     /**
      * Accept stats about the current file upload chunk for a file.
-     * @param fileName the name of the file in question
+     * @param field the field name
+     * @param fileName the name of the file in question if available (InputStreams and byte arrays may not have file names)
      * @param bytesWritten the number of bytes that have been uploaded so far
-     * @param totalBytes the total bytes that will be uploaded.
+     * @param totalBytes the total bytes that will be uploaded. Note this this may be an estimate if an InputStream was used
      * */
-    void accept(String fileName, Long bytesWritten, Long totalBytes);
+    void accept(String field, String fileName, Long bytesWritten, Long totalBytes);
 }

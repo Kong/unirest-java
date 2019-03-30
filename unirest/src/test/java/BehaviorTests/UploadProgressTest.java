@@ -25,16 +25,18 @@
 
 package BehaviorTests;
 
+import com.google.common.base.Strings;
 import kong.unirest.ProgressMonitor;
-import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.defaultIfNull;
@@ -46,14 +48,22 @@ public class UploadProgressTest extends BddTest {
         private Map<String, Stats> stats = new HashMap<>();
 
         @Override
-        public void accept(String file, Long bytesWritten, Long totalBytes) {
-            stats.compute(file, (f, s) -> {
+        public void accept(String field, String file, Long bytesWritten, Long totalBytes) {
+            String key = firstNotEmpty(file, field);
+            stats.compute(key, (f, s) -> {
                 s = defaultIfNull(s, Stats::new);
                 s.progress.add(bytesWritten);
                 s.timesCalled++;
                 s.total = totalBytes;
                 return s;
             });
+        }
+
+        private String firstNotEmpty(String... s) {
+            return Stream.of(s)
+                    .filter(string -> !Strings.isNullOrEmpty(string))
+                    .findFirst()
+                    .orElse("");
         }
 
         public Stats get(String fineName) {
@@ -79,55 +89,63 @@ public class UploadProgressTest extends BddTest {
 
     @Test
     public void canAddUploadProgress() {
-        RequestCapture cap = Unirest.post(MockServer.POST)
+        Unirest.post(MockServer.POST)
                 .field("spidey", this.spidey)
                 .uploadMonitor(monitor)
                 .asObject(RequestCapture.class)
                 .getBody();
 
-        assertSpideyFileUpload(cap);
+        assertSpideyFileUpload("spidey.jpg");
     }
 
     @Test
     public void canAddUploadProgressAsync() throws Exception {
-        RequestCapture cap = Unirest.post(MockServer.POST)
+        Unirest.post(MockServer.POST)
                 .field("spidey", spidey)
                 .uploadMonitor(monitor)
                 .asObjectAsync(RequestCapture.class)
                 .get()
                 .getBody();
 
-        assertSpideyFileUpload(cap);
+        assertSpideyFileUpload("spidey.jpg");
     }
 
     @Test
     public void canKeepTrackOfMultipleFiles() {
-        RequestCapture cap = Unirest.post(MockServer.POST)
+        Unirest.post(MockServer.POST)
                 .field("spidey", this.spidey)
                 .field("other", rezFile("/test"))
                 .uploadMonitor(monitor)
                 .asObject(RequestCapture.class)
                 .getBody();
 
-        assertSpideyFileUpload(cap);
-        assertOtherFileUpload(cap);
-
+        assertSpideyFileUpload("spidey.jpg");
+        assertOtherFileUpload();
     }
 
-    private void assertOtherFileUpload(RequestCapture capture) {
+    @Test
+    public void canMonitorIfPassedAsInputStream() throws Exception {
+        Unirest.post(MockServer.POST)
+                .field("spidey", new FileInputStream(spidey))
+                .uploadMonitor(monitor)
+                .asObject(RequestCapture.class)
+                .getBody();
+
+        assertSpideyFileUpload("spidey");
+    }
+
+    private void assertOtherFileUpload() {
         Monitor.Stats stat = monitor.get("test");
         assertEquals(1, stat.timesCalled);
         assertEquals(asList(19L), stat.progress);
         assertEquals(19L, stat.total);
-        capture.getFile("test").assertSize(19L);
     }
 
-    private void assertSpideyFileUpload(RequestCapture capture) {
-        Monitor.Stats stat = monitor.get(spidey.getName());
+    private void assertSpideyFileUpload(String name) {
+        Monitor.Stats stat = monitor.get(name);
         assertEquals(12, stat.timesCalled);
         assertEquals(asList(4096L, 8192L, 12288L, 16384L, 20480L, 24576L, 28672L,
                 32768L, 36864L, 40960L, 45056L, 46246L), stat.progress);
         assertEquals(this.spidey.length(), stat.total);
-        capture.getFile("spidey.jpg").assertSize(this.spidey.length());
     }
 }

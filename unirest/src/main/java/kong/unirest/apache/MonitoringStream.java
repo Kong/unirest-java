@@ -26,34 +26,55 @@
 package kong.unirest.apache;
 
 import kong.unirest.ProgressMonitor;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.content.FileBody;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Objects;
 
-public class MonitoringFileBody extends FileBody {
-    private final String field;
-    private final ProgressMonitor monitor;
+class MonitoringStream extends OutputStream {
+
+    private final OutputStream out;
+    private volatile long written = 0;
     private long length;
-    private String name;
+    private String fieldName;
+    private String fileName;
+    private ProgressMonitor monitor;
 
-    public MonitoringFileBody(String field, File file, ContentType contentType, ProgressMonitor monitor) {
-        super(file, contentType);
-        this.field = field;
+    public MonitoringStream(OutputStream out, long length, String fieldName, String fileName, ProgressMonitor monitor) {
+        this.out = out;
+        this.length = length;
+        this.fieldName = fieldName;
+        this.fileName = fileName;
         this.monitor = monitor;
-        this.length = file.length();
-        this.name = file.getName();
     }
 
     @Override
-    public void writeTo(OutputStream out) throws IOException {
-        if(Objects.nonNull(monitor)){
-            super.writeTo(new MonitoringStream(out, length, field, name, monitor));
-        } else {
-            super.writeTo(out);
-        }
+    public void write(int b) throws IOException {
+        out.write(b);
+        written++;
+        monitor.accept(fieldName, fileName, written, length);
+    }
+
+    @Override
+    public void write(byte[] b) throws IOException {
+        out.write(b);
+        written += b.length;
+        monitor.accept(fieldName, fileName, written, length);
+    }
+
+    @Override
+    public void write(byte[] b, int off, int len) throws IOException {
+        out.write(b, off, len);
+        written += len;
+        monitor.accept(fieldName, fileName, written, length);
+    }
+
+    @Override
+    public void flush() throws IOException {
+        out.flush();
+    }
+
+    @Override
+    public void close() throws IOException {
+        out.close();
     }
 }

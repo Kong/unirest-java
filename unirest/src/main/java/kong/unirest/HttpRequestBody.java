@@ -66,7 +66,7 @@ class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRe
 
 	@Override
 	public MultipartBody field(String name, Object value, String contentType) {
-		return new HttpRequestMultiPart(this).field(name, Util.nullToEmpty(value), contentType);
+		return new HttpRequestMultiPart(this).field(name, value, contentType);
 	}
 
 	@Override

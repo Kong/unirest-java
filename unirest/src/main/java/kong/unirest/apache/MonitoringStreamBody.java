@@ -26,32 +26,41 @@
 package kong.unirest.apache;
 
 import kong.unirest.ProgressMonitor;
+import kong.unirest.UnirestException;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.InputStreamBody;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 
-public class MonitoringFileBody extends FileBody {
-    private final String field;
+class MonitoringStreamBody extends InputStreamBody {
     private final ProgressMonitor monitor;
-    private long length;
-    private String name;
+    private final long length;
+    private final String name;
+    private final String fileName;
 
-    public MonitoringFileBody(String field, File file, ContentType contentType, ProgressMonitor monitor) {
-        super(file, contentType);
-        this.field = field;
-        this.monitor = monitor;
-        this.length = file.length();
-        this.name = file.getName();
+    public MonitoringStreamBody(InputStream in,
+                                ContentType contentType,
+                                String fileName,
+                                String fieldName,
+                                ProgressMonitor monitor) {
+        super(in, contentType, fileName);
+        this.fileName = fileName;
+        try {
+            this.monitor = monitor;
+            this.name = fieldName;
+            this.length = in.available();
+        }catch (IOException e){
+            throw new UnirestException(e);
+        }
     }
 
     @Override
     public void writeTo(OutputStream out) throws IOException {
         if(Objects.nonNull(monitor)){
-            super.writeTo(new MonitoringStream(out, length, field, name, monitor));
+            super.writeTo(new MonitoringStream(out, length, name, fileName, monitor));
         } else {
             super.writeTo(out);
         }

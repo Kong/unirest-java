@@ -53,14 +53,14 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
 
     @Override
     public MultipartBody field(String name, String value, String contentType) {
-        addPart(new ParamPart(name, value, contentType));
+        addPart(name, value, contentType);
         return this;
     }
 
     @Override
     public MultipartBody field(String name, Collection<?> collection) {
         for (Object current: collection) {
-            addPart(name, current);
+            addPart(name, current, null);
         }
         return this;
     }
@@ -150,13 +150,18 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
         return this;
     }
 
-    private void addPart(String name, Object value) {
+    public MultipartBody field(String name, Object value, String contentType) {
+        addPart(name, value, contentType);
+        return this;
+    }
+
+    private void addPart(String name, Object value, String contentType) {
         if(value instanceof InputStream){
-            addPart(new InputStreamPart(name, (InputStream)value));
+            addPart(new InputStreamPart(name, (InputStream)value, contentType));
         } else if (value instanceof File) {
-            addPart(new FilePart((File)value, name));
+            addPart(new FilePart((File)value, name, contentType));
         } else {
-            addPart(new ParamPart(name, String.valueOf(value)));
+            addPart(new ParamPart(name, Util.nullToEmpty(value), contentType));
         }
     }
 
