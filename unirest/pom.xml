@@ -11,6 +11,10 @@
     <artifactId>unirest-java</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <main.dir>${project.parent.basedir}</main.dir>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
