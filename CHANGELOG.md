@@ -1,4 +1,4 @@
-## 2.2.00 (pending)
+## 2.2.00
 * Introduce default implementations of popular object mappers
     * Jackson
     * GSON
