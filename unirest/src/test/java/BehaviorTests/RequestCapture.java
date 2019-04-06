@@ -35,6 +35,7 @@ import spark.Request;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.Part;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -60,6 +61,7 @@ public class RequestCapture {
     public JsonPatch jsonPatches;
     public Integer status;
     private boolean isProxied;
+    public HashMap<String, String> cookies = new HashMap<>();
 
 
     public RequestCapture() {
@@ -72,6 +74,7 @@ public class RequestCapture {
         writeHeaders(req);
         writeQuery(req);
         populateParams(req);
+        cookies.putAll(req.cookies());
         contentType = req.contentType();
         status = 200;
     }
@@ -289,6 +292,16 @@ public class RequestCapture {
 
     public RequestCapture assertUrlEncodedContent() {
         return assertContentType("application/x-www-form-urlencoded; charset=UTF-8");
+    }
+
+    public void assertCookie(String name, String value) {
+        String c = cookies.get(name);
+        assertNotNull("expected a cookie to be passed to the server but got none. Name: " + name, c);
+        assertEquals(value, c);
+    }
+
+    public void assertNoCookie(String name) {
+        assertNull("Cookie should not have been passed but it was! ", cookies.get(name));
     }
 
     public static class FormPart {

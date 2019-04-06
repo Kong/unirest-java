@@ -26,6 +26,7 @@
 
 package BehaviorTests;
 
+import kong.unirest.Headers;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
@@ -48,6 +49,8 @@ public class MockServer {
 	private static int pages = 1;
 	private static int onPage = 1;
     private static final List<Pair<String,String>> responseHeaders = new ArrayList<>();
+	private static final List<Pair<String,String>> cookies = new ArrayList<>();
+
 	private static final JacksonObjectMapper om = new JacksonObjectMapper();
 	private static Object responseBody;
 	public static final int PORT = 4567;
@@ -78,6 +81,7 @@ public class MockServer {
 	public static void reset(){
 		responseBody = null;
 		responseHeaders.clear();
+		cookies.clear();
 		pages = 1;
 		onPage = 1;
 	}
@@ -180,7 +184,7 @@ public class MockServer {
 	}
 
 	private static RequestCapture getRequestCapture(Request req, Response res) {
-		res.cookie("JSESSIONID", "ABC123");
+		cookies.forEach(c -> res.cookie(c.key, c.value));
 		responseHeaders.forEach(h -> res.header(h.key, h.value));
 		RequestCapture value = new RequestCapture(req);
 		value.writeBody(req);
@@ -205,5 +209,9 @@ public class MockServer {
 
 	public static void main(String[] args){
 		
+	}
+
+	public static void expectCookie(String name, String value) {
+		cookies.add(new Pair<>(name, value));
 	}
 }

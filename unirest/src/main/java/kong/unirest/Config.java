@@ -74,6 +74,7 @@ public class Config {
     private boolean addShutdownHook = false;
     private KeyStore keystore;
     private String keystorePassword;
+    private String cookieSpec;
 
     public Config() {
         setDefaults();

@@ -41,6 +41,7 @@ public class ResponseHeaderTest extends BddTest {
         MockServer.addResponseHeader("alpha", "apples");
         MockServer.addResponseHeader("Content", "application/xml");
         MockServer.addResponseHeader("zed", "grapes");
+        MockServer.expectCookie("JSESSIONID", "ABC123");
 
         Headers h = Unirest.get(MockServer.GET).asString().getHeaders();
 
