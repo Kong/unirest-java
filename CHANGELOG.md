@@ -1,3 +1,8 @@
+## 2.2.00 (pending)
+* Introduce default implementations of popular object mappers
+    * Jackson
+    * GSON
+
 ## 2.1.03
 * Finally address #26 You can add a file upload progress monitor. This monitor will get called for each file in a multipart file upload by name.
 ``` java
