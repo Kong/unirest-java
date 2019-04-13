@@ -1,3 +1,6 @@
+## 2.2.01 (pending)
+* add cookiespec policies to config. These are the same as Apache Http Clients cookiespec. See org.apache.http.client.config.CookieSpec
+
 ## 2.2.00
 * Introduce default implementations of popular object mappers
     * Jackson

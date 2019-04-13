@@ -26,6 +26,7 @@
 package BehaviorTests;
 
 import kong.unirest.Unirest;
+import org.apache.http.client.config.CookieSpecs;
 import org.junit.Test;
 
 public class CookieTest extends BddTest {
@@ -42,6 +43,18 @@ public class CookieTest extends BddTest {
     @Test
     public void canTurnOffCookieManagement() {
         Unirest.config().enableCookieManagement(false);
+        MockServer.expectCookie("JSESSIONID", "ABC123");
+        Unirest.get(MockServer.GET).asEmpty();
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertNoCookie("JSESSIONID");
+    }
+
+    @Test
+    public void canSetCookieSpec() {
+        Unirest.config().cookieSpec(CookieSpecs.IGNORE_COOKIES);
+
         MockServer.expectCookie("JSESSIONID", "ABC123");
         Unirest.get(MockServer.GET).asEmpty();
         Unirest.get(MockServer.GET)

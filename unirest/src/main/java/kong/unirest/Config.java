@@ -421,6 +421,23 @@ public class Config {
     }
 
     /**
+     * Sets a cookie policy
+     * Acceptable values:
+     *  'default' (same as Netscape),
+     *  'netscape',
+     *  'ignoreCookies',
+     *  'standard' (RFC 6265 interoprability profile) ,
+     *  'standard-strict' (RFC 6265 strict profile)
+     *
+     * @param policy: the policy for cookies to follow
+     * @return this config object
+     */
+    public Config cookieSpec(String policy) {
+        this.cookieSpec = policy;
+        return this;
+    }
+
+    /**
      * Set the default encoding that will be used for serialization into Strings.
      * The default-default is UTF-8
      *
@@ -628,5 +645,9 @@ public class Config {
 
     public boolean shouldAddShutdownHook() {
         return addShutdownHook;
+    }
+
+    public String getCookieSpec() {
+        return cookieSpec;
     }
 }
