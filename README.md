@@ -225,7 +225,7 @@ Unirest config allows easy access to build a configuration just like you would b
 | ```setDefaultBasicAuth(String, String)``` | Add a default Basic Auth Header |  |
 | ```followRedirects(boolean)``` | toggle following redirects | true |
 | ```enableCookieManagement(boolean)``` | toggle accepting and storing cookies | true |
-| ```cookieSpec(boolean)``` | set a cookie policy. Acceptable values: 'default' (same as Netscape), 'netscape', 'ignoreCookies', 'standard' (RFC 6265 interoprability profile) , 'standard-strict' (RFC 6265 strict profile) | true |
+| ```cookieSpec(boolean)``` | set a cookie policy. Acceptable values: 'default' (same as Netscape), 'netscape', 'ignoreCookies', 'standard' (RFC 6265 interoprability profile) , 'standard-strict' (RFC 6265 strict profile) | default |
 | ```automaticRetries(boolean)``` | toggle disabling automatic retries (up to 4 times) for socket timeouts | true |
 | ```verifySsl(boolean)``` |toggle enforcing SSL | true |
 | ```addShutdownHook(boolean)``` | toggle to add the clients to the system shutdown hooks automatically | false |
