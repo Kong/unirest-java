@@ -1,4 +1,12 @@
-## 2.2.01 (pending)
+## 2.2.02 (pending)
+* Add a mapper function to transform a HttpResponse<V> to a HttpResponse<T>
+```java
+HttpResponse<Integer> response = Unirest.get("http://someplace/number")
+                .asString()
+                .map(Integer::valueOf);
+```
+
+## 2.2.01
 * add cookiespec policies to config. These are the same as Apache Http Clients cookiespec. See org.apache.http.client.config.CookieSpec
 
 ## 2.2.00

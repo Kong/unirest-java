@@ -37,9 +37,15 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     private Optional<UnirestParsingException> parsingerror = Optional.empty();
 
     protected BaseResponse(RawResponse response){
-        headers = response.getHeaders();
+        this.headers = response.getHeaders();
         this.statusCode = response.getStatus();
         this.statusText = response.getStatusText();
+    }
+
+    protected BaseResponse(BaseResponse other){
+        this.headers = other.headers;
+        this.statusCode = other.statusCode;
+        this.statusText = other.statusText;
     }
 
     @Override
@@ -68,6 +74,11 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     @Override
     public <V> V mapBody(Function<T, V> func){
         return func.apply(getBody());
+    }
+
+    @Override
+    public <V> HttpResponse<V> map(Function<T, V> func) {
+        return new MappedResponse(this, mapBody(func));
     }
 
     protected void setParsingException(String originalBody, RuntimeException e) {

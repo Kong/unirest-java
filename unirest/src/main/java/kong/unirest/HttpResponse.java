@@ -62,11 +62,20 @@ public interface HttpResponse<T> {
     Optional<UnirestParsingException> getParsingError();
 
     /**
+     * Map the body into another type
      * @param func a function to transform a body type to something else.
      * @param <V> The return type of the function
      * @return the return type
      */
     <V> V mapBody(Function<T, V> func);
+
+    /**
+     * Map the Response into another response with a different body
+     * @param func a function to transform a body type to something else.
+     * @param <V> The return type of the function
+     * @return the return type
+     */
+    <V> HttpResponse<V> map(Function<T, V> func);
 
     /**
      * If the response was a 200-series response. Invoke this consumer

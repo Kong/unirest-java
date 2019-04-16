@@ -40,6 +40,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -167,25 +168,33 @@ public class MockServer {
 	}
 
 	private static Object proxiedResponse(Request req, Response res) {
-		if(responseBody != null){
-			return responseBody;
+		return simpleResponse(req, res)
+				.orElseGet(() -> {
+					RequestCapture value = getRequestCapture(req, res);
+					value.setIsProxied(true);
+					return om.writeValue(value);
+				});
+	}
+
+	private static Optional<Object> simpleResponse(Request req, Response res) {
+		cookies.forEach(c -> res.cookie(c.key, c.value));
+		responseHeaders.forEach(h -> res.header(h.key, h.value));
+
+		if(responseBody != null) {
+			return Optional.of(responseBody);
 		}
-		RequestCapture value = getRequestCapture(req, res);
-		value.setIsProxied(true);
-		return om.writeValue(value);
+		return Optional.empty();
 	}
 
 	private static Object jsonResponse(Request req, Response res) {
-		if(responseBody != null){
-			return responseBody;
-		}
-		RequestCapture value = getRequestCapture(req, res);
-		return om.writeValue(value);
+		return simpleResponse(req, res)
+				.orElseGet(() -> {
+					RequestCapture value = getRequestCapture(req, res);
+					return om.writeValue(value);
+				});
 	}
 
 	private static RequestCapture getRequestCapture(Request req, Response res) {
-		cookies.forEach(c -> res.cookie(c.key, c.value));
-		responseHeaders.forEach(h -> res.header(h.key, h.value));
 		RequestCapture value = new RequestCapture(req);
 		value.writeBody(req);
 		return value;
