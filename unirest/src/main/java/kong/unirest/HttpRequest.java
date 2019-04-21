@@ -33,6 +33,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+    The primary request builder used to create a request. This will be completed after calling one of
+    the "as**" methods like asString()
+ */
 public interface HttpRequest<R extends HttpRequest> {
     /**
      * add a route param that replaces the matching {name}
@@ -224,6 +228,17 @@ public interface HttpRequest<R extends HttpRequest> {
     <T> HttpResponse<T> asObject(Function<RawResponse, T> function);
 
     /**
+     * Executes the request and returns the response with the body mapped into T by a configured ObjectMapper
+     * if the response resulted in an error then map the error into an alternative object
+     * @param responseClass the class to return. This will be passed to the ObjectMapper
+     * @param errorClass the error class to return. This will be passed to the ObjectMapper
+     * @param <T> the return type
+     * @param <E> the error type
+     * @return a response
+     */
+    <T, E> HttpEither<T, E> asObject(Class<? extends T> responseClass, Class<? extends E> errorClass);
+
+    /**
      * Executes the request asynchronously and returns response with the body mapped into T by a configured ObjectMapper
      * @param responseClass the class type to map to
      * @param <T> the return type
@@ -266,8 +281,6 @@ public interface HttpRequest<R extends HttpRequest> {
      * @return a CompletableFuture of a HttpResponse containing the body of T
      */
     <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Function<RawResponse, T> function);
-
-    <T, E> HttpEitherResponse<T, E> asObject(Class<? extends T> responseClass, Class<? extends E> errorThingClass);
 
     /**
      * Executes the request and writes the contents into a file

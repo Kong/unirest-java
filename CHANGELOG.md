@@ -5,6 +5,15 @@ HttpResponse<Integer> response = Unirest.get("http://someplace/number")
                 .asString()
                 .map(Integer::valueOf);
 ```
+* Add a new response builder for getting an object OR an alternative error object. This is nice for systems that return errors in the same format as the primary objects (json, xml, etc).
+```java
+HttpEither<Thing, ErrorThing> response = Unirest.get("http://someplace")
+                .asObject(Thing.class, ErrorThing.class);
+
+response.getBody(); // Has the thing
+response.getError(); // has an error object (as defined by the server)
+
+```
 
 ## 2.2.01
 * add cookiespec policies to config. These are the same as Apache Http Clients cookiespec. See org.apache.http.client.config.CookieSpec

@@ -222,10 +222,10 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
-    public <T, E> HttpEitherResponse<T, E> asObject(Class<? extends T> responseClass, Class<? extends E> errorClass) {
+    public <T, E> HttpEither<T, E> asObject(Class<? extends T> responseClass, Class<? extends E> errorClass) {
         ObjectMapper om = getObjectMapper();
         HttpResponse<T> response = config.getClient().request(this, r -> new ObjectResponse<T>(om, r, responseClass));
-        return new EitherResponse(
+        return new Either(
                 (BaseResponse) response,
                 om, errorClass);
     }

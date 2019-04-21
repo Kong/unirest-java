@@ -128,7 +128,7 @@ public class AsObjectTest extends BddTest {
 
     @Test
     public void parsingAnAlternativeErrorObject() {
-        HttpEitherResponse<RequestCapture, ErrorThing> request = Unirest.get(MockServer.ERROR_RESPONSE)
+        HttpEither<RequestCapture, ErrorThing> request = Unirest.get(MockServer.ERROR_RESPONSE)
                 .asObject(RequestCapture.class, ErrorThing.class);
 
         assertEquals("boom!", request.getError().getMessage());

@@ -25,24 +25,9 @@
 
 package kong.unirest;
 
-class EitherResponse<T, E> extends BaseResponse<T> implements HttpEitherResponse<T, E>  {
-    private T body;
-    private E error;
-
-    EitherResponse(BaseResponse<T> response, ObjectMapper om, Class<? extends E> errorClass) {
-        super(response);
-        if(!response.isSuccess()){
-            error = om.readValue(response.getParsingError().get().getOriginalBody(), errorClass);
-        }
-    }
-
-    @Override
-    public T getBody() {
-        return body;
-    }
-
-    @Override
-    public E getError() {
-        return error;
-    }
+/**
+ * A response with an alternate error class
+ */
+public interface HttpEither<T, E> extends HttpResponse<T> {
+    E getError();
 }
