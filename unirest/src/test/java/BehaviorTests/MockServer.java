@@ -49,7 +49,7 @@ import static spark.Spark.*;
 public class MockServer {
 	private static int pages = 1;
 	private static int onPage = 1;
-    private static final List<Pair<String,String>> responseHeaders = new ArrayList<>();
+	private static final List<Pair<String,String>> responseHeaders = new ArrayList<>();
 	private static final List<Pair<String,String>> cookies = new ArrayList<>();
 
 	private static final JacksonObjectMapper om = new JacksonObjectMapper();
@@ -64,6 +64,7 @@ public class MockServer {
 	public static final String PROXY = "localhost:4567";
 	public static final String POST = HOST + "/post";
 	public static final String GET = HOST + "/get";
+	public static final String ERROR_RESPONSE = HOST + "/error";
 	public static final String DELETE = HOST + "/delete";
 	public static final String GZIP = HOST + "/gzip";
 	public static final String PATCH = HOST + "/patch";
@@ -108,12 +109,17 @@ public class MockServer {
 		get("/binary", MockServer::file);
 		get("/paged", MockServer::paged);
 		post("/raw", MockServer::echo);
+		get("/error", MockServer::error);
         Runtime.getRuntime().addShutdownHook(new Thread(Spark::stop));
 		try {
 			new CountDownLatch(1).await(2, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static Object error(Request request, Response response) {
+		return Spark.halt(400, om.writeValue(new ErrorThing("boom!")));
 	}
 
 	private static Object echo(Request request, Response response) {

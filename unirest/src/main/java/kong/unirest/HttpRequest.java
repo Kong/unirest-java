@@ -267,6 +267,8 @@ public interface HttpRequest<R extends HttpRequest> {
      */
     <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Function<RawResponse, T> function);
 
+    <T, E> HttpEitherResponse<T, E> asObject(Class<? extends T> responseClass, Class<? extends E> errorThingClass);
+
     /**
      * Executes the request and writes the contents into a file
      * @param path The path to the file.
@@ -288,7 +290,6 @@ public interface HttpRequest<R extends HttpRequest> {
      * @return a file containing the results
      */
     CompletableFuture<HttpResponse<File>> asFileAsync(String path, Callback<File> callback);
-
     /**
      * Allows for following paging links common in many APIs.
      * Each request will result in the same request (headers, etc) but will use the "next" link provided by the extract function.
@@ -300,6 +301,7 @@ public interface HttpRequest<R extends HttpRequest> {
      */
     <T> PagedList<T> asPaged(Function<HttpRequest, HttpResponse> mappingFunction,
                              Function<HttpResponse<T>, String> linkExtractor);
+
     /**
      * Executes the request and returns the response without parsing the body
      * @return the basic HttpResponse

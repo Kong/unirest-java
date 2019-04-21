@@ -126,6 +126,15 @@ public class AsObjectTest extends BddTest {
         assertEquals("You did something bad", request.getParsingError().get().getOriginalBody());
     }
 
+    @Test
+    public void parsingAnAlternativeErrorObject() {
+        HttpEitherResponse<RequestCapture, ErrorThing> request = Unirest.get(MockServer.ERROR_RESPONSE)
+                .asObject(RequestCapture.class, ErrorThing.class);
+
+        assertEquals("boom!", request.getError().getMessage());
+
+    }
+
     public static class TestingMapper implements ObjectMapper {
         public boolean wasCalled;
 
