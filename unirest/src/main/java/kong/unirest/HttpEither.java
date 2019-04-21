@@ -29,5 +29,11 @@ package kong.unirest;
  * A response with an alternate error class
  */
 public interface HttpEither<T, E> extends HttpResponse<T> {
+
+    /**
+     * @return the error object or null if the request was:
+     *  1) successful
+     *  2) failed but didn't return a result that could be mapped into a error object.
+     */
     E getError();
 }
