@@ -31,6 +31,7 @@ class Either<T, E> extends BaseResponse<T> implements HttpEither<T, E> {
 
     Either(BaseResponse<T> response, ObjectMapper om, Class<? extends E> errorClass) {
         super(response);
+        this.body = response.getBody();
         if(!response.isSuccess()){
             try {
                 error = om.readValue(response.getParsingError().get().getOriginalBody(), errorClass);
