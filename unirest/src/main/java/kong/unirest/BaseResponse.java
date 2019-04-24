@@ -35,17 +35,20 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     private final String statusText;
     private final int statusCode;
     private Optional<UnirestParsingException> parsingerror = Optional.empty();
+    private final Config config;
 
     protected BaseResponse(RawResponse response){
         this.headers = response.getHeaders();
         this.statusCode = response.getStatus();
         this.statusText = response.getStatusText();
+        this.config = response.getConfig();
     }
 
     protected BaseResponse(BaseResponse other){
         this.headers = other.headers;
         this.statusCode = other.statusCode;
         this.statusText = other.statusText;
+        this.config = other.config;
     }
 
     @Override
@@ -86,6 +89,11 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     }
 
     @Override
+    public boolean isSuccess() {
+        return getStatus() >= 200 && getStatus() < 300 && !getParsingError().isPresent();
+    }
+
+    @Override
     public HttpResponse<T> ifSuccess(Consumer<HttpResponse<T>> consumer) {
         if(isSuccess()){
             consumer.accept(this);
@@ -102,7 +110,14 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     }
 
     @Override
-    public boolean isSuccess() {
-        return getStatus() >= 200 && getStatus() < 300 && !getParsingError().isPresent();
+    public <E> E mapError(Class<? extends E> errorClass) {
+        if(!isSuccess()){
+            try {
+                return config.getObjectMapper().readValue(getParsingError().get().getOriginalBody(), errorClass);
+            }catch (RuntimeException e) {
+                setParsingException(getParsingError().get().getOriginalBody(), e);
+            }
+        }
+        return null;
     }
 }

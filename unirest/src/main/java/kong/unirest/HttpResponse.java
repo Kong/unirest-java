@@ -97,4 +97,12 @@ public interface HttpResponse<T> {
      * @return true if the response was a 200-series response and no mapping exception happened, else false
      */
     boolean isSuccess();
+
+    /**
+     * Map the body into a error class if the response was NOT a 200-series response or a mapping exception happened.
+     * Uses the system Object Mapper
+     * @param errorClass the class for the error
+     * @return the error object
+     */
+    <E> E mapError(Class<? extends E> errorClass);
 }

@@ -26,41 +26,41 @@
 package BehaviorTests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import kong.unirest.HttpEither;
+import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNull;
 
-public class EitherTest extends BddTest {
+public class ErrorParsingTest extends BddTest {
 
     @Test
     public void parsingAnAlternativeErrorObject() {
-        HttpEither<RequestCapture, ErrorThing> request = Unirest.get(MockServer.ERROR_RESPONSE)
-                .asObject(RequestCapture.class, ErrorThing.class);
+        ErrorThing e = Unirest.get(MockServer.ERROR_RESPONSE)
+                .asObject(RequestCapture.class)
+                .mapError(ErrorThing.class);
 
-        assertEquals("boom!", request.getError().getMessage());
-        assertNull(request.getBody());
+        assertEquals("boom!", e.getMessage());
     }
 
     @Test
     public void ifNoErrorThenGetTheRegularBody() {
-        HttpEither<RequestCapture, ErrorThing> request = Unirest.get(MockServer.GET)
-                .asObject(RequestCapture.class, ErrorThing.class);
+        ErrorThing error = Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .mapError(ErrorThing.class);
 
-        request.getBody().assertStatus(200);
-        assertNull(request.getError());
+        assertNull(error);
     }
 
     @Test
     public void failsIfErrorResponseCantBeMapped() {
+        HttpResponse<RequestCapture> request = Unirest.get(MockServer.ERROR_RESPONSE)
+                .asObject(RequestCapture.class);
 
-        HttpEither<RequestCapture, NotTheError> request = Unirest.get(MockServer.ERROR_RESPONSE)
-                .asObject(RequestCapture.class, NotTheError.class);
+        NotTheError error = request.mapError(NotTheError.class);
 
-        assertEquals(null, request.getError());
-        assertEquals(null, request.getBody());
+        assertEquals(null, error);
         assertEquals("{\"message\":\"boom!\"}", request.getParsingError().get().getOriginalBody());
     }
 

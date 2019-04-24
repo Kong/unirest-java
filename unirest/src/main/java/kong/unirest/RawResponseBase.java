@@ -64,4 +64,8 @@ public abstract class RawResponseBase implements RawResponse {
         return null;
     }
 
+    @Override
+    public Config getConfig() {
+        return config;
+    }
 }

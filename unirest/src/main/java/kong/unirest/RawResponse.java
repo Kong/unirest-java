@@ -40,4 +40,5 @@ public interface RawResponse {
     boolean hasContent();
     String getContentType();
     String getEncoding();
+    Config getConfig();
 }

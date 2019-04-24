@@ -222,15 +222,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
-    public <T, E> HttpEither<T, E> asObject(Class<? extends T> responseClass, Class<? extends E> errorClass) {
-        ObjectMapper om = getObjectMapper();
-        HttpResponse<T> response = config.getClient().request(this, r -> new ObjectResponse<T>(om, r, responseClass));
-        return new Either(
-                (BaseResponse) response,
-                om, errorClass);
-    }
-
-    @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Function<RawResponse, T> function) {
 
         return config.getAsyncClient().request(this, funcResponse(function), new CompletableFuture<>());
