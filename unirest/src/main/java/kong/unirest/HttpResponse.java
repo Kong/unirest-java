@@ -93,6 +93,15 @@ public interface HttpResponse<T> {
      */
     HttpResponse<T> ifFailure(Consumer<HttpResponse<T>> consumer);
 
+
+    /**
+     * If the response was NOT a 200-series response or a mapping exception happened. map the original body into a error type and invoke this consumer
+     * can be chained with ifSuccess
+     * @param consumer a function to consume a HttpResponse
+     * @return the same response
+     */
+    <E> HttpResponse<T> ifFailure(Class<? extends E> errorClass, Consumer<HttpResponse<E>> consumer);
+
      /**
      * @return true if the response was a 200-series response and no mapping exception happened, else false
      */

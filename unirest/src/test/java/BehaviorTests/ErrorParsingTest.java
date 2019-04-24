@@ -30,10 +30,10 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.junit.Test;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNull;
+import static junit.framework.TestCase.*;
 
 public class ErrorParsingTest extends BddTest {
+    private boolean errorCalled;
 
     @Test
     public void parsingAnAlternativeErrorObject() {
@@ -41,7 +41,7 @@ public class ErrorParsingTest extends BddTest {
                 .asObject(RequestCapture.class)
                 .mapError(ErrorThing.class);
 
-        assertEquals("boom!", e.getMessage());
+        assertErrorThing(e);
     }
 
     @Test
@@ -64,7 +64,26 @@ public class ErrorParsingTest extends BddTest {
         assertEquals("{\"message\":\"boom!\"}", request.getParsingError().get().getOriginalBody());
     }
 
+    @Test
+    public void mapTheErrorWithAFunction() {
+        errorCalled = false;
+        Unirest.get(MockServer.ERROR_RESPONSE)
+                .asObject(RequestCapture.class)
+                .ifFailure(ErrorThing.class, e -> {
+                    assertEquals(400, e.getStatus());
+                    assertErrorThing(e.getBody());
+                    errorCalled = true;
+                }).ifSuccess(e -> {throw new AssertionError("No");});
+
+        assertTrue(errorCalled);
+    }
+
+    private void assertErrorThing(ErrorThing e) {
+        assertEquals("boom!", e.getMessage());
+    }
+
     public static class NotTheError {
+
         @JsonProperty("merp")
         public String merp;
     }

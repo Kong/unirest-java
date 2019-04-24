@@ -5,13 +5,18 @@ HttpResponse<Integer> response = Unirest.get("http://someplace/number")
                 .asString()
                 .map(Integer::valueOf);
 ```
-* Add a new response builder for getting an object OR an alternative error object. This is nice for systems that return errors in the same format as the primary objects (json, xml, etc).
+* Add a few ways to map a error response into a different type than the original
 ```java
-HttpEither<Thing, ErrorThing> response = Unirest.get("http://someplace")
-                .asObject(Thing.class, ErrorThing.class);
+ErrorThing error = Unirest.get("http://someplace")
+                .asObject(Thing.class)
+                .mapError(ErrorThing.class); // will be null if the request had been successful
 
-response.getBody(); // Has the thing
-response.getError(); // has an error object (as defined by the server)
+Unirest.get("http://someplace")
+                .asObject(Thing.class)
+                .ifFailure(ErrorThing.class, f -> {
+                    // f is a HttpResponse<ErrorThing> 
+                    // this function is not called if the request was succesful
+                }); 
 
 ```
 

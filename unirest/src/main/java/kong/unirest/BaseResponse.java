@@ -120,4 +120,13 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
         }
         return null;
     }
+
+    @Override
+    public <E> HttpResponse<T> ifFailure(Class<? extends E> errorClass, Consumer<HttpResponse<E>> consumer) {
+        if(!isSuccess()){
+            E error = mapError(errorClass);
+            consumer.accept(new SimpleResponse(error, this));
+        }
+        return this;
+    }
 }
