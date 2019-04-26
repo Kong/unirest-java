@@ -1,4 +1,4 @@
-## 2.2.02 (pending)
+## 2.2.02
 * Add a mapper function to transform a HttpResponse<V> to a HttpResponse<T>
 ```java
 HttpResponse<Integer> response = Unirest.get("http://someplace/number")
