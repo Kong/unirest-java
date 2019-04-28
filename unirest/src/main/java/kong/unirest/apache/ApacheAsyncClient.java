@@ -142,21 +142,26 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
         Objects.requireNonNull(callback);
 
         HttpUriRequest requestObj = new RequestPrep(request, config, true).prepare();
-
+        MetricContext metric = config.getMetric().begin(request.toSummary());
         client.execute(requestObj, new FutureCallback<org.apache.http.HttpResponse>() {
                     @Override
                     public void completed(org.apache.http.HttpResponse httpResponse) {
-                        callback.complete(transformer.apply(new ApacheResponse(httpResponse, config)));
+                        ApacheResponse t = new ApacheResponse(httpResponse, config);
+                        metric.complete(t.toSummary(), null);
+                        callback.complete(transformer.apply(t));
                     }
 
                     @Override
                     public void failed(Exception e) {
+                        metric.complete(null, e);
                         callback.completeExceptionally(e);
                     }
 
                     @Override
                     public void cancelled() {
-                        callback.completeExceptionally(new UnirestException("canceled"));
+                        UnirestException canceled = new UnirestException("canceled");
+                        metric.complete(null, canceled);
+                        callback.completeExceptionally(canceled);
                     }
                 });
         return callback;

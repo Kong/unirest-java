@@ -101,4 +101,25 @@ public class MetricsTest extends BddTest {
         assertEquals(2L, metric.countResponses(301));
         assertEquals(1L, metric.countResponses(400));
     }
+
+    @Test
+    public void metricsOnAsyncRequests() throws Exception {
+        MyMetric metric = new MyMetric(HttpRequestSummary::getUrl);
+        Unirest.config().instramentWith(metric);
+
+        Unirest.get(GET).asEmptyAsync().get();
+
+        assertEquals(1L, metric.countResponses(200));
+    }
+
+    @Test
+    public void metricsOnAsyncMethodsWithCallbacks() {
+        MyMetric metric = new MyMetric(HttpRequestSummary::getUrl);
+        Unirest.config().instramentWith(metric);
+
+        Unirest.get(GET).asEmptyAsync(r -> asyncSuccess());
+
+        assertAsync();
+        assertEquals(1L, metric.countResponses(200));
+    }
 }
