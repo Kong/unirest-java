@@ -28,7 +28,9 @@ package kong.unirest;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public interface RawResponse extends ResponseSummary {
+public interface RawResponse {
+    int getStatus();
+    String getStatusText();
     Headers getHeaders();
     InputStream getContent();
     byte[] getContentAsBytes();
@@ -39,4 +41,5 @@ public interface RawResponse extends ResponseSummary {
     String getContentType();
     String getEncoding();
     Config getConfig();
+    HttpResponseSummary toSummary();
 }

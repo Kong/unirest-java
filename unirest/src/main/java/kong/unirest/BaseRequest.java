@@ -313,11 +313,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
-    public String getRawPath() {
-        return url.rawPath();
-    }
-
-    @Override
     public Headers getHeaders() {
         return headers;
     }
@@ -341,10 +336,19 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         return valueOr(proxy, config::getProxy);
     }
 
+    @Override
+    public HttpRequestSummary toSummary() {
+        return new RequestSummary(this);
+    }
+
     private <T> T valueOr(T x, Supplier<T> o){
         if(x != null){
             return x;
         }
         return o.get();
+    }
+
+    Path getPath() {
+        return url;
     }
 }

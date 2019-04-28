@@ -140,5 +140,10 @@ public class ResponseUtilsTest {
         public String getEncoding() {
             return null;
         }
+
+        @Override
+        public HttpResponseSummary toSummary() {
+            return null;
+        }
     }
 }

@@ -99,11 +99,11 @@ public class ApacheClient extends BaseApacheClient implements Client {
     public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
 
         HttpRequestBase requestObj = new RequestPrep(request, config, false).prepare();
-        MetricContext metric = config.getMetric().begin(request);
+        MetricContext metric = config.getMetric().begin(request.toSummary());
         try {
             org.apache.http.HttpResponse execute = client.execute(requestObj);
             ApacheResponse t = new ApacheResponse(execute, config);
-            metric.complete(t, null);
+            metric.complete(t.toSummary(), null);
             HttpResponse<T> httpResponse = transformer.apply(t);
             requestObj.releaseConnection();
             return httpResponse;

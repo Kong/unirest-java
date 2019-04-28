@@ -68,4 +68,9 @@ public abstract class RawResponseBase implements RawResponse {
     public Config getConfig() {
         return config;
     }
+
+    @Override
+    public HttpResponseSummary toSummary() {
+        return new ResponseSummary(this);
+    }
 }

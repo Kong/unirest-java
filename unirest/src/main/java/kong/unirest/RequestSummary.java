@@ -25,22 +25,29 @@
 
 package kong.unirest;
 
-class ResponseSummary implements HttpResponseSummary {
-    private final int status;
-    private final String statusText;
+class RequestSummary implements HttpRequestSummary {
+    private final String rawPath;
+    private final String url;
+    private final HttpMethod method;
 
-    ResponseSummary(RawResponse response) {
-        this.status = response.getStatus();
-        this.statusText = response.getStatusText();
+    RequestSummary(BaseRequest request) {
+        this.url = request.getUrl();
+        this.method = request.getHttpMethod();
+        this.rawPath = request.getPath().rawPath();
     }
 
     @Override
-    public int getStatus() {
-        return status;
+    public HttpMethod getHttpMethod() {
+        return method;
     }
 
     @Override
-    public String getStatusText() {
-        return statusText;
+    public String getUrl() {
+        return url;
+    }
+
+    @Override
+    public String getRawPath() {
+        return rawPath;
     }
 }

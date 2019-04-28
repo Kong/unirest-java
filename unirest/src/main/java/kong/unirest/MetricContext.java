@@ -27,5 +27,5 @@ package kong.unirest;
 
 @FunctionalInterface
 public interface MetricContext {
-     void complete(ResponseSummary httpResponse, Exception ex);
+     void complete(HttpResponseSummary httpResponse, Exception ex);
 }

@@ -25,22 +25,7 @@
 
 package kong.unirest;
 
-class ResponseSummary implements HttpResponseSummary {
-    private final int status;
-    private final String statusText;
-
-    ResponseSummary(RawResponse response) {
-        this.status = response.getStatus();
-        this.statusText = response.getStatusText();
-    }
-
-    @Override
-    public int getStatus() {
-        return status;
-    }
-
-    @Override
-    public String getStatusText() {
-        return statusText;
-    }
+public interface HttpResponseSummary {
+    int getStatus();
+    String getStatusText();
 }
