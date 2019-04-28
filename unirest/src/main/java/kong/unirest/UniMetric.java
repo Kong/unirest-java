@@ -25,18 +25,6 @@
 
 package kong.unirest;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-public interface RawResponse extends ResponseSummary {
-    Headers getHeaders();
-    InputStream getContent();
-    byte[] getContentAsBytes();
-    String getContentAsString();
-    String getContentAsString(String charset);
-    InputStreamReader getContentReader();
-    boolean hasContent();
-    String getContentType();
-    String getEncoding();
-    Config getConfig();
+public interface UniMetric {
+    MetricContext begin(HttpRequestSummary request);
 }

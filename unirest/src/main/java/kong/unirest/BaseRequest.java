@@ -313,6 +313,11 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
+    public String getRawPath() {
+        return url.rawPath();
+    }
+
+    @Override
     public Headers getHeaders() {
         return headers;
     }

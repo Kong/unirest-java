@@ -34,9 +34,11 @@ import java.util.regex.Pattern;
 
 class Path {
     private String url;
+    private String rawPath;
 
     Path(String url) {
         this.url = url;
+        this.rawPath = url;
     }
 
     public void param(Map<String, Object> params) {
@@ -90,5 +92,9 @@ class Path {
     @Override
     public String toString() {
         return url;
+    }
+
+    public String rawPath() {
+        return rawPath;
     }
 }

@@ -25,18 +25,19 @@
 
 package kong.unirest;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
+public interface HttpRequestSummary {
+    /**
+     * @return The HTTP method of the request
+     */
+    HttpMethod getHttpMethod();
 
-public interface RawResponse extends ResponseSummary {
-    Headers getHeaders();
-    InputStream getContent();
-    byte[] getContentAsBytes();
-    String getContentAsString();
-    String getContentAsString(String charset);
-    InputStreamReader getContentReader();
-    boolean hasContent();
-    String getContentType();
-    String getEncoding();
-    Config getConfig();
+    /**
+     * @return The current URL string for the request
+     */
+    String getUrl();
+
+    /**
+     * @return The raw un-parameterized path (http://somewhere/{param})
+     */
+    String getRawPath();
 }

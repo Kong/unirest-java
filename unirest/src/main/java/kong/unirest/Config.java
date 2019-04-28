@@ -75,6 +75,7 @@ public class Config {
     private KeyStore keystore;
     private String keystorePassword;
     private String cookieSpec;
+    private UniMetric metrics = new NoopMetric();
 
     public Config() {
         setDefaults();
@@ -333,6 +334,11 @@ public class Config {
      */
     public Config addDefaultHeader(String name, String value) {
         headers.add(name, value);
+        return this;
+    }
+
+    public Config instramentWith(UniMetric metric) {
+        this.metrics = metric;
         return this;
     }
 
@@ -649,5 +655,9 @@ public class Config {
 
     public String getCookieSpec() {
         return cookieSpec;
+    }
+
+    public UniMetric getMetric() {
+        return metrics;
     }
 }

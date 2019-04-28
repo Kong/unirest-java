@@ -37,7 +37,7 @@ import java.util.function.Function;
     The primary request builder used to create a request. This will be completed after calling one of
     the "as**" methods like asString()
  */
-public interface HttpRequest<R extends HttpRequest> {
+public interface HttpRequest<R extends HttpRequest> extends HttpRequestSummary {
     /**
      * add a route param that replaces the matching {name}
      * For example routeParam("name", "fred") will replace {name} in
@@ -339,16 +339,6 @@ public interface HttpRequest<R extends HttpRequest> {
      * @param consumer a consumer function
      */
     void thenConsumeAsync(Consumer<RawResponse> consumer);
-
-    /**
-     * @return The HTTP method of the request
-     */
-    HttpMethod getHttpMethod();
-
-    /**
-     * @return The current URL string for the request
-     */
-    String getUrl();
 
     /**
      * @return the current headers for the request
