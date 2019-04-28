@@ -25,11 +25,16 @@
 
 package kong.unirest.apache;
 
+import kong.unirest.BasicResponse;
+import kong.unirest.HttpResponse;
 import kong.unirest.Proxy;
+import kong.unirest.RawResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+
+import java.util.function.Function;
 
 abstract class BaseApacheClient {
 
@@ -41,5 +46,22 @@ abstract class BaseApacheClient {
             return proxyCreds;
         }
         return null;
+    }
+
+    protected <T> HttpResponse<T> transformBody(Function<RawResponse, HttpResponse<T>> transformer, RawResponse rr) {
+        try {
+            return transformer.apply(rr);
+        }catch (RuntimeException e){
+            String originalBody = recoverBody(rr);
+            return new BasicResponse(rr, originalBody, e);
+        }
+    }
+
+    private String recoverBody(RawResponse rr){
+        try {
+            return rr.getContentAsString();
+        }catch (Exception e){
+            return null;
+        }
     }
 }

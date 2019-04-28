@@ -26,6 +26,7 @@
 package BehaviorTests;
 
 import com.google.gson.Gson;
+import kong.unirest.HttpResponse;
 import org.junit.Test;
 import kong.unirest.Unirest;
 
@@ -43,7 +44,6 @@ public class ObjectFunctionalTest extends BddTest {
         MockServer.setJsonAsResponse(of("foo", "bar"));
 
         Map r = Unirest.get(MockServer.GET)
-                .queryString("foo", "bar")
                 .asObject(i -> gson.fromJson(i.getContentReader(), HashMap.class))
                 .getBody();
 
@@ -55,11 +55,42 @@ public class ObjectFunctionalTest extends BddTest {
         MockServer.setJsonAsResponse(of("foo", "bar"));
 
         Map r = Unirest.get(MockServer.GET)
-                .queryString("foo", "bar")
                 .asObjectAsync(i -> gson.fromJson(i.getContentReader(), HashMap.class))
                 .get()
                 .getBody();
 
         assertEquals("bar", r.get("foo"));
+    }
+
+    @Test
+    public void willNotStopForParsingExceptions() {
+        MockServer.setStringResponse("call me ishmael");
+
+        RuntimeException ohNoes = new RuntimeException("oh noes");
+
+        HttpResponse<Object> r = Unirest.get(MockServer.GET)
+                .asObject(i -> {
+                    throw ohNoes;
+                });
+
+        assertEquals(200, r.getStatus());
+        assertEquals(ohNoes, r.getParsingError().get().getCause());
+        assertEquals("call me ishmael", r.getParsingError().get().getOriginalBody());
+    }
+
+    @Test
+    public void willNotStopForParsingExceptions_async() throws Exception {
+        MockServer.setStringResponse("call me ishmael");
+
+        RuntimeException ohNoes = new RuntimeException("oh noes");
+
+        HttpResponse<Object> r = Unirest.get(MockServer.GET)
+                .asObjectAsync(i -> {
+                    throw ohNoes;
+                }).get();
+
+        assertEquals(200, r.getStatus());
+        assertEquals(ohNoes, r.getParsingError().get().getCause());
+        assertEquals("call me ishmael", r.getParsingError().get().getOriginalBody());
     }
 }

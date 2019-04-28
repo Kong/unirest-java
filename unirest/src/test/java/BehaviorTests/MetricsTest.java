@@ -25,24 +25,35 @@
 
 package BehaviorTests;
 
+import kong.unirest.Client;
+import kong.unirest.Config;
 import kong.unirest.HttpRequestSummary;
 import kong.unirest.Unirest;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.nio.client.HttpAsyncClient;
+import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.function.Function;
 
 import static BehaviorTests.MockServer.*;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MetricsTest extends BddTest {
     @Test
     public void canSetAMetricObjectToInstramentUnirest() {
-        MyMetric metric = new MyMetric(HttpRequestSummary::getUrl);
-        Unirest.config().instramentWith(metric);
+        MyMetric metric = configureMetric();
 
         Unirest.get(GET).asEmpty();
         Unirest.get(GET).asEmpty();
         Unirest.get(PASSED_PATH_PARAM)
-                .routeParam("params","foo")
-                .queryString("fruit","orange")
+                .routeParam("params", "foo")
+                .queryString("fruit", "orange")
                 .asEmpty();
 
         assertEquals(2, metric.routes.get(GET).size());
@@ -51,12 +62,11 @@ public class MetricsTest extends BddTest {
 
     @Test
     public void canGetParamedUrlInSummary() {
-        MyMetric metric = new MyMetric(HttpRequestSummary::getRawPath);
-        Unirest.config().instramentWith(metric);
+        MyMetric metric = configureMetric(HttpRequestSummary::getRawPath);
 
         Unirest.get(PASSED_PATH_PARAM)
-                .routeParam("params","foo")
-                .queryString("fruit","orange")
+                .routeParam("params", "foo")
+                .queryString("fruit", "orange")
                 .asEmpty();
 
         assertEquals(1, metric.routes.get("http://localhost:4567/get/{params}/passed").size());
@@ -64,8 +74,7 @@ public class MetricsTest extends BddTest {
 
     @Test
     public void canGetToMethod() {
-        MyMetric metric = new MyMetric(s -> s.getHttpMethod().name());
-        Unirest.config().instramentWith(metric);
+        MyMetric metric = configureMetric(s -> s.getHttpMethod().name());
 
         Unirest.get(GET).asEmpty();
         Unirest.get(GET).asEmpty();
@@ -78,8 +87,7 @@ public class MetricsTest extends BddTest {
 
     @Test
     public void amountOfTimeBetweenRequestAndResponseDoesNotIncludeDeserialization() {
-        MyMetric metric = new MyMetric(HttpRequestSummary::getUrl);
-        Unirest.config().instramentWith(metric);
+        MyMetric metric = configureMetric();
 
         Unirest.get(GET).asObject(r -> {
             assertEquals(1, metric.routes.get(GET).size());
@@ -89,8 +97,7 @@ public class MetricsTest extends BddTest {
 
     @Test
     public void canGetInformationOnStatus() {
-        MyMetric metric = new MyMetric(HttpRequestSummary::getUrl);
-        Unirest.config().followRedirects(false).instramentWith(metric);
+        MyMetric metric = configureMetric(HttpRequestSummary::getUrl);
 
         Unirest.get(GET).asEmpty();
         Unirest.get(REDIRECT).asEmpty();
@@ -104,8 +111,7 @@ public class MetricsTest extends BddTest {
 
     @Test
     public void metricsOnAsyncRequests() throws Exception {
-        MyMetric metric = new MyMetric(HttpRequestSummary::getUrl);
-        Unirest.config().instramentWith(metric);
+        MyMetric metric = configureMetric();
 
         Unirest.get(GET).asEmptyAsync().get();
 
@@ -114,12 +120,50 @@ public class MetricsTest extends BddTest {
 
     @Test
     public void metricsOnAsyncMethodsWithCallbacks() {
-        MyMetric metric = new MyMetric(HttpRequestSummary::getUrl);
-        Unirest.config().instramentWith(metric);
+        MyMetric metric = configureMetric();
 
         Unirest.get(GET).asEmptyAsync(r -> asyncSuccess());
 
         assertAsync();
         assertEquals(1L, metric.countResponses(200));
+    }
+
+    @Test
+    public void errorHandling() throws Exception {
+        HttpClient mock = mock(HttpClient.class);
+        when(mock.execute(any(HttpRequestBase.class))).thenThrow(new RuntimeException("boo"));
+        MyMetric metric = new MyMetric(HttpRequestSummary::getUrl);
+        Unirest.config().reset().httpClient(mock).instramentWith(metric);
+
+        try {
+            Unirest.get(GET).asEmpty();
+        }catch (Exception e){
+
+        }
+
+        assertEquals("boo", metric.routes.get(GET).get(0).e.getMessage());
+    }
+
+    @Test @Ignore
+    public void errorHandling_async() throws Exception {
+        MyMetric metric = configureMetric();
+
+        try {
+            Unirest.get("http://localhost:0000").asEmptyAsync().get();
+        }catch (Exception e){
+
+        }
+
+        assertEquals("Connection refused", metric.routes.get("http://localhost:0000").get(0).e.getMessage());
+    }
+
+    private MyMetric configureMetric() {
+        return configureMetric(HttpRequestSummary::getUrl);
+    }
+
+    private MyMetric configureMetric(Function<HttpRequestSummary, String> keyFunction) {
+        MyMetric metric = new MyMetric(keyFunction);
+        Unirest.config().followRedirects(false).instramentWith(metric);
+        return metric;
     }
 }

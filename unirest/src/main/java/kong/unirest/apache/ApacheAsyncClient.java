@@ -148,7 +148,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
                     public void completed(org.apache.http.HttpResponse httpResponse) {
                         ApacheResponse t = new ApacheResponse(httpResponse, config);
                         metric.complete(t.toSummary(), null);
-                        callback.complete(transformer.apply(t));
+                        callback.complete(transformBody(transformer, t));
                     }
 
                     @Override

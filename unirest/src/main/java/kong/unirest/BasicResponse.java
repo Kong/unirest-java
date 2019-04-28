@@ -25,12 +25,17 @@
 
 package kong.unirest;
 
-class BasicResponse<T> extends BaseResponse<T> {
+public class BasicResponse<T> extends BaseResponse<T> {
     private final T body;
 
     public BasicResponse(RawResponse httpResponse, T body) {
         super(httpResponse);
         this.body = body;
+    }
+
+    public BasicResponse(RawResponse httpResponse, String ogBody, RuntimeException ex) {
+        this(httpResponse, null);
+        setParsingException(ogBody, ex);
     }
 
     @Override

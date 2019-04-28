@@ -27,6 +27,7 @@ package BehaviorTests;
 
 import com.google.common.collect.ArrayListMultimap;
 import kong.unirest.HttpRequestSummary;
+import kong.unirest.HttpResponseSummary;
 import kong.unirest.MetricContext;
 import kong.unirest.UniMetric;
 
@@ -43,7 +44,16 @@ public class MyMetric implements UniMetric {
     @Override
     public MetricContext begin(HttpRequestSummary request) {
         long startNanos = System.nanoTime();
-        return (r, e) -> routes.put(keyFunction.apply(request), new Execution(System.nanoTime() - startNanos, r.getStatus()));
+        return (r, e) -> {
+            routes.put(keyFunction.apply(request), new Execution(System.nanoTime() - startNanos, statusOr(r), e));
+        };
+    }
+
+    private int statusOr(HttpResponseSummary r) {
+        if(r == null){
+            return -1;
+        }
+        return r.getStatus();
     }
 
     public long countResponses(int i) {
@@ -56,10 +66,12 @@ public class MyMetric implements UniMetric {
     public static class Execution {
         public final long time;
         public final int status;
+        public final Exception e;
 
-        public Execution(long time, int status){
+        public Execution(long time, int status, Exception e){
             this.time = time;
             this.status = status;
+            this.e = e;
         }
     }
 }
