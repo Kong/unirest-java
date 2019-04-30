@@ -5,8 +5,6 @@
 [![Javadocs](http://www.javadoc.io/badge/com.konghq/unirest-java.svg)](http://www.javadoc.io/doc/com.konghq/unirest-java)
 
 
-We are looking for official maintainers, check out issue [#252](https://github.com/Kong/unirest-java/issues/252)
-
 ## Install With [Maven](https://mvnrepository.com/artifact/com.konghq/unirest-java)[:](https://repo.maven.apache.org/maven2/com/konghq/unirest-java/)
 ```xml
 <dependency>
