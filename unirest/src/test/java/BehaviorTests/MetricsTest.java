@@ -155,6 +155,7 @@ public class MetricsTest extends BddTest {
         }
 
         assertEquals("Connection refused", metric.routes.get("http://localhost:0000").get(0).e.getMessage());
+        assertEquals(1, metric.routes.get("http://localhost:0000").size());
     }
 
     private MyMetric configureMetric() {
