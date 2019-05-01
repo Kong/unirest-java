@@ -25,6 +25,9 @@
 
 package kong.unirest;
 
+/**
+ * A summary of a request about to be performed
+ */
 public interface HttpRequestSummary {
     /**
      * @return The HTTP method of the request

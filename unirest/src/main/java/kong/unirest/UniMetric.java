@@ -25,6 +25,15 @@
 
 package kong.unirest;
 
+/**
+ * A UniMetric is a factory for producing a MetricContext this will be called just before
+ * any Http Request
+ */
 public interface UniMetric {
+    /**
+     * Factory method for a MetricContext
+     * @param request A summary of the current Http Request about to be performed
+     * @return a MetricContext for this request
+     */
     MetricContext begin(HttpRequestSummary request);
 }

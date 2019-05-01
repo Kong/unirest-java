@@ -25,7 +25,18 @@
 
 package kong.unirest;
 
+/**
+ * A metric context for the current request
+ */
 @FunctionalInterface
 public interface MetricContext {
+     /**
+      * Finishes a Http Request. Called just after the main request but before any mapping
+      * function including before any streaming responses (like file downloads) are complete.
+      * @param httpResponse a summary of the just executed response or null in the case of a system exception.
+      * @param ex an exception if one happened or null .
+      *           Note that this is not just a 500 from the remote,
+      *           but more likely a socket or connection timeout.
+      */
      void complete(HttpResponseSummary httpResponse, Exception ex);
 }

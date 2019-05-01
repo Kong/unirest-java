@@ -25,21 +25,19 @@
 
 package BehaviorTests;
 
-import kong.unirest.Client;
-import kong.unirest.Config;
 import kong.unirest.HttpRequestSummary;
 import kong.unirest.Unirest;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.concurrent.FutureCallback;
-import org.apache.http.nio.client.HttpAsyncClient;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.function.Function;
 
 import static BehaviorTests.MockServer.*;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -156,6 +154,21 @@ public class MetricsTest extends BddTest {
 
         assertEquals("Connection refused", metric.routes.get("http://localhost:0000").get(0).e.getMessage());
         assertEquals(1, metric.routes.get("http://localhost:0000").size());
+    }
+
+    long exTime;
+
+    @Test
+    public void metricAsALambda() {
+        exTime = 0;
+        Unirest.config().instramentWith((s) -> {
+            long startNanos = System.nanoTime();
+            return (r,e) -> exTime = System.nanoTime() - startNanos;
+        });
+
+        Unirest.get(GET).asEmpty();
+
+        assertThat(exTime, greaterThan(0L));
     }
 
     private MyMetric configureMetric() {

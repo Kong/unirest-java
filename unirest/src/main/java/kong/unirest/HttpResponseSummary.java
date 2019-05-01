@@ -25,7 +25,17 @@
 
 package kong.unirest;
 
+/**
+ * A Summary of rhe response
+ */
 public interface HttpResponseSummary {
+    /**
+     * @return the http response code
+     */
     int getStatus();
+
+    /**
+     * @return the text of the http response code
+     */
     String getStatusText();
 }

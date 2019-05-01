@@ -1,3 +1,7 @@
+## 2.3.00
+* #267 make sure hooks are registered regardless of where we are in the lifecycle of the client engines
+* Adds a metric hook for observing the health and performance of unirest. 
+
 ## 2.2.02
 * Add a mapper function to transform a HttpResponse<V> to a HttpResponse<T>
 ```java
@@ -19,7 +23,6 @@ Unirest.get("http://someplace")
                 }); 
 
 ```
-* #267 make sure hooks are registered regardless of where we are in the lifecycle of the client engines
 
 ## 2.2.01
 * add cookiespec policies to config. These are the same as Apache Http Clients cookiespec. See org.apache.http.client.config.CookieSpec
