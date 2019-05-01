@@ -97,6 +97,7 @@ public interface HttpResponse<T> {
     /**
      * If the response was NOT a 200-series response or a mapping exception happened. map the original body into a error type and invoke this consumer
      * can be chained with ifSuccess
+     * @param <E> the type of error class to map the body
      * @param consumer a function to consume a HttpResponse
      * @return the same response
      */
@@ -110,6 +111,7 @@ public interface HttpResponse<T> {
     /**
      * Map the body into a error class if the response was NOT a 200-series response or a mapping exception happened.
      * Uses the system Object Mapper
+     * @param <E> the response type
      * @param errorClass the class for the error
      * @return the error object
      */
