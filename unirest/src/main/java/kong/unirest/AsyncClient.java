@@ -61,4 +61,6 @@ public interface AsyncClient {
     default boolean isRunning() {
         return true;
     }
+
+    void registerShutdownHook();
 }

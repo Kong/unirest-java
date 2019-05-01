@@ -19,6 +19,7 @@ Unirest.get("http://someplace")
                 }); 
 
 ```
+* #267 make sure hooks are registered regardless of where we are in the lifecycle of the client engines
 
 ## 2.2.01
 * add cookiespec policies to config. These are the same as Apache Http Clients cookiespec. See org.apache.http.client.config.CookieSpec

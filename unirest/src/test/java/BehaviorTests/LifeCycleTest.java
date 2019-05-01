@@ -26,6 +26,7 @@
 package BehaviorTests;
 
 import com.github.paweladamski.httpclientmock.HttpClientMock;
+import com.google.common.collect.Sets;
 import kong.unirest.*;
 import kong.unirest.apache.AsyncIdleConnectionMonitorThread;
 import kong.unirest.apache.SyncIdleConnectionMonitorThread;
@@ -45,7 +46,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.IntStream;
 
-import static java.lang.Thread.getAllStackTraces;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.*;
@@ -67,6 +67,12 @@ public class LifeCycleTest extends BddTest {
     @Mock
     private PoolingNHttpClientConnectionManager manager;
 
+    @Override
+    public void setUp() {
+        super.setUp();
+        clearUnirestHooks();
+    }
+
     @Test
     public void settingACustomClient() {
         HttpClientMock httpClientMock = new HttpClientMock();
@@ -78,18 +84,25 @@ public class LifeCycleTest extends BddTest {
     }
 
     @Test
+    public void ifClientsAreAlreadyRunningCanAddShutdownHooks() throws Exception  {
+        assertShutdownHooks(0);
+
+        Unirest.get(MockServer.GET).asEmpty();
+        Unirest.get(MockServer.GET).asEmptyAsync();
+        Unirest.config().addShutdownHook(true);
+        Unirest.config().addShutdownHook(true);
+
+        assertShutdownHooks(1);
+    }
+
+    @Test
     public void canAddShutdownHooks() throws Exception {
+        assertShutdownHooks(0);
+
         Unirest.config().addShutdownHook(true).getClient();
         Unirest.config().addShutdownHook(true).getAsyncClient();
 
-        // oh this is so dirty and horrible. Set to @Ignore if it starts to be a problem.
-        Class clazz = Class.forName("java.lang.ApplicationShutdownHooks");
-        Field field = clazz.getDeclaredField("hooks");
-        field.setAccessible(true);
-        Set<Thread> threads = ((Map<Thread, Thread>)field.get(null)).keySet();
-
-        assertTrue(threads.stream().anyMatch(t -> "Unirest Apache Client Shutdown Hook".equals(t.getName())));
-        assertTrue(threads.stream().anyMatch(t -> "Unirest Apache Async Client Shutdown Hook".equals(t.getName())));
+        assertShutdownHooks(1);
     }
 
     @Test
@@ -162,5 +175,32 @@ public class LifeCycleTest extends BddTest {
             assertEquals("bar", reference.config().getDefaultHeaders().get("foo").get(0));
         }
         assertEquals(0, reference.config().getDefaultHeaders().size());
+    }
+
+    private void assertShutdownHooks(int expected) {
+        Set<Thread> threads = getShutdownHookMap();
+
+        assertEquals(expected, threads.stream().filter(t -> "Unirest Apache Client Shutdown Hook".equals(t.getName())).count());
+        assertEquals(expected, threads.stream().filter(t -> "Unirest Apache Async Client Shutdown Hook".equals(t.getName())).count());
+    }
+
+    private void clearUnirestHooks() {
+        getShutdownHookMap()
+                .stream()
+                .filter(t -> t.getName().contains("Unirest"))
+                .forEach(t -> Runtime.getRuntime().removeShutdownHook(t));
+    }
+
+    private Set<Thread> getShutdownHookMap() {
+        try {
+            // oh this is so dirty and horrible. Set to @Ignore if it starts to be a problem.
+            Class clazz = Class.forName("java.lang.ApplicationShutdownHooks");
+            Field field = clazz.getDeclaredField("hooks");
+            field.setAccessible(true);
+            Set<Thread> threads = ((Map<Thread, Thread>) field.get(null)).keySet();
+            return Sets.newHashSet(threads);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
 }

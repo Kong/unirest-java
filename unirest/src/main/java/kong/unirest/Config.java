@@ -465,6 +465,10 @@ public class Config {
      */
     public Config addShutdownHook(boolean value) {
         this.addShutdownHook = value;
+        if(value){
+            client.ifPresent(Client::registerShutdownHook);
+            asyncClient.ifPresent(AsyncClient::registerShutdownHook);
+        }
         return this;
     }
 

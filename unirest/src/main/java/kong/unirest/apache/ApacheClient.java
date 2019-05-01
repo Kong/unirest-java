@@ -44,6 +44,7 @@ public class ApacheClient extends BaseApacheClient implements Client {
     private final PoolingHttpClientConnectionManager manager;
     private final SyncIdleConnectionMonitorThread syncMonitor;
     private final SecurityConfig security;
+    private boolean hookset;
 
     public ApacheClient(Config config) {
         this.config = config;
@@ -82,6 +83,14 @@ public class ApacheClient extends BaseApacheClient implements Client {
         }
         config.getInterceptors().stream().forEach(cb::addInterceptorFirst);
         if (config.shouldAddShutdownHook()) {
+            registerShutdownHook();
+        }
+    }
+
+    @Override
+    public void registerShutdownHook() {
+        if(!hookset) {
+            hookset = true;
             Runtime.getRuntime().addShutdownHook(new Thread(this::close, "Unirest Apache Client Shutdown Hook"));
         }
     }

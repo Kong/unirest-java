@@ -47,4 +47,6 @@ public interface Client {
      * @return a stream of exceptions possibly thrown while closing all the things.
      */
     Stream<Exception> close();
+
+    void registerShutdownHook();
 }

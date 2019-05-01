@@ -54,6 +54,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
     private final AsyncIdleConnectionMonitorThread syncMonitor;
     private final PoolingNHttpClientConnectionManager manager;
     private Config config;
+    private boolean hookset;
 
     public ApacheAsyncClient(Config config) {
         this.config = config;
@@ -76,10 +77,18 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
             syncMonitor.tryStart();
             client = build;
             if(config.shouldAddShutdownHook()){
-                Runtime.getRuntime().addShutdownHook(new Thread(this::close, "Unirest Apache Async Client Shutdown Hook"));
+                registerShutdownHook();
             }
         } catch (Exception e) {
             throw new UnirestConfigException(e);
+        }
+    }
+
+    @Override
+    public void registerShutdownHook() {
+        if(!hookset) {
+            hookset = true;
+            Runtime.getRuntime().addShutdownHook(new Thread(this::close, "Unirest Apache Async Client Shutdown Hook"));
         }
     }
 
