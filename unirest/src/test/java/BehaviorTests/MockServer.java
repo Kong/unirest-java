@@ -38,16 +38,16 @@ import javax.servlet.ServletOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static spark.Spark.*;
 
 public class MockServer {
-	private static int pages = 1;
+    private static int pages = 1;
 	private static int onPage = 1;
 	private static final List<Pair<String,String>> responseHeaders = new ArrayList<>();
 	private static final List<Pair<String,String>> cookies = new ArrayList<>();
@@ -58,6 +58,7 @@ public class MockServer {
 	public static final String HOST = "http://localhost:" + PORT;
 	public static final String WINDOWS_LATIN_1_FILE = HOST + "data/cp1250.txt";
 	public static final String REDIRECT = HOST + "/redirect";
+	public static final String SPARKLE = HOST + "/sparkle/{spark}/yippy";
 	public static final String BINARYFILE = HOST + "/binary";
 	public static final String NOBODY = HOST + "/nobody";
 	public static final String PAGED = HOST + "/paged";
@@ -93,6 +94,7 @@ public class MockServer {
 		Spark.staticFileLocation("data");
 		Spark.notFound(MockServer::notFound);
 		delete("/delete", MockServer::jsonResponse);
+		get("/sparkle/:spark/yippy", MockServer::sparkle);
 		post("/post", MockServer::jsonResponse);
 		get("/get", MockServer::jsonResponse);
 		get("/gzip", MockServer::gzipResponse);
@@ -116,6 +118,28 @@ public class MockServer {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static Object sparkle(Request request, Response response) {
+		Map<String, String> sparks = new HashMap<>();
+		sparks.put("contentType()", request.contentType());
+		sparks.put("contextPath()", request.contextPath());
+		sparks.put("host()", request.host());
+		sparks.put("ip()", request.ip());
+		sparks.put("pathInfo()", request.pathInfo());
+		sparks.put("port()", String.valueOf(request.port()));
+		sparks.put("protocol()", request.protocol());
+		sparks.put("requestMethod()", request.requestMethod());
+		sparks.put("scheme()", request.scheme());
+		sparks.put("servletPath()", request.servletPath());
+		sparks.put("requestMethod()", request.requestMethod());
+		sparks.put("splat()", Stream.of(request.splat()).collect(Collectors.joining(" | ")));
+		sparks.put("uri()", request.uri());
+		sparks.put("url()", request.url());
+		sparks.put("userAgent()", request.userAgent());
+		sparks.put("queryString()", request.queryString());
+
+		return om.writeValue(sparks);
 	}
 
 	private static Object error(Request request, Response response) {

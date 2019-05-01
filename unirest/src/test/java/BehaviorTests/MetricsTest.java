@@ -26,12 +26,14 @@
 package BehaviorTests;
 
 import kong.unirest.HttpRequestSummary;
+import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.function.Function;
 
 import static BehaviorTests.MockServer.*;
@@ -169,6 +171,23 @@ public class MetricsTest extends BddTest {
         Unirest.get(GET).asEmpty();
 
         assertThat(exTime, greaterThan(0L));
+    }
+
+    @Test
+    public void showWhatSparkDoes() {
+        HashMap map = Unirest.get(SPARKLE)
+                .routeParam("spark", "joy")
+                .queryString("food", "hamberders")
+                .queryString("colour", "red")
+                .asObject(HashMap.class)
+                .getBody();
+
+        assertEquals("localhost:4567", map.get("host()"));
+        assertEquals("/sparkle/joy/yippy", map.get("uri()")); // this is different from what the Spark doc says.
+        assertEquals("http://localhost:4567/sparkle/joy/yippy", map.get("url()"));
+        assertEquals(null, map.get("contextPath()"));
+        assertEquals("/sparkle/joy/yippy", map.get("pathInfo()"));
+        assertEquals("food=hamberders&colour=red", map.get("queryString()"));
     }
 
     private MyMetric configureMetric() {
