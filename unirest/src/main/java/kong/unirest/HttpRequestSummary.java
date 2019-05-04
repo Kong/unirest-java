@@ -35,12 +35,12 @@ public interface HttpRequestSummary {
     HttpMethod getHttpMethod();
 
     /**
-     * @return The current URL string for the request
+     * @return The current full URL string for the request with query params (http://somewhere/else?colour=red)
      */
     String getUrl();
 
     /**
-     * @return The raw un-parameterized path (http://somewhere/{param})
+     * @return The raw un-parameterized path without query strings (http://somewhere/{param})
      */
     String getRawPath();
 }
