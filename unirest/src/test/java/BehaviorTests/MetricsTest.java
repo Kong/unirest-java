@@ -26,7 +26,6 @@
 package BehaviorTests;
 
 import kong.unirest.HttpRequestSummary;
-import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -133,7 +132,7 @@ public class MetricsTest extends BddTest {
         HttpClient mock = mock(HttpClient.class);
         when(mock.execute(any(HttpRequestBase.class))).thenThrow(new RuntimeException("boo"));
         MyMetric metric = new MyMetric(HttpRequestSummary::getUrl);
-        Unirest.config().reset().httpClient(mock).instramentWith(metric);
+        Unirest.config().reset().httpClient(mock).instrumentWith(metric);
 
         try {
             Unirest.get(GET).asEmpty();
@@ -163,7 +162,7 @@ public class MetricsTest extends BddTest {
     @Test
     public void metricAsALambda() {
         exTime = 0;
-        Unirest.config().instramentWith((s) -> {
+        Unirest.config().instrumentWith((s) -> {
             long startNanos = System.nanoTime();
             return (r,e) -> exTime = System.nanoTime() - startNanos;
         });
@@ -196,7 +195,7 @@ public class MetricsTest extends BddTest {
 
     private MyMetric configureMetric(Function<HttpRequestSummary, String> keyFunction) {
         MyMetric metric = new MyMetric(keyFunction);
-        Unirest.config().followRedirects(false).instramentWith(metric);
+        Unirest.config().followRedirects(false).instrumentWith(metric);
         return metric;
     }
 }

@@ -62,5 +62,8 @@ public interface AsyncClient {
         return true;
     }
 
+    /**
+     * Register the Async clients with shutdown hooks
+     */
     void registerShutdownHook();
 }

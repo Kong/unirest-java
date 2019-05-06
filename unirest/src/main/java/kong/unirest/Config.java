@@ -337,7 +337,12 @@ public class Config {
         return this;
     }
 
-    public Config instramentWith(UniMetric metric) {
+    /**
+     * Add a metric object for instrumentation
+     * @param metric a UniMetric object
+     * @return this config object
+     */
+    public Config instrumentWith(UniMetric metric) {
         this.metrics = metric;
         return this;
     }

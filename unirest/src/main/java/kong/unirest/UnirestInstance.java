@@ -25,10 +25,19 @@
 
 package kong.unirest;
 
+/**
+ * A Instance of the unirest runtime, you can have many of these but it is the config
+ * and its clients where all the action happens.
+ * This class is suitable for mocking.
+ */
 public class UnirestInstance implements AutoCloseable {
 
     private final Config config;
 
+    /**
+     * Create a new UnirestInstance with a config
+     * @param config the config for the instance
+     */
     public UnirestInstance(Config config){
         this.config = config;
     }
