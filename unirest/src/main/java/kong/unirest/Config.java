@@ -1,8 +1,8 @@
 /**
  * The MIT License
- *
+ * <p>
  * Copyright for portions of unirest-java are held by Kong Inc (c) 2013.
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -10,10 +10,10 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -81,7 +81,7 @@ public class Config {
         setDefaults();
     }
 
-    private void setDefaults(){
+    private void setDefaults() {
         interceptors.clear();
         proxy = null;
         headers = new Headers();
@@ -159,7 +159,7 @@ public class Config {
      * @param asyncClientBuilder A builder function for creating a AsyncClient
      * @return this config object
      */
-    public Config asyncClient(Function<Config, AsyncClient> asyncClientBuilder){
+    public Config asyncClient(Function<Config, AsyncClient> asyncClientBuilder) {
         this.asyncBuilder = asyncClientBuilder;
         return this;
     }
@@ -234,7 +234,7 @@ public class Config {
     public Config clientCertificateStore(String fileLocation, String password) {
         try (InputStream keyStoreStream = Util.getFileInputStream(fileLocation)) {
             this.keystorePassword = password;
-            this.keystore  = KeyStore.getInstance("PKCS12");
+            this.keystore = KeyStore.getInstance("PKCS12");
             this.keystore.load(keyStoreStream, keystorePassword.toCharArray());
         } catch (Exception e) {
             throw new UnirestConfigException(e);
@@ -427,8 +427,8 @@ public class Config {
      * @return this config object
      */
     public Config automaticRetries(boolean value) {
-         automaticRetries = value;
-         return this;
+        automaticRetries = value;
+        return this;
     }
 
     /**
@@ -470,7 +470,7 @@ public class Config {
      */
     public Config addShutdownHook(boolean value) {
         this.addShutdownHook = value;
-        if(value){
+        if (value) {
             client.ifPresent(Client::registerShutdownHook);
             asyncClient.ifPresent(AsyncClient::registerShutdownHook);
         }
@@ -506,7 +506,6 @@ public class Config {
     }
 
 
-
     /**
      * Shut down the configuration and its clients.
      * The config can be re-initialized with its settings
@@ -526,7 +525,7 @@ public class Config {
             setDefaults();
         }
 
-        if(!ex.isEmpty()){
+        if (!ex.isEmpty()) {
             throw new UnirestException(ex);
         }
     }
@@ -535,7 +534,7 @@ public class Config {
      * Return the current Client. One will be build if it does
      * not yet exist.
      *
-     * @return  A synchronous Client
+     * @return A synchronous Client
      */
     public Client getClient() {
         if (!client.isPresent()) {
@@ -554,7 +553,7 @@ public class Config {
      * Return the current HttpAsyncClient. One will be build if it does
      * not yet exist.
      *
-     * @return  Apache HttpAsyncClient
+     * @return Apache HttpAsyncClient
      */
     public AsyncClient getAsyncClient() {
         if (!asyncClientIsReady()) {
@@ -578,45 +577,79 @@ public class Config {
     }
 
     private void verifyIsOn(AsyncClient value) {
-        if(!value.isRunning()){
+        if (!value.isRunning()) {
             throw new UnirestConfigException("Attempted to get a new async client but it was not started. Please ensure it is");
         }
     }
 
     // Accessors for unirest.
 
+    /**
+     * @return if cookie management should be enabled.
+     *         default: true
+     */
     public boolean getEnabledCookieManagement() {
         return cookieManagement;
     }
 
+    /**
+     * @return if the clients should follow redirects
+     *         default: true
+     */
     public boolean getFollowRedirects() {
         return followRedirects;
     }
 
+    /**
+     * @return the maximum number of connections the clients for this config will manage at once
+     *         default: 200
+     */
     public int getMaxConnections() {
         return maxTotal;
     }
 
+    /**
+     * @return the maximum number of connections per route the clients for this config will manage at once
+     *         default: 20
+     */
     public int getMaxPerRoutes() {
         return maxPerRoute;
     }
 
+    /**
+     * @return the connection timeout in milliseconds
+     *         default: 10000
+     */
     public int getConnectionTimeout() {
         return connectionTimeout;
     }
 
+    /**
+     * @return socket timeout in milliseconds
+     *         default: 60000
+     */
     public int getSocketTimeout() {
         return socketTimeout;
     }
 
+    /**
+     * @return a security keystore if one has been provided
+     */
     public KeyStore getKeystore() {
         return this.keystore;
     }
 
-    public String getKeyStorePassword(){
+    /**
+     * @return The password for the keystore if provided
+     */
+    public String getKeyStorePassword() {
         return this.keystorePassword;
     }
 
+    /**
+     * @return a configured object mapper
+     * @throws UnirestException if none has been configured.
+     */
     public ObjectMapper getObjectMapper() {
         return objectMapper.orElseThrow(() -> new UnirestException("No Object Mapper Configured. Please config one with Unirest.config().setObjectMapper"));
     }
@@ -638,7 +671,7 @@ public class Config {
         return proxy;
     }
 
-    public boolean useSystemProperties(){
+    public boolean useSystemProperties() {
         return this.useSystemProperties;
     }
 
