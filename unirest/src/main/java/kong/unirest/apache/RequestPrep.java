@@ -97,6 +97,7 @@ class RequestPrep {
         return RequestConfig.custom()
                 .setConnectTimeout(request.getConnectTimeout())
                 .setSocketTimeout(request.getSocketTimeout())
+                .setNormalizeUri(false)
                 .setConnectionRequestTimeout(request.getSocketTimeout())
                 .setProxy(RequestOptions.toApacheProxy(request.getProxy()))
                 .setCookieSpec(config.getCookieSpec())
