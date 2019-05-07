@@ -7,11 +7,11 @@
     <parent>
         <groupId>com.konghq</groupId>
         <artifactId>unirest-java-parent</artifactId>
-        <version>2.2.03-SNAPSHOT</version>
+        <version>2.3.00-SNAPSHOT</version>
     </parent>
 
     <artifactId>bad-maven-test</artifactId>
-    <version>2.2.03-SNAPSHOT</version>
+    <version>2.3.00-SNAPSHOT</version>
     <description>Errors that happen when people are using crusty old version of apache Http client</description>
 
     <properties>

@@ -1,6 +1,8 @@
 ## 2.3.00
 * #267 make sure hooks are registered regardless of where we are in the lifecycle of the client engines
-* Adds a metric hook for observing the health and performance of unirest. 
+* #264 Adds a metric hook for observing the health and performance of unirest. 
+* #270 Throw a more helpful error when a older version of Apache Client has been pulled in over Unirest's requirement.
+* Upgrade Apache Http Client Dependency to 4.5.8
 
 ## 2.2.02
 * Add a mapper function to transform a HttpResponse<V> to a HttpResponse<T>
