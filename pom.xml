@@ -21,6 +21,7 @@
         <module>unirest</module>
         <module>object-mapper-gson</module>
         <module>object-mapper-jackson</module>
+        <!--<module>bad-maven-test</module>-->
     </modules>
 
     <properties>

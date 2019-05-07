@@ -66,8 +66,8 @@ public class Config {
     private boolean cookieManagement;
     private boolean useSystemProperties;
     private String defaultResponseEncoding = StandardCharsets.UTF_8.name();
-    private Function<Config, AsyncClient> asyncBuilder = ApacheAsyncClient::new;
-    private Function<Config, Client> clientBuilder = ApacheClient::new;
+    private Function<Config, AsyncClient> asyncBuilder;
+    private Function<Config, Client> clientBuilder;
     private boolean requestCompressionOn = true;
     private boolean automaticRetries;
     private boolean verifySsl = true;
@@ -79,6 +79,13 @@ public class Config {
 
     public Config() {
         setDefaults();
+        try {
+            asyncBuilder = ApacheAsyncClient::new;
+            clientBuilder = ApacheClient::new;
+        }catch (BootstrapMethodError e){
+            throw new UnirestException("It looks like you are using an older version of Apache Http Client. \n" +
+                    "For security and performance reasons Unirest requires the most recent version. Please upgrade.", e);
+        }
     }
 
     private void setDefaults() {

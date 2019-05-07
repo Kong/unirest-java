@@ -23,32 +23,25 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
+package kong;
 
-import java.util.Collection;
-import java.util.stream.Collectors;
+import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
+import org.junit.Test;
 
-public class UnirestException extends RuntimeException {
+import static org.junit.Assert.*;
 
-	private static final long serialVersionUID = -3714840499934575734L;
+public class BadMavenConfigTest {
 
-	public UnirestException(Exception e) {
-		super(e);
-	}
-
-	public UnirestException(String msg) {
-		super(msg);
-	}
-
-	public UnirestException(Throwable ex) {
-		super(ex);
-	}
-
-	public UnirestException(String message, Throwable e) {
-		super(message, e);
-	}
-
-	public UnirestException(Collection<Exception> ex) {
-		super(ex.stream().map(e -> e.getClass().getName() + " " + e.getMessage()).collect(Collectors.joining("\n")));
-	}
+    @Test
+    public void interpretError() {
+        try {
+            Unirest.get("https://konghq.com").asEmpty();
+        }catch (ExceptionInInitializerError e){
+            assertEquals("It looks like you are using an older version of Apache Http Client. \n" +
+                    "For security and performance reasons Unirest requires the most recent version. Please upgrade.", e.getCause().getMessage());
+            return;
+        }
+        fail("Should have thrown a Unirest Exception");
+    }
 }
