@@ -54,7 +54,6 @@ public class ResponseHeaderTest extends BddTest {
         assertHeader("zed", "grapes", h.all().get(6));
         assertHeader("Content-Type", "text/html;charset=utf-8", h.all().get(7));
         assertHeader("Transfer-Encoding", "chunked", h.all().get(8));
-        assertHeader("Server", "Jetty(9.4.12.v20180830)", h.all().get(9));
 
     }
 
