@@ -1,3 +1,6 @@
+## 2.3.02
+* Remove mistaken dependency that should have been scoped to test.
+
 ## 2.3.01
 * Update Jackson dependency in object-mapper-jackson due to security.
 

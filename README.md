@@ -10,7 +10,7 @@
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>2.3.01</version>
+    <version>2.3.02</version>
 </dependency>
 ```
 
