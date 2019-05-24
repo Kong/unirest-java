@@ -1,3 +1,6 @@
+## 2.3.01
+* Update Jackson dependency in object-mapper-jackson due to security.
+
 ## 2.3.00
 * #267 make sure hooks are registered regardless of where we are in the lifecycle of the client engines
 * #264 Adds a metric hook for observing the health and performance of unirest. 
