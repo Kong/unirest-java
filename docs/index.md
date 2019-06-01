@@ -1,3 +1,9 @@
+---
+layout: default
+title: Documentation
+rightmenu: true
+---
+
 <div id="spy-nav" class="right-menu" markdown="1">
 * [Features](#features)
 * [Creating Request](#creating-request)
