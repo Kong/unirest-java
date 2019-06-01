@@ -1,0 +1,26 @@
+{% assign _ = include %}
+<div class="team-member">
+    <img src="/img/team/{{_.imgFile}}">
+    <div class="info-wrap">
+        <h3>{{_.firstName}} {{_.lastName}}</h3>
+        {{_.role}}
+        <div class="social">
+            {% if _.twitter %}
+            <a href="https://www.twitter.com/{{_.twitter}}" target="_blank">
+                <img src="/img/twitter.svg" title="Find {{_.firstName}} on Twitter" alt="Twitter icon"> 
+            </a>
+            {% endif %}
+            {% if _.linkedin %}
+            <a href="https://www.linkedin.com/in/{{_.linkedin}}" target="_blank">
+                <img src="/img/linkedin.svg" title="Find {{_.firstName}} on LinkedIn" alt="LinkedIn icon">
+            </a>
+            {% endif %}
+            <a href="https://www.github.com/{{_.github}}" target="_blank">
+                <img src="/img/github.svg" title="Find {{_.firstName}} on GitHub" alt="GitHub icon">
+            </a>
+            <a href="mailto:{{_.email}}">
+                <img src="/img/email.svg" title="Email {{_.firstName}}" alt="Email icon">
+            </a>
+        </div>
+    </div>
+</div>

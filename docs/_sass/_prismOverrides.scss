@@ -1,0 +1,55 @@
+.highlighter-rouge {
+    margin: 10px 0;
+    position: relative;
+    overflow: auto;
+    pre {
+        margin: 0;
+        overflow: auto;
+        background: #30312a;
+        padding: 15px;
+        code {
+            float: left;
+            font-family: 'Fira Mono', monospace;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+    }
+}
+
+.smaller-code {
+    pre code {
+        font-size: 13px;
+    }
+}
+
+// Toolbar
+
+pre.code-toolbar {
+    position: initial;
+}
+
+pre.code-toolbar > .toolbar {
+    opacity: 1;
+    transition: none;
+    top: 0px;
+    right: 0px;
+}
+
+pre.code-toolbar > .toolbar a {
+    font-size: 13px;
+	padding: 1px 6px 3px;
+}
+
+pre.code-toolbar > .toolbar a,
+pre.code-toolbar > .toolbar button,
+pre.code-toolbar > .toolbar span {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #30312a;
+    box-shadow: none;
+    border-radius: 0 5px 0 5px;
+    color: #888;
+    border: 1px solid #444;
+    border-top: 0;
+    border-right: 0;
+}

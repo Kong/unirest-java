@@ -1,0 +1,67 @@
+.tutorial {
+    h1, h2, h3, h4 {
+        font-family: "Trebuchet MS", Helvetica, sans-serif;
+        font-weight: 400;
+    }
+    h1 { font-size: 26px; }
+    h2 { font-size: 22px; }
+    h3 { font-size: 20px; }
+    h4 { font-size: 18px; }
+    #timeToRead {
+        float: right;
+    }
+    .tutorial-header .notification {
+        font-size: 14px;
+        margin-bottom: 30px;
+        .github-link {
+            display: block;
+            width: 100%;
+            padding-top: 8px;
+            margin-top: 8px;
+            border-top: 1px solid #ddd;
+        }
+    }
+}
+
+.tutorial-overview {
+    overflow: hidden;  
+    margin: 24px 0;
+    padding: 24px 0;
+    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+}
+
+.tutorials-header,
+.tutorials-footer {
+    clear: both;
+    p {
+        margin: 0;
+    }
+}
+
+ul.tutorial-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 50%;
+    float: left;
+    h2 {
+        margin-top: 0; 
+    }
+    li {
+        padding-right: 24px;
+        + li {
+            margin-top: 24px;
+        }
+        h2 {
+            font-size: 20px;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        p {
+            font-size: 13px;
+        }
+    }
+}

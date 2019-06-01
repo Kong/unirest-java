@@ -1,0 +1,211 @@
+$spark-orange: #e88300;
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    padding-top: 80px;
+    margin-bottom: 60px;
+}
+
+header {
+    z-index: 1;
+    background: #fff;
+    position: fixed;
+    height: 80px;
+    width: 100%;
+    top: 0;
+    left: 0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+footer {
+    font-size: 13px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 40px;
+    width: 100%;
+    line-height: 40px;
+    text-align: center;
+    background: #f5f5f5;
+    border-top: 1px solid #ddd;
+    padding: 0 20px;
+    overflow: hidden;
+}
+
+.width-limit {
+    width: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
+    max-width: 840px;
+    margin: 0 auto;
+}
+
+nav {
+    height: 80px;
+    position: relative;
+    #logo img {
+        margin: 10px 0;
+        height: 60px;
+    }
+    ul {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        float: right;
+        height: 40px;
+        margin-top: 40px;
+        li {
+            display: inline-block;
+            a {
+                display: block;
+                color: #333;
+                text-decoration: none;
+                margin: 0 5px;
+                padding: 0 5px;
+                line-height: 40px;
+            }
+            &:last-of-type a {
+                padding-right: 0;
+                margin-right: 0;
+            }
+        }
+    }
+}
+
+#some-buttons {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    #githubStar {
+        display: inline-block;
+        width: 95px;
+        height: 20px;
+        position: relative;
+        #starBg,
+        #starFrame {
+            position: absolute;
+            border: 0;
+        }
+    }
+    a {
+        display: inline-block;
+        &:last-of-type {
+            margin-left: 3px;
+        }
+        img {
+            border-radius: 3px;
+            height: 20px;
+        }
+    }
+}
+
+.right-menu {
+    position: fixed;
+    left: 50%;
+    list-style: none;
+    padding: 0;
+    margin-left: 430px;
+    top: 120px;
+    z-index: 999999;
+    width: 200px;
+    ul {
+        margin: 0;
+        list-style: none;
+        padding: 0;
+        .active > a {
+            font-weight: 700;
+        }
+        a {
+            display: inline-block;
+            padding: 1px 0;
+            margin: 1px 0;
+        }
+        ul {
+            font-size: 14px;
+            padding-left: 15px;
+        }
+    }
+    ul.tutorial-menu {
+        font-size: 13px;
+        font-family: Tahoma, arial, sans-serif;
+        a {
+            padding: 2px 0;
+            margin: 2px 0;
+        }
+    }
+}
+
+@media (max-height: 850px) {
+    .right-menu {
+        font-size: 14px;
+    }
+}
+
+@media (max-height: 750px) {
+    .right-menu {
+        ul a {
+            margin: 0;
+        }
+    }
+}
+
+@media (max-width: 1200px) {
+    #fork-me {
+        display: none;
+    }
+}
+
+@media (min-width: 701px) and (max-width: 1200px) {
+    main.width-limit,
+    nav.width-limit {
+        max-width: 100%;
+    }
+    .has-right-menu {
+        &.width-limit {
+            padding-right: 220px;
+        }
+    }
+    .right-menu {
+        top: 80px;
+        right: 0;
+        left: auto;
+        margin-left: 0;
+        height: 100%;
+        border-left: 1px solid #e0e0e0;
+        background: linear-gradient(to right, #f9f9f9, white);
+        padding: 40px 15px 0 15px;
+        z-index: 0;
+    }
+}
+@media (max-width: 700px) {
+    .right-menu {
+        display: none;
+    }
+}
+@media (max-width: 600px) {
+    a[href="/download"] {
+        display: none;
+    }
+}
+@media (max-width: 480px) {
+    nav ul li a {
+        margin: 0 2px;
+        font-size: 14px;
+    }
+}
+@media (max-width: 400px) {
+    nav {
+        ul li a {
+            padding: 0;
+            font-size: 12px;
+        }
+        #logo img {
+            margin: 30px 0 10px;
+            height: 40px;
+        }
+    }
+}
