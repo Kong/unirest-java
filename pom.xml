@@ -316,12 +316,16 @@
 
                             <!-- final name of the shaded jar will be ${project.artifactId}-standalone -->
                             <shadedClassifierName>standalone</shadedClassifierName>
-
+                            <generateUniqueDependencyReducedPom>true</generateUniqueDependencyReducedPom>
                             <relocations>
                                 <relocation>
                                     <!-- Apache HttpClients -->
                                     <pattern>org.apache.http</pattern>
                                     <shadedPattern>unirest.shaded.org.apache.http</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.json</pattern>
+                                    <shadedPattern>unirest.shaded.org.json</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <!-- Jackson -->
