@@ -1,4 +1,7 @@
-# Unirest for Java
+<div id="spy-nav" class="right-menu" markdown="1">
+* [Features](#features)
+* [Creating Request](#creating-request)
+</div>
 
 [![Build Status](https://travis-ci.org/Kong/unirest-java.svg?branch=master)](https://travis-ci.org/Kong/unirest-java)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.konghq/unirest-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kong/unirest-java)
