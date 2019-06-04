@@ -9,4 +9,8 @@ META-INF
 .idea
 *.iml
 .gitconfig
+_site/
+Gemfile.lock
+.sass-cache/
+.jekyll-metadata
 
