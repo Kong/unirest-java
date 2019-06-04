@@ -9,9 +9,6 @@ rightmenu: true
 * [Creating Request](#creating-request)
 </div>
 
-# Unirest-Java
-Unirest in Java: Simplified, lightweight HTTP client library.
-
 ## Install With [Maven](https://mvnrepository.com/artifact/com.konghq/unirest-java)[:](https://repo.maven.apache.org/maven2/com/konghq/unirest-java/)
 ```xml
 <dependency>
