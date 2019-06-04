@@ -4,8 +4,8 @@ templateversion: 2.7.1
 description: > # > means to ignore newlines as long as indent is kept
   unirest-java
   Unirest in Java: Simplified, lightweight HTTP client library.
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "http://kong.github.io/unirest-java/" # the base hostname & protocol for your site
+baseurl: "/unirest-java" # the subpath of your site, e.g. /blog
+url: "http://kong.github.io" # the base hostname & protocol for your site
 gems: [jekyll-redirect-from]
 
 # Build settings
