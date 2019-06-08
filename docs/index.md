@@ -12,6 +12,7 @@ rightmenu: true
 * [Basic Authentication](#basic-authentication)
 * [Body Data](#body-data)
 * [Entity Bodies](#entity-bodies)
+* [JSON Patch Bodies](#json-patch-bodies)
 * [Basic Forms](#basic-forms)
 * [File Uploads](#file-uploads)
 * [Object Mappers](#object-mappers)
@@ -87,7 +88,7 @@ Unirest.get("http://httpbin.org")
 
 ## Headers
 Request headers can be added with the ```header``` method.
-```
+```java
 Unirest.get("http://httpbin.org")
             .header("Accept", "application/json")
             .header("x-custom-header", "hello")
@@ -98,7 +99,7 @@ Unirest.get("http://httpbin.org")
 Unirest exposes a shortcut for doing basic auth when you need to. Unirest handles the Base64 encoding part.
 Please make sure you are always doing this over HTTPS!
 
-```
+```java
 Unirest.get("http://httpbin.org")
             .basicAuth("user", "password1!")
             .asString();
@@ -135,6 +136,31 @@ Unirest.post("http://httpbin.org")
 // This will use Jackson to serialize the object into JSON.
 ```
 
+### JSON Patch Bodies
+Unirest has full native support for JSON Patch requests (RFC-6902 see http://jsonpatch.com/)
+```java
+     Unirest.jsonPatch(MockServer.PATCH)
+            .add("/fruits/-", "Apple")
+            .remove("/bugs")
+            .replace("/lastname", "Flintstone")
+            .test("/firstname", "Fred")
+            .move("/old/location", "/new/location")
+            .copy("/original/location", "/new/location")
+            .asJson();
+```
+will send a request with a body of
+```json
+  [
+     {"op":"add","path":"/fruits/-","value":"Apple"},
+     {"op":"remove","path":"/bugs"},
+     {"op":"replace","path":"/lastname","value":"Flintstone"},
+     {"op":"test","path":"/firstname","value":"Fred"},
+     {"op":"move","path":"/new/location","from":"/old/location"},
+     {"op":"copy","path":"/new/location","from":"/original/location"}
+  ]
+
+```
+
 ### Basic Forms
 Basic http name value body params can be passed with simple field calls.
 The ```Content-Type``` for this type of request is defaulted to  ```application/x-www-form-urlencoded```
@@ -154,7 +180,7 @@ You can also post binary data in a form. Like a file.
 
 The ```Content-Type``` for this type of request is defaulted to  ```multipart/form-data```
 
-```
+```java
 Unirest.post("http://httpbin.org")
        .field("upload", new File("/MyFile.zip"))
        .asEmpty();
@@ -163,7 +189,7 @@ Unirest.post("http://httpbin.org")
 For large files you may want to use a InputStream. Pass it a file name if you want one.
 We are using a FileInputStream here but it can actually be any kind of InputStream.
 
-```
+```java
 InputStream file = new FileInputStream(new File("/MyFile.zip"));
 
 Unirest.post("http://httpbin.org")
@@ -249,59 +275,6 @@ or consumers:
                 .thenConsumeAsync(r -> {
                        // something like writing a file to disk
                 });
-```
-
-#### File Uploads
-Creating `multipart` requests with Java is trivial, simply pass along a `File` or an InputStream Object as a field:
-
-```java
-HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
-  .header("accept", "application/json")
-  .field("parameter", "value")
-  .field("file", new File("/tmp/file"))
-  .asJson();
-```
-
-#### Custom Entity Body
-
-```java
-HttpResponse<JsonNode> jsonResponse = Unirest.post("http://httpbin.org/post")
-  .header("accept", "application/json")
-  .body("{\"parameter\":\"value\", \"foo\":\"bar\"}")
-  .asJson();
-```
-
-#### JSON Patch Requests
-Unirest has full native support for JSON Patch requests
-```java
-     Unirest.jsonPatch(MockServer.PATCH)
-            .add("/fruits/-", "Apple")
-            .remove("/bugs")
-            .replace("/lastname", "Flintstone")
-            .test("/firstname", "Fred")
-            .move("/old/location", "/new/location")
-            .copy("/original/location", "/new/location")
-            .asJson();
-```
-will send a request with a body of
-```json
-  [
-     {"op":"add","path":"/fruits/-","value":"Apple"},
-     {"op":"remove","path":"/bugs"},
-     {"op":"replace","path":"/lastname","value":"Flintstone"},
-     {"op":"test","path":"/firstname","value":"Fred"},
-     {"op":"move","path":"/new/location","from":"/old/location"},
-     {"op":"copy","path":"/new/location","from":"/original/location"}
-  ]
-
-```
-
-#### Basic Authentication
-Authenticating the request with basic authentication can be done by calling the `basicAuth(username, password)` function:
-```java
- Unirest.get("http://httpbin.org/headers")
-        .basicAuth("username", "password")
-        .asJson();
 ```
 
 # Configuration
