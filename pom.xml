@@ -95,6 +95,7 @@
                     <header>${main.dir}/build/fileHeader.txt</header>
                     <strictCheck>true</strictCheck>
                     <excludes>
+                        <exclude>**/*.js</exclude>
                         <exclude>**/*.html</exclude>
                         <exclude>**/*.xml</exclude>
                         <exclude>**/*.txt</exclude>
