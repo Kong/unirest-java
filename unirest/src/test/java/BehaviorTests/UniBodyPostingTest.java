@@ -39,6 +39,15 @@ import static kong.unirest.TestUtil.assertException;
 
 public class UniBodyPostingTest extends BddTest {
     @Test
+    public void testDefaults_String(){
+        Unirest.post(MockServer.POST)
+                .body("foo")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertContentType("text/plain; charset=UTF-8");
+    }
+
+    @Test
     public void canSetCharsetOfBody(){
         Unirest.post(MockServer.POST)
                 .charset(StandardCharsets.US_ASCII)

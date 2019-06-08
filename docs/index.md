@@ -7,8 +7,14 @@ rightmenu: true
 <div id="spy-nav" class="right-menu" markdown="1">
 * [Requests](#requests)
 * [Route Parameters](#route-parameters)
-* [Multipart Form Parameters](#multipart-form-parameters)
-* [Object Mapping](#object-mapping)
+* [Query Parameters](#query-parameters)
+* [Headers](#headers)
+* [Basic Authentication](#basic-authentication)
+* [Body Data](#body-data)
+* [Entity Bodies](#entity-bodies)
+* [Basic Forms](#basic-forms)
+* [File Uploads](#file-uploads)
+* [Object Mappers](#object-mappers)
 </div>
 
 ## Install With [Maven](https://mvnrepository.com/artifact/com.konghq/unirest-java)[:](https://repo.maven.apache.org/maven2/com/konghq/unirest-java/)
@@ -39,7 +45,7 @@ HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post")
 Requests are made when `as[Type]()` is invoked, possible types include `Json`, `String`, `Object` `Empty` and `File`.
 
 
-### Route Parameters
+## Route Parameters
 Sometimes you want to add dynamic parameters in the URL, you can easily do that by adding a placeholder in the URL, and then by setting the route parameters with the `routeParam` function, like:
 
 ```java
@@ -55,7 +61,7 @@ The placeholder's format is as easy as: `{custom_name}`
 
 All param values will be URL-Encoded for you
 
-### Query Parameters
+## Query Parameters
 Query-string params can be built up one by one
 
 ```java
@@ -79,10 +85,59 @@ Unirest.get("http://httpbin.org")
  // Results in "http://httpbin.org?fruit=apple&fruit=orange&droid=R2D2&beatle=Ringo"
 ```
 
+## Headers
+Request headers can be added with the ```header``` method.
+```
+Unirest.get("http://httpbin.org")
+            .header("Accept", "application/json")
+            .header("x-custom-header", "hello")
+            .asString();
+```
+
+### Basic Authentication
+Unirest exposes a shortcut for doing basic auth when you need to. Unirest handles the Base64 encoding part.
+Please make sure you are always doing this over HTTPS!
+
+```
+Unirest.get("http://httpbin.org")
+            .basicAuth("user", "password1!")
+            .asString();
+
+// this adds the header "Authorization: Basic dXNlcjpwYXNzd29yZDEh"
+```
+
 ## Body Data
 
+### Entity Bodies
+You can post entity objects as the full body easily. This is the default behavior of most REST services.
+
+Unless you specify otherwise the default ```Content-Type``` is ```text/plain; charset=UTF-8```
+
+```java
+Unirest.post("http://httpbin.org")
+                .body("This is the entire body")
+                .asEmpty();
+```
+
+You can also post as a Object that is serialized using a configured ObjectMapper. (see [Object Mappers](#object-mappers) for implementation details.
+
+```java
+// Object Mappers can be configured globally, per config, or on a per-request basis.
+// We will set it up in the global config here:
+
+Unirest.config().setObjectMapper(new JacksonObjectMapper());
+
+Unirest.post("http://httpbin.org")
+            .header("Content-Type", "application/json")
+            .body(new SomeUserObject("Bob"))
+            .asEmpty();
+
+// This will use Jackson to serialize the object into JSON.
+```
+
 ### Basic Forms
-Basic http name value body params can be passed with simple field calls
+Basic http name value body params can be passed with simple field calls.
+The ```Content-Type``` for this type of request is defaulted to  ```application/x-www-form-urlencoded```
 
 ```java
 Unirest.post("http://httpbin.org")
@@ -95,7 +150,9 @@ Unirest.post("http://httpbin.org")
 ```
 
 ### File Uploads
-You can also post binary data in a form. Like a file
+You can also post binary data in a form. Like a file.
+
+The ```Content-Type``` for this type of request is defaulted to  ```multipart/form-data```
 
 ```
 Unirest.post("http://httpbin.org")
@@ -107,14 +164,16 @@ For large files you may want to use a InputStream. Pass it a file name if you wa
 We are using a FileInputStream here but it can actually be any kind of InputStream.
 
 ```
+InputStream file = new FileInputStream(new File("/MyFile.zip"));
+
 Unirest.post("http://httpbin.org")
-       .field("upload", new FileInputStream(new File("/MyFile.zip")), "MyFile.zip")
+       .field("upload", file, "MyFile.zip")
        .asEmpty();
 ```
 
 
 
-### Object Mapping
+## Object Mappers
 Before an `asObject(Class)` or a `.body(Object)` invocation, is necessary to provide a custom implementation of the `ObjectMapper` interface.
 This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
 Unirest offers a few plug-ins implementing popular object mappers like Jackson and Gson. See [mvn central](https://mvnrepository.com/artifact/com.konghq) for details.

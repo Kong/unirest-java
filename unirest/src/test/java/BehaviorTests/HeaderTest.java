@@ -62,11 +62,11 @@ public class HeaderTest extends BddTest {
     @Test
     public void testBasicAuth() {
         Unirest.get(MockServer.GET)
-                .basicAuth("user", "test")
+                .basicAuth("user", "password1!")
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertHeader("Authorization", "Basic dXNlcjp0ZXN0")
-                .assertBasicAuth("user", "test");
+                .assertHeader("Authorization", "Basic dXNlcjpwYXNzd29yZDEh")
+                .assertBasicAuth("user", "password1!");
     }
 
     @Test
