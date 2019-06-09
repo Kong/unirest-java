@@ -325,7 +325,7 @@ public interface HttpRequest<R extends HttpRequest>  {
 
 
     /**
-     * Execute the request asynchronously and pass the raw response to a consumer.
+     * Execute the request and pass the raw response to a consumer.
      * This raw response contains the original InputStream and is suitable for
      * reading large responses
      * @param consumer a consumer function
@@ -333,7 +333,7 @@ public interface HttpRequest<R extends HttpRequest>  {
     void thenConsume(Consumer<RawResponse> consumer);
 
     /**
-     * Execute the request and pass the raw response to a consumer.
+     * Execute the request asynchronously and pass the raw response to a consumer.
      * This raw response contains the original InputStream and is suitable for
      * reading large responses
      * @param consumer a consumer function
