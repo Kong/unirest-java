@@ -18,7 +18,9 @@ rightmenu: true
 * [Responses](#responses)
 * [Empty Responses](#empty-responses)
 * [String Responses](#string-responses)
-* [Object Mappers](#object-mappers)
+* [Object Mapped Responses](#object-mapped-responses)
+* [File Responses](#file-responses)
+
 </div>
 
 ## Install With [Maven](https://mvnrepository.com/artifact/com.konghq/unirest-java)[:](https://repo.maven.apache.org/maven2/com/konghq/unirest-java/)
@@ -222,13 +224,14 @@ String body = Unirest.get("http://httpbin.org")
 					 .body();
 ```
 
+## Object Mapped Responses
+Most of the time when consuming RESTful services you probably want to map the response into an object. For this you need to provide the Unirest configuration with a implementation of ```ObjectMapper``` (see [Object Mappers](#object-mappers) for details.). Unirest has several modules that can be included for popular JSON object mappers like Jackson and GSON.
 
-# Object Mappers
-Before an `asObject(Class)` or a `.body(Object)` invocation, is necessary to provide a custom implementation of the `ObjectMapper` interface.
-This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
+Before an `asObject(Class)` it is necessary to provide a custom implementation of the `ObjectMapper` interface. This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
+
 Unirest offers a few plug-ins implementing popular object mappers like Jackson and Gson. See [mvn central](https://mvnrepository.com/artifact/com.konghq) for details.
-nes of code.
-For example, serializing Json from\to Object using the popular Jackson ObjectMapper takes only few li
+
+For example, serializing Json from\to Object using the popular Jackson ObjectMapper takes only few lines
 
 ```java
 // Only one time
@@ -243,16 +246,9 @@ Author author = Unirest.get("http://httpbin.org/books/{id}/author")
                        .routeParam("id", bookObject.getId())
                        .asObject(Author.class)
                        .getBody();
-
-// Sending a JSON object
-Unirest.post("http://httpbin.org/authors/post")
-        .header("accept", "application/json")
-        .header("Content-Type", "application/json")
-        .body(author)
-        .asJson();
 ```
 
-#### Errors in Object or JSON parsing
+### Errors in Object or JSON parsing
 You can't always get what you want. And sometimes results you get from web services will not map into what you expect them to.
 When this happens with a ```asObject``` or ```asJson``` request the resulting body will be null, but the response object will contain a ParsingException that allows you to get the error and the original body for inspection.
 
@@ -263,6 +259,17 @@ ex.getOriginalBody(); // Has the original body as a string.
 ex.getMessage(); // Will have the parsing exception.
 ex.getCause(); // of course will have the original parsing exception itself.
 ```
+
+## File Responses
+Sometimes you just want to download a file, or maybe capture the response body into a file. Unirest can do both. Just tell Unirest where you want to put the file.
+
+```java
+File result = Unirest.get("http://some.file.location/file.zip")
+                .asFile("/disk/location/file.zip")
+                .getBody();
+```
+
+
 
 #### Asynchronous Requests
 Sometimes, well most of the time, you want your application to be asynchronous and not block, Unirest supports this in Java using anonymous callbacks, or direct method placement:
@@ -379,7 +386,8 @@ As usual, Unirest maintains a primary single instance. Sometimes you might want 
 
 **WARNING!** If you get a new instance of unirest YOU are responsible for shutting it down when the JVM shuts down. It is not tracked or shut down by ```Unirest.shutDown();```
 
-
+# Object Mappers
+todo
 
 
 ## Exiting an application
