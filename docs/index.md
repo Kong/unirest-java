@@ -15,6 +15,9 @@ rightmenu: true
 * [JSON Patch Bodies](#json-patch-bodies)
 * [Basic Forms](#basic-forms)
 * [File Uploads](#file-uploads)
+* [Responses](#responses)
+* [Empty Responses](#empty-responses)
+* [String Responses](#string-responses)
 * [Object Mappers](#object-mappers)
 </div>
 
@@ -138,8 +141,10 @@ Unirest.post("http://httpbin.org")
 
 ### JSON Patch Bodies
 Unirest has full native support for JSON Patch requests (RFC-6902 see http://jsonpatch.com/)
+Per the spec, the default ```Content-Type``` for json-patch is ```application/json-patch+json```
+
 ```java
-     Unirest.jsonPatch(MockServer.PATCH)
+     Unirest.jsonPatch("http://httpbin.org")
             .add("/fruits/-", "Apple")
             .remove("/bugs")
             .replace("/lastname", "Flintstone")
@@ -149,7 +154,7 @@ Unirest has full native support for JSON Patch requests (RFC-6902 see http://jso
             .asJson();
 ```
 will send a request with a body of
-```json
+```js
   [
      {"op":"add","path":"/fruits/-","value":"Apple"},
      {"op":"remove","path":"/bugs"},
@@ -158,7 +163,6 @@ will send a request with a body of
      {"op":"move","path":"/new/location","from":"/old/location"},
      {"op":"copy","path":"/new/location","from":"/original/location"}
   ]
-
 ```
 
 ### Basic Forms
@@ -197,9 +201,29 @@ Unirest.post("http://httpbin.org")
        .asEmpty();
 ```
 
+# Responses
+Unirest makes the actual request the moment you invoke of it's ```as[type]``` method. These methods also inform Unirest what type to map the response to. Options are ```Empty```, ```String```, ```File```, ```Object```, and ```Json```.
+
+The response returns as a ```HttpResponse<T>``` where the ```HttpResponse``` object has all of the common response data like status and headers. The Body (if present) can be accessed via the desired type with the ```.body()``` method. 
+
+## Empty Responses
+If you aren't expecting a body back, ```asEmpty``` is the easiest choice. You will still get back response information like status and headers.
+
+```java
+HttpResponse response = Unirest.delete("http://httpbin.org").asEmpty()
+```
+
+## String Responses
+The next easiest response type is String. You can do whatever you want with it after that.
+
+```java
+String body = Unirest.get("http://httpbin.org")
+					 .asString()
+					 .body();
+```
 
 
-## Object Mappers
+# Object Mappers
 Before an `asObject(Class)` or a `.body(Object)` invocation, is necessary to provide a custom implementation of the `ObjectMapper` interface.
 This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
 Unirest offers a few plug-ins implementing popular object mappers like Jackson and Gson. See [mvn central](https://mvnrepository.com/artifact/com.konghq) for details.

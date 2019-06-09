@@ -41,13 +41,13 @@ public class JsonPatchTest extends BddTest {
 
     @Test
     public void canAddThings() {
-
         Unirest.jsonPatch(MockServer.PATCH)
                 .add("/some/path", "a value")
                 .add("/another/path", 42)
                 .add("/third/path", true)
                 .asObject(RequestCapture.class)
                 .getBody()
+                .assertContentType("application/json-patch+json")
                 .assertJsonPatch(add, "/some/path", "a value")
                 .assertJsonPatch(add, "/another/path", 42)
                 .assertJsonPatch(add, "/third/path", true);
@@ -61,6 +61,7 @@ public class JsonPatchTest extends BddTest {
                 .remove("/third/path")
                 .asObject(RequestCapture.class)
                 .getBody()
+                .assertContentType("application/json-patch+json")
                 .assertJsonPatch(remove, "/some/path", null)
                 .assertJsonPatch(remove, "/another/path", null)
                 .assertJsonPatch(remove, "/third/path", null);
@@ -74,6 +75,7 @@ public class JsonPatchTest extends BddTest {
                 .replace("/third/path", true)
                 .asObject(RequestCapture.class)
                 .getBody()
+                .assertContentType("application/json-patch+json")
                 .assertJsonPatch(replace, "/some/path", "a value")
                 .assertJsonPatch(replace, "/another/path", 42)
                 .assertJsonPatch(replace, "/third/path", true);
@@ -87,6 +89,7 @@ public class JsonPatchTest extends BddTest {
                 .test("/third/path", true)
                 .asObject(RequestCapture.class)
                 .getBody()
+                .assertContentType("application/json-patch+json")
                 .assertJsonPatch(test, "/some/path", "a value")
                 .assertJsonPatch(test, "/another/path", 42)
                 .assertJsonPatch(test, "/third/path", true);
