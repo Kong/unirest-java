@@ -15,12 +15,19 @@ rightmenu: true
 * [JSON Patch Bodies](#json-patch-bodies)
 * [Basic Forms](#basic-forms)
 * [File Uploads](#file-uploads)
+* [Asynchronous Requests](#asynchronous-requests)
 * [Responses](#responses)
 * [Empty Responses](#empty-responses)
 * [String Responses](#string-responses)
 * [Object Mapped Responses](#object-mapped-responses)
 * [File Responses](#file-responses)
-
+* [JSON Responses](#json-responses)
+* [Large Responses](#large-responses)
+* [Configuration](#configuration)
+* [Config Options](#config-options)
+* [Custom Apache Clients](#custom-apache-clients)
+* [Multiple Configurations](#multiple-configurations)
+* [Shutting Down](#shutting-down)
 </div>
 
 ## Install With [Maven](https://mvnrepository.com/artifact/com.konghq/unirest-java)[:](https://repo.maven.apache.org/maven2/com/konghq/unirest-java/)
@@ -202,6 +209,19 @@ Unirest.post("http://httpbin.org")
        .field("upload", file, "MyFile.zip")
        .asEmpty();
 ```
+## Asynchronous Requests
+Sometimes, well most of the time, you want your application to be asynchronous and not block, Unirest supports this in Java using anonymous callbacks, or direct method placement. All request types also support async versions.
+
+```java
+CompletableFuture<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.org/post")
+  .header("accept", "application/json")
+  .field("param1", "value1")
+  .field("param2", "value2")
+  .asJsonAsync(response -> {
+        int code = response.getStatus();
+        JsonNode body = response.getBody();
+    });
+```
 
 # Responses
 Unirest makes the actual request the moment you invoke of it's ```as[type]``` method. These methods also inform Unirest what type to map the response to. Options are ```Empty```, ```String```, ```File```, ```Object```, and ```Json```.
@@ -269,24 +289,21 @@ File result = Unirest.get("http://some.file.location/file.zip")
                 .getBody();
 ```
 
-
-
-#### Asynchronous Requests
-Sometimes, well most of the time, you want your application to be asynchronous and not block, Unirest supports this in Java using anonymous callbacks, or direct method placement:
+## JSON responses
+Unirest offers a lightweight JSON response type when you don't need a full Object Mapper.
 
 ```java
-CompletableFuture<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.org/post")
-  .header("accept", "application/json")
-  .field("param1", "value1")
-  .field("param2", "value2")
-  .asJsonAsync(response -> {
-        int code = response.getStatus();
-        JsonNode body = response.getBody();
-    });
+String result = Unirest.get("http://some.json.com")
+				       .getBody()
+				       .getObject()
+				       .getJSONObject("thing")
+				       .getJSONArray("foo")
+				       .get(0)
 ```
 
-#### Custom mappings and handling large responses
-Most response methods (```asString```, ```asJson```, and even ```asBinary```) read the entire
+
+## Large Responses
+Some response methods (```asString```, ```asJson```) read the entire
 response stream into memory. In order to read the original stream and handle large responses you
 can use several functional methods like:
 
@@ -312,8 +329,6 @@ or consumers:
 Previous versions of unirest had configuration split across several different places. Sometimes it was done on ```Unirest```, sometimes it was done on ```Option```, sometimes it was somewhere else.
 All configuration is now done through ```Unirest.config()```
 
-#### Unirest.config()
-Unirest config allows easy access to build a configuration just like you would build a request:
 
 ```java
     Unirest.config()
@@ -327,7 +342,11 @@ Unirest config allows easy access to build a configuration just like you would b
            .addInterceptor(new MyCustomInterceptor());
 ```
 
-#### Config Options
+Changing Unirest's config should ideally be done once, or rarely. There are several background threads spawned by both Unirest itself and Apache HttpAsyncClient. Once Unirest has been activated configuration options that are involved in creating the client cannot be changed without an explicit shutdown or reset.
+
+
+
+## Config Options
 
 | Builder Method  | Impact | Default |
 | ------------- | ------------- | ------------- |
@@ -350,17 +369,7 @@ Unirest config allows easy access to build a configuration just like you would b
 | ```clientCertificateStore(KeyStore,String)``` | Add a PKCS12 KeyStore for doing client certificates |  |
 
 
-
-#### Changing the config
-Changing Unirest's config should ideally be done once, or rarely. There are several background threads spawned by both Unirest itself and Apache HttpAsyncClient. Once Unirest has been activated configuration options that are involved in creating the client cannot be changed without an explicit shutdown or reset.
-
-```Java
-     Unirest.config()
-            .reset()
-            .connectTimeout(5000)
-```
-
-#### Setting custom Apache Client
+## Custom Apache Clients
 You can set your own custom Apache HttpClient and HttpAsyncClient. Note that Unirest settings like timeouts or interceptors are not applied to custom clients.
 
 ```java
@@ -369,7 +378,7 @@ You can set your own custom Apache HttpClient and HttpAsyncClient. Note that Uni
             .asyncClient(myAsyncClient)
 ```
 
-#### Multiple Configuration Instances
+## Multiple Configurations
 As usual, Unirest maintains a primary single instance. Sometimes you might want different configurations for different systems. You might also want an instance rather than a static context for testing purposes.
 
 ```java
@@ -390,7 +399,7 @@ As usual, Unirest maintains a primary single instance. Sometimes you might want 
 todo
 
 
-## Exiting an application
+# Shutting Down
 
 Unirest starts a background event loop and your Java application won't be able to exit until you manually shutdown all the threads by invoking:
 
