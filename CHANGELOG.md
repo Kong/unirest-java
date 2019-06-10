@@ -1,3 +1,6 @@
+## 2.3.05
+* Unriest is now packaged both as a traditional jar and as a standalone jar with all of it's dependencies shaded. This is nice when you have a large project where many components may use different versions of things like Apache Http Client.
+
 ## 2.3.02
 * Remove mistaken dependency that should have been scoped to test.
 

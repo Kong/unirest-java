@@ -25,23 +25,13 @@
 
 package kong;
 
-import kong.unirest.Unirest;
-import kong.unirest.UnirestException;
-import org.junit.Test;
 
-import static org.junit.Assert.*;
+import kong.unirest.Unirest;
 
 public class BadMavenConfigTest {
 
-    @Test
-    public void interpretError() {
-        try {
-            Unirest.get("https://konghq.com").asEmpty();
-        }catch (ExceptionInInitializerError e){
-            assertEquals("It looks like you are using an older version of Apache Http Client. \n" +
-                    "For security and performance reasons Unirest requires the most recent version. Please upgrade.", e.getCause().getMessage());
-            return;
-        }
-        fail("Should have thrown a Unirest Exception");
+
+    public static void main(String[] args) {
+        Unirest.get("https://konghq.com").asString().ifSuccess(e -> System.out.println("e = " + e.getBody()));
     }
 }

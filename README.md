@@ -8,11 +8,21 @@
 
 ## Install With [Maven](https://mvnrepository.com/artifact/com.konghq/unirest-java)[:](https://repo.maven.apache.org/maven2/com/konghq/unirest-java/)
 ```xml
+<!-- Pull in as a traditional dependency -->
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>2.3.02</version>
+    <version>2.3.05</version>
 </dependency>
+
+<!-- OR as a snazzy new standalone jar with shaded dependencies -->
+<dependency>
+    <groupId>com.konghq</groupId>
+    <artifactId>unirest-java</artifactId>
+    <version>2.3.05</version>
+    <classifier>standalone</classifier>
+</dependency>
+
 ```
 
 ### Upgrading from Previous Versions 

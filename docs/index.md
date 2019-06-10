@@ -30,15 +30,6 @@ rightmenu: true
 * [Shutting Down](#shutting-down)
 </div>
 
-## Install With [Maven](https://mvnrepository.com/artifact/com.konghq/unirest-java)[:](https://repo.maven.apache.org/maven2/com/konghq/unirest-java/)
-```xml
-<dependency>
-    <groupId>com.konghq</groupId>
-    <artifactId>unirest-java</artifactId>
-    <version>2.3.02</version>
-</dependency>
-```
-
 ### Upgrading from Previous Versions
 See the [Upgrade Guide](UPGRADE_GUIDE.md)
 
