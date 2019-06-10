@@ -30,9 +30,32 @@ rightmenu: true
 * [Shutting Down](#shutting-down)
 </div>
 
+<h1 class="no-margin-top">Documentation</h1>
+
+### Install With [Maven](https://mvnrepository.com/artifact/com.konghq/unirest-java)[:](https://repo.maven.apache.org/maven2/com/konghq/unirest-java/)
+```xml
+<!-- Pull in as a traditional dependency -->
+<dependency>
+    <groupId>com.konghq</groupId>
+    <artifactId>unirest-java</artifactId>
+    <version>2.3.05</version>
+</dependency>
+
+<!-- OR as a snazzy new standalone jar with shaded dependencies -->
+<dependency>
+    <groupId>com.konghq</groupId>
+    <artifactId>unirest-java</artifactId>
+    <version>2.3.05</version>
+    <classifier>standalone</classifier>
+</dependency>
+
+```
+
 ### Upgrading from Previous Versions
 See the [Upgrade Guide](UPGRADE_GUIDE.md)
 
+### ChangeLog 
+See the [Change Log](CHANGELOG.md) for recent changes.
 
 # Requests
 So you're probably wondering how using Unirest makes creating requests in Java easier, here is a basic POST request that will explain everything:
