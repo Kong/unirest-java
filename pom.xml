@@ -8,7 +8,7 @@
     <name>unirest</name>
     <description>Parent pom for unirest packages</description>
     <url>http://github.com/Kong/unirest-java/</url>
-    
+
     <licenses>
         <license>
             <name>MIT</name>
@@ -30,7 +30,7 @@
         <jackson.version>2.9.9</jackson.version>
         <main.dir>${project.basedir}</main.dir>
     </properties>
-    
+
     <scm>
         <url>https://github.com/Kong/unirest-java</url>
         <connection>scm:git:git@github.com:Kong/unirest-java.git</connection>
@@ -83,8 +83,8 @@
             </build>
         </profile>
     </profiles>
-    
-     <build>
+
+    <build>
         <plugins>
             <plugin>
                 <groupId>com.mycila.maven-license-plugin</groupId>
@@ -301,53 +301,57 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Will output 2 jars: the original, and the shaded one -->
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-
-                            <!-- final name of the shaded jar will be ${project.artifactId}-standalone -->
-                            <shadedClassifierName>standalone</shadedClassifierName>
-                            <generateUniqueDependencyReducedPom>true</generateUniqueDependencyReducedPom>
-                            <relocations>
-                                <relocation>
-                                    <!-- Apache HttpClients -->
-                                    <pattern>org.apache.http</pattern>
-                                    <shadedPattern>unirest.shaded.org.apache.http</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.json</pattern>
-                                    <shadedPattern>unirest.shaded.org.json</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <!-- Jackson -->
-                                    <pattern>com.fasterxml.jackson</pattern>
-                                    <shadedPattern>unirest.shaded.com.fasterxml.jackson</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <!-- Google Guava -->
-                                    <pattern>com.google.common</pattern>
-                                    <shadedPattern>unirest.shaded.com.google.common</shadedPattern>
-                                </relocation>
-                            </relocations>
-
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
         </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <!-- Configured in pluginManagement instead of plugins, because we do not want a shaded parent POM -->
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.2.1</version>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                            <configuration>
+                                <!-- Will output 2 jars: the original, and the shaded one -->
+                                <shadedArtifactAttached>true</shadedArtifactAttached>
+
+                                <!-- final name of the shaded jar will be ${project.artifactId}-standalone -->
+                                <shadedClassifierName>standalone</shadedClassifierName>
+
+                                <relocations>
+                                    <relocation>
+                                        <!-- Apache HttpClients -->
+                                        <pattern>org.apache.http</pattern>
+                                        <shadedPattern>unirest.shaded.org.apache.http</shadedPattern>
+                                    </relocation>
+                                    <relocation>
+                                        <!-- Jackson -->
+                                        <pattern>com.fasterxml.jackson</pattern>
+                                        <shadedPattern>unirest.shaded.com.fasterxml.jackson</shadedPattern>
+                                    </relocation>
+                                    <relocation>
+                                        <!-- Google Guava -->
+                                        <pattern>com.google.common</pattern>
+                                        <shadedPattern>unirest.shaded.com.google.common</shadedPattern>
+                                    </relocation>
+                                </relocations>
+
+                                <!-- NOTE: Any dependencies of the project will not show up in the standalone pom.
+                                This means that if those dependencies are not properly relocated and there is a class-loading conflict,
+                                user would not be able to figure out where the conflicting dependency is. -->
+                                <createDependencyReducedPom>true</createDependencyReducedPom>
+
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
 
