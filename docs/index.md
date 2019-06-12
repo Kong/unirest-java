@@ -15,9 +15,9 @@ rightmenu: true
 * [JSON Patch Bodies](#json-patch-bodies)
 * [Basic Forms](#basic-forms)
 * [File Uploads](#file-uploads)
+* [Upload Progress Monitoring](#upload-progress-monitoring)
 * [Asynchronous Requests](#asynchronous-requests)
 * [Paged Requests](#paged-requests)
-
 * [Responses](#responses)
 * [Empty Responses](#empty-responses)
 * [String Responses](#string-responses)
@@ -226,6 +226,19 @@ Unirest.post("http://httpbin.org")
        .field("upload", file, "MyFile.zip")
        .asEmpty();
 ```
+
+## Upload Progress Monitoring
+If you are uploading large files you might want to provide some time of progress bar to a user. You can monitor this progress by providing a ProgresMonitor.
+
+```java
+          Unirest.post("http://httpbin.org")
+                .field("upload", new File("/MyFile.zip"))
+                .uploadMonitor((field, fileName, bytesWritten, totalBytes) -> {
+                    updateProgressBarWithBytesLeft(totalBytes - bytesWritten);
+                })
+                .asEmpty();
+```
+
 ## Asynchronous Requests
 Sometimes, well most of the time, you want your application to be asynchronous and not block, Unirest supports this in Java using anonymous callbacks, or direct method placement. All request types also support async versions.
 
