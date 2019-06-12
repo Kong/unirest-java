@@ -6,24 +6,26 @@ rightmenu: true
 
 <div id="spy-nav" class="right-menu" markdown="1">
 * [Requests](#requests)
-    * [Route Parameters](#route-parameters)
-    * [Query Parameters](#query-parameters)
-    * [Headers](#headers)
-    * [Basic Authentication](#basic-authentication)
-    * [Body Data](#body-data)
-    * [Entity Bodies](#entity-bodies)
-    * [JSON Patch Bodies](#json-patch-bodies)
-    * [Basic Forms](#basic-forms)
-    * [File Uploads](#file-uploads)
-    * [Asynchronous Requests](#asynchronous-requests)
+* [Route Parameters](#route-parameters)
+* [Query Parameters](#query-parameters)
+* [Headers](#headers)
+* [Basic Authentication](#basic-authentication)
+* [Body Data](#body-data)
+* [Entity Bodies](#entity-bodies)
+* [JSON Patch Bodies](#json-patch-bodies)
+* [Basic Forms](#basic-forms)
+* [File Uploads](#file-uploads)
+* [Asynchronous Requests](#asynchronous-requests)
+* [Paged Requests](#paged-requests)
+
 * [Responses](#responses)
-    * [Empty Responses](#empty-responses)
-    * [String Responses](#string-responses)
-    * [Object Mapped Responses](#object-mapped-responses)
-    * [File Responses](#file-responses)
-    * [JSON Responses](#json-responses)
-    * [Large Responses](#large-responses)
-    * [Error Handling](#error-handling)
+* [Empty Responses](#empty-responses)
+* [String Responses](#string-responses)
+* [Object Mapped Responses](#object-mapped-responses)
+* [File Responses](#file-responses)
+* [JSON Responses](#json-responses)
+* [Large Responses](#large-responses)
+* [Error Handling](#error-handling)
 * [Configuration](#configuration)
     * [Config Options](#config-options)
     * [Custom Apache Clients](#custom-apache-clients)
@@ -238,6 +240,19 @@ CompletableFuture<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.
     });
 ```
 
+## Paged Requests
+Sometimes services offer paged requests. How this is done is not standardized but Unirest proves a mechanism to follow pages until all have been consumed. You must provide two functions for extracting the next page. The first is to get the HttpResponse in the format you want, the other is to extract the ```next``` link from the response. The result is a ```PagedList``` of ```HttpResponse<T>```. The paged list has some handy methods for dealing with the results. Here we are getting a paged list of Dogs where the ```next``` link is in the headers.
+
+```java
+PagedList<Doggos> result =  Unirest.get("https://somewhere/dogs")
+                .asPaged(
+                        r -> r.asObject(Doggos.class),
+                        r -> r.getHeaders().getFirst("nextPage")
+                );
+                
+```
+
+
 # Responses
 Unirest makes the actual request the moment you invoke of it's ```as[type]``` method. These methods also inform Unirest what type to map the response to. Options are ```Empty```, ```String```, ```File```, ```Object```, and ```Json```.
 
@@ -358,7 +373,6 @@ Putting them together might look like this:
                     });
                 });
 ```   
-
 
 # Configuration
 Previous versions of unirest had configuration split across several different places. Sometimes it was done on ```Unirest```, sometimes it was done on ```Option```, sometimes it was somewhere else.

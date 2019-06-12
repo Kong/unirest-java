@@ -47,6 +47,19 @@ public class PagingTest extends BddTest {
     }
 
     @Test
+    public void canCapturePagesAsStrings() {
+        MockServer.expectedPages(10);
+
+        PagedList<String> result =  Unirest.get(MockServer.PAGED)
+                .asPaged(
+                        r -> r.asString(),
+                        r -> r.getHeaders().getFirst("nextPage")
+                );
+
+        assertEquals(10, result.size());
+    }
+
+    @Test
     public void willReturnOnePageIfthereWasNoPaging() {
 
         PagedList<RequestCapture> result =  Unirest.get(MockServer.PAGED)
