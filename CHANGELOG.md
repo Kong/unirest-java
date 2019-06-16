@@ -1,3 +1,6 @@
+## 2.3.06
+* Updated dependencies to latest, including Apache Http Client (4.5.9)
+
 ## 2.3.05
 * Unriest is now packaged both as a traditional jar and as a standalone jar with all of it's dependencies shaded. This is nice when you have a large project where many components may use different versions of things like Apache Http Client.
 
