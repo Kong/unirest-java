@@ -458,7 +458,25 @@ As usual, Unirest maintains a primary single instance. Sometimes you might want 
 **WARNING!** If you get a new instance of unirest YOU are responsible for shutting it down when the JVM shuts down. It is not tracked or shut down by ```Unirest.shutDown();```
 
 # Object Mappers
-todo
+Unirest offers a few different Object Mapper's based on popular JSON libraries (Jackson and GSON). These can be included either as traditional or shaded jars:
+```
+<!-- https://mvnrepository.com/artifact/com.konghq/unirest-objectmapper-jackson -->
+<dependency>
+    <groupId>com.konghq</groupId>
+    <artifactId>unirest-objectmapper-jackson</artifactId>
+    <version>2.3.05</version>
+</dependency>
+
+
+<!-- https://mvnrepository.com/artifact/com.konghq/unirest-object-mappers-gson -->
+<dependency>
+    <groupId>com.konghq</groupId>
+    <artifactId>unirest-object-mappers-gson</artifactId>
+    <version>2.3.05</version>
+</dependency>
+```
+
+If you have some other need you can supply your own Object mapper by implementing the ```ObjectMapper``` interface. It has only a few methods
 
 
 # Shutting Down
