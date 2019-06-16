@@ -55,10 +55,10 @@ rightmenu: true
 ```
 
 ### Upgrading from Previous Versions
-See the [Upgrade Guide](UPGRADE_GUIDE.md)
+See the [Upgrade Guide](https://github.com/Kong/unirest-java/blob/master/UPGRADE_GUIDE.md)
 
 ### ChangeLog 
-See the [Change Log](CHANGELOG.md) for recent changes.
+See the [Change Log](https://github.com/Kong/unirest-java/blob/master/CHANGELOG.md) for recent changes.
 
 # Requests
 So you're probably wondering how using Unirest makes creating requests in Java easier, here is a basic POST request that will explain everything:
@@ -227,7 +227,7 @@ Unirest.post("http://httpbin.org")
        .asEmpty();
 ```
 
-## Upload Progress Monitoring
+### Upload Progress Monitoring
 If you are uploading large files you might want to provide some time of progress bar to a user. You can monitor this progress by providing a ProgresMonitor.
 
 ```java
