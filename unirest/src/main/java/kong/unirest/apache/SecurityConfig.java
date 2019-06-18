@@ -56,9 +56,12 @@ class SecurityConfig {
     }
 
     public PoolingHttpClientConnectionManager createManager() {
-        return buildSocketFactory()
+        PoolingHttpClientConnectionManager manager = buildSocketFactory()
                 .map(PoolingHttpClientConnectionManager::new)
                 .orElseGet(PoolingHttpClientConnectionManager::new);
+        manager.setMaxTotal(config.getMaxConnections());
+        manager.setDefaultMaxPerRoute(config.getMaxPerRoutes());
+        return manager;
     }
 
     private Optional<Registry<ConnectionSocketFactory>> buildSocketFactory() {
