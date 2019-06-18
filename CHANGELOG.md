@@ -1,3 +1,6 @@
+## 2.3.07
+* #280 regular Apache client not picking up max connections
+
 ## 2.3.06
 * Updated dependencies to latest, including Apache Http Client (4.5.9)
 
