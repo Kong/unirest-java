@@ -18,6 +18,7 @@ rightmenu: true
 * [Upload Progress Monitoring](#upload-progress-monitoring)
 * [Asynchronous Requests](#asynchronous-requests)
 * [Paged Requests](#paged-requests)
+* [Client Certificates](#client-certificates)
 * [Responses](#responses)
 * [Empty Responses](#empty-responses)
 * [String Responses](#string-responses)
@@ -265,6 +266,18 @@ PagedList<Doggos> result =  Unirest.get("https://somewhere/dogs")
                 
 ```
 
+## Client Certificates
+In case you need to use a custom client certificate to call a service you can provide unirest with a custom keystore.
+You may either pass a KeyStore object or a path to a valid PKCS#12 keystore file.
+
+```java
+Unirest.config()
+  .clientCertificateStore("/path/mykeystore.p12", "password1!");
+
+Unirest.get("https://some.custom.secured.place.com")
+                .asString();
+```
+
 
 # Responses
 Unirest makes the actual request the moment you invoke of it's ```as[type]``` method. These methods also inform Unirest what type to map the response to. Options are ```Empty```, ```String```, ```File```, ```Object```, and ```Json```.
@@ -459,7 +472,7 @@ As usual, Unirest maintains a primary single instance. Sometimes you might want 
 
 # Object Mappers
 Unirest offers a few different Object Mapper's based on popular JSON libraries (Jackson and GSON). These can be included either as traditional or shaded jars:
-```
+```xml
 <!-- https://mvnrepository.com/artifact/com.konghq/unirest-objectmapper-jackson -->
 <dependency>
     <groupId>com.konghq</groupId>
