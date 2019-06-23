@@ -31,6 +31,7 @@ rightmenu: true
     * [Config Options](#config-options)
     * [Custom Apache Clients](#custom-apache-clients)
     * [Multiple Configurations](#multiple-configurations)
+    * [Object Mappers](#object-mappers)
 * [Shutting Down](#shutting-down)
 </div>
 
@@ -470,7 +471,7 @@ As usual, Unirest maintains a primary single instance. Sometimes you might want 
 
 **WARNING!** If you get a new instance of unirest YOU are responsible for shutting it down when the JVM shuts down. It is not tracked or shut down by ```Unirest.shutDown();```
 
-# Object Mappers
+## Object Mappers
 Unirest offers a few different Object Mapper's based on popular JSON libraries (Jackson and GSON). These can be included either as traditional or shaded jars:
 ```xml
 <!-- https://mvnrepository.com/artifact/com.konghq/unirest-objectmapper-jackson -->
@@ -491,6 +492,25 @@ Unirest offers a few different Object Mapper's based on popular JSON libraries (
 
 If you have some other need you can supply your own Object mapper by implementing the ```ObjectMapper``` interface. It has only a few methods
 
+## Metrics
+Unirest has hooks for collecting metrics on your runtime code. This is a simple and lightweight framework that marks two events:
+   1. The moment just before the actual request is made
+   1. The moment just after the actual request is make
+
+Context inforation like method and request path are given to you so that you can collect based on whatever your needs are.
+In it's simplest form it might like this:
+
+```java
+   Unirest.config().instrumentWith(requestSummary -> {
+              long startNanos = System.nanoTime();
+              return (responseSummary,exception) -> logger.info("path: {} status: {} time: {}",
+                      requestSummary.getRawPath(),
+                      responseSummary.getStatus(),
+                      System.nanoTime() - startNanos);
+   });
+```
+
+By providing more feature rich UniMetric instances you could easily calculate averages per route, uptime, or other fun facts.
 
 # Shutting Down
 
