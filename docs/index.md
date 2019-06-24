@@ -19,6 +19,7 @@ rightmenu: true
 * [Asynchronous Requests](#asynchronous-requests)
 * [Paged Requests](#paged-requests)
 * [Client Certificates](#client-certificates)
+* [Proxies](#proxies)
 * [Responses](#responses)
 * [Empty Responses](#empty-responses)
 * [String Responses](#string-responses)
@@ -32,6 +33,7 @@ rightmenu: true
     * [Custom Apache Clients](#custom-apache-clients)
     * [Multiple Configurations](#multiple-configurations)
     * [Object Mappers](#object-mappers)
+    * [Metrics](#metrics)
 * [Shutting Down](#shutting-down)
 </div>
 
@@ -279,6 +281,22 @@ Unirest.get("https://some.custom.secured.place.com")
                 .asString();
 ```
 
+## Proxies
+Sometimes you need to tunnel through a proxy. Unirest can be configured to do this. Note that authenticated proxies cannot be configured on a per-request basis unless you want to build it into the URL itself.
+
+```java
+    // Configure with authentication:
+    Unirest.config().proxy("proxy.com", 7777, "username", "password1!");
+
+    // or without
+    Unirest.config().proxy("proxy.com", 7777);
+
+    // or pass it in the request. This will override any proxy done in the config
+    // currently only unauthenticated proxies work
+    Unirest.get(MockServer.GET)
+                    .proxy("proxy.com", 7777)
+                    .asString();
+```
 
 # Responses
 Unirest makes the actual request the moment you invoke of it's ```as[type]``` method. These methods also inform Unirest what type to map the response to. Options are ```Empty```, ```String```, ```File```, ```Object```, and ```Json```.
