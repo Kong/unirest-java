@@ -1,3 +1,6 @@
+## 2.3.08
+* #282 force maven not to pick the async clients version of client
+
 ## 2.3.07
 * #280 regular Apache client not picking up max connections
 
