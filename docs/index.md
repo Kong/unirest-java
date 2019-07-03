@@ -337,10 +337,9 @@ Book book = Unirest.get("http://httpbin.org/books/1")
                    .asObject(Book.class)
                    .getBody();
 		   
-List<Book> books = Arrays.asList(Unirest.get("http://httpbin.org/books/")
-				.asObject(Book[].class)
-				.getBody()
-		);
+List<Book> books = Unirest.get("http://httpbin.org/books/")
+			  .asObject(new GenericType<List<Book>>(){})
+			  .getBody();
 
 Author author = Unirest.get("http://httpbin.org/books/{id}/author")
                        .routeParam("id", bookObject.getId())
