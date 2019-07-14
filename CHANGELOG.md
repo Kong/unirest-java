@@ -1,3 +1,6 @@
+## 2.3.09
+* #284 allow setting a custom factory for the RequestConfig 
+
 ## 2.3.08
 * #282 force maven not to pick the async clients version of client
 

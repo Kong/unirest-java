@@ -25,10 +25,7 @@
 
 package kong.unirest.apache;
 
-import kong.unirest.BasicResponse;
-import kong.unirest.HttpResponse;
-import kong.unirest.Proxy;
-import kong.unirest.RawResponse;
+import kong.unirest.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -37,6 +34,9 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import java.util.function.Function;
 
 abstract class BaseApacheClient {
+
+    protected RequestConfigFactory configFactory = new DefaultFactory();
+
 
     protected CredentialsProvider toApacheCreds(Proxy proxy) {
         if(proxy != null && proxy.isAuthenticated()) {
@@ -63,5 +63,9 @@ abstract class BaseApacheClient {
         }catch (Exception e){
             return null;
         }
+    }
+
+    public void setConfigFactory(RequestConfigFactory configFactory) {
+        this.configFactory = configFactory;
     }
 }

@@ -170,7 +170,7 @@ Unirest.post("http://httpbin.org")
 ```
 
 ### JSON Patch Bodies
-Unirest has full native support for JSON Patch requests (RFC-6902 see http://jsonpatch.com/)
+Unirest has full native support for JSON Patch requests (RFC-6902 see <http://jsonpatch.com/>)
 Per the spec, the default ```Content-Type``` for json-patch is ```application/json-patch+json```
 
 ```java
@@ -468,13 +468,26 @@ Changing Unirest's config should ideally be done once, or rarely. There are seve
 
 
 ## Custom Apache Clients
-You can set your own custom Apache HttpClient and HttpAsyncClient. Note that Unirest settings like timeouts or interceptors are not applied to custom clients.
+Unirest leverages Apache Http Client under the hood, this is not considered to be a permemant requirement and future versions of Unirest may replace Apache with something else.
+
+You can set your own custom Apache HttpClient and HttpAsyncClient. 
+Note that Unirest settings like timeouts or interceptors are not applied to custom clients.
 
 ```java
      Unirest.config()
-            .httpClient(myClient)
-            .asyncClient(myAsyncClient)
+            .httpClient(ApacheClient.builder(myClient))
+            .asyncClient(ApacheAsyncClient.builder(myAsyncClient));
 ```
+
+You can also override Unirest's implementation of the Apache request config
+
+```java
+     Unirest.config()
+            .httpClient(ApacheClient.builder(client)
+                .withRequestConfig((c,r) -> RequestConfig.custom().build()
+                );
+```
+
 
 ## Multiple Configurations
 As usual, Unirest maintains a primary single instance. Sometimes you might want different configurations for different systems. You might also want an instance rather than a static context for testing purposes.

@@ -51,8 +51,8 @@ import java.util.stream.Stream;
 public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
 
     private final HttpAsyncClient client;
-    private final AsyncIdleConnectionMonitorThread syncMonitor;
-    private final PoolingNHttpClientConnectionManager manager;
+    private AsyncIdleConnectionMonitorThread syncMonitor;
+    private PoolingNHttpClientConnectionManager manager;
     private Config config;
     private boolean hookset;
 
@@ -82,6 +82,24 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
         } catch (Exception e) {
             throw new UnirestConfigException(e);
         }
+    }
+
+    public ApacheAsyncClient(HttpAsyncClient client, Config config) {
+        this.config = config;
+        this.client = client;
+    }
+
+    @Deprecated
+    public ApacheAsyncClient(HttpAsyncClient client,
+                             Config config,
+                             PoolingNHttpClientConnectionManager manager,
+                             AsyncIdleConnectionMonitorThread monitor) {
+        Objects.requireNonNull(client, "Client may not be null");
+
+        this.config = config;
+        this.client = client;
+        this.syncMonitor = monitor;
+        this.manager = manager;
     }
 
     @Override
@@ -131,17 +149,6 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
         }
     }
 
-    public ApacheAsyncClient(HttpAsyncClient client,
-                      Config config,
-                      PoolingNHttpClientConnectionManager manager,
-                      AsyncIdleConnectionMonitorThread monitor) {
-        Objects.requireNonNull(client, "Client may not be null");
-        this.config = config;
-        this.client = client;
-        this.syncMonitor = monitor;
-        this.manager = manager;
-    }
-
     @Override
     public <T> CompletableFuture<HttpResponse<T>> request(
             HttpRequest request,
@@ -150,7 +157,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
 
         Objects.requireNonNull(callback);
 
-        HttpUriRequest requestObj = new RequestPrep(request, config, true).prepare();
+        HttpUriRequest requestObj = new RequestPrep(request, config, true).prepare(configFactory);
         MetricContext metric = config.getMetric().begin(request.toSummary());
         client.execute(requestObj, new FutureCallback<org.apache.http.HttpResponse>() {
                     @Override
@@ -199,5 +206,31 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
                 Util.tryDo(syncMonitor, m -> m.interrupt()));
     }
 
+    public static Builder builder(HttpAsyncClient client) {
+        return new Builder(client);
+    }
 
+    public static class Builder implements Function<Config, AsyncClient> {
+        private HttpAsyncClient asyncClient;
+        private RequestConfigFactory cf;
+
+        public Builder(HttpAsyncClient client) {
+            this.asyncClient = client;
+        }
+
+        @Override
+        public AsyncClient apply(Config config) {
+            ApacheAsyncClient client = new ApacheAsyncClient(this.asyncClient, config);
+            if(cf != null) {
+                client.setConfigFactory(cf);
+            }
+            return client;
+        }
+
+        public Builder withRequestConfig(RequestConfigFactory factory) {
+            Objects.requireNonNull(factory);
+            this.cf = factory;
+            return this;
+        }
+    }
 }

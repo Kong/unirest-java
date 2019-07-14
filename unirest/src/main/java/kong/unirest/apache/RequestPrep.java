@@ -28,7 +28,6 @@ package kong.unirest.apache;
 import kong.unirest.*;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.*;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.nio.entity.NByteArrayEntity;
@@ -66,15 +65,15 @@ class RequestPrep {
         this.async = async;
     }
 
-    HttpRequestBase prepare() {
-        HttpRequestBase reqObj = getHttpRequestBase();
+    HttpRequestBase prepare(RequestConfigFactory configFactory) {
+        HttpRequestBase reqObj = getHttpRequestBase(configFactory);
 
         setBody(reqObj);
 
         return reqObj;
     }
 
-    private HttpRequestBase getHttpRequestBase() {
+    private HttpRequestBase getHttpRequestBase(RequestConfigFactory configFactory) {
         if (!request.getHeaders().containsKey(USER_AGENT_HEADER)) {
             request.header(USER_AGENT_HEADER, USER_AGENT);
         }
@@ -86,15 +85,11 @@ class RequestPrep {
             String url = request.getUrl();
             HttpRequestBase reqObj = FACTORIES.computeIfAbsent(request.getHttpMethod(), this::register).apply(url);
             request.getHeaders().all().stream().map(this::toEntries).forEach(reqObj::addHeader);
-            reqObj.setConfig(overrideConfig());
+            reqObj.setConfig(configFactory.apply(config, request));
             return reqObj;
         } catch (RuntimeException e) {
             throw new UnirestException(e);
         }
-    }
-
-    private RequestConfig overrideConfig() {
-        return new RequestConfigFactory().apply(config, request);
     }
 
     private Function<String, HttpRequestBase> register(HttpMethod method) {

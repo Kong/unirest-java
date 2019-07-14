@@ -73,15 +73,6 @@ public class LifeCycleTest extends BddTest {
         clearUnirestHooks();
     }
 
-    @Test
-    public void settingACustomClient() {
-        HttpClientMock httpClientMock = new HttpClientMock();
-        httpClientMock.onGet("http://localhost/getme").doReturn(202, "Howdy Ho!");
-        Unirest.config().httpClient(httpClientMock);
-        HttpResponse<String> result =  Unirest.get("http://localhost/getme").asString();
-        assertEquals(202, result.getStatus());
-        assertEquals("Howdy Ho!", result.getBody());
-    }
 
     @Test
     public void ifClientsAreAlreadyRunningCanAddShutdownHooks() throws Exception  {

@@ -79,13 +79,6 @@ public class Config {
 
     public Config() {
         setDefaults();
-        try {
-            asyncBuilder = ApacheAsyncClient::new;
-            clientBuilder = ApacheClient::new;
-        }catch (BootstrapMethodError e){
-            throw new UnirestException("It looks like you are using an older version of Apache Http Client. \n" +
-                    "For security and performance reasons Unirest requires the most recent version. Please upgrade.", e);
-        }
     }
 
     private void setDefaults() {
@@ -103,6 +96,13 @@ public class Config {
         verifySsl = true;
         keystore = null;
         keystorePassword = null;
+        try {
+            asyncBuilder = ApacheAsyncClient::new;
+            clientBuilder = ApacheClient::new;
+        }catch (BootstrapMethodError e){
+            throw new UnirestException("It looks like you are using an older version of Apache Http Client. \n" +
+                    "For security and performance reasons Unirest requires the most recent version. Please upgrade.", e);
+        }
     }
 
     /**
@@ -111,6 +111,7 @@ public class Config {
      * @param httpClient Custom httpClient implementation
      * @return this config object
      */
+    @Deprecated // use httpClient(Function<Config, Client> httpClient) with the ApacheConfig.builder()
     public Config httpClient(HttpClient httpClient) {
         client = Optional.of(new ApacheClient(httpClient, this, null, null));
         return this;

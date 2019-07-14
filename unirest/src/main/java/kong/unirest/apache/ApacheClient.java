@@ -34,6 +34,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
 import java.io.Closeable;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -41,9 +42,9 @@ import java.util.stream.Stream;
 public class ApacheClient extends BaseApacheClient implements Client {
     private final HttpClient client;
     private final Config config;
+    private final SecurityConfig security;
     private final PoolingHttpClientConnectionManager manager;
     private final SyncIdleConnectionMonitorThread syncMonitor;
-    private final SecurityConfig security;
     private boolean hookset;
 
     public ApacheClient(Config config) {
@@ -62,6 +63,25 @@ public class ApacheClient extends BaseApacheClient implements Client {
         setOptions(cb);
         client = cb.build();
     }
+
+    @Deprecated // Use the builder instead, also, the PoolingHttpClientConnectionManager and SyncIdleConnectionMonitorThread don't get used here anyway
+    public ApacheClient(HttpClient httpClient, Config config, PoolingHttpClientConnectionManager clientManager, SyncIdleConnectionMonitorThread connMonitor) {
+        this.client = httpClient;
+        this.security = new SecurityConfig(config);
+        this.config = config;
+        this.manager = clientManager;
+        this.syncMonitor = connMonitor;
+    }
+
+    public ApacheClient(HttpClient httpClient, Config config){
+        this.client = httpClient;
+        this.config = config;
+        this.security = new SecurityConfig(config);
+        this.manager = null;
+        this.syncMonitor = null;
+    }
+
+
 
 
     private void setOptions(HttpClientBuilder cb) {
@@ -95,19 +115,11 @@ public class ApacheClient extends BaseApacheClient implements Client {
         }
     }
 
-    public ApacheClient(HttpClient httpClient, Config config, PoolingHttpClientConnectionManager clientManager, SyncIdleConnectionMonitorThread connMonitor) {
-        this.client = httpClient;
-        this.security = new SecurityConfig(config);
-        this.config = config;
-        this.manager = clientManager;
-        this.syncMonitor = connMonitor;
-    }
-
 
     @Override
     public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
 
-        HttpRequestBase requestObj = new RequestPrep(request, config, false).prepare();
+        HttpRequestBase requestObj = new RequestPrep(request, config, false).prepare(configFactory);
         MetricContext metric = config.getMetric().begin(request.toSummary());
         try {
             org.apache.http.HttpResponse execute = client.execute(requestObj);
@@ -146,6 +158,35 @@ public class ApacheClient extends BaseApacheClient implements Client {
                 Util.tryDo(manager, m -> m.close()),
                 Util.tryDo(syncMonitor, i -> i.interrupt())
         );
+    }
+
+    public static Builder builder(HttpClient baseClient) {
+        return new Builder(baseClient);
+    }
+
+    public static class Builder implements Function<Config, Client> {
+
+        private HttpClient baseClient;
+        private RequestConfigFactory configFactory;
+
+        public Builder(HttpClient baseClient) {
+            this.baseClient = baseClient;
+        }
+
+        @Override
+        public Client apply(Config config) {
+            ApacheClient apacheClient = new ApacheClient(baseClient, config);
+            if(configFactory != null){
+                apacheClient.setConfigFactory(configFactory);
+            }
+            return apacheClient;
+        }
+
+        public Builder withRequestConfig(RequestConfigFactory factory) {
+            Objects.requireNonNull(factory);
+            this.configFactory = factory;
+            return this;
+        }
     }
 
 }
