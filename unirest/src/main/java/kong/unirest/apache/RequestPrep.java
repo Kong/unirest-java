@@ -94,14 +94,7 @@ class RequestPrep {
     }
 
     private RequestConfig overrideConfig() {
-        return RequestConfig.custom()
-                .setConnectTimeout(request.getConnectTimeout())
-                .setSocketTimeout(request.getSocketTimeout())
-                .setNormalizeUri(false)
-                .setConnectionRequestTimeout(request.getSocketTimeout())
-                .setProxy(RequestOptions.toApacheProxy(request.getProxy()))
-                .setCookieSpec(config.getCookieSpec())
-                .build();
+        return new RequestConfigFactory().apply(config, request);
     }
 
     private Function<String, HttpRequestBase> register(HttpMethod method) {
