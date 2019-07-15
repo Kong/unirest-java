@@ -1,3 +1,6 @@
+## 2.3.10
+* Update of jackson-databind for CVE-2019-12814
+
 ## 2.3.09
 * #284 allow setting a custom factory for the RequestConfig 
 
