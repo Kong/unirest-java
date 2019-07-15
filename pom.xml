@@ -27,6 +27,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- jackson-databind is now on 2.9.9.1 for security and not using this prop -->
         <jackson.version>2.9.9</jackson.version>
         <main.dir>${project.basedir}</main.dir>
     </properties>
