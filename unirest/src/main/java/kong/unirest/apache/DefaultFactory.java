@@ -32,13 +32,21 @@ import org.apache.http.client.config.RequestConfig;
 class DefaultFactory implements RequestConfigFactory {
     @Override
     public RequestConfig apply(Config config, HttpRequest request) {
-        return RequestConfig.custom()
+        RequestConfig.Builder builder = RequestConfig.custom()
                 .setConnectTimeout(request.getConnectTimeout())
                 .setSocketTimeout(request.getSocketTimeout())
-                .setNormalizeUri(false)
                 .setConnectionRequestTimeout(request.getSocketTimeout())
                 .setProxy(RequestOptions.toApacheProxy(request.getProxy()))
-                .setCookieSpec(config.getCookieSpec())
-                .build();
+                .setCookieSpec(config.getCookieSpec());
+
+        return tryNormalize(builder).build();
+    }
+
+    private RequestConfig.Builder tryNormalize(RequestConfig.Builder builder) {
+        try {
+            return builder.setNormalizeUri(false);
+        }catch (Exception e) {
+            return builder;
+        }
     }
 }
