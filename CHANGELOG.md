@@ -1,4 +1,4 @@
-## 2.3.11 (pending)
+## 2.3.11
 * Skip calling apache method that may not exist if older versions of client are on the path to avoid MethodNotFound exceptions.
 * Add a config option for setting the TTL of persistent connections:/ issue #286
 
