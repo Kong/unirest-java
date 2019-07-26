@@ -465,6 +465,7 @@ Changing Unirest's config should ideally be done once, or rarely. There are seve
 | ```addShutdownHook(boolean)``` | toggle to add the clients to the system shutdown hooks automatically | false |
 | ```clientCertificateStore(String,String)``` | Add a PKCS12 KeyStore by path for doing client certificates |  |
 | ```clientCertificateStore(KeyStore,String)``` | Add a PKCS12 KeyStore for doing client certificates |  |
+| ```connectionTTL(long,TimeUnit)``` | Total time to live (TTL)  defines maximum life span of persistent connections regardless of their expiration setting. No persistent connection will be re-used past its TTL value.| -1  |
 
 
 ## Custom Apache Clients

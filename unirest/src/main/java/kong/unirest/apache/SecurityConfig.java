@@ -40,10 +40,8 @@ import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
 
 import javax.net.ssl.SSLContext;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 class SecurityConfig {
     private final Config config;
@@ -56,28 +54,36 @@ class SecurityConfig {
     }
 
     public PoolingHttpClientConnectionManager createManager() {
-        PoolingHttpClientConnectionManager manager = buildSocketFactory()
-                .map(PoolingHttpClientConnectionManager::new)
-                .orElseGet(PoolingHttpClientConnectionManager::new);
+        PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(buildSocketFactory(),
+                null, null, null,
+                config.getTTL(), TimeUnit.MILLISECONDS);
+
         manager.setMaxTotal(config.getMaxConnections());
         manager.setDefaultMaxPerRoute(config.getMaxPerRoutes());
         return manager;
     }
 
-    private Optional<Registry<ConnectionSocketFactory>> buildSocketFactory() {
+    private Registry<ConnectionSocketFactory> buildSocketFactory() {
         try {
             if (!config.isVerifySsl()) {
-                return Optional.of(createDisabledSSLContext());
+                return createDisabledSSLContext();
             } else if (config.getKeystore() != null) {
-                return Optional.of(createCustomSslContext());
+                return createCustomSslContext();
+            } else {
+                return createDefaultRegistry();
             }
         } catch (Exception e) {
             throw new UnirestConfigException(e);
         }
-
-        return Optional.empty();
-
     }
+
+    private Registry<ConnectionSocketFactory> createDefaultRegistry() {
+        return RegistryBuilder.<ConnectionSocketFactory>create()
+                .register("http", PlainConnectionSocketFactory.getSocketFactory())
+                .register("https", SSLConnectionSocketFactory.getSocketFactory())
+                .build();
+    }
+
     private Registry<ConnectionSocketFactory> createCustomSslContext() {
         SSLConnectionSocketFactory socketFactory = getSocketFactory();
         return RegistryBuilder.<ConnectionSocketFactory>create()
@@ -86,14 +92,7 @@ class SecurityConfig {
                 .build();
     }
 
-    private SSLConnectionSocketFactory getSocketFactory() {
-        if(sslSocketFactory == null) {
-            sslSocketFactory = new SSLConnectionSocketFactory(createSslContext(), new NoopHostnameVerifier());
-        }
-        return sslSocketFactory;
-    }
-
-    private Registry<ConnectionSocketFactory> createDisabledSSLContext() throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+    private Registry<ConnectionSocketFactory> createDisabledSSLContext() throws Exception {
         return RegistryBuilder.<ConnectionSocketFactory>create()
                 .register("http", PlainConnectionSocketFactory.INSTANCE)
                 .register("https", new SSLConnectionSocketFactory(new SSLContextBuilder()
@@ -101,6 +100,13 @@ class SecurityConfig {
                         .build(),
                         NoopHostnameVerifier.INSTANCE))
                 .build();
+    }
+
+    private SSLConnectionSocketFactory getSocketFactory() {
+        if(sslSocketFactory == null) {
+            sslSocketFactory = new SSLConnectionSocketFactory(createSslContext(), new NoopHostnameVerifier());
+        }
+        return sslSocketFactory;
     }
     private SSLContext createSslContext() {
         if(sslContext == null) {
