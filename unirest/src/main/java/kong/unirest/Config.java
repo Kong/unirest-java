@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -76,6 +77,7 @@ public class Config {
     private Supplier<String> keystorePassword = () -> null;
     private String cookieSpec;
     private UniMetric metrics = new NoopMetric();
+    private long ttl = -1;
 
     public Config() {
         setDefaults();
@@ -470,6 +472,19 @@ public class Config {
     }
 
     /**
+     * Total time to live (TTL)  defines maximum life span of persistent connections regardless of their expiration setting.
+     * No persistent connection will be re-used past its TTL value.
+     *
+     * @param duration of ttl.
+     * @param unit the time unit of the ttl
+     * @return this config object
+     */
+    public Config connectionTTL(long duration, TimeUnit unit) {
+        this.ttl = unit.toMillis(duration);
+        return this;
+    }
+
+    /**
      * Register the client with a system shutdown hook. Note that this creates up to two threads
      * (depending on if you use both sync and async clients). default is false
      *
@@ -710,4 +725,10 @@ public class Config {
     public UniMetric getMetric() {
         return metrics;
     }
+
+    public long getTTL() {
+        return ttl;
+    }
+
+
 }

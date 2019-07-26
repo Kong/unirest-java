@@ -44,6 +44,7 @@ import org.apache.http.ssl.SSLContextBuilder;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -76,7 +77,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
             syncMonitor = new AsyncIdleConnectionMonitorThread(manager);
             syncMonitor.tryStart();
             client = build;
-            if(config.shouldAddShutdownHook()){
+            if (config.shouldAddShutdownHook()) {
                 registerShutdownHook();
             }
         } catch (Exception e) {
@@ -104,17 +105,17 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
 
     @Override
     public void registerShutdownHook() {
-        if(!hookset) {
+        if (!hookset) {
             hookset = true;
             Runtime.getRuntime().addShutdownHook(new Thread(this::close, "Unirest Apache Async Client Shutdown Hook"));
         }
     }
 
     private void setOptions(HttpAsyncClientBuilder ab) {
-        if(!config.isVerifySsl()){
+        if (!config.isVerifySsl()) {
             disableSsl(ab);
         }
-        if(config.useSystemProperties()){
+        if (config.useSystemProperties()) {
             ab.useSystemProperties();
         }
         if (!config.getFollowRedirects()) {
@@ -127,24 +128,36 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
     }
 
     private PoolingNHttpClientConnectionManager createConnectionManager() throws Exception {
-        if(config.isVerifySsl()) {
-            return new PoolingNHttpClientConnectionManager(new DefaultConnectingIOReactor());
-        }
-        Registry<SchemeIOSessionStrategy> registry = RegistryBuilder.<SchemeIOSessionStrategy>create()
-                .register("http", NoopIOSessionStrategy.INSTANCE)
-                .register("https", new SSLIOSessionStrategy(new SSLContextBuilder()
-                        .loadTrustMaterial(null, (x509Certificates, s) -> true)
-                        .build(), NoopHostnameVerifier.INSTANCE))
-                .build();
-
-        return new PoolingNHttpClientConnectionManager(new DefaultConnectingIOReactor(), registry);
+            return new PoolingNHttpClientConnectionManager(new DefaultConnectingIOReactor(),
+                    null,
+                    getRegistry(),
+                    null,
+                    null,
+                    config.getTTL(), TimeUnit.MILLISECONDS);
     }
+
+    private Registry<SchemeIOSessionStrategy> getRegistry() throws Exception {
+        if (config.isVerifySsl()) {
+            return RegistryBuilder.<SchemeIOSessionStrategy>create()
+                    .register("http", NoopIOSessionStrategy.INSTANCE)
+                    .register("https", SSLIOSessionStrategy.getDefaultStrategy())
+                    .build();
+        } else {
+            return RegistryBuilder.<SchemeIOSessionStrategy>create()
+                    .register("http", NoopIOSessionStrategy.INSTANCE)
+                    .register("https", new SSLIOSessionStrategy(new SSLContextBuilder()
+                            .loadTrustMaterial(null, (x509Certificates, s) -> true)
+                            .build(), NoopHostnameVerifier.INSTANCE))
+                    .build();
+        }
+    }
+
 
     private void disableSsl(HttpAsyncClientBuilder ab) {
         try {
             ab.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
             ab.setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, (TrustStrategy) (arg0, arg1) -> true).build());
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new UnirestConfigException(e);
         }
     }
@@ -160,26 +173,26 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
         HttpUriRequest requestObj = new RequestPrep(request, config, true).prepare(configFactory);
         MetricContext metric = config.getMetric().begin(request.toSummary());
         client.execute(requestObj, new FutureCallback<org.apache.http.HttpResponse>() {
-                    @Override
-                    public void completed(org.apache.http.HttpResponse httpResponse) {
-                        ApacheResponse t = new ApacheResponse(httpResponse, config);
-                        metric.complete(t.toSummary(), null);
-                        callback.complete(transformBody(transformer, t));
-                    }
+            @Override
+            public void completed(org.apache.http.HttpResponse httpResponse) {
+                ApacheResponse t = new ApacheResponse(httpResponse, config);
+                metric.complete(t.toSummary(), null);
+                callback.complete(transformBody(transformer, t));
+            }
 
-                    @Override
-                    public void failed(Exception e) {
-                        metric.complete(null, e);
-                        callback.completeExceptionally(e);
-                    }
+            @Override
+            public void failed(Exception e) {
+                metric.complete(null, e);
+                callback.completeExceptionally(e);
+            }
 
-                    @Override
-                    public void cancelled() {
-                        UnirestException canceled = new UnirestException("canceled");
-                        metric.complete(null, canceled);
-                        callback.completeExceptionally(canceled);
-                    }
-                });
+            @Override
+            public void cancelled() {
+                UnirestException canceled = new UnirestException("canceled");
+                metric.complete(null, canceled);
+                callback.completeExceptionally(canceled);
+            }
+        });
         return callback;
     }
 
@@ -221,7 +234,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
         @Override
         public AsyncClient apply(Config config) {
             ApacheAsyncClient client = new ApacheAsyncClient(this.asyncClient, config);
-            if(cf != null) {
+            if (cf != null) {
                 client.setConfigFactory(cf);
             }
             return client;

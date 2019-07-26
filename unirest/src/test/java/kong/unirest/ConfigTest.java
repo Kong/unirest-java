@@ -42,6 +42,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -139,6 +140,13 @@ public class ConfigTest {
         verify(connMonitor).interrupt();
         verify(asyncClient).close();
         verify(asyncMonitor).interrupt();
+    }
+
+    @Test
+    public void settingTTl() {
+        assertEquals(-1, config.getTTL());
+        assertEquals(42, config.connectionTTL(42, TimeUnit.MILLISECONDS).getTTL());
+        assertEquals(2520000, config.connectionTTL(42, TimeUnit.MINUTES).getTTL());
     }
 
     @Test

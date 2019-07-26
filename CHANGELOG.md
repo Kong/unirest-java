@@ -1,5 +1,6 @@
-## 2.3.11
+## 2.3.11 (pending)
 * Skip calling apache method that may not exist if older versions of client are on the path to avoid MethodNotFound exceptions.
+* Add a config option for setting the TTL of persistent connections:/ issue #286
 
 ## 2.3.10
 * Update of jackson-databind for CVE-2019-12814
