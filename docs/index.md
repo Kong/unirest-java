@@ -301,7 +301,7 @@ Sometimes you need to tunnel through a proxy. Unirest can be configured to do th
 # Responses
 Unirest makes the actual request the moment you invoke of it's ```as[type]``` method. These methods also inform Unirest what type to map the response to. Options are ```Empty```, ```String```, ```File```, ```Object```, and ```Json```.
 
-The response returns as a ```HttpResponse<T>``` where the ```HttpResponse``` object has all of the common response data like status and headers. The Body (if present) can be accessed via the desired type with the ```.body()``` method. 
+The response returns as a ```HttpResponse<T>``` where the ```HttpResponse``` object has all of the common response data like status and headers. The Body (if present) can be accessed via the desired type with the ```.getBody()``` method. 
 
 ## Empty Responses
 If you aren't expecting a body back, ```asEmpty``` is the easiest choice. You will still get back response information like status and headers.
@@ -316,7 +316,7 @@ The next easiest response type is String. You can do whatever you want with it a
 ```java
 String body = Unirest.get("http://httpbin.org")
 					 .asString()
-					 .body();
+					 .getBody();
 ```
 
 ## Object Mapped Responses
