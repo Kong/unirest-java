@@ -30,6 +30,7 @@ import kong.unirest.HttpRequest;
 import org.apache.http.client.config.RequestConfig;
 
 class DefaultFactory implements RequestConfigFactory {
+    private static boolean isOldApache = false;
     @Override
     public RequestConfig apply(Config config, HttpRequest request) {
         RequestConfig.Builder builder = RequestConfig.custom()
@@ -43,9 +44,17 @@ class DefaultFactory implements RequestConfigFactory {
     }
 
     private RequestConfig.Builder tryNormalize(RequestConfig.Builder builder) {
+        if(isOldApache){
+            return builder;
+        }
+
         try {
             return builder.setNormalizeUri(false);
         }catch (Exception e) {
+            // setNormalizeUri doesnt exist in old version of apache client
+            // the behavior that it does used to just be standard
+            // so remember that we don't care
+            isOldApache = true;
             return builder;
         }
     }
