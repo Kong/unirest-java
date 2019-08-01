@@ -51,6 +51,7 @@ package kong.unirest;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 
 import java.io.IOException;
 
@@ -60,6 +61,7 @@ public class JacksonObjectMapper implements ObjectMapper {
     public JacksonObjectMapper() {
         this(new com.fasterxml.jackson.databind.ObjectMapper());
         om.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
+        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     public JacksonObjectMapper(com.fasterxml.jackson.databind.ObjectMapper om){
