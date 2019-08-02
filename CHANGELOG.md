@@ -1,3 +1,12 @@
+## 2.3.14
+* Update jackson-databind to 2.9.9.2 to address moderate security vulnerability
+
+## 2.3.13
+* Add ```FAIL_ON_UNKNOWN_PROPERTIES = false``` to the default Jackson object mapper.
+
+## 2.3.12
+* Remember when an older version of apache was on the path for the remainder of the runtime
+
 ## 2.3.11
 * Skip calling apache method that may not exist if older versions of client are on the path to avoid MethodNotFound exceptions.
 * Add a config option for setting the TTL of persistent connections:/ issue #286
