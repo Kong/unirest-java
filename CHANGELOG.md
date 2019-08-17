@@ -1,3 +1,6 @@
+## 2.3.15
+* Update jackson-databind to 2.9.9.3 because .2 has shenanigans 
+
 ## 2.3.14
 * Update jackson-databind to 2.9.9.2 to address moderate security vulnerability
 
