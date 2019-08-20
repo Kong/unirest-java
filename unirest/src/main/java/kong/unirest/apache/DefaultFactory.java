@@ -50,7 +50,7 @@ class DefaultFactory implements RequestConfigFactory {
 
         try {
             return builder.setNormalizeUri(false);
-        }catch (Exception e) {
+        }catch (NoSuchMethodError e) {
             // setNormalizeUri doesnt exist in old version of apache client
             // the behavior that it does used to just be standard
             // so remember that we don't care
