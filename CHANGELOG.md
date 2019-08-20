@@ -1,3 +1,6 @@
+## 2.3.16
+* Catch the proper error rather than Exception in the old-apache compatibility fix
+
 ## 2.3.15
 * Update jackson-databind to 2.9.9.3 because .2 has shenanigans 
 
