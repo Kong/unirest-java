@@ -1,3 +1,14 @@
+## Upgrading to Unirest 3.0
+The primary difference in Unirest 3 is that the org.json dependency has been replaced by a clean-room implementation of the it's interface using Google Gson as the engine. This was done due to conflicts with the org.json license which requires that "The Software shall be used for Good, not Evil.". While many people would rightly view this as silly and unenforceable by law, many organizations such as Eclipse, Debian, and Apache will not allow linking to it.
+
+### Differences between org.json and kong.unirest.json
+For the most part kong.unirest.json honors all public interfaces and behavior of ```JSONArray``` and ```JSONObject```. The utility classes in org.json have NOT been implemented as they are not required for Unirest's use case. Implementation was done without looking at the internals of the org.json classes. This was accomplished by  writing extensive unit tests in order to document behavior and method signatures and then simply changing the test to use this projects own classes as well as Google Gson. There are however differences:
+* The namespace ```kong.unirest.json```
+* Custom indenting with ```.toString(int spaces)``` does not honor the indent factor and always uses 2 spaces. Waiting on https://github.com/google/gson/pull/1280 for a fix.
+* There are some slight differences in the details of some error messages.
+* ```optString``` and ```getString``` methods no longer throw an exception when the value is not a string but will simply convert the value to a string.
+* when you ```put``` to a JSONArray org.json appears to store original object and only turns it to Json on serialization meaning you may also ```get``` it back. This library turns everything to a gson JsonElement immediately on ```put```. 
+
 ## Upgrading to Unirest 2.0 from previous versions
 
 ### Package

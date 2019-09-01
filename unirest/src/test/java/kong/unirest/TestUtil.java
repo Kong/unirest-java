@@ -30,6 +30,7 @@ import BehaviorTests.UploadProgressTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Charsets;
+import com.google.common.base.Throwables;
 import com.google.common.io.Resources;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
@@ -71,7 +72,7 @@ public class TestUtil {
             fail("Expected exception but got none. \nExpected " + exClass);
         } catch (Exception e){
             if (!e.getClass().isAssignableFrom(exClass)) {
-                fail("Expected wrong exception type \n Expected: " + exClass + "\n but got " + e.getClass());
+                fail("Expected wrong exception type \n Expected: " + exClass + "\n but got " + e.getClass() + "\n\n" + Throwables.getStackTraceAsString(e));
             }
             assertEquals("Wrong Error Message", message, e.getMessage());
         }

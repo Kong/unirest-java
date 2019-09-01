@@ -26,20 +26,21 @@
 package kong.unirest.json;
 
 import kong.unirest.TestUtil;
-import org.json.JSONArray;
-import org.json.JSONObject;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static java.util.Arrays.asList;
+import static kong.unirest.TestUtil.assertException;
 import static kong.unirest.json.JSONObjectTest.assertEqualJson;
 import static kong.unirest.json.JSONObjectTest.assertNotType;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
 public class JSONArrayTest {
@@ -124,7 +125,7 @@ public class JSONArrayTest {
 
         assertEquals(BigInteger.valueOf(33), obj.getBigInteger(0));
         assertNotFound(() -> obj.getBigInteger(5));
-        assertNotType(() -> obj.getBigInteger(1), "JSONArray[1] could not convert to BigInteger.");
+        assertNotType(() -> obj.getBigInteger(1), "JSONArray[1] is not a number.");
         assertEquals(BigInteger.valueOf(33), obj.optBigInteger(0, BigInteger.TEN));
         assertEquals(BigInteger.TEN, obj.optBigInteger(5, BigInteger.TEN));
     }
@@ -138,7 +139,7 @@ public class JSONArrayTest {
 
         assertEquals(value, obj.getBigDecimal(0));
         assertNotFound(() -> obj.getBigDecimal(5));
-        assertNotType(() -> obj.getBigDecimal(1), "JSONArray[1] could not convert to BigDecimal.");
+        assertNotType(() -> obj.getBigDecimal(1), "JSONArray[1] is not a number.");
         assertEquals(value, obj.optBigDecimal(0, BigDecimal.TEN));
         assertEquals(BigDecimal.TEN, obj.optBigDecimal(5, BigDecimal.TEN));
     }
@@ -151,7 +152,7 @@ public class JSONArrayTest {
 
         assertEquals("cheese", obj.getString(0));
         assertNotFound(() -> obj.getString(5));
-        assertNotType(() -> obj.getString(1), "JSONArray[1] not a string.");
+        assertEquals(obj.getString(1), "45");
         assertEquals("cheese", obj.optString(0));
         assertEquals("logs", obj.optString(5, "logs"));
         assertEquals("", obj.optString(5));
@@ -223,12 +224,28 @@ public class JSONArrayTest {
         JSONArray array = new JSONArray(str);
 
         assertEquals("[\n" +
-                "   33.5,\n" +
-                "   42,\n" +
-                "   \"foo\",\n" +
-                "   true,\n" +
-                "   \"apple\"\n" +
+                "  33.5,\n" +
+                "  42,\n" +
+                "  \"foo\",\n" +
+                "  true,\n" +
+                "  \"apple\"\n" +
                 "]", array.toString(3));
+    }
+
+    @Test
+    public void rawGet() {
+        JSONArray array = new JSONArray(asList(
+                33.457848383,
+                1,
+                "cheese",
+                new JSONObject(of("foo", "bar")),
+                new JSONArray(asList(1,2))));
+
+        assertThat(array.get(0), instanceOf(Double.class));
+        assertThat(array.get(1), instanceOf(Integer.class));
+        assertThat(array.get(2), instanceOf(String.class));
+        assertThat(array.get(3), instanceOf(JSONObject.class));
+        assertThat(array.get(4), instanceOf(JSONArray.class));
     }
 
     @Test
@@ -265,10 +282,10 @@ public class JSONArrayTest {
         array.write(sw, 3, 3);
 
         assertEquals("[\n" +
-                "      1,\n" +
-                "      2,\n" +
-                "      3\n" +
-                "   ]", sw.toString());
+                "  1,\n" +
+                "  2,\n" +
+                "  3\n" +
+                "]", sw.toString());
     }
 
     @Test
@@ -283,43 +300,53 @@ public class JSONArrayTest {
     public void putSimple() {
         JSONArray array = new JSONArray();
         array.put(1);
-        array.put(3000L);
+        array.put(Long.MAX_VALUE);
         array.put(3.5d);
         array.put(6.4f);
         array.put("howdy");
         array.put(fruit.pear);
+        array.put(of("foo", 22));
+        array.put(asList(1,2,3));
 
         assertEquals(1, array.get(0));
-        assertEquals(3000L, array.get(1));
+        assertEquals(Long.MAX_VALUE, array.get(1));
         assertEquals(3.5d, array.get(2));
-        assertEquals(6.4f, array.get(3));
+        assertEquals(6.4f, ((Double)array.get(3)).floatValue(), 2);
         assertEquals("howdy", array.get(4));
-        assertEquals(fruit.pear, array.get(5));
+        assertEquals("pear", array.get(5));
+        assertTrue(new JSONObject(of("foo", 22)).similar(array.get(6)));
+        assertTrue(new JSONArray(asList(1,2,3)).similar(array.get(7)));
 
-        assertEquals("[1,3000,3.5,6.4,\"howdy\",\"pear\"]", array.toString());
+        assertEquals("[1,9223372036854775807,3.5,6.4,\"howdy\",\"pear\",{\"foo\":22},[1,2,3]]",
+                array.toString());
     }
 
     @Test
     public void putByIndex() {
         JSONArray array = new JSONArray();
+        array.put(5, fruit.pear);
         array.put(0, 1);
-        array.put(1, 3000L);
+        array.put(1, Long.MAX_VALUE);
         array.put(2, 3.5d);
         array.put(3, 6.4f);
         array.put(4, "howdy");
-        array.put(5, fruit.pear);
+        array.put(6, of("foo", 22));
+        array.put(7, asList(1,2,3));
 
         assertEquals(1, array.get(0));
-        assertEquals(3000L, array.get(1));
+        assertEquals(Long.MAX_VALUE, array.get(1));
         assertEquals(3.5d, array.get(2));
-        assertEquals(6.4f, array.get(3));
+        assertEquals(6.4f, ((Double)array.get(3)).floatValue(), 2);
         assertEquals("howdy", array.get(4));
-        assertEquals(fruit.pear, array.get(5));
+        assertEquals("pear", array.get(5));
+        assertTrue(new JSONObject(of("foo", 22)).similar(array.get(6)));
+        assertTrue(new JSONArray(asList(1,2,3)).similar(array.get(7)));
 
-        assertEquals("[1,3000,3.5,6.4,\"howdy\",\"pear\"]", array.toString());
+        assertEquals("[1,9223372036854775807,3.5,6.4,\"howdy\",\"pear\",{\"foo\":22},[1,2,3]]",
+                array.toString());
     }
 
-    @Test
+    @Test @Ignore // will do in a dedicated commit
     public void query() {
         JSONArray obj = new JSONArray("[{\"a\":{\"b\": 42}}]");
         assertEquals(42, obj.query("/0/a/b"));
@@ -327,7 +354,7 @@ public class JSONArrayTest {
 
     @Test
     public void putCollection() {
-        List<Integer> ints = asList(1, 1, 2, 3);
+        List ints = asList(1, 1, 2, 3);
         JSONArray array = new JSONArray();
         array.put(ints);
 
@@ -354,6 +381,13 @@ public class JSONArrayTest {
     }
 
     @Test
+    public void constructArrayError() {
+        TestUtil.assertException(()-> new JSONArray(new Object()),
+                JSONException.class,
+                "JSONArray initial value should be a string or collection or array.");
+    }
+
+    @Test
     public void nullMembers() {
         JSONArray array = new JSONArray();
         array.put("foo");
@@ -362,9 +396,19 @@ public class JSONArrayTest {
         assertFalse(array.isNull(0));
         assertTrue(array.isNull(1));
         assertTrue(array.isNull(2));
+        assertTrue(array.isNull(33));
     }
 
     @Test
+    public void puttingSomeRandoObjectWillResultInString() {
+        JSONArray array = new JSONArray();
+        array.put(new Fudge());
+
+        assertEquals("[\"Hello World\"]", array.toString());
+    }
+
+
+    @Test @Ignore // will do with JSONObject Test
     public void maps() {
         JSONArray array = new JSONArray();
         array.put(of("foo", "bar"));
@@ -381,9 +425,27 @@ public class JSONArrayTest {
         }
     }
 
+    public static void assertNotType(TestUtil.ExRunnable exRunnable, String message) {
+        assertException(exRunnable, JSONException.class, message);
+    }
+
     private void assertNotFound(TestUtil.ExRunnable exRunnable) {
         assertNotType(exRunnable, "JSONArray[5] not found.");
     }
 
-    public enum fruit {orange, apple, pear}
+    public class Fudge {
+        public String foo = "bar";
+
+        public String toString(){
+            return "Hello World";
+        }
+    }
+
+    public enum fruit {orange, apple, pear;}
+
 }
+
+
+
+
+
