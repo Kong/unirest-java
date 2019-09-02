@@ -68,4 +68,8 @@ public class Json {
     public static String toPrettyJson(JsonElement obj) {
         return PRETTY_GSON.toJson(obj);
     }
+
+    public static Map<String, Object> toMap(JsonObject obj) {
+        return GSON.fromJson(obj, Map.class);
+    }
 }

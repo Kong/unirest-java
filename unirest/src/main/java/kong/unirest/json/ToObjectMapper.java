@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-class ToElementMapper {
+class ToObjectMapper {
     private static Map<Predicate<JsonElement>, Function<JsonElement, Object>> mappers;
 
     static {

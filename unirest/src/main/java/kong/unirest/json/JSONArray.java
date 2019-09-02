@@ -295,7 +295,7 @@ public class JSONArray implements Iterable<Object> {
     }
 
     public Object get(int index) {
-        return  new ToElementMapper().apply(obj.get(index));
+        return  new ToObjectMapper().apply(obj.get(index));
     }
 
     public boolean equals(Object o) {

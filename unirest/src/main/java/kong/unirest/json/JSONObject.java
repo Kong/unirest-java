@@ -1,8 +1,8 @@
 /**
  * The MIT License
- *
+ * <p>
  * Copyright for portions of unirest-java are held by Kong Inc (c) 2013.
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -10,10 +10,10 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -33,8 +33,12 @@ import com.google.gson.JsonPrimitive;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
+
+import static java.util.Objects.requireNonNull;
 
 public class JSONObject {
     private transient final JsonObject obj;
@@ -63,8 +67,10 @@ public class JSONObject {
         return tryNumber(() -> getProperty(key).getAsInt(), key);
     }
 
-    public Object get(String key){
-        return get(key);
+    private static transient final ToObjectMapper MAPPER = new ToObjectMapper();
+
+    public Object get(String key) {
+        return MAPPER.apply(getProperty(key));
     }
 
 
@@ -78,10 +84,10 @@ public class JSONObject {
     }
 
     public boolean similar(Object o) {
-        if(!(o instanceof JSONObject)){
+        if (!(o instanceof JSONObject)) {
             return false;
         }
-        JSONObject cst = (JSONObject)o;
+        JSONObject cst = (JSONObject) o;
         return this.obj.equals(cst.obj);
     }
 
@@ -96,7 +102,7 @@ public class JSONObject {
     public JSONObject getJSONObject(String key) {
         try {
             return new JSONObject(getProperty(key).getAsJsonObject());
-        }catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             throw new JSONException("JSONObject[\"%s\"] is not a JSONObject.", key);
         }
     }
@@ -110,7 +116,7 @@ public class JSONObject {
     }
 
     public double getDouble(String key) {
-        return tryNumber(() -> getProperty(key).getAsDouble(),  key);
+        return tryNumber(() -> getProperty(key).getAsDouble(), key);
     }
 
     public double optDouble(String key) {
@@ -129,8 +135,8 @@ public class JSONObject {
         }
     }
 
-    private JsonElement getProperty(String key){
-        if(!obj.has(key)){
+    private JsonElement getProperty(String key) {
+        if (!obj.has(key)) {
             throw new JSONException("JSONObject[\"%s\"] not found.", key);
         }
         return obj.get(key);
@@ -149,7 +155,7 @@ public class JSONObject {
     }
 
     public float optFloat(String key) {
-       return optFloat(key, Float.NaN);
+        return optFloat(key, Float.NaN);
     }
 
     public float optFloat(String key, float defaultValue) {
@@ -157,7 +163,7 @@ public class JSONObject {
     }
 
     public long getLong(String key) {
-        return tryNumber(()-> getProperty(key).getAsLong(), key);
+        return tryNumber(() -> getProperty(key).getAsLong(), key);
     }
 
     public long optLong(String key) {
@@ -172,7 +178,7 @@ public class JSONObject {
         return getOrDefault(() -> getInt(key), defaultValue);
     }
 
-    public int optInt(String key){
+    public int optInt(String key) {
         return optInt(key, 0);
     }
 
@@ -215,7 +221,7 @@ public class JSONObject {
     public JSONArray getJSONArray(String key) {
         try {
             return new JSONArray(getProperty(key).getAsJsonArray());
-        }catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             throw new JSONException("JSONObject[\"%s\"] is not a JSONArray.", key);
         }
     }
@@ -232,7 +238,7 @@ public class JSONObject {
         try {
             String v = getProperty(key).getAsString();
             return Enum.valueOf(enumClass, v);
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             throw new JSONException("JSONObject[\"%s\"] is not an enum of type \"%s\".", key, enumClass.getSimpleName());
         }
     }
@@ -250,7 +256,7 @@ public class JSONObject {
     }
 
     public void write(StringWriter sw) {
-         Json.write(obj, sw);
+        Json.write(obj, sw);
     }
 
     public void write(StringWriter sw, int index, int i1) {
@@ -259,5 +265,101 @@ public class JSONObject {
 
     public void remove(String key) {
         obj.remove(key);
+    }
+
+    public void accumulate(String key, Object additionalValue) {
+        requireNonNull(key, "Null key.");
+        if (!obj.has(key)) {
+            return;
+        }
+        Object existing = get(key);
+        if (existing instanceof JSONArray) {
+            ((JSONArray) existing).put(additionalValue);
+            put(key, (JSONArray) existing);
+        } else {
+            JSONArray a = new JSONArray();
+            a.put(existing);
+            a.put(additionalValue);
+            put(key, a);
+        }
+    }
+
+    public void append(String key, Object value) {
+        requireNonNull(key, "Null key.");
+        if (has(key)) {
+            JSONArray arr = getJSONArray(key);
+            arr.put(value);
+            put(key, arr);
+        } else {
+            JSONArray arr = new JSONArray();
+            arr.put(value);
+            put(key, arr);
+        }
+    }
+
+    public void increment(String key) {
+        if (!has(key)) {
+            put(key, 1);
+        } else {
+            Object n = get(key);
+            if (!(n instanceof Number)) {
+                throw new JSONException("");
+            } else if (n instanceof Integer) {
+                put(key, ((Integer) n) + 1);
+            } else if (n instanceof Double) {
+                put(key, ((Double) n) + 1);
+            }
+        }
+    }
+
+    public void putOnce(String key, Object value) {
+        if(has(key)){
+            throw new JSONException("Duplicate key \"foo\"");
+        }
+        put(key, value);
+    }
+
+    public void put(String key, Object value){
+        if(value == null){
+            put(key, (String) value);
+        } else if (value instanceof Number){
+            put(key, (Number)value);
+        } else if (value instanceof Boolean){
+            put(key, (Boolean)value);
+        } else if (value instanceof JSONArray) {
+            put(key, (JSONArray) value);
+        } else if (value instanceof JSONObject) {
+            put(key, (JSONObject) value);
+        } else {
+            put(key, String.valueOf(value));
+        }
+
+    }
+
+    public void put(String key, Boolean value){
+        obj.addProperty(key, value);
+    }
+
+    public void putOpt(String key, Object value) {
+        if(key == null || value == null){
+            return;
+        }
+        put(key, value);
+    }
+
+    public Set<String> keySet() {
+        return obj.keySet();
+    }
+
+    public Iterator<String> keys() {
+        return obj.keySet().iterator();
+    }
+
+    public Map<String, Object> toMap() {
+        return Json.toMap(obj);
+    }
+
+    public JSONArray names() {
+        return new JSONArray(keySet());
     }
 }
