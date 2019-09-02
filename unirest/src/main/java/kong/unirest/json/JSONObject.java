@@ -26,9 +26,15 @@
 package kong.unirest.json;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
+import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class JSONObject {
     private transient final JsonObject obj;
@@ -45,21 +51,22 @@ public class JSONObject {
         obj = Json.fromJson(Json.toJson(map), JsonObject.class);
     }
 
+    public JSONObject() {
+        this.obj = new JsonObject();
+    }
+
     public String getString(String key) {
-        return getElement(key).getAsString();
+        return getProperty(key).getAsString();
     }
 
     public int getInt(String key) {
-        return getElement(key).getAsInt();
+        return tryNumber(() -> getProperty(key).getAsInt(), key);
     }
 
     public Object get(String key){
         return get(key);
     }
 
-    private JsonElement getElement(String key) {
-        return obj.get(key);
-    }
 
     JsonElement asElement() {
         return obj;
@@ -76,5 +83,181 @@ public class JSONObject {
         }
         JSONObject cst = (JSONObject)o;
         return this.obj.equals(cst.obj);
+    }
+
+    public boolean has(String key) {
+        return this.obj.has(key);
+    }
+
+    public int length() {
+        return this.obj.size();
+    }
+
+    public JSONObject getJSONObject(String key) {
+        try {
+            return new JSONObject(getProperty(key).getAsJsonObject());
+        }catch (IllegalStateException e){
+            throw new JSONException("JSONObject[\"%s\"] is not a JSONObject.", key);
+        }
+    }
+
+    public void put(String key, Number value) {
+        this.obj.addProperty(key, value);
+    }
+
+    public void put(String key, String value) {
+        this.obj.addProperty(key, value);
+    }
+
+    public double getDouble(String key) {
+        return tryNumber(() -> getProperty(key).getAsDouble(),  key);
+    }
+
+    public double optDouble(String key) {
+        return optDouble(key, Double.NaN);
+    }
+
+    public double optDouble(String key, double defaultValue) {
+        return getOrDefault(() -> getDouble(key), defaultValue);
+    }
+
+    private <T> T getOrDefault(Supplier<T> supplier, T defaultValue) {
+        try {
+            return supplier.get();
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    private JsonElement getProperty(String key){
+        if(!obj.has(key)){
+            throw new JSONException("JSONObject[\"%s\"] not found.", key);
+        }
+        return obj.get(key);
+    }
+
+    private <T extends Number> T tryNumber(Supplier<T> supplier, String key) {
+        try {
+            return supplier.get();
+        } catch (NumberFormatException e) {
+            throw new JSONException("JSONObject[\"%s\"] is not a number.", key);
+        }
+    }
+
+    public float getFloat(String key) {
+        return tryNumber(() -> getProperty(key).getAsFloat(), key);
+    }
+
+    public float optFloat(String key) {
+       return optFloat(key, Float.NaN);
+    }
+
+    public float optFloat(String key, float defaultValue) {
+        return getOrDefault(() -> getFloat(key), defaultValue);
+    }
+
+    public long getLong(String key) {
+        return tryNumber(()-> getProperty(key).getAsLong(), key);
+    }
+
+    public long optLong(String key) {
+        return optLong(key, 0L);
+    }
+
+    public long optLong(String key, long defaultValue) {
+        return getOrDefault(() -> getLong(key), defaultValue);
+    }
+
+    public int optInt(String key, int defaultValue) {
+        return getOrDefault(() -> getInt(key), defaultValue);
+    }
+
+    public int optInt(String key){
+        return optInt(key, 0);
+    }
+
+    public BigInteger getBigInteger(String key) {
+        return tryNumber(() -> getProperty(key).getAsBigInteger(), key);
+    }
+
+    public BigInteger optBigInteger(String key, BigInteger defaultValue) {
+        return getOrDefault(() -> getBigInteger(key), defaultValue);
+    }
+
+    public BigDecimal getBigDecimal(String key) {
+        return tryNumber(() -> getProperty(key).getAsBigDecimal(), key);
+    }
+
+    public BigDecimal optBigDecimal(String key, BigDecimal defaultValue) {
+        return getOrDefault(() -> getBigDecimal(key), defaultValue);
+    }
+
+    public String optString(String key, String defaultValue) {
+        return getOrDefault(() -> getString(key), defaultValue);
+    }
+
+    public String optString(String key) {
+        return optString(key, "");
+    }
+
+    public void put(String key, JSONObject object) {
+        obj.add(key, object.obj);
+    }
+
+    public JSONObject optJSONObject(String key) {
+        return getOrDefault(() -> getJSONObject(key), null);
+    }
+
+    public void put(String key, JSONArray array) {
+        obj.add(key, array.getArray());
+    }
+
+    public JSONArray getJSONArray(String key) {
+        try {
+            return new JSONArray(getProperty(key).getAsJsonArray());
+        }catch (IllegalStateException e){
+            throw new JSONException("JSONObject[\"%s\"] is not a JSONArray.", key);
+        }
+    }
+
+    public JSONArray optJSONArray(String key) {
+        return getOrDefault(() -> getJSONArray(key), null);
+    }
+
+    public <T extends Enum<T>> void put(String key, T enumvalue) {
+        obj.add(key, enumvalue == null ? JsonNull.INSTANCE : new JsonPrimitive(enumvalue.name()));
+    }
+
+    public <T extends Enum<T>> T getEnum(Class<T> enumClass, String key) {
+        try {
+            String v = getProperty(key).getAsString();
+            return Enum.valueOf(enumClass, v);
+        }catch (IllegalArgumentException e){
+            throw new JSONException("JSONObject[\"%s\"] is not an enum of type \"%s\".", key, enumClass.getSimpleName());
+        }
+    }
+
+    public <T extends Enum<T>> T optEnum(Class<T> enumClass, String key, T defaultValue) {
+        return getOrDefault(() -> getEnum(enumClass, key), defaultValue);
+    }
+
+    public <T extends Enum<T>> T optEnum(Class<T> enumClass, String key) {
+        return optEnum(enumClass, key, null);
+    }
+
+    public String toString(int i) {
+        return Json.toPrettyJson(obj);
+    }
+
+    public void write(StringWriter sw) {
+         Json.write(obj, sw);
+    }
+
+    public void write(StringWriter sw, int index, int i1) {
+        Json.writePretty(obj, sw);
+    }
+
+    public void remove(String key) {
+        obj.remove(key);
     }
 }

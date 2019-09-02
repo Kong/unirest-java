@@ -26,7 +26,6 @@
 package kong.unirest.json;
 
 import kong.unirest.TestUtil;
-
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -39,7 +38,6 @@ import static com.google.common.collect.ImmutableMap.of;
 import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.assertException;
 import static kong.unirest.json.JSONObjectTest.assertEqualJson;
-import static kong.unirest.json.JSONObjectTest.assertNotType;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 

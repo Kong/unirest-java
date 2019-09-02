@@ -53,7 +53,7 @@ public class Json {
         GSON.toJson(obj, sw);
     }
 
-    public static void writePretty(JsonArray obj, StringWriter sw) {
+    public static void writePretty(JsonElement obj, StringWriter sw) {
         PRETTY_GSON.toJson(obj, sw);
     }
 
@@ -63,5 +63,9 @@ public class Json {
 
     public static JsonArray toJsonArray(Object collection) {
         return fromJson(Json.toJson(collection), JsonArray.class);
+    }
+
+    public static String toPrettyJson(JsonElement obj) {
+        return PRETTY_GSON.toJson(obj);
     }
 }

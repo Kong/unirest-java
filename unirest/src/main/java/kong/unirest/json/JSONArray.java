@@ -258,10 +258,7 @@ public class JSONArray implements Iterable<Object> {
     }
 
     public String toString(int indent) {
-        return new GsonBuilder()
-                .setPrettyPrinting()
-                .create()
-                .toJson(obj);
+        return Json.toPrettyJson(obj);
     }
 
     public <T extends Enum> void put(T enumValues) {
@@ -374,5 +371,9 @@ public class JSONArray implements Iterable<Object> {
 
     public boolean isNull(int index) {
         return index >= obj.size() || obj.get(index).isJsonNull();
+    }
+
+    JsonArray getArray(){
+        return obj;
     }
 }
