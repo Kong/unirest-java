@@ -1,3 +1,6 @@
+## 2.3.17
+* Issue #292: Use per request Object Mapper for request bodies.
+
 ## 2.3.16
 * Catch the proper error rather than Exception in the old-apache compatibility fix
 
