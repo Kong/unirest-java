@@ -344,7 +344,7 @@ public class JSONArrayTest {
                 array.toString());
     }
 
-    @Test @Ignore // will do in a dedicated commit
+    @Test
     public void query() {
         JSONArray obj = new JSONArray("[{\"a\":{\"b\": 42}}]");
         assertEquals(42, obj.query("/0/a/b"));

@@ -35,6 +35,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+/**
+ * Represents a JSON Array
+ */
 public class JSONArray implements Iterable<Object> {
 
     private transient final JsonArray obj;
@@ -358,7 +361,8 @@ public class JSONArray implements Iterable<Object> {
     }
 
     public Object query(String pattern) {
-        return 0;
+        JSONPointer point = JSONPointer.compile(pattern);
+        return point.queryFrom(this);
     }
 
     public List toList() {

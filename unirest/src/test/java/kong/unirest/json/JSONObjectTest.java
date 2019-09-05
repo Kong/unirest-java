@@ -399,12 +399,12 @@ public class JSONObjectTest {
         assertFalse(obj1.similar(obj2));
     }
 
-//    @Test
-//    public void query() {
-//        JSONObject obj = new JSONObject("{\"a\":{\"b\": 42}}");
-//        assertEquals(42, obj.query("/a/b"));
-//    }
-//
+    @Test
+    public void query() {
+        JSONObject obj = new JSONObject("{\"a\":{\"b\": 42}}");
+        assertEquals(42, obj.query("/a/b"));
+    }
+
     @Test
     public void maps() {
         JSONObject obj = new JSONObject("{\"foo\": {\"bar\": 42}, \"baz\": 55}");

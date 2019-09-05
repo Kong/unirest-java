@@ -8,6 +8,7 @@ For the most part kong.unirest.json honors all public interfaces and behavior of
 * There are some slight differences in the details of some error messages.
 * ```optString``` and ```getString``` methods no longer throw an exception when the value is not a string but will simply convert the value to a string.
 * when you ```put``` to a JSONArray org.json appears to store original object and only turns it to Json on serialization meaning you may also ```get``` it back. This library turns everything to a gson JsonElement immediately on ```put```. 
+* ```JSONPointer(List<String> strings)``` has not been implemented. It's not documented and seems to assume knowledge of the internals of the class.
 
 ## Upgrading to Unirest 2.0 from previous versions
 
