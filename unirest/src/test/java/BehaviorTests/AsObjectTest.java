@@ -78,15 +78,25 @@ public class AsObjectTest extends BddTest {
 
     @Test
     public void canPassAnObjectMapperAsPartOfARequest(){
+        Unirest.config().setObjectMapper(null);
+
         TestingMapper mapper = new TestingMapper();
-        Unirest.get(MockServer.GET)
+        Unirest.post(MockServer.POST)
                 .queryString("foo", "bar")
                 .withObjectMapper(mapper)
+                .body(new Foo("Hello World"))
                 .asObject(RequestCapture.class)
+                .ifFailure(e -> {
+                    UnirestParsingException ex = e.getParsingError().get();
+                    ex.printStackTrace();
+                    throw new RuntimeException(ex.getMessage());
+                })
                 .getBody()
-                .assertParam("foo", "bar");
+                .assertParam("foo", "bar")
+                .assertBody("{\"bar\":\"Hello World\"}");
 
-        assertTrue(mapper.wasCalled);
+        assertTrue(mapper.readWasCalled);
+        assertTrue(mapper.writeWasCalled);
     }
 
     @Test
@@ -127,16 +137,18 @@ public class AsObjectTest extends BddTest {
     }
 
     public static class TestingMapper implements ObjectMapper {
-        public boolean wasCalled;
+        public boolean readWasCalled;
+        public boolean writeWasCalled;
 
         @Override
         public <T> T readValue(String value, Class<T> valueType) {
-            this.wasCalled = true;
+            this.readWasCalled = true;
             return new JacksonObjectMapper().readValue(value, valueType);
         }
 
         @Override
         public String writeValue(Object value) {
+            writeWasCalled = true;
             return new Gson().toJson(value);
         }
     }

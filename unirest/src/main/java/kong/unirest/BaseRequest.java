@@ -52,6 +52,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         this.socketTimeout = httpRequest.socketTimeout;
         this.connectTimeout = httpRequest.connectTimeout;
         this.proxy = httpRequest.proxy;
+        this.objectMapper = httpRequest.objectMapper;
     }
 
     BaseRequest(Config config, HttpMethod method, String url) {
@@ -317,7 +318,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         return headers;
     }
 
-    private ObjectMapper getObjectMapper() {
+    protected ObjectMapper getObjectMapper() {
         return objectMapper.orElseGet(config::getObjectMapper);
     }
 

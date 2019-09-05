@@ -107,7 +107,7 @@ class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRe
 
 	@Override
 	public RequestBodyEntity body(Object body) {
-		return body(config.getObjectMapper().writeValue(body));
+		return body(getObjectMapper().writeValue(body));
 	}
 
 	@Override
