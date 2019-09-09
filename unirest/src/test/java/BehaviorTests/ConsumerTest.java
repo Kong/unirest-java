@@ -25,21 +25,38 @@
 
 package BehaviorTests;
 
+import com.google.common.base.Throwables;
 import org.junit.After;
 import org.junit.Test;
 import kong.unirest.Unirest;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ConsumerTest extends BddTest {
 
+    Path test = Paths.get("1.jpeg");
     private int status;
+    private String error;
+    private boolean asyncDone = false;
 
     @Override
     @After
     public void tearDown() {
         super.tearDown();
+        asyncDone = false;
         status = 0;
+        File file = test.toFile();
+        if(file.exists()){
+            file.delete();
+        }
     }
 
     @Test
@@ -51,13 +68,53 @@ public class ConsumerTest extends BddTest {
     }
 
     @Test
+    public void downloadAFileAsync() throws Exception {
+        Unirest.get(MockServer.BINARYFILE)
+                .thenConsumeAsync(r -> {
+                    try {
+                        BufferedImage image = ImageIO.read(r.getContent());
+                        ImageIO.write(image, "jpeg", new File("1.jpeg"));
+                        status = r.getStatus();
+                    } catch (IOException e) {
+                        error = Throwables.getStackTraceAsString(e);
+                    } finally {
+                        asyncDone = true;
+                    }
+                });
+        while (!asyncDone){
+            System.out.println(".");
+        }
+        assertEquals(null, error);
+        assertEquals(200, status);
+        assertTrue(test.toFile().exists());
+    }
+
+    @Test
+    public void downloadAFile() throws Exception {
+        Unirest.get(MockServer.BINARYFILE)
+                .thenConsume(r -> {
+                    try {
+                        BufferedImage image = ImageIO.read(r.getContent());
+                        ImageIO.write(image, "jpeg", new File("1.jpeg"));
+                        status = r.getStatus();
+                    } catch (IOException e) {
+                        error = Throwables.getStackTraceAsString(e);
+                    }
+                });
+
+        assertEquals(null, error);
+        assertEquals(200, status);
+        assertTrue(test.toFile().exists());
+    }
+
+    @Test
     public void canSimplyConsumeAResponseAsync() {
         Unirest.get(MockServer.GET)
                 .thenConsumeAsync(r -> status = r.getStatus());
 
         long time = System.currentTimeMillis();
-        while(System.currentTimeMillis() - time < 5000){
-            if(status != 0){
+        while (System.currentTimeMillis() - time < 5000) {
+            if (status != 0) {
                 break;
             }
         }
