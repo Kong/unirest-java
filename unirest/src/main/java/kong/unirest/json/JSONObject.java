@@ -40,37 +40,41 @@ import java.util.function.Supplier;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * https://json.org/
+ * https://tools.ietf.org/html/rfc7159#section-4
+ * represents a JSON Object
+ */
 public class JSONObject {
+    private static transient final ToObjectMapper MAPPER = new ToObjectMapper();
     private transient final JsonObject obj;
 
-    JSONObject(JsonElement jsonElement) {
-        this.obj = jsonElement.getAsJsonObject();
-    }
 
+    /**
+     * https://tools.ietf.org/html/rfc7159#section-4
+     * @param string a json object string
+     */
     public JSONObject(String string) {
         this(Json.fromJson(string, JsonObject.class));
     }
 
+    /**
+     * construct using a map
+     * @param map a map representing the elements of a JSON Object
+     */
     public JSONObject(Map<String, Object> map) {
         obj = Json.fromJson(Json.toJson(map), JsonObject.class);
     }
 
+    /**
+     * an empty JSON object
+     */
     public JSONObject() {
         this.obj = new JsonObject();
     }
 
-    public String getString(String key) {
-        return getProperty(key).getAsString();
-    }
-
-    public int getInt(String key) {
-        return tryNumber(() -> getProperty(key).getAsInt(), key);
-    }
-
-    private static transient final ToObjectMapper MAPPER = new ToObjectMapper();
-
-    public Object get(String key) {
-        return MAPPER.apply(getProperty(key));
+    JSONObject(JsonElement jsonElement) {
+        this.obj = jsonElement.getAsJsonObject();
     }
 
 
@@ -78,11 +82,19 @@ public class JSONObject {
         return obj;
     }
 
+    /**
+     * @return the object as a JSON string
+     */
     @Override
     public String toString() {
         return Json.toJson(obj);
     }
 
+    /**
+     * indicates if a JSONObject has the same elements as another JSONObject
+     * @param o
+     * @return a bool
+     */
     public boolean similar(Object o) {
         if (!(o instanceof JSONObject)) {
             return false;
@@ -91,14 +103,36 @@ public class JSONObject {
         return this.obj.equals(cst.obj);
     }
 
+    /**
+     * @param key
+     * @return indicates that the structure has this key
+     */
     public boolean has(String key) {
         return this.obj.has(key);
     }
 
+    /**
+     * @return number of keys in the structure
+     */
     public int length() {
         return this.obj.size();
     }
 
+    /**
+     * get and element by key as its native object
+     * @param key
+     * @return the object, this could be an object, array or primitive
+     */
+    public Object get(String key) {
+        return MAPPER.apply(getProperty(key));
+    }
+
+    /**
+     * get the element as a JSONObject
+     * @param key
+     * @return the element as a JSONObject
+     * @throws JSONException  if it is not a object or the key does not exist
+     */
     public JSONObject getJSONObject(String key) {
         try {
             return new JSONObject(getProperty(key).getAsJsonObject());
@@ -107,115 +141,250 @@ public class JSONObject {
         }
     }
 
-    public void put(String key, Number value) {
-        this.obj.addProperty(key, value);
-    }
-
-    public void put(String key, String value) {
-        this.obj.addProperty(key, value);
-    }
-
-    public double getDouble(String key) {
-        return tryNumber(() -> getProperty(key).getAsDouble(), key);
-    }
-
-    public double optDouble(String key) {
-        return optDouble(key, Double.NaN);
-    }
-
-    public double optDouble(String key, double defaultValue) {
-        return getOrDefault(() -> getDouble(key), defaultValue);
-    }
-
-    private <T> T getOrDefault(Supplier<T> supplier, T defaultValue) {
-        try {
-            return supplier.get();
-        } catch (Exception e) {
-            return defaultValue;
-        }
-    }
-
-    private JsonElement getProperty(String key) {
-        if (!obj.has(key)) {
-            throw new JSONException("JSONObject[\"%s\"] not found.", key);
-        }
-        return obj.get(key);
-    }
-
-    private <T extends Number> T tryNumber(Supplier<T> supplier, String key) {
-        try {
-            return supplier.get();
-        } catch (NumberFormatException e) {
-            throw new JSONException("JSONObject[\"%s\"] is not a number.", key);
-        }
-    }
-
-    public float getFloat(String key) {
-        return tryNumber(() -> getProperty(key).getAsFloat(), key);
-    }
-
-    public float optFloat(String key) {
-        return optFloat(key, Float.NaN);
-    }
-
-    public float optFloat(String key, float defaultValue) {
-        return getOrDefault(() -> getFloat(key), defaultValue);
-    }
-
-    public long getLong(String key) {
-        return tryNumber(() -> getProperty(key).getAsLong(), key);
-    }
-
-    public long optLong(String key) {
-        return optLong(key, 0L);
-    }
-
-    public long optLong(String key, long defaultValue) {
-        return getOrDefault(() -> getLong(key), defaultValue);
-    }
-
-    public int optInt(String key, int defaultValue) {
-        return getOrDefault(() -> getInt(key), defaultValue);
-    }
-
-    public int optInt(String key) {
-        return optInt(key, 0);
-    }
-
-    public BigInteger getBigInteger(String key) {
-        return tryNumber(() -> getProperty(key).getAsBigInteger(), key);
-    }
-
-    public BigInteger optBigInteger(String key, BigInteger defaultValue) {
-        return getOrDefault(() -> getBigInteger(key), defaultValue);
-    }
-
-    public BigDecimal getBigDecimal(String key) {
-        return tryNumber(() -> getProperty(key).getAsBigDecimal(), key);
-    }
-
-    public BigDecimal optBigDecimal(String key, BigDecimal defaultValue) {
-        return getOrDefault(() -> getBigDecimal(key), defaultValue);
-    }
-
-    public String optString(String key, String defaultValue) {
-        return getOrDefault(() -> getString(key), defaultValue);
-    }
-
-    public String optString(String key) {
-        return optString(key, "");
-    }
-
-    public void put(String key, JSONObject object) {
-        obj.add(key, object.obj);
-    }
-
+    /**
+     * get the element as a JSONObject
+     * @param key
+     * @return an object or null if it is not an object or the key does not exist
+     */
     public JSONObject optJSONObject(String key) {
         return getOrDefault(() -> getJSONObject(key), null);
     }
 
+    /**
+     * get a element property as a string
+     * @param key
+     * @return a string representation of the value
+     * @throws JSONException if the key does not exist
+     */
+    public String getString(String key) {
+        return getProperty(key).getAsString();
+    }
+
+    /**
+     * get a element property as a string
+     * @param key
+     * @return a string representation of the value or null of it doesn't exist
+     */
+    public String optString(String key) {
+        return optString(key, "");
+    }
+
+    /**
+     * get a element property as a string
+     * @param key
+     * @return a string representation of the value or default value
+     */
+    public String optString(String key, String defaultValue) {
+        return getOrDefault(() -> getString(key), defaultValue);
+    }
+
+    /**
+     * get the value as a double
+     * @param key
+     * @return the value
+     * @throws JSONException if the object is not a number or does not exist
+     */
+    public double getDouble(String key) {
+        return tryNumber(() -> getProperty(key).getAsDouble(), key);
+    }
+
+    /**
+     * the value as double or NaN
+     * @param key
+     * @return the value as a double or NaN if the key doesn't exist or the value is not a number
+     */
+    public double optDouble(String key) {
+        return optDouble(key, Double.NaN);
+    }
+
+    /**
+     * get the  value as a double or default value
+     * @param key
+     * @param defaultValue
+     * @return return value as double or a default value if value is not viable
+     */
+    public double optDouble(String key, double defaultValue) {
+        return getOrDefault(() -> getDouble(key), defaultValue);
+    }
+
+    /**
+     * get the value as a float
+     * @param key
+     * @return the value
+     * @throws JSONException if the object is not a number or does not exist
+     */
+    public float getFloat(String key) {
+        return tryNumber(() -> getProperty(key).getAsFloat(), key);
+    }
+
+    /**
+     * the value as double or NaN
+     * @param key
+     * @return the value as a float or NaN if the key doesn't exist or the value is not a number
+     */
+    public float optFloat(String key) {
+        return optFloat(key, Float.NaN);
+    }
+
+    /**
+     * get the  value as a float or default value
+     * @param key
+     * @param defaultValue
+     * @return return value as double or a default value if value is not viable
+     */
+    public float optFloat(String key, float defaultValue) {
+        return getOrDefault(() -> getFloat(key), defaultValue);
+    }
+
+    /**
+     * get the value as a long
+     * @param key
+     * @return the value
+     * @throws JSONException if the object is not a number or does not exist
+     */
+    public long getLong(String key) {
+        return tryNumber(() -> getProperty(key).getAsLong(), key);
+    }
+
+    /**
+     * the value as long or NaN
+     * @param key
+     * @return the value as a long or NaN if the key doesn't exist or the value is not a number
+     */
+    public long optLong(String key) {
+        return optLong(key, 0L);
+    }
+
+    /**
+     * get the  value as a long or default value
+     * @param key
+     * @param defaultValue
+     * @return return value as long or a default value if value is not viable
+     */
+    public long optLong(String key, long defaultValue) {
+        return getOrDefault(() -> getLong(key), defaultValue);
+    }
+
+    /**
+     * get an element property as a int
+     * @param key
+     * @return the element as a int if it can be cast to one.
+     * @throws JSONException  if it is not a number or the key does not exist
+     */
+    public int getInt(String key) {
+        return tryNumber(() -> getProperty(key).getAsInt(), key);
+    }
+
+    /**
+     * the value as int or NaN
+     * @param key
+     * @return the value as a int or 0 if the key doesn't exist or the value is not a number
+     */
+    public int optInt(String key) {
+        return optInt(key, 0);
+    }
+
+    /**
+     * get the  value as a long or default value
+     * @param key
+     * @param defaultValue
+     * @return return value as long or a default value if value is not viable
+     */
+    public int optInt(String key, int defaultValue) {
+        return getOrDefault(() -> getInt(key), defaultValue);
+    }
+
+    /**
+     * get an element property as a BigInteger
+     * @param key
+     * @return the element as a BigInteger if it can be cast to one.
+     * @throws JSONException  if it is not a number or the key does not exist
+     */
+    public BigInteger getBigInteger(String key) {
+        return tryNumber(() -> getProperty(key).getAsBigInteger(), key);
+    }
+
+    /**
+     * get the  value as a BigInteger or default value
+     * @param key
+     * @param defaultValue
+     * @return return value as BigInteger or a default value if value is not viable
+     */
+    public BigInteger optBigInteger(String key, BigInteger defaultValue) {
+        return getOrDefault(() -> getBigInteger(key), defaultValue);
+    }
+
+    /**
+     * get an element property as a BigDecimal
+     * @param key
+     * @return the element as a BigInteger if it can be cast to one.
+     * @throws JSONException  if it is not a number or the key does not exist
+     */
+    public BigDecimal getBigDecimal(String key) {
+        return tryNumber(() -> getProperty(key).getAsBigDecimal(), key);
+    }
+
+    /**
+     * get the  value as a BigDecimal or default value
+     * @param key
+     * @param defaultValue
+     * @return return value as BigDecimal or a default value if value is not viable
+     */
+    public BigDecimal optBigDecimal(String key, BigDecimal defaultValue) {
+        return getOrDefault(() -> getBigDecimal(key), defaultValue);
+    }
+
+    public <T extends Enum<T>> T getEnum(Class<T> enumClass, String key) {
+        try {
+            String v = getProperty(key).getAsString();
+            return Enum.valueOf(enumClass, v);
+        } catch (IllegalArgumentException e) {
+            throw new JSONException("JSONObject[\"%s\"] is not an enum of type \"%s\".", key, enumClass.getSimpleName());
+        }
+    }
+    
+    public <T extends Enum<T>> T optEnum(Class<T> enumClass, String key) {
+        return optEnum(enumClass, key, null);
+    }
+
+    public <T extends Enum<T>> T optEnum(Class<T> enumClass, String key, T defaultValue) {
+        return getOrDefault(() -> getEnum(enumClass, key), defaultValue);
+    }
+
+    /**
+     * put a JSONObject at a particular key
+     * @param key
+     * @param object JSONObject
+     */
+    public void put(String key, JSONObject object) {
+        obj.add(key, object.obj);
+    }
+
+    /**
+     * put a JSONArray at a particular key
+     * @param key
+     * @param array JSONArray
+     */
     public void put(String key, JSONArray array) {
         obj.add(key, array.getArray());
+    }
+
+    /**
+     * put a Number at a particular key
+     * @param key
+     * @param value Number
+     */
+    public void put(String key, Number value) {
+        this.obj.addProperty(key, value);
+    }
+
+    /**
+     * put a String at a particular key
+     * @param key
+     * @param value Number
+     */
+    public void put(String key, String value) {
+        this.obj.addProperty(key, value);
     }
 
     public JSONArray getJSONArray(String key) {
@@ -234,21 +403,19 @@ public class JSONObject {
         obj.add(key, enumvalue == null ? JsonNull.INSTANCE : new JsonPrimitive(enumvalue.name()));
     }
 
-    public <T extends Enum<T>> T getEnum(Class<T> enumClass, String key) {
-        try {
-            String v = getProperty(key).getAsString();
-            return Enum.valueOf(enumClass, v);
-        } catch (IllegalArgumentException e) {
-            throw new JSONException("JSONObject[\"%s\"] is not an enum of type \"%s\".", key, enumClass.getSimpleName());
+    private JsonElement getProperty(String key) {
+        if (!obj.has(key)) {
+            throw new JSONException("JSONObject[\"%s\"] not found.", key);
         }
+        return obj.get(key);
     }
 
-    public <T extends Enum<T>> T optEnum(Class<T> enumClass, String key, T defaultValue) {
-        return getOrDefault(() -> getEnum(enumClass, key), defaultValue);
-    }
-
-    public <T extends Enum<T>> T optEnum(Class<T> enumClass, String key) {
-        return optEnum(enumClass, key, null);
+    private <T extends Number> T tryNumber(Supplier<T> supplier, String key) {
+        try {
+            return supplier.get();
+        } catch (NumberFormatException e) {
+            throw new JSONException("JSONObject[\"%s\"] is not a number.", key);
+        }
     }
 
     public String toString(int i) {
@@ -366,5 +533,13 @@ public class JSONObject {
     public Object query(String query) {
         JSONPointer pointer = JSONPointer.compile(query);
         return pointer.queryFrom(this);
+    }
+
+    private <T> T getOrDefault(Supplier<T> supplier, T defaultValue) {
+        try {
+            return supplier.get();
+        } catch (Exception e) {
+            return defaultValue;
+        }
     }
 }
