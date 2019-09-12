@@ -30,7 +30,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import java.io.StringWriter;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Iterator;
@@ -83,11 +83,20 @@ public class JSONObject {
     }
 
     /**
-     * @return the object as a JSON string
+     * @return the object as a JSON string with no formatting
      */
     @Override
     public String toString() {
         return Json.toJson(obj);
+    }
+
+    /**
+     * render the  object as a JSON String
+     * @param i (ignored due to limitations  in gson which uses a hardcoded indentation)
+     * @return a JSON  String
+     */
+    public String toString(int i) {
+        return Json.toPrettyJson(obj);
     }
 
     /**
@@ -148,6 +157,29 @@ public class JSONObject {
      */
     public JSONObject optJSONObject(String key) {
         return getOrDefault(() -> getJSONObject(key), null);
+    }
+
+    /**
+     * get the element as a JSONArray
+     * @param key
+     * @return the element as a JSONArray
+     * @throws JSONException  if it is not an array or the key does not exist
+     */
+    public JSONArray getJSONArray(String key) {
+        try {
+            return new JSONArray(getProperty(key).getAsJsonArray());
+        } catch (IllegalStateException e) {
+            throw new JSONException("JSONObject[\"%s\"] is not a JSONArray.", key);
+        }
+    }
+
+    /**
+     * optionally get the element as a JSONArray
+     * @param key
+     * @return the element as a JSONArray or null if it doesn't exist or is not an array
+     */
+    public JSONArray optJSONArray(String key) {
+        return getOrDefault(() -> getJSONArray(key), null);
     }
 
     /**
@@ -334,6 +366,14 @@ public class JSONObject {
         return getOrDefault(() -> getBigDecimal(key), defaultValue);
     }
 
+    /**
+     * get element as a enum value
+     * @param enumClass a enum class
+     * @param key
+     * @param <T> the type of enum you want
+     * @return the value as a enum of T
+     * @throws JSONException  if it does not map to a enum of T or the key does not exist
+     */
     public <T extends Enum<T>> T getEnum(Class<T> enumClass, String key) {
         try {
             String v = getProperty(key).getAsString();
@@ -342,11 +382,25 @@ public class JSONObject {
             throw new JSONException("JSONObject[\"%s\"] is not an enum of type \"%s\".", key, enumClass.getSimpleName());
         }
     }
-    
+
+    /**
+     * get element as a enum value or null if the value cannot be mapped
+     * @param enumClass a enum class
+     * @param key
+     * @param <T> the type of enum you want
+     * @return the value as a enum of T
+     */
     public <T extends Enum<T>> T optEnum(Class<T> enumClass, String key) {
         return optEnum(enumClass, key, null);
     }
 
+    /**
+     * get element as a enum value or a default value if the value cannot be mapped
+     * @param enumClass a enum class
+     * @param key
+     * @param <T> the type of enum you want
+     * @return the value as a enum of T
+     */
     public <T extends Enum<T>> T optEnum(Class<T> enumClass, String key, T defaultValue) {
         return getOrDefault(() -> getEnum(enumClass, key), defaultValue);
     }
@@ -370,6 +424,15 @@ public class JSONObject {
     }
 
     /**
+     * put a boolean at a particular key
+     * @param key
+     * @param value
+     */
+    public void put(String key, Boolean value){
+        obj.addProperty(key, value);
+    }
+
+    /**
      * put a Number at a particular key
      * @param key
      * @param value Number
@@ -387,53 +450,46 @@ public class JSONObject {
         this.obj.addProperty(key, value);
     }
 
-    public JSONArray getJSONArray(String key) {
-        try {
-            return new JSONArray(getProperty(key).getAsJsonArray());
-        } catch (IllegalStateException e) {
-            throw new JSONException("JSONObject[\"%s\"] is not a JSONArray.", key);
-        }
-    }
-
-    public JSONArray optJSONArray(String key) {
-        return getOrDefault(() -> getJSONArray(key), null);
-    }
-
+    /**
+     * put a enum at a particular key. The enum will be stored as a string by name
+     * @param key
+     * @param enumvalue a enum
+     */
     public <T extends Enum<T>> void put(String key, T enumvalue) {
         obj.add(key, enumvalue == null ? JsonNull.INSTANCE : new JsonPrimitive(enumvalue.name()));
     }
 
-    private JsonElement getProperty(String key) {
-        if (!obj.has(key)) {
-            throw new JSONException("JSONObject[\"%s\"] not found.", key);
-        }
-        return obj.get(key);
-    }
-
-    private <T extends Number> T tryNumber(Supplier<T> supplier, String key) {
-        try {
-            return supplier.get();
-        } catch (NumberFormatException e) {
-            throw new JSONException("JSONObject[\"%s\"] is not a number.", key);
-        }
-    }
-
-    public String toString(int i) {
-        return Json.toPrettyJson(obj);
-    }
-
-    public void write(StringWriter sw) {
+    /**
+     * Write the JSON to a Writer
+     * @param sw the writer
+     */
+    public void write(Writer sw) {
         Json.write(obj, sw);
     }
 
-    public void write(StringWriter sw, int index, int i1) {
+    /**
+     * Write the JSON to a Writer with a pretty format
+     * due to limitations in GSON the index and indent are currently ignored
+     * @param sw the writer
+     */
+    public void write(Writer sw, int indentFactor, int indent) {
         Json.writePretty(obj, sw);
     }
 
+    /**
+     * remove a element by key name
+     * @param key
+     */
     public void remove(String key) {
         obj.remove(key);
     }
 
+    /**
+     * Add a element to a JSONArray in a element. If the value is not
+     * already an array it will be made one with the original value as the first element
+     * @param key
+     * @param additionalValue value to append to the array
+     */
     public void accumulate(String key, Object additionalValue) {
         requireNonNull(key, "Null key.");
         if (!obj.has(key)) {
@@ -451,6 +507,12 @@ public class JSONObject {
         }
     }
 
+    /**
+     * appends to an existing array
+     * @param key
+     * @param value
+     * @throws JSONException if the value exists and is not an array
+     */
     public void append(String key, Object value) {
         requireNonNull(key, "Null key.");
         if (has(key)) {
@@ -464,6 +526,11 @@ public class JSONObject {
         }
     }
 
+    /**
+     * increments a numeric value by 1, or creates it with a value of 1 if
+     * it does not exist.
+     * @param key
+     */
     public void increment(String key) {
         if (!has(key)) {
             put(key, 1);
@@ -479,6 +546,12 @@ public class JSONObject {
         }
     }
 
+    /**
+     * put a value to a key only if it does not exist
+     * @param key
+     * @param value
+     * @throws JSONException if the key exists.
+     */
     public void putOnce(String key, Object value) {
         if(has(key)){
             throw new JSONException("Duplicate key \"foo\"");
@@ -486,6 +559,12 @@ public class JSONObject {
         put(key, value);
     }
 
+    /**
+     * put an object to a key.
+     * the value must be a JSON type
+     * @param key
+     * @param value
+     */
     public void put(String key, Object value){
         if(value == null){
             put(key, (String) value);
@@ -503,10 +582,12 @@ public class JSONObject {
 
     }
 
-    public void put(String key, Boolean value){
-        obj.addProperty(key, value);
-    }
-
+    /**
+     * optional put a value at a key as long as both they key and value are not null
+     * otherwise it does nothing
+     * @param key
+     * @param value
+     */
     public void putOpt(String key, Object value) {
         if(key == null || value == null){
             return;
@@ -514,25 +595,61 @@ public class JSONObject {
         put(key, value);
     }
 
+    /**
+     * get all the keys as a set
+     * @return a set of keys
+     */
     public Set<String> keySet() {
         return obj.keySet();
     }
 
+    /**
+     * get a iterator for the keyset
+     * @return a Iterator of keys
+     */
     public Iterator<String> keys() {
         return obj.keySet().iterator();
     }
 
+    /**
+     * get object as a map
+     */
     public Map<String, Object> toMap() {
         return Json.toMap(obj);
     }
 
+    /**
+     * get the key names as a JSONArray
+     * @return a JSONArray of keys
+     */
     public JSONArray names() {
         return new JSONArray(keySet());
     }
 
+    /**
+     * query the object graph using JSONPointer
+     * https://tools.ietf.org/html/rfc6901
+     *
+     * @return the thing you asked for
+     */
     public Object query(String query) {
         JSONPointer pointer = JSONPointer.compile(query);
         return pointer.queryFrom(this);
+    }
+
+    private JsonElement getProperty(String key) {
+        if (!obj.has(key)) {
+            throw new JSONException("JSONObject[\"%s\"] not found.", key);
+        }
+        return obj.get(key);
+    }
+
+    private <T extends Number> T tryNumber(Supplier<T> supplier, String key) {
+        try {
+            return supplier.get();
+        } catch (NumberFormatException e) {
+            throw new JSONException("JSONObject[\"%s\"] is not a number.", key);
+        }
     }
 
     private <T> T getOrDefault(Supplier<T> supplier, T defaultValue) {

@@ -28,12 +28,19 @@ package kong.unirest.json;
 import kong.unirest.TestUtil;
 import org.junit.Test;
 import org.json.JSONPointer;
+import org.json.JSONObject;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
 public class ClarificationTest {
+
+    @Test
+    public void name() {
+        new JSONObject().toString();
+    }
+
     @Test
     public void toStringReturnsOriginalString() {
         assertEquals("/foo/g~0h/baz", new JSONPointer("/foo/g~h/baz").toString());

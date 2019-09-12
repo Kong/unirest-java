@@ -30,46 +30,43 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Collection;
 import java.util.Map;
 
-public class Json {
+class Json {
     private static final Gson GSON = new Gson();
     private static final Gson PRETTY_GSON = new Gson().newBuilder().setPrettyPrinting().create();
 
-    public static JsonObject toJsonObject(Map map){
+    static JsonObject toJsonObject(Map map){
         return fromJson(Json.toJson(map), JsonObject.class);
     }
-    public static <T> T fromJson(String json, Class<T> classOfT) {
+
+    static <T> T fromJson(String json, Class<T> classOfT) {
         return GSON.fromJson(json, classOfT);
     }
 
-    public static String toJson(Object collection) {
+    static String toJson(Object collection) {
         return GSON.toJson(collection);
     }
 
-    public static void write(JsonElement obj, StringWriter sw) {
+    public static void write(JsonElement obj, Writer sw) {
         GSON.toJson(obj, sw);
     }
 
-    public static void writePretty(JsonElement obj, StringWriter sw) {
+    static void writePretty(JsonElement obj, Writer sw) {
         PRETTY_GSON.toJson(obj, sw);
     }
 
-    public static JsonArray toJsonArray(Collection collection) {
+    static JsonArray toJsonArray(Collection collection) {
         return fromJson(Json.toJson(collection), JsonArray.class);
     }
 
-    public static JsonArray toJsonArray(Object collection) {
-        return fromJson(Json.toJson(collection), JsonArray.class);
-    }
-
-    public static String toPrettyJson(JsonElement obj) {
+    static String toPrettyJson(JsonElement obj) {
         return PRETTY_GSON.toJson(obj);
     }
 
-    public static Map<String, Object> toMap(JsonObject obj) {
+    static Map<String, Object> toMap(JsonObject obj) {
         return GSON.fromJson(obj, Map.class);
     }
 }
