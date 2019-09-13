@@ -25,10 +25,7 @@
 
 package kong.unirest.json;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 
 import java.io.Writer;
 import java.util.Collection;
@@ -43,7 +40,11 @@ class Json {
     }
 
     static <T> T fromJson(String json, Class<T> classOfT) {
-        return GSON.fromJson(json, classOfT);
+        try {
+            return GSON.fromJson(json, classOfT);
+        }catch (JsonSyntaxException e){
+            throw new JSONException("Invalid JSON");
+        }
     }
 
     static String toJson(Object collection) {

@@ -36,18 +36,51 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
+ * https://json.org/
+ * https://tools.ietf.org/html/rfc7159#section-4
  * Represents a JSON Array
  */
 public class JSONArray implements Iterable<Object> {
 
     private transient final JsonArray obj;
 
+    /**
+     * construct a empty JSONArray
+     */
+    public JSONArray() {
+        obj = new JsonArray();
+    }
+
+    /**
+     * construct a JSONArray from a String
+     * @param jsonString
+     */
     public JSONArray(String jsonString) {
         obj = Json.fromJson(jsonString, JsonArray.class);
     }
 
-    public JSONArray() {
-        obj = new JsonArray();
+    /**
+     * Construct a JSONArray from a collection.
+     * @param collection
+     */
+    public JSONArray(Collection<?> collection) {
+        Collection pre = collection.stream().map(this::wrap).collect(Collectors.toList());
+        obj = Json.toJsonArray(pre);
+    }
+
+    /**
+     * Construct a JSONArray from a typed  array (int[]).
+     * @param array
+     */
+    public JSONArray(Object array) {
+        if(array == null || !array.getClass().isArray()){
+            throw new JSONException("JSONArray initial value should be an array.");
+        }
+        Collection pre = new ArrayList();
+        for(Object o : (Object[])array){
+            pre.add(wrap(o));
+        }
+        this.obj = Json.toJsonArray(pre);
     }
 
     JSONArray(JsonArray array) {
@@ -58,66 +91,58 @@ public class JSONArray implements Iterable<Object> {
         obj = jsonElement.getAsJsonArray();
     }
 
-    public JSONArray(Collection<?> collection) {
-        Collection pre = collection.stream().map(this::wrap).collect(Collectors.toList());
-        obj = Json.toJsonArray(pre);
-    }
-
-    public JSONArray(Object array) {
-        if(array == null || !array.getClass().isArray()){
-            throw new JSONException("JSONArray initial value should be a string or collection or array.");
-        }
-        Collection pre = new ArrayList();
-        for(Object o : (Object[])array){
-            pre.add(wrap(o));
-        }
-        this.obj = Json.toJsonArray(pre);
-    }
-
-    private Object wrap(Object o) {
-        if(o instanceof Iterable){
-            return StreamSupport.stream(((Iterable)o).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
-        return o;
-    }
-
-    private <T> T getOrDefault(Supplier<T> supplier, T defaultValue) {
-        try {
-            return supplier.get();
-        } catch (Exception e) {
-            return defaultValue;
-        }
-    }
-
-    private <T extends Number> T tryNumber(Supplier<T> supplier, int index) {
-        try {
-            return supplier.get();
-        } catch (NumberFormatException e) {
-            throw new JSONException("JSONArray[%s] is not a number.", index);
-        }
-    }
-
+    /**
+     * @return The length of the array
+     */
     public int length() {
         return obj.size();
     }
 
-    public JSONObject getJSONObject(int index) {
-        try {
-            return new JSONObject(getElement(index));
-        } catch (IllegalStateException e) {
-            throw new JSONException("JSONArray[%s] is not a JSONObject.", index);
-        }
-    }
-
+    /**
+     * add a Number to the array
+     * @param num
+     */
     public void put(Number num) {
         obj.add(num);
     }
 
+    /**
+     * add a Boolean to the array
+     * @param bool
+     */
     public void put(Boolean bool){
         obj.add(bool);
     }
 
+    /**
+     * add a String to the array
+     * @param str
+     */
+    public void put(String str) {
+        obj.add(str);
+    }
+
+    /**
+     * add a JSONObject to the array as a map
+     * @param map
+     */
+    public void put(Map map){
+        obj.add(Json.toJsonObject(map));
+    }
+
+    /**
+     * add a JSONArray to the array
+     * @param collection
+     */
+    public void put(Collection collection){
+        obj.add(Json.toJsonArray(collection));
+    }
+
+    /**
+     * add a Object to the array
+     * Must be a valid JSON type or else it will be turned into a string
+     * @param object
+     */
     public void put(Object object) {
         if(object == null){
             obj.add(JsonNull.INSTANCE);
@@ -132,77 +157,151 @@ public class JSONArray implements Iterable<Object> {
         } else {
             put(String.valueOf(object));
         }
-
     }
 
-    public void put(String str) {
-        obj.add(str);
-    }
-
-    public void put(Map map){
-        obj.add(Json.toJsonObject(map));
-    }
-
-    public void put(Collection collection){
-        obj.add(Json.toJsonArray(collection));
-    }
-
-    private JsonElement getElement(int index) {
+    /**
+     * get a JSONObject at a specified index
+     * @param index
+     * @return a JSONObject
+     * @throws JSONException if the element is not a JSONObject or index is out of bounds
+     */
+    public JSONObject getJSONObject(int index) {
         try {
-            return obj.get(index);
-        } catch (IndexOutOfBoundsException e) {
-            throw new JSONException("JSONArray[%s] not found.", index);
+            return new JSONObject(getElement(index));
+        } catch (IllegalStateException e) {
+            throw new JSONException("JSONArray[%s] is not a JSONObject.", index);
         }
     }
 
+    /**
+     * get a Double at a specified index
+     * @param index
+     * @return a Double
+     * @throws JSONException if the element is not a Double or index is out of bounds
+     */
     public Double getDouble(int index) {
         return tryNumber(() -> getElement(index).getAsDouble(), index);
     }
 
+    /**
+     * get a Double at a specified index
+     * @param index
+     * @return a Double
+     * @throws JSONException if the element is not a Double or index is out of bounds
+     */
     public Double optDouble(int index) {
         return optDouble(index, Double.NaN);
     }
 
+    /**
+     * get a Double at a specified index, or a default value
+     * if the value does not exist or is not a double
+     * @param index
+     * @param defaultValue
+     * @return a Double
+     */
     public double optDouble(int index, double defaultValue) {
         return getOrDefault(() -> getDouble(index), defaultValue);
     }
 
+    /**
+     * get a Float at a specified index
+     * @param index
+     * @return a Float
+     * @throws JSONException if the element is not a Float or index is out of bounds
+     */
     public Float getFloat(int index) {
         return tryNumber(() -> getElement(index).getAsFloat(), index);
     }
 
+    /**
+     * get a Float at a specified index, or a NaN value
+     * if the value does not exist or is not a Float
+     * @param index
+     * @return a Float
+     */
     public Float optFloat(int index) {
         return optFloat(index, Float.NaN);
     }
 
+    /**
+     * get a Float at a specified index, or a default value
+     * if the value does not exist or is not a Float
+     * @param index
+     * @param defaultValue
+     * @return a Float
+     */
     public Float optFloat(int index, float defaultValue) {
         return getOrDefault(() -> getFloat(index), defaultValue);
     }
 
+    /**
+     * get a long at a specified index
+     * @param index
+     * @return a long
+     * @throws JSONException if the element is not a long or index is out of bounds
+     */
     public long getLong(int index) {
         return tryNumber(() -> getElement(index).getAsLong(), index);
     }
 
+    /**
+     * get a long at a specified index, or 0
+     * if the value does not exist or is not a long
+     * @param index
+     * @return a long
+     */
     public long optLong(int index) {
         return optLong(index, 0L);
     }
 
+    /**
+     * get a long at a specified index, or a default value
+     * if the value does not exist or is not a long
+     * @param index
+     * @param defaultValue
+     * @return a long
+     */
     public long optLong(int index, long defaultValue) {
         return getOrDefault(() -> getLong(index), defaultValue);
     }
 
+    /**
+     * get a int at a specified index
+     * @param index
+     * @return a int
+     */
     public int getInt(int index) {
         return tryNumber(() -> getElement(index).getAsInt(), index);
     }
 
-    public int optInt(int index, int defaultValue) {
-        return getOrDefault(() -> getInt(index), defaultValue);
-    }
-
+    /**
+     * get a int at a specified index, or 0
+     * if the value does not exist or is not a int
+     * @param index
+     * @return a int
+     */
     public int optInt(int index) {
         return optInt(index, 0);
     }
 
+    /**
+     * get a int at a specified index, or a default value
+     * if the value does not exist or is not a int
+     * @param index
+     * @param defaultValue
+     * @return a long
+     * @throws JSONException if the element is not a int or index is out of bounds
+     */
+    public int optInt(int index, int defaultValue) {
+        return getOrDefault(() -> getInt(index), defaultValue);
+    }
+
+    /**
+     * get a BigInteger at a specified index
+     * @param index
+     * @return a BigInteger
+     */
     public BigInteger getBigInteger(int index) {
         return tryNumber(() -> getElement(index).getAsBigInteger(), index);
     }
@@ -379,5 +478,37 @@ public class JSONArray implements Iterable<Object> {
 
     JsonArray getArray(){
         return obj;
+    }
+
+    private Object wrap(Object o) {
+        if(o instanceof Iterable){
+            return StreamSupport.stream(((Iterable)o).spliterator(), false)
+                    .collect(Collectors.toList());
+        }
+        return o;
+    }
+
+    private JsonElement getElement(int index) {
+        try {
+            return obj.get(index);
+        } catch (IndexOutOfBoundsException e) {
+            throw new JSONException("JSONArray[%s] not found.", index);
+        }
+    }
+
+    private <T> T getOrDefault(Supplier<T> supplier, T defaultValue) {
+        try {
+            return supplier.get();
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    private <T extends Number> T tryNumber(Supplier<T> supplier, int index) {
+        try {
+            return supplier.get();
+        } catch (NumberFormatException e) {
+            throw new JSONException("JSONArray[%s] is not a number.", index);
+        }
     }
 }

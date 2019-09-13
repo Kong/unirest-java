@@ -36,10 +36,6 @@ import static org.junit.Assert.assertEquals;
 
 public class ClarificationTest {
 
-    @Test
-    public void name() {
-        new JSONObject().toString();
-    }
 
     @Test
     public void toStringReturnsOriginalString() {

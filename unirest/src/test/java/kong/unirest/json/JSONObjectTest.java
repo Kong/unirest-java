@@ -44,6 +44,13 @@ import static org.junit.Assert.*;
 public class JSONObjectTest {
 
     @Test
+    public void contructInvalid() {
+        TestUtil.assertException(() -> new JSONObject("foo"),
+                JSONException.class,
+                "Invalid JSON");
+    }
+
+    @Test
     public void simpleConvert() {
         String str = "{\"foo\": {\"baz\": 42}}";
 
