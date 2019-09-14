@@ -289,9 +289,15 @@ public class JSONArrayTest {
     @Test
     public void remove() {
         JSONArray array = new JSONArray("[1,2,3]");
-        array.remove(1);
 
+        assertEqualJson(2, array.remove(1));
         assertEquals("[1,3]", array.toString());
+    }
+
+    @Test
+    public void removeMissingIndex() {
+        JSONArray array = new JSONArray("[1,2,3]");
+        assertNull(array.remove(55));
     }
 
     @Test

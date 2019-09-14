@@ -25,9 +25,12 @@
 
 package kong.unirest.json;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonPrimitive;
 
-import java.io.StringWriter;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -74,7 +77,7 @@ public class JSONArray implements Iterable<Object> {
      */
     public JSONArray(Object array) {
         if(array == null || !array.getClass().isArray()){
-            throw new JSONException("JSONArray initial value should be an array.");
+            throw new JSONException("JSONArray initial value should be a string or collection or array.");
         }
         Collection pre = new ArrayList();
         for(Object o : (Object[])array){
@@ -96,6 +99,22 @@ public class JSONArray implements Iterable<Object> {
      */
     public int length() {
         return obj.size();
+    }
+
+    /**
+     * append a JSONObject to the end of the array
+     * @param object a JSONObject
+     */
+    public void put(JSONObject object) {
+        obj.add(object.asElement());
+    }
+
+    /**
+     * append a JSONArray as an element to the end of the array
+     * @param array a JSONArray
+     */
+    public void put(JSONArray array) {
+        obj.add(array.obj);
     }
 
     /**
@@ -139,6 +158,76 @@ public class JSONArray implements Iterable<Object> {
     }
 
     /**
+     * put a enum which will be put as the string name
+     * @param enumValues
+     * @param <T> a enum type
+     */
+    public <T extends Enum> void put(T enumValues) {
+        obj.add(enumValues.name());
+    }
+
+    /**
+     * put a Number at a specific instance
+     * if the index is beyond the currently length the array will be buffered with nulls
+     * @param index
+     * @param number
+     */
+    public void put(int index, Number number) {
+        put(index, number == null ? JsonNull.INSTANCE : new JsonPrimitive(number));
+    }
+
+    /**
+     * put a String at a specific index
+     * if the index is beyond the currently length the array will be buffered with nulls
+     * @param index
+     * @param string
+     */
+    public void put(int index, String string) {
+        put(index, string == null ? JsonNull.INSTANCE : new JsonPrimitive(string));
+    }
+
+    /**
+     * put a JSONObject as a map at a specific index
+     * if the index is beyond the currently length the array will be buffered with nulls
+     * @param index
+     * @param map
+     */
+    public void put(int index, Map map) {
+        put(index, Json.toJsonObject(map));
+    }
+
+    /**
+     * put a JSONArray at a specific index as a Collection
+     * if the index is beyond the currently length the array will be buffered with nulls
+     * @param index
+     * @param collection
+     */
+    public void put(int index, Collection collection) {
+        put(index, Json.toJsonArray(collection));
+    }
+
+    /**
+     * put a Enum name at a specific index as a string
+     * if the index is beyond the currently length the array will be buffered with nulls
+     * @param index
+     * @param enumValue
+     */
+    public <T extends Enum> void put(int index, T enumValue) {
+        put(index, enumValue == null ? null : enumValue.name());
+    }
+
+    private void put(int index, JsonElement o){
+        while(obj.size() < index + 1){
+            obj.add(JsonNull.INSTANCE);
+        }
+        if(index < obj.size()){
+            obj.set(index, o);
+        } else if (index == obj.size()){
+            obj.add(o);
+        }
+    }
+
+    /**
      * add a Object to the array
      * Must be a valid JSON type or else it will be turned into a string
      * @param object
@@ -160,6 +249,21 @@ public class JSONArray implements Iterable<Object> {
     }
 
     /**
+     * Removes the element at the specified position in this array. Shifts any subsequent elements
+     * to the left (subtracts one from their indices). Returns the element that was removed from
+     * the array.
+     * @param index index the index of the element to be removed
+     * @return the element previously at the specified position or null if the index did not exist.
+     */
+    public Object remove(int index) {
+        try {
+            return obj.remove(index);
+        }catch (IndexOutOfBoundsException e){
+            return  null;
+        }
+    }
+
+    /**
      * get a JSONObject at a specified index
      * @param index
      * @return a JSONObject
@@ -171,6 +275,16 @@ public class JSONArray implements Iterable<Object> {
         } catch (IllegalStateException e) {
             throw new JSONException("JSONArray[%s] is not a JSONObject.", index);
         }
+    }
+
+    /**
+     * get a JSONObject at a specified index or null if it does not exist
+     * or is not a valid JSONObject
+     * @param index
+     * @return a JSONObject
+     */
+    public JSONObject optJSONObject(int index) {
+        return getOrDefault(() -> new JSONObject(getElement(index).getAsJsonObject()), null);
     }
 
     /**
@@ -270,6 +384,7 @@ public class JSONArray implements Iterable<Object> {
      * get a int at a specified index
      * @param index
      * @return a int
+     * @throws JSONException if the element is not a int or index is out of bounds
      */
     public int getInt(int index) {
         return tryNumber(() -> getElement(index).getAsInt(), index);
@@ -290,8 +405,7 @@ public class JSONArray implements Iterable<Object> {
      * if the value does not exist or is not a int
      * @param index
      * @param defaultValue
-     * @return a long
-     * @throws JSONException if the element is not a int or index is out of bounds
+     * @return a int
      */
     public int optInt(int index, int defaultValue) {
         return getOrDefault(() -> getInt(index), defaultValue);
@@ -301,47 +415,81 @@ public class JSONArray implements Iterable<Object> {
      * get a BigInteger at a specified index
      * @param index
      * @return a BigInteger
+     * @throws JSONException if the element is not a BigInteger or index is out of bounds
      */
     public BigInteger getBigInteger(int index) {
         return tryNumber(() -> getElement(index).getAsBigInteger(), index);
     }
 
+    /**
+     * get a BigInteger at a specified index, or a default value
+     * if the value does not exist or is not a BigInteger
+     * @param index
+     * @param defaultValue
+     * @return a BigInteger
+     */
     public BigInteger optBigInteger(int index, BigInteger defaultValue) {
         return getOrDefault(() -> getBigInteger(index), defaultValue);
     }
 
+    /**
+     * get a BigDecimal at a specified index
+     * @param index
+     * @return a BigDecimal
+     * @throws JSONException if the element is not a BigDecimal or index is out of bounds
+     */
     public BigDecimal getBigDecimal(int index) {
         return tryNumber(() -> getElement(index).getAsBigDecimal(), index);
     }
 
+    /**
+     * get a BigDecimal at a specified index, or a default value
+     * if the value does not exist or is not a BigDecimal
+     * @param index
+     * @param defaultValue
+     * @return a BigDecimal
+     */
     public BigDecimal optBigDecimal(int index, BigDecimal defaultValue) {
         return getOrDefault(() -> getBigDecimal(index), defaultValue);
     }
 
+    /**
+     * get a String at a specified index
+     * @param index
+     * @return a String
+     * @throws JSONException if the element is not a String or index is out of bounds
+     */
     public String getString(int index) {
         return getElement(index).getAsString();
     }
 
-    public String optString(int index, String defaultValue) {
-        return getOrDefault(() -> getString(index), defaultValue);
-    }
-
+    /**
+     * get a String at a specified index, or an empty string
+     * if the value does not exist or is not a String
+     * @param index
+     * @return a String
+     */
     public String optString(int index) {
         return optString(index, "");
     }
 
-    public void put(JSONObject object) {
-        obj.add(object.asElement());
+    /**
+     * get a String at a specified index, or a default value
+     * if the value does not exist or is not a String
+     * @param index
+     * @param defaultValue
+     * @return a String
+     */
+    public String optString(int index, String defaultValue) {
+        return getOrDefault(() -> getString(index), defaultValue);
     }
 
-    public JSONObject optJSONObject(int index) {
-        return getOrDefault(() -> new JSONObject(getElement(index).getAsJsonObject()), null);
-    }
-
-    public void put(JSONArray array) {
-        obj.add(array.obj);
-    }
-
+    /**
+     * get a JSONArray at a specified index
+     * @param index
+     * @return a JSONArray
+     * @throws JSONException if the element is not a JSONArray or index is out of bounds
+     */
     public JSONArray getJSONArray(int index) {
         try {
             return new JSONArray(getElement(index).getAsJsonArray());
@@ -350,21 +498,14 @@ public class JSONArray implements Iterable<Object> {
         }
     }
 
+    /**
+     * get a String at a specified index, or null
+     * if the value does not exist or is not a JSONArray
+     * @param index
+     * @return a JSONArray
+     */
     public JSONArray optJSONArray(int index) {
         return getOrDefault(() -> getJSONArray(index), null);
-    }
-
-    @Override
-    public String toString() {
-        return Json.toJson(obj);
-    }
-
-    public String toString(int indent) {
-        return Json.toPrettyJson(obj);
-    }
-
-    public <T extends Enum> void put(T enumValues) {
-        obj.add(enumValues.name());
     }
 
     public <T extends Enum<T>> T getEnum(Class<T> enumClass, int index) {
@@ -385,72 +526,70 @@ public class JSONArray implements Iterable<Object> {
         return getOrDefault(() -> getEnum(enumClass, index), defaultValue);
     }
 
+    public Object get(int index) {
+        return  new ToObjectMapper().apply(obj.get(index));
+    }
+
+
+    /**
+     * returns the String representation of the JSONArray
+     * @return string json
+     */
+    @Override
+    public String toString() {
+        return Json.toJson(obj);
+    }
+
+    /**
+     * returns the String representation of the JSONArray
+     * @param indent  currently ignored until this is addressed by GSON
+     * @return string json
+     */
+    public String toString(int indent) {
+        return Json.toPrettyJson(obj);
+    }
+
+    /**
+     * return the array as a string delimited by a specific token
+     * @param token
+     * @return a token delimited array
+     */
     public String join(String token) {
         return StreamSupport.stream(obj.spliterator(), false)
                 .map(String::valueOf)
                 .collect(Collectors.joining(token));
     }
 
+    /**
+     * @return the iterator for the array
+     */
     @Override
     public Iterator<Object> iterator() {
         return (Iterator)toList().iterator();
     }
 
-    public Object get(int index) {
-        return  new ToObjectMapper().apply(obj.get(index));
-    }
-
-    public boolean equals(Object o) {
-        return o == this || o instanceof JsonArray && ((JSONArray)o).obj.equals(this.obj);
-    }
-
-    public int hashCode() {
-        return this.obj.hashCode();
-    }
-
-    public void write(StringWriter sw) {
+    /**
+     * Write the JSON to a Writer
+     * @param sw the writer
+     */
+    public void write(Writer sw) {
         Json.write(obj, sw);
     }
 
-    public void write(StringWriter sw, int index, int i1) {
+    /**
+     * Write the JSON to a Writer with a pretty format
+     * due to limitations in GSON the index and indent are currently ignored
+     * @param sw the writer
+     */
+    public void write(Writer sw, int index, int i1) {
         Json.writePretty(obj, sw);
     }
 
-    public void remove(int index) {
-        obj.remove(index);
-    }
-
-    public void put(int index, Number number) {
-        put(index, number == null ? JsonNull.INSTANCE : new JsonPrimitive(number));
-    }
-
-    public void put(int index, String string) {
-        put(index, string == null ? JsonNull.INSTANCE : new JsonPrimitive(string));
-    }
-
-    public void put(int index, Map map) {
-        put(index, Json.toJsonObject(map));
-    }
-
-    public void put(int index, Collection map) {
-        put(index, Json.toJsonArray(map));
-    }
-
-    public <T extends Enum> void put(int index, T e) {
-        put(index, e == null ? null : e.name());
-    }
-
-    private void put(int index, JsonElement o){
-        while(obj.size() < index + 1){
-            obj.add(JsonNull.INSTANCE);
-        }
-        if(index < obj.size()){
-            obj.set(index, o);
-        } else if (index == obj.size()){
-            obj.add(o);
-        }
-    }
-
+    /**
+     * indicates if a JSONArray has the same elements as another JSONArray
+     * @param o
+     * @return a bool
+     */
     public boolean similar(Object o) {
         if(!(o instanceof JSONArray)){
             return false;
@@ -459,11 +598,21 @@ public class JSONArray implements Iterable<Object> {
         return this.obj.equals(cst.obj);
     }
 
+    /**
+     * query the object graph using JSONPointer
+     * https://tools.ietf.org/html/rfc6901
+     *
+     * @return the thing you asked for
+     */
     public Object query(String pattern) {
         JSONPointer point = JSONPointer.compile(pattern);
         return point.queryFrom(this);
     }
 
+    /**
+     * Converts the JSONArray to a List
+     * @return a List
+     */
     public List toList() {
         List list = new ArrayList();
         for(int i = 0; i < obj.size(); i++){
@@ -472,8 +621,21 @@ public class JSONArray implements Iterable<Object> {
         return list;
     }
 
+    /**
+     * Indicates if the index does not exist or it's contents are null
+     * @param index
+     * @return
+     */
     public boolean isNull(int index) {
         return index >= obj.size() || obj.get(index).isJsonNull();
+    }
+
+    public boolean equals(Object o) {
+        return o == this || o instanceof JsonArray && ((JSONArray)o).obj.equals(this.obj);
+    }
+
+    public int hashCode() {
+        return this.obj.hashCode();
     }
 
     JsonArray getArray(){

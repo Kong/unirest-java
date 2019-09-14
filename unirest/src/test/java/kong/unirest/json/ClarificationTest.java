@@ -28,6 +28,7 @@ package kong.unirest.json;
 import kong.unirest.TestUtil;
 import org.junit.Test;
 import org.json.JSONPointer;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -36,6 +37,16 @@ import static org.junit.Assert.assertEquals;
 
 public class ClarificationTest {
 
+    @Test
+    public void name() {
+        JSONArray s = new JSONArray("[1]");
+        JSONObject o = new JSONObject();
+        System.out.println("s.remove(55) = " + s.remove(0));
+//        JSONArray array = new JSONArray("[1,2,3]");
+//        TestUtil.assertException(() -> array.remove(55),
+//                JSONException.class,
+//                "");
+    }
 
     @Test
     public void toStringReturnsOriginalString() {
@@ -62,7 +73,7 @@ public class ClarificationTest {
     }
 
     @Test
-    public void builder(){
+    public void builder() {
         JSONPointer pointer = JSONPointer.builder()
                 .append("foo")
                 .append(4)

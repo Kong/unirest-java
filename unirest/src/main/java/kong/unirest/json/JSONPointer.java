@@ -163,6 +163,7 @@ public class JSONPointer {
         }
         sb.append(c);
     }
+
     public Object queryFrom(Object object) throws JSONPointerException {
         if(section == null){
             return object;
