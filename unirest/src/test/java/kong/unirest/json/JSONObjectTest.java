@@ -1,8 +1,8 @@
 /**
  * The MIT License
- *
+ * <p>
  * Copyright for portions of unirest-java are held by Kong Inc (c) 2013.
- *
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -10,10 +10,10 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- *
+ * <p>
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -277,8 +277,8 @@ public class JSONObjectTest {
     @Test
     public void remove() {
         JSONObject obj = new JSONObject("{\"foo\": 42, \"bar\": true}");
-        obj.remove("foo");
-
+        assertEquals(42, obj.remove("foo"));
+        assertNull(obj.remove("nothing"));
         assertEquals("{\"bar\":true}", obj.toString());
     }
 
@@ -294,7 +294,7 @@ public class JSONObjectTest {
     public void putReplace() {
         JSONObject obj = new JSONObject("{\"bar\": 42}");
         assertEquals(42, obj.get("bar"));
-        obj.put("bar", 33);
+        assertSame(obj, obj.put("bar", 33));
         assertEquals(33, obj.get("bar"));
         assertException(() -> obj.put(null, "hi"), NullPointerException.class, "key == null");
     }
@@ -302,14 +302,14 @@ public class JSONObjectTest {
     @Test
     public void accumulateDoesNotCreate() {
         JSONObject obj = new JSONObject();
-        obj.accumulate("bar", 42);
+        assertSame(obj, obj.accumulate("bar", 42));
         assertEquals(0, obj.length());
     }
 
     @Test
     public void accumulate() {
         JSONObject obj = new JSONObject("{\"bar\": 42}");
-        obj.accumulate("bar", 33);
+        assertSame(obj, obj.accumulate("bar", 33));
         assertEquals(2, obj.getJSONArray("bar").length());
         assertEquals(42, obj.getJSONArray("bar").get(0));
         assertEquals(33, obj.getJSONArray("bar").get(1));
@@ -325,7 +325,7 @@ public class JSONObjectTest {
     @Test
     public void append() {
         JSONObject obj = new JSONObject();
-        obj.append("bar", 42);
+        assertSame(obj, obj.append("bar", 42));
         obj.append("bar", 33);
         assertEquals(2, obj.getJSONArray("bar").length());
         assertEquals(42, obj.getJSONArray("bar").get(0));
@@ -342,7 +342,7 @@ public class JSONObjectTest {
     @Test
     public void appendToNotAnArrary() {
         JSONObject obj = new JSONObject();
-        obj.put("bar", "not");
+        assertSame(obj, obj.put("bar", "not"));
         assertException(() -> obj.append("bar", 33),
                 JSONException.class,
                 "JSONObject[\"bar\"] is not a JSONArray.");
@@ -351,18 +351,18 @@ public class JSONObjectTest {
     @Test
     public void increment() {
         JSONObject obj = new JSONObject();
-        obj.increment("cool-beans");
+        assertSame(obj, obj.increment("cool-beans"));
         assertEquals(1, obj.get("cool-beans"));
-        obj.increment("cool-beans");
-        obj.increment("cool-beans");
-        obj.increment("cool-beans");
+        obj.increment("cool-beans")
+                .increment("cool-beans")
+                .increment("cool-beans");
         assertEquals(4, obj.get("cool-beans"));
     }
 
     @Test
     public void incrementDouble() {
         JSONObject obj = new JSONObject();
-        obj.put("cool-beans", 1.5);
+        assertSame(obj, obj.put("cool-beans", 1.5));
         obj.increment("cool-beans");
         assertEquals(2.5, obj.get("cool-beans"));
     }
@@ -371,7 +371,7 @@ public class JSONObjectTest {
     @Test
     public void putOnce() {
         JSONObject obj = new JSONObject();
-        obj.putOnce("foo", "bar");
+        assertSame(obj, obj.putOnce("foo", "bar"));
         assertJSONEx(() -> obj.putOnce("foo", "baz"), "Duplicate key \"foo\"");
         assertEquals("bar", obj.getString("foo"));
     }
@@ -379,7 +379,7 @@ public class JSONObjectTest {
     @Test
     public void optPut() {
         JSONObject obj = new JSONObject();
-        obj.putOpt("foo", "bar");
+        assertSame(obj, obj.putOpt("foo", "bar"));
         obj.putOpt(null, "bar");
         obj.putOpt("foo", null);
         assertEquals("bar", obj.get("foo"));
@@ -418,7 +418,7 @@ public class JSONObjectTest {
 
         Map map = obj.toMap();
         assertEquals(55.0, map.get("baz"));
-        JSONObject sub = (JSONObject)obj.get("foo");
+        JSONObject sub = (JSONObject) obj.get("foo");
         assertEquals(42, sub.get("bar"));
     }
 
@@ -444,7 +444,7 @@ public class JSONObjectTest {
         JSONAssert.assertEquals(subObj.toString(), value.toString(), true);
     }
 
-    public static void isTypeAndValue(Object o, Class<?> type, Object value){
+    public static void isTypeAndValue(Object o, Class<?> type, Object value) {
         assertEquals(o, value);
         assertTrue(type.isInstance(o));
     }

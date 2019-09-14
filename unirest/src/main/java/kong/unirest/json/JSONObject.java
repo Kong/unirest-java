@@ -113,7 +113,7 @@ public class JSONObject {
     }
 
     /**
-     * @param key
+     * @param key the key element to operate on
      * @return indicates that the structure has this key
      */
     public boolean has(String key) {
@@ -129,7 +129,7 @@ public class JSONObject {
 
     /**
      * get and element by key as its native object
-     * @param key
+     * @param key the key element to operate on
      * @return the object, this could be an object, array or primitive
      */
     public Object get(String key) {
@@ -138,7 +138,7 @@ public class JSONObject {
 
     /**
      * get the element as a JSONObject
-     * @param key
+     * @param key the key element to operate on
      * @return the element as a JSONObject
      * @throws JSONException  if it is not a object or the key does not exist
      */
@@ -152,7 +152,7 @@ public class JSONObject {
 
     /**
      * get the element as a JSONObject
-     * @param key
+     * @param key the key element to operate on
      * @return an object or null if it is not an object or the key does not exist
      */
     public JSONObject optJSONObject(String key) {
@@ -161,7 +161,7 @@ public class JSONObject {
 
     /**
      * get the element as a JSONArray
-     * @param key
+     * @param key the key element to operate on
      * @return the element as a JSONArray
      * @throws JSONException  if it is not an array or the key does not exist
      */
@@ -175,7 +175,7 @@ public class JSONObject {
 
     /**
      * optionally get the element as a JSONArray
-     * @param key
+     * @param key the key element to operate on
      * @return the element as a JSONArray or null if it doesn't exist or is not an array
      */
     public JSONArray optJSONArray(String key) {
@@ -184,7 +184,7 @@ public class JSONObject {
 
     /**
      * get a element property as a string
-     * @param key
+     * @param key the key element to operate on
      * @return a string representation of the value
      * @throws JSONException if the key does not exist
      */
@@ -194,7 +194,7 @@ public class JSONObject {
 
     /**
      * get a element property as a string
-     * @param key
+     * @param key the key element to operate on
      * @return a string representation of the value or null of it doesn't exist
      */
     public String optString(String key) {
@@ -203,7 +203,7 @@ public class JSONObject {
 
     /**
      * get a element property as a string
-     * @param key
+     * @param key the key element to operate on
      * @return a string representation of the value or default value
      */
     public String optString(String key, String defaultValue) {
@@ -212,7 +212,7 @@ public class JSONObject {
 
     /**
      * get the value as a double
-     * @param key
+     * @param key the key element to operate on
      * @return the value
      * @throws JSONException if the object is not a number or does not exist
      */
@@ -222,7 +222,7 @@ public class JSONObject {
 
     /**
      * the value as double or NaN
-     * @param key
+     * @param key the key element to operate on
      * @return the value as a double or NaN if the key doesn't exist or the value is not a number
      */
     public double optDouble(String key) {
@@ -231,7 +231,7 @@ public class JSONObject {
 
     /**
      * get the  value as a double or default value
-     * @param key
+     * @param key the key element to operate on
      * @param defaultValue
      * @return return value as double or a default value if value is not viable
      */
@@ -241,7 +241,7 @@ public class JSONObject {
 
     /**
      * get the value as a float
-     * @param key
+     * @param key the key element to operate on
      * @return the value
      * @throws JSONException if the object is not a number or does not exist
      */
@@ -251,7 +251,7 @@ public class JSONObject {
 
     /**
      * the value as double or NaN
-     * @param key
+     * @param key the key element to operate on
      * @return the value as a float or NaN if the key doesn't exist or the value is not a number
      */
     public float optFloat(String key) {
@@ -260,7 +260,7 @@ public class JSONObject {
 
     /**
      * get the  value as a float or default value
-     * @param key
+     * @param key the key element to operate on
      * @param defaultValue
      * @return return value as double or a default value if value is not viable
      */
@@ -270,7 +270,7 @@ public class JSONObject {
 
     /**
      * get the value as a long
-     * @param key
+     * @param key the key element to operate on
      * @return the value
      * @throws JSONException if the object is not a number or does not exist
      */
@@ -280,7 +280,7 @@ public class JSONObject {
 
     /**
      * the value as long or NaN
-     * @param key
+     * @param key the key element to operate on
      * @return the value as a long or NaN if the key doesn't exist or the value is not a number
      */
     public long optLong(String key) {
@@ -289,7 +289,7 @@ public class JSONObject {
 
     /**
      * get the  value as a long or default value
-     * @param key
+     * @param key the key element to operate on
      * @param defaultValue
      * @return return value as long or a default value if value is not viable
      */
@@ -299,7 +299,7 @@ public class JSONObject {
 
     /**
      * get an element property as a int
-     * @param key
+     * @param key the key element to operate on
      * @return the element as a int if it can be cast to one.
      * @throws JSONException  if it is not a number or the key does not exist
      */
@@ -309,7 +309,7 @@ public class JSONObject {
 
     /**
      * the value as int or NaN
-     * @param key
+     * @param key the key element to operate on
      * @return the value as a int or 0 if the key doesn't exist or the value is not a number
      */
     public int optInt(String key) {
@@ -318,7 +318,7 @@ public class JSONObject {
 
     /**
      * get the  value as a long or default value
-     * @param key
+     * @param key the key element to operate on
      * @param defaultValue
      * @return return value as long or a default value if value is not viable
      */
@@ -328,7 +328,7 @@ public class JSONObject {
 
     /**
      * get an element property as a BigInteger
-     * @param key
+     * @param key the key element to operate on
      * @return the element as a BigInteger if it can be cast to one.
      * @throws JSONException  if it is not a number or the key does not exist
      */
@@ -338,7 +338,7 @@ public class JSONObject {
 
     /**
      * get the  value as a BigInteger or default value
-     * @param key
+     * @param key the key element to operate on
      * @param defaultValue
      * @return return value as BigInteger or a default value if value is not viable
      */
@@ -348,7 +348,7 @@ public class JSONObject {
 
     /**
      * get an element property as a BigDecimal
-     * @param key
+     * @param key the key element to operate on
      * @return the element as a BigInteger if it can be cast to one.
      * @throws JSONException  if it is not a number or the key does not exist
      */
@@ -358,7 +358,7 @@ public class JSONObject {
 
     /**
      * get the  value as a BigDecimal or default value
-     * @param key
+     * @param key the key element to operate on
      * @param defaultValue
      * @return return value as BigDecimal or a default value if value is not viable
      */
@@ -369,7 +369,7 @@ public class JSONObject {
     /**
      * get element as a enum value
      * @param enumClass a enum class
-     * @param key
+     * @param key the key element to operate on
      * @param <T> the type of enum you want
      * @return the value as a enum of T
      * @throws JSONException  if it does not map to a enum of T or the key does not exist
@@ -386,7 +386,7 @@ public class JSONObject {
     /**
      * get element as a enum value or null if the value cannot be mapped
      * @param enumClass a enum class
-     * @param key
+     * @param key the key element to operate on
      * @param <T> the type of enum you want
      * @return the value as a enum of T
      */
@@ -397,7 +397,7 @@ public class JSONObject {
     /**
      * get element as a enum value or a default value if the value cannot be mapped
      * @param enumClass a enum class
-     * @param key
+     * @param key the key element to operate on
      * @param <T> the type of enum you want
      * @return the value as a enum of T
      */
@@ -407,56 +407,68 @@ public class JSONObject {
 
     /**
      * put a JSONObject at a particular key
-     * @param key
+     * @param key the key element to operate on
      * @param object JSONObject
+     * @return this JSONObject
      */
-    public void put(String key, JSONObject object) {
+    public JSONObject put(String key, JSONObject object) {
         obj.add(key, object.obj);
+        return this;
     }
 
     /**
      * put a JSONArray at a particular key
-     * @param key
+     * @param key the key element to operate on
      * @param array JSONArray
+     * @return this JSONObject
      */
-    public void put(String key, JSONArray array) {
+    public JSONObject put(String key, JSONArray array) {
         obj.add(key, array.getArray());
+        return this;
     }
 
     /**
      * put a boolean at a particular key
-     * @param key
+     * @param key the key element to operate on
      * @param value
+     * @return this JSONObject
      */
-    public void put(String key, Boolean value){
+    public JSONObject put(String key, Boolean value){
         obj.addProperty(key, value);
+        return this;
     }
 
     /**
      * put a Number at a particular key
-     * @param key
+     * @param key the key element to operate on
      * @param value Number
+     * @return this JSONObject
      */
-    public void put(String key, Number value) {
+    public JSONObject put(String key, Number value) {
         this.obj.addProperty(key, value);
+        return this;
     }
 
     /**
      * put a String at a particular key
-     * @param key
+     * @param key the key element to operate on
      * @param value Number
+     * @return this JSONObject
      */
-    public void put(String key, String value) {
+    public JSONObject put(String key, String value) {
         this.obj.addProperty(key, value);
+        return this;
     }
 
     /**
      * put a enum at a particular key. The enum will be stored as a string by name
-     * @param key
+     * @param key the key element to operate on
      * @param enumvalue a enum
+     * @return this JSONObject
      */
-    public <T extends Enum<T>> void put(String key, T enumvalue) {
+    public <T extends Enum<T>> JSONObject put(String key, T enumvalue) {
         obj.add(key, enumvalue == null ? JsonNull.INSTANCE : new JsonPrimitive(enumvalue.name()));
+        return this;
     }
 
     /**
@@ -478,22 +490,29 @@ public class JSONObject {
 
     /**
      * remove a element by key name
-     * @param key
+     * @param key the key element to operate on
+     * @return the object value that was removed
      */
-    public void remove(String key) {
+    public Object remove(String key) {
+        if(!has(key)){
+            return null;
+        }
+        Object o = get(key);
         obj.remove(key);
+        return o;
     }
 
     /**
      * Add a element to a JSONArray in a element. If the value is not
      * already an array it will be made one with the original value as the first element
-     * @param key
+     * @param key the key element to operate on
      * @param additionalValue value to append to the array
+     * @return this JSONObject
      */
-    public void accumulate(String key, Object additionalValue) {
+    public JSONObject accumulate(String key, Object additionalValue) {
         requireNonNull(key, "Null key.");
         if (!obj.has(key)) {
-            return;
+            return this;
         }
         Object existing = get(key);
         if (existing instanceof JSONArray) {
@@ -505,15 +524,17 @@ public class JSONObject {
             a.put(additionalValue);
             put(key, a);
         }
+        return  this;
     }
 
     /**
      * appends to an existing array
-     * @param key
+     * @param key the key element to operate on
      * @param value
      * @throws JSONException if the value exists and is not an array
+     * @return this JSONObject
      */
-    public void append(String key, Object value) {
+    public JSONObject append(String key, Object value) {
         requireNonNull(key, "Null key.");
         if (has(key)) {
             JSONArray arr = getJSONArray(key);
@@ -524,14 +545,16 @@ public class JSONObject {
             arr.put(value);
             put(key, arr);
         }
+        return this;
     }
 
     /**
      * increments a numeric value by 1, or creates it with a value of 1 if
      * it does not exist.
-     * @param key
+     * @param key the key element to operate on
+     * @return this JSONObject
      */
-    public void increment(String key) {
+    public JSONObject increment(String key) {
         if (!has(key)) {
             put(key, 1);
         } else {
@@ -544,28 +567,31 @@ public class JSONObject {
                 put(key, ((Double) n) + 1);
             }
         }
+        return this;
     }
 
     /**
      * put a value to a key only if it does not exist
-     * @param key
+     * @param key the key element to operate on
      * @param value
      * @throws JSONException if the key exists.
+     * @return this JSONObject
      */
-    public void putOnce(String key, Object value) {
+    public JSONObject putOnce(String key, Object value) {
         if(has(key)){
             throw new JSONException("Duplicate key \"foo\"");
         }
-        put(key, value);
+        return put(key, value);
     }
 
     /**
      * put an object to a key.
      * the value must be a JSON type
-     * @param key
+     * @param key the key element to operate on
      * @param value
+     * @return this JSONObject
      */
-    public void put(String key, Object value){
+    public JSONObject put(String key, Object value){
         if(value == null){
             put(key, (String) value);
         } else if (value instanceof Number){
@@ -579,20 +605,21 @@ public class JSONObject {
         } else {
             put(key, String.valueOf(value));
         }
-
+        return this;
     }
 
     /**
      * optional put a value at a key as long as both they key and value are not null
      * otherwise it does nothing
-     * @param key
+     * @param key the key element to operate on
      * @param value
+     * @return this JSONObject
      */
-    public void putOpt(String key, Object value) {
+    public JSONObject putOpt(String key, Object value) {
         if(key == null || value == null){
-            return;
+            return this;
         }
-        put(key, value);
+        return put(key, value);
     }
 
     /**
