@@ -45,6 +45,7 @@ public class ClarificationTest {
         System.out.println("s.remove(55) = " + s.remove(0));
         System.out.println("s.length() = " + s.length());
         assertEquals(null, o.remove("foo"));
+        assertEquals(null, s.remove(44));
         o.put("bar", "X");
         assertEquals("X",  o.remove("bar"));
 //        JSONArray array = new JSONArray("[1,2,3]");

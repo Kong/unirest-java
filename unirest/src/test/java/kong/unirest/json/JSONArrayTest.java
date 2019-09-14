@@ -32,6 +32,7 @@ import org.junit.Test;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.google.common.collect.ImmutableMap.of;
@@ -288,10 +289,14 @@ public class JSONArrayTest {
 
     @Test
     public void remove() {
-        JSONArray array = new JSONArray("[1,2,3]");
+        JSONObject o = new JSONObject(of("foo","bar"));
+        JSONArray array = new JSONArray(asList(1, o));
 
-        assertEqualJson(2, array.remove(1));
-        assertEquals("[1,3]", array.toString());
+        Object remove = array.remove(1);
+        assertTrue(remove instanceof JSONObject);
+        assertEquals(o, remove);
+        assertEquals(1, array.length());
+        assertEquals(null, array.remove(55));
     }
 
     @Test

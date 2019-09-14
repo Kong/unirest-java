@@ -30,6 +30,8 @@ import com.google.gson.*;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 class Json {
     private static final Gson GSON = new Gson();
@@ -51,8 +53,24 @@ class Json {
         return GSON.toJson(collection);
     }
 
-    public static void write(JsonElement obj, Writer sw) {
+    static void write(JsonElement obj, Writer sw) {
         GSON.toJson(obj, sw);
+    }
+
+    static Object unwrap(Object o) {
+        if(o instanceof Iterable){
+            return StreamSupport.stream(((Iterable)o).spliterator(), false)
+                    .map(Json::unwrapObject)
+                    .collect(Collectors.toList());
+        }
+        return unwrapObject(o);
+    }
+
+    static Object unwrapObject(Object o){
+        if(o instanceof JSONElement){
+            return ((JSONElement)o).getElement();
+        }
+        return o;
     }
 
     static void writePretty(JsonElement obj, Writer sw) {

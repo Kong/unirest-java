@@ -30,7 +30,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 
-import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -43,15 +42,15 @@ import java.util.stream.StreamSupport;
  * https://tools.ietf.org/html/rfc7159#section-4
  * Represents a JSON Array
  */
-public class JSONArray implements Iterable<Object> {
-
+public class JSONArray extends JSONElement implements Iterable<Object> {
+    private static transient final ToObjectMapper MAPPER = new ToObjectMapper();
     private transient final JsonArray obj;
 
     /**
      * construct a empty JSONArray
      */
     public JSONArray() {
-        obj = new JsonArray();
+        this(new JsonArray());
     }
 
     /**
@@ -59,7 +58,7 @@ public class JSONArray implements Iterable<Object> {
      * @param jsonString a JSON String
      */
     public JSONArray(String jsonString) {
-        obj = Json.fromJson(jsonString, JsonArray.class);
+        this(Json.fromJson(jsonString, JsonArray.class));
     }
 
     /**
@@ -67,8 +66,7 @@ public class JSONArray implements Iterable<Object> {
      * @param collection a collection which contains json types
      */
     public JSONArray(Collection<?> collection) {
-        Collection pre = collection.stream().map(this::wrap).collect(Collectors.toList());
-        obj = Json.toJsonArray(pre);
+        this(Json.toJsonArray(collection.stream().map(Json::unwrap).collect(Collectors.toList())));
     }
 
     /**
@@ -76,22 +74,27 @@ public class JSONArray implements Iterable<Object> {
      * @param array an array type which may be typed (e.g. Object[], String[], JSONObject[])
      */
     public JSONArray(Object array) {
-        if(array == null || !array.getClass().isArray()){
+        this(toJsonArray(array));
+    }
+
+    private static JsonArray toJsonArray(Object array) {
+        if (array == null || !array.getClass().isArray()) {
             throw new JSONException("JSONArray initial value should be a string or collection or array.");
         }
         Collection pre = new ArrayList();
-        for(Object o : (Object[])array){
-            pre.add(wrap(o));
+        for (Object o : (Object[]) array) {
+            pre.add(Json.unwrap(o));
         }
-        this.obj = Json.toJsonArray(pre);
+        return Json.toJsonArray(pre);
     }
 
     JSONArray(JsonArray array) {
+        super(array);
         obj = array;
     }
 
     JSONArray(JsonElement jsonElement) {
-        obj = jsonElement.getAsJsonArray();
+        this(jsonElement.getAsJsonArray());
     }
 
     /**
@@ -136,7 +139,7 @@ public class JSONArray implements Iterable<Object> {
      * @param bool a Boolean
      * @return this JSONArray
      */
-    public JSONArray put(Boolean bool){
+    public JSONArray put(Boolean bool) {
         obj.add(bool);
         return this;
     }
@@ -156,7 +159,7 @@ public class JSONArray implements Iterable<Object> {
      * @param map a Map which should contain String keys and JSON types for values
      * @return this JSONArray
      */
-    public JSONArray put(Map map){
+    public JSONArray put(Map map) {
         obj.add(Json.toJsonObject(map));
         return this;
     }
@@ -166,7 +169,7 @@ public class JSONArray implements Iterable<Object> {
      * @param collection a Collection of JSON Types
      * @return this JSONArray
      */
-    public JSONArray put(Collection collection){
+    public JSONArray put(Collection collection) {
         obj.add(Json.toJsonArray(collection));
         return this;
     }
@@ -236,13 +239,13 @@ public class JSONArray implements Iterable<Object> {
         return put(index, enumValue == null ? null : enumValue.name());
     }
 
-    private JSONArray put(int index, JsonElement o){
-        while(obj.size() < index + 1){
+    private JSONArray put(int index, JsonElement o) {
+        while (obj.size() < index + 1) {
             obj.add(JsonNull.INSTANCE);
         }
-        if(index < obj.size()){
+        if (index < obj.size()) {
             obj.set(index, o);
-        } else if (index == obj.size()){
+        } else if (index == obj.size()) {
             obj.add(o);
         }
         return this;
@@ -254,16 +257,16 @@ public class JSONArray implements Iterable<Object> {
      * @param object the JSON Typed object
      */
     public void put(Object object) {
-        if(object == null){
+        if (object == null) {
             obj.add(JsonNull.INSTANCE);
-        } else if (object instanceof Number){
-            put((Number)object);
+        } else if (object instanceof Number) {
+            put((Number) object);
         } else if (object instanceof Boolean) {
             put((Boolean) object);
-        }else if (object instanceof JSONObject){
-            put((JSONObject)object);
-        } else if (object instanceof JSONArray){
-            put((JSONArray)object);
+        } else if (object instanceof JSONObject) {
+            put((JSONObject) object);
+        } else if (object instanceof JSONArray) {
+            put((JSONArray) object);
         } else {
             put(String.valueOf(object));
         }
@@ -278,9 +281,10 @@ public class JSONArray implements Iterable<Object> {
      */
     public Object remove(int index) {
         try {
-            return obj.remove(index);
-        }catch (IndexOutOfBoundsException e){
-            return  null;
+            JsonElement remove = obj.remove(index);
+            return MAPPER.apply(remove);
+        } catch (IndexOutOfBoundsException e) {
+            return null;
         }
     }
 
@@ -548,7 +552,7 @@ public class JSONArray implements Iterable<Object> {
     }
 
     public Object get(int index) {
-        return  new ToObjectMapper().apply(obj.get(index));
+        return new ToObjectMapper().apply(obj.get(index));
     }
 
 
@@ -586,36 +590,20 @@ public class JSONArray implements Iterable<Object> {
      */
     @Override
     public Iterator<Object> iterator() {
-        return (Iterator)toList().iterator();
+        return (Iterator) toList().iterator();
     }
 
-    /**
-     * Write the JSON to a Writer
-     * @param sw the writer
-     */
-    public void write(Writer sw) {
-        Json.write(obj, sw);
-    }
-
-    /**
-     * Write the JSON to a Writer with a pretty format
-     * due to limitations in GSON the index and indent are currently ignored
-     * @param sw the writer
-     */
-    public void write(Writer sw, int index, int i1) {
-        Json.writePretty(obj, sw);
-    }
 
     /**
      * indicates if a JSONArray has the same elements as another JSONArray
-     * @param o
+     * @param o the other object
      * @return a bool
      */
     public boolean similar(Object o) {
-        if(!(o instanceof JSONArray)){
+        if (!(o instanceof JSONArray)) {
             return false;
         }
-        JSONArray cst = (JSONArray)o;
+        JSONArray cst = (JSONArray) o;
         return this.obj.equals(cst.obj);
     }
 
@@ -623,6 +611,7 @@ public class JSONArray implements Iterable<Object> {
      * query the object graph using JSONPointer
      * https://tools.ietf.org/html/rfc6901
      *
+     * @param pattern the pointer to get
      * @return the thing you asked for
      */
     public Object query(String pattern) {
@@ -636,7 +625,7 @@ public class JSONArray implements Iterable<Object> {
      */
     public List toList() {
         List list = new ArrayList();
-        for(int i = 0; i < obj.size(); i++){
+        for (int i = 0; i < obj.size(); i++) {
             list.add(get(i));
         }
         return list;
@@ -644,32 +633,25 @@ public class JSONArray implements Iterable<Object> {
 
     /**
      * Indicates if the index does not exist or it's contents are null
-     * @param index
-     * @return
+     * @param index the index poisition to test
+     * @return boolean if the index exists
      */
     public boolean isNull(int index) {
         return index >= obj.size() || obj.get(index).isJsonNull();
     }
 
     public boolean equals(Object o) {
-        return o == this || o instanceof JsonArray && ((JSONArray)o).obj.equals(this.obj);
+        return o == this || o instanceof JsonArray && ((JSONArray) o).obj.equals(this.obj);
     }
 
     public int hashCode() {
         return this.obj.hashCode();
     }
 
-    JsonArray getArray(){
+    JsonArray getArray() {
         return obj;
     }
 
-    private Object wrap(Object o) {
-        if(o instanceof Iterable){
-            return StreamSupport.stream(((Iterable)o).spliterator(), false)
-                    .collect(Collectors.toList());
-        }
-        return o;
-    }
 
     private JsonElement getElement(int index) {
         try {

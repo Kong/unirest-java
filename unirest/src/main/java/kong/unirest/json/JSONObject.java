@@ -30,7 +30,6 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Iterator;
@@ -45,10 +44,9 @@ import static java.util.Objects.requireNonNull;
  * https://tools.ietf.org/html/rfc7159#section-4
  * represents a JSON Object
  */
-public class JSONObject {
+public class JSONObject extends JSONElement {
     private static transient final ToObjectMapper MAPPER = new ToObjectMapper();
     private transient final JsonObject obj;
-
 
     /**
      * https://tools.ietf.org/html/rfc7159#section-4
@@ -63,17 +61,18 @@ public class JSONObject {
      * @param map a map representing the elements of a JSON Object
      */
     public JSONObject(Map<String, Object> map) {
-        obj = Json.fromJson(Json.toJson(map), JsonObject.class);
+        this(Json.fromJson(Json.toJson(map), JsonObject.class));
     }
 
     /**
      * an empty JSON object
      */
     public JSONObject() {
-        this.obj = new JsonObject();
+        this(new JsonObject());
     }
 
     JSONObject(JsonElement jsonElement) {
+        super(jsonElement);
         this.obj = jsonElement.getAsJsonObject();
     }
 
@@ -111,6 +110,7 @@ public class JSONObject {
         JSONObject cst = (JSONObject) o;
         return this.obj.equals(cst.obj);
     }
+
 
     /**
      * @param key the key element to operate on
@@ -232,7 +232,7 @@ public class JSONObject {
     /**
      * get the  value as a double or default value
      * @param key the key element to operate on
-     * @param defaultValue
+     * @param defaultValue the default value to return if the index or value type are not valid
      * @return return value as double or a default value if value is not viable
      */
     public double optDouble(String key, double defaultValue) {
@@ -261,7 +261,7 @@ public class JSONObject {
     /**
      * get the  value as a float or default value
      * @param key the key element to operate on
-     * @param defaultValue
+     * @param defaultValue the default value to return if the index or value type are not valid
      * @return return value as double or a default value if value is not viable
      */
     public float optFloat(String key, float defaultValue) {
@@ -290,7 +290,7 @@ public class JSONObject {
     /**
      * get the  value as a long or default value
      * @param key the key element to operate on
-     * @param defaultValue
+     * @param defaultValue the default value to return if the index or value type are not valid
      * @return return value as long or a default value if value is not viable
      */
     public long optLong(String key, long defaultValue) {
@@ -319,7 +319,7 @@ public class JSONObject {
     /**
      * get the  value as a long or default value
      * @param key the key element to operate on
-     * @param defaultValue
+     * @param defaultValue the default value to return if the index or value type are not valid
      * @return return value as long or a default value if value is not viable
      */
     public int optInt(String key, int defaultValue) {
@@ -339,7 +339,7 @@ public class JSONObject {
     /**
      * get the  value as a BigInteger or default value
      * @param key the key element to operate on
-     * @param defaultValue
+     * @param defaultValue the default value to return if the index or value type are not valid
      * @return return value as BigInteger or a default value if value is not viable
      */
     public BigInteger optBigInteger(String key, BigInteger defaultValue) {
@@ -359,7 +359,7 @@ public class JSONObject {
     /**
      * get the  value as a BigDecimal or default value
      * @param key the key element to operate on
-     * @param defaultValue
+     * @param defaultValue the default value to return if the index or value type are not valid
      * @return return value as BigDecimal or a default value if value is not viable
      */
     public BigDecimal optBigDecimal(String key, BigDecimal defaultValue) {
@@ -368,9 +368,9 @@ public class JSONObject {
 
     /**
      * get element as a enum value
+     * @param <T> the type of enum you want
      * @param enumClass a enum class
      * @param key the key element to operate on
-     * @param <T> the type of enum you want
      * @return the value as a enum of T
      * @throws JSONException  if it does not map to a enum of T or the key does not exist
      */
@@ -385,9 +385,9 @@ public class JSONObject {
 
     /**
      * get element as a enum value or null if the value cannot be mapped
+     * @param <T> the type of enum you want
      * @param enumClass a enum class
      * @param key the key element to operate on
-     * @param <T> the type of enum you want
      * @return the value as a enum of T
      */
     public <T extends Enum<T>> T optEnum(Class<T> enumClass, String key) {
@@ -396,9 +396,10 @@ public class JSONObject {
 
     /**
      * get element as a enum value or a default value if the value cannot be mapped
+     * @param <T> the type of enum you want
      * @param enumClass a enum class
      * @param key the key element to operate on
-     * @param <T> the type of enum you want
+     * @param defaultValue the default value to return if the index or value type are not valid
      * @return the value as a enum of T
      */
     public <T extends Enum<T>> T optEnum(Class<T> enumClass, String key, T defaultValue) {
@@ -472,23 +473,6 @@ public class JSONObject {
     }
 
     /**
-     * Write the JSON to a Writer
-     * @param sw the writer
-     */
-    public void write(Writer sw) {
-        Json.write(obj, sw);
-    }
-
-    /**
-     * Write the JSON to a Writer with a pretty format
-     * due to limitations in GSON the index and indent are currently ignored
-     * @param sw the writer
-     */
-    public void write(Writer sw, int indentFactor, int indent) {
-        Json.writePretty(obj, sw);
-    }
-
-    /**
      * remove a element by key name
      * @param key the key element to operate on
      * @return the object value that was removed
@@ -530,7 +514,7 @@ public class JSONObject {
     /**
      * appends to an existing array
      * @param key the key element to operate on
-     * @param value
+     * @param value the object to put
      * @throws JSONException if the value exists and is not an array
      * @return this JSONObject
      */
@@ -573,7 +557,7 @@ public class JSONObject {
     /**
      * put a value to a key only if it does not exist
      * @param key the key element to operate on
-     * @param value
+     * @param value the object to put
      * @throws JSONException if the key exists.
      * @return this JSONObject
      */
@@ -588,7 +572,7 @@ public class JSONObject {
      * put an object to a key.
      * the value must be a JSON type
      * @param key the key element to operate on
-     * @param value
+     * @param value the  object to put
      * @return this JSONObject
      */
     public JSONObject put(String key, Object value){
@@ -612,7 +596,7 @@ public class JSONObject {
      * optional put a value at a key as long as both they key and value are not null
      * otherwise it does nothing
      * @param key the key element to operate on
-     * @param value
+     * @param value the  object to put
      * @return this JSONObject
      */
     public JSONObject putOpt(String key, Object value) {
@@ -657,6 +641,7 @@ public class JSONObject {
      * query the object graph using JSONPointer
      * https://tools.ietf.org/html/rfc6901
      *
+     * @param query the pointer to get
      * @return the thing you asked for
      */
     public Object query(String query) {
@@ -685,5 +670,15 @@ public class JSONObject {
         } catch (Exception e) {
             return defaultValue;
         }
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return this.similar(other);
+    }
+
+    @Override
+    public int hashCode() {
+        return obj.hashCode();
     }
 }
