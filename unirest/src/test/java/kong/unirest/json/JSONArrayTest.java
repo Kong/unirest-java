@@ -58,7 +58,7 @@ public class JSONArrayTest {
     @Test
     public void doubles() {
         JSONArray obj = new JSONArray();
-        obj.put(33.5d);
+        assertSame(obj, obj.put(33.5d));
         obj.put("nan");
 
         assertEquals(33.5d, obj.getDouble(0), 4);
@@ -73,7 +73,7 @@ public class JSONArrayTest {
     @Test
     public void floats() {
         JSONArray obj = new JSONArray();
-        obj.put(33.5f);
+        assertSame(obj, obj.put(33.5f));
         obj.put("nan");
 
         assertEquals(33.5f, obj.getFloat(0), 4);
@@ -88,7 +88,7 @@ public class JSONArrayTest {
     @Test
     public void longs() {
         JSONArray obj = new JSONArray();
-        obj.put(33L);
+        assertSame(obj, obj.put(33L));
         obj.put("nan");
 
         assertEquals(33L, obj.getLong(0));
@@ -103,7 +103,7 @@ public class JSONArrayTest {
     @Test
     public void ints() {
         JSONArray obj = new JSONArray();
-        obj.put(33);
+        assertSame(obj, obj.put(33));
         obj.put("nan");
 
         assertEquals(33, obj.getInt(0));
@@ -118,7 +118,7 @@ public class JSONArrayTest {
     @Test
     public void bigInts() {
         JSONArray obj = new JSONArray();
-        obj.put(BigInteger.valueOf(33));
+        assertSame(obj, obj.put(BigInteger.valueOf(33)));
         obj.put("nan");
 
         assertEquals(BigInteger.valueOf(33), obj.getBigInteger(0));
@@ -132,7 +132,7 @@ public class JSONArrayTest {
     public void bigDecimal() {
         BigDecimal value = BigDecimal.valueOf(33.5);
         JSONArray obj = new JSONArray();
-        obj.put(value);
+        assertSame(obj, obj.put(value));
         obj.put("nan");
 
         assertEquals(value, obj.getBigDecimal(0));
@@ -145,7 +145,7 @@ public class JSONArrayTest {
     @Test
     public void strings() {
         JSONArray obj = new JSONArray();
-        obj.put("cheese");
+        assertSame(obj, obj.put("cheese"));
         obj.put(45);
 
         assertEquals("cheese", obj.getString(0));
@@ -160,7 +160,7 @@ public class JSONArrayTest {
     public void jsonObjects() {
         JSONObject subObj = new JSONObject("{\"derp\": 42}");
         JSONArray obj = new JSONArray();
-        obj.put(subObj);
+        assertSame(obj, obj.put(subObj));
         obj.put(45);
 
         assertEqualJson(subObj, obj.getJSONObject(0));
@@ -174,7 +174,7 @@ public class JSONArrayTest {
     public void jsonArrays() {
         JSONArray subObj = new JSONArray("[42]");
         JSONArray obj = new JSONArray();
-        obj.put(subObj);
+        assertSame(obj, obj.put(subObj));
         obj.put(45);
 
         assertEqualJson(subObj, obj.getJSONArray(0));
@@ -187,7 +187,7 @@ public class JSONArrayTest {
     @Test
     public void enums() {
         JSONArray obj = new JSONArray();
-        obj.put(fruit.orange);
+        assertSame(obj, obj.put(fruit.orange));
         obj.put("nan");
 
         assertEquals(fruit.orange, obj.getEnum(fruit.class, 0));

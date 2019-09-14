@@ -34,6 +34,7 @@ import org.json.JSONObject;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 public class ClarificationTest {
 
@@ -42,6 +43,7 @@ public class ClarificationTest {
         JSONArray s = new JSONArray("[1]");
         JSONObject o = new JSONObject();
         System.out.println("s.remove(55) = " + s.remove(0));
+        System.out.println("s.length() = " + s.length());
 //        JSONArray array = new JSONArray("[1,2,3]");
 //        TestUtil.assertException(() -> array.remove(55),
 //                JSONException.class,

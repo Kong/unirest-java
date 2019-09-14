@@ -56,7 +56,7 @@ public class JSONArray implements Iterable<Object> {
 
     /**
      * construct a JSONArray from a String
-     * @param jsonString
+     * @param jsonString a JSON String
      */
     public JSONArray(String jsonString) {
         obj = Json.fromJson(jsonString, JsonArray.class);
@@ -64,7 +64,7 @@ public class JSONArray implements Iterable<Object> {
 
     /**
      * Construct a JSONArray from a collection.
-     * @param collection
+     * @param collection a collection which contains json types
      */
     public JSONArray(Collection<?> collection) {
         Collection pre = collection.stream().map(this::wrap).collect(Collectors.toList());
@@ -73,7 +73,7 @@ public class JSONArray implements Iterable<Object> {
 
     /**
      * Construct a JSONArray from a typed  array (int[]).
-     * @param array
+     * @param array an array type which may be typed (e.g. Object[], String[], JSONObject[])
      */
     public JSONArray(Object array) {
         if(array == null || !array.getClass().isArray()){
@@ -104,119 +104,139 @@ public class JSONArray implements Iterable<Object> {
     /**
      * append a JSONObject to the end of the array
      * @param object a JSONObject
+     * @return this JSONArray
      */
-    public void put(JSONObject object) {
+    public JSONArray put(JSONObject object) {
         obj.add(object.asElement());
+        return this;
     }
 
     /**
      * append a JSONArray as an element to the end of the array
      * @param array a JSONArray
+     * @return this JSONArray
      */
-    public void put(JSONArray array) {
+    public JSONArray put(JSONArray array) {
         obj.add(array.obj);
+        return this;
     }
 
     /**
      * add a Number to the array
-     * @param num
+     * @param num a Number
+     * @return this JSONArray
      */
-    public void put(Number num) {
+    public JSONArray put(Number num) {
         obj.add(num);
+        return this;
     }
 
     /**
      * add a Boolean to the array
-     * @param bool
+     * @param bool a Boolean
+     * @return this JSONArray
      */
-    public void put(Boolean bool){
+    public JSONArray put(Boolean bool){
         obj.add(bool);
+        return this;
     }
 
     /**
      * add a String to the array
-     * @param str
+     * @param str a String
+     * @return this JSONArray
      */
-    public void put(String str) {
+    public JSONArray put(String str) {
         obj.add(str);
+        return this;
     }
 
     /**
      * add a JSONObject to the array as a map
-     * @param map
+     * @param map a Map which should contain String keys and JSON types for values
+     * @return this JSONArray
      */
-    public void put(Map map){
+    public JSONArray put(Map map){
         obj.add(Json.toJsonObject(map));
+        return this;
     }
 
     /**
      * add a JSONArray to the array
-     * @param collection
+     * @param collection a Collection of JSON Types
+     * @return this JSONArray
      */
-    public void put(Collection collection){
+    public JSONArray put(Collection collection){
         obj.add(Json.toJsonArray(collection));
+        return this;
     }
 
     /**
      * put a enum which will be put as the string name
-     * @param enumValues
+     * @param enumValue a enum
      * @param <T> a enum type
+     * @return this JSONArray
      */
-    public <T extends Enum> void put(T enumValues) {
-        obj.add(enumValues.name());
+    public <T extends Enum> JSONArray put(T enumValue) {
+        return put(enumValue.name());
     }
 
     /**
      * put a Number at a specific instance
      * if the index is beyond the currently length the array will be buffered with nulls
-     * @param index
-     * @param number
+     * @param index the index position to put to
+     * @param number a Number
+     * @return this JSONArray
      */
-    public void put(int index, Number number) {
-        put(index, number == null ? JsonNull.INSTANCE : new JsonPrimitive(number));
+    public JSONArray put(int index, Number number) {
+        return put(index, number == null ? JsonNull.INSTANCE : new JsonPrimitive(number));
     }
 
     /**
      * put a String at a specific index
      * if the index is beyond the currently length the array will be buffered with nulls
-     * @param index
+     * @param index the index position to put to
      * @param string
+     * @return this JSONArray
      */
-    public void put(int index, String string) {
-        put(index, string == null ? JsonNull.INSTANCE : new JsonPrimitive(string));
+    public JSONArray put(int index, String string) {
+        return put(index, string == null ? JsonNull.INSTANCE : new JsonPrimitive(string));
     }
 
     /**
      * put a JSONObject as a map at a specific index
      * if the index is beyond the currently length the array will be buffered with nulls
-     * @param index
+     * @param index index of the element to replace
      * @param map
+     * @return this JSONArray
      */
-    public void put(int index, Map map) {
-        put(index, Json.toJsonObject(map));
+    public JSONArray put(int index, Map map) {
+        return put(index, Json.toJsonObject(map));
     }
 
     /**
      * put a JSONArray at a specific index as a Collection
      * if the index is beyond the currently length the array will be buffered with nulls
-     * @param index
+     * @param index the index position to put to
      * @param collection
+     * @return this JSONArray
      */
-    public void put(int index, Collection collection) {
-        put(index, Json.toJsonArray(collection));
+    public JSONArray put(int index, Collection collection) {
+        return put(index, Json.toJsonArray(collection));
     }
 
     /**
      * put a Enum name at a specific index as a string
      * if the index is beyond the currently length the array will be buffered with nulls
-     * @param index
+     * @param index the index position to put to
      * @param enumValue
+     * @return this JSONArray
      */
-    public <T extends Enum> void put(int index, T enumValue) {
-        put(index, enumValue == null ? null : enumValue.name());
+    public <T extends Enum> JSONArray put(int index, T enumValue) {
+        return put(index, enumValue == null ? null : enumValue.name());
     }
 
-    private void put(int index, JsonElement o){
+    private JSONArray put(int index, JsonElement o){
         while(obj.size() < index + 1){
             obj.add(JsonNull.INSTANCE);
         }
@@ -225,6 +245,7 @@ public class JSONArray implements Iterable<Object> {
         } else if (index == obj.size()){
             obj.add(o);
         }
+        return this;
     }
 
     /**
