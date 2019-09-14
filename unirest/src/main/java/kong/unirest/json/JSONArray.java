@@ -196,7 +196,7 @@ public class JSONArray implements Iterable<Object> {
      * put a String at a specific index
      * if the index is beyond the currently length the array will be buffered with nulls
      * @param index the index position to put to
-     * @param string
+     * @param string a String
      * @return this JSONArray
      */
     public JSONArray put(int index, String string) {
@@ -207,7 +207,7 @@ public class JSONArray implements Iterable<Object> {
      * put a JSONObject as a map at a specific index
      * if the index is beyond the currently length the array will be buffered with nulls
      * @param index index of the element to replace
-     * @param map
+     * @param map a Map of String keys and values of JSON Types
      * @return this JSONArray
      */
     public JSONArray put(int index, Map map) {
@@ -218,7 +218,7 @@ public class JSONArray implements Iterable<Object> {
      * put a JSONArray at a specific index as a Collection
      * if the index is beyond the currently length the array will be buffered with nulls
      * @param index the index position to put to
-     * @param collection
+     * @param collection  a Collection of JSON types
      * @return this JSONArray
      */
     public JSONArray put(int index, Collection collection) {
@@ -251,7 +251,7 @@ public class JSONArray implements Iterable<Object> {
     /**
      * add a Object to the array
      * Must be a valid JSON type or else it will be turned into a string
-     * @param object
+     * @param object the JSON Typed object
      */
     public void put(Object object) {
         if(object == null){
@@ -286,7 +286,7 @@ public class JSONArray implements Iterable<Object> {
 
     /**
      * get a JSONObject at a specified index
-     * @param index
+     * @param index the array index position
      * @return a JSONObject
      * @throws JSONException if the element is not a JSONObject or index is out of bounds
      */
@@ -301,7 +301,7 @@ public class JSONArray implements Iterable<Object> {
     /**
      * get a JSONObject at a specified index or null if it does not exist
      * or is not a valid JSONObject
-     * @param index
+     * @param index the array index position
      * @return a JSONObject
      */
     public JSONObject optJSONObject(int index) {
@@ -310,7 +310,7 @@ public class JSONArray implements Iterable<Object> {
 
     /**
      * get a Double at a specified index
-     * @param index
+     * @param index the array index position
      * @return a Double
      * @throws JSONException if the element is not a Double or index is out of bounds
      */
@@ -320,7 +320,7 @@ public class JSONArray implements Iterable<Object> {
 
     /**
      * get a Double at a specified index
-     * @param index
+     * @param index the array index position
      * @return a Double
      * @throws JSONException if the element is not a Double or index is out of bounds
      */
@@ -331,8 +331,8 @@ public class JSONArray implements Iterable<Object> {
     /**
      * get a Double at a specified index, or a default value
      * if the value does not exist or is not a double
-     * @param index
-     * @param defaultValue
+     * @param index the array index position
+     * @param defaultValue the default value to return if the index or value type are not valid
      * @return a Double
      */
     public double optDouble(int index, double defaultValue) {
@@ -341,7 +341,7 @@ public class JSONArray implements Iterable<Object> {
 
     /**
      * get a Float at a specified index
-     * @param index
+     * @param index the array index position
      * @return a Float
      * @throws JSONException if the element is not a Float or index is out of bounds
      */
@@ -352,7 +352,7 @@ public class JSONArray implements Iterable<Object> {
     /**
      * get a Float at a specified index, or a NaN value
      * if the value does not exist or is not a Float
-     * @param index
+     * @param index the array index position
      * @return a Float
      */
     public Float optFloat(int index) {
@@ -362,8 +362,8 @@ public class JSONArray implements Iterable<Object> {
     /**
      * get a Float at a specified index, or a default value
      * if the value does not exist or is not a Float
-     * @param index
-     * @param defaultValue
+     * @param index the array index position
+     * @param defaultValue the default value to return if the index or value type are not valid
      * @return a Float
      */
     public Float optFloat(int index, float defaultValue) {
@@ -372,7 +372,7 @@ public class JSONArray implements Iterable<Object> {
 
     /**
      * get a long at a specified index
-     * @param index
+     * @param index the array index position
      * @return a long
      * @throws JSONException if the element is not a long or index is out of bounds
      */
@@ -383,7 +383,7 @@ public class JSONArray implements Iterable<Object> {
     /**
      * get a long at a specified index, or 0
      * if the value does not exist or is not a long
-     * @param index
+     * @param index the array index position
      * @return a long
      */
     public long optLong(int index) {
@@ -393,8 +393,8 @@ public class JSONArray implements Iterable<Object> {
     /**
      * get a long at a specified index, or a default value
      * if the value does not exist or is not a long
-     * @param index
-     * @param defaultValue
+     * @param index the array index position
+     * @param defaultValue the default value to return if the index or value type are not valid
      * @return a long
      */
     public long optLong(int index, long defaultValue) {
@@ -403,7 +403,7 @@ public class JSONArray implements Iterable<Object> {
 
     /**
      * get a int at a specified index
-     * @param index
+     * @param index the array index position
      * @return a int
      * @throws JSONException if the element is not a int or index is out of bounds
      */
@@ -414,7 +414,7 @@ public class JSONArray implements Iterable<Object> {
     /**
      * get a int at a specified index, or 0
      * if the value does not exist or is not a int
-     * @param index
+     * @param index the array index position
      * @return a int
      */
     public int optInt(int index) {
@@ -424,8 +424,8 @@ public class JSONArray implements Iterable<Object> {
     /**
      * get a int at a specified index, or a default value
      * if the value does not exist or is not a int
-     * @param index
-     * @param defaultValue
+     * @param index the array index position
+     * @param defaultValue the default value to return if the index or value type are not valid
      * @return a int
      */
     public int optInt(int index, int defaultValue) {
@@ -434,7 +434,7 @@ public class JSONArray implements Iterable<Object> {
 
     /**
      * get a BigInteger at a specified index
-     * @param index
+     * @param index the array index position
      * @return a BigInteger
      * @throws JSONException if the element is not a BigInteger or index is out of bounds
      */
@@ -445,8 +445,8 @@ public class JSONArray implements Iterable<Object> {
     /**
      * get a BigInteger at a specified index, or a default value
      * if the value does not exist or is not a BigInteger
-     * @param index
-     * @param defaultValue
+     * @param index the array index position
+     * @param defaultValue the default value to return if the index or value type are not valid
      * @return a BigInteger
      */
     public BigInteger optBigInteger(int index, BigInteger defaultValue) {
@@ -455,7 +455,7 @@ public class JSONArray implements Iterable<Object> {
 
     /**
      * get a BigDecimal at a specified index
-     * @param index
+     * @param index the array index position
      * @return a BigDecimal
      * @throws JSONException if the element is not a BigDecimal or index is out of bounds
      */
@@ -466,8 +466,8 @@ public class JSONArray implements Iterable<Object> {
     /**
      * get a BigDecimal at a specified index, or a default value
      * if the value does not exist or is not a BigDecimal
-     * @param index
-     * @param defaultValue
+     * @param index the array index position
+     * @param defaultValue the default value to return if the index or value type are not valid
      * @return a BigDecimal
      */
     public BigDecimal optBigDecimal(int index, BigDecimal defaultValue) {
@@ -476,7 +476,7 @@ public class JSONArray implements Iterable<Object> {
 
     /**
      * get a String at a specified index
-     * @param index
+     * @param index the array index position
      * @return a String
      * @throws JSONException if the element is not a String or index is out of bounds
      */
@@ -487,7 +487,7 @@ public class JSONArray implements Iterable<Object> {
     /**
      * get a String at a specified index, or an empty string
      * if the value does not exist or is not a String
-     * @param index
+     * @param index the array index position
      * @return a String
      */
     public String optString(int index) {
@@ -497,8 +497,8 @@ public class JSONArray implements Iterable<Object> {
     /**
      * get a String at a specified index, or a default value
      * if the value does not exist or is not a String
-     * @param index
-     * @param defaultValue
+     * @param index the array index position
+     * @param defaultValue the default value to return if the index or value type are not valid
      * @return a String
      */
     public String optString(int index, String defaultValue) {
@@ -507,7 +507,7 @@ public class JSONArray implements Iterable<Object> {
 
     /**
      * get a JSONArray at a specified index
-     * @param index
+     * @param index the array index position
      * @return a JSONArray
      * @throws JSONException if the element is not a JSONArray or index is out of bounds
      */
@@ -522,7 +522,7 @@ public class JSONArray implements Iterable<Object> {
     /**
      * get a String at a specified index, or null
      * if the value does not exist or is not a JSONArray
-     * @param index
+     * @param index the array index position
      * @return a JSONArray
      */
     public JSONArray optJSONArray(int index) {
