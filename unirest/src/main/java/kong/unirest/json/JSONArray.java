@@ -43,7 +43,6 @@ import java.util.stream.StreamSupport;
  * Represents a JSON Array
  */
 public class JSONArray extends JSONElement implements Iterable<Object> {
-    private static transient final ToObjectMapper MAPPER = new ToObjectMapper();
     private transient final JsonArray obj;
 
     /**
@@ -58,7 +57,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @param jsonString a JSON String
      */
     public JSONArray(String jsonString) {
-        this(Json.fromJson(jsonString, JsonArray.class));
+        this(fromJson(jsonString, JsonArray.class));
     }
 
     /**
@@ -66,7 +65,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @param collection a collection which contains json types
      */
     public JSONArray(Collection<?> collection) {
-        this(Json.toJsonArray(collection.stream().map(Json::unwrap).collect(Collectors.toList())));
+        this(toJsonArray(collection.stream().map(JSONElement::unwrap).collect(Collectors.toList())));
     }
 
     /**
@@ -83,9 +82,9 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
         }
         Collection pre = new ArrayList();
         for (Object o : (Object[]) array) {
-            pre.add(Json.unwrap(o));
+            pre.add(unwrap(o));
         }
-        return Json.toJsonArray(pre);
+        return toJsonArray(pre);
     }
 
     JSONArray(JsonArray array) {
@@ -160,7 +159,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return this JSONArray
      */
     public JSONArray put(Map map) {
-        obj.add(Json.toJsonObject(map));
+        obj.add(toJsonObject(map));
         return this;
     }
 
@@ -170,7 +169,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return this JSONArray
      */
     public JSONArray put(Collection collection) {
-        obj.add(Json.toJsonArray(collection));
+        obj.add(toJsonArray(collection));
         return this;
     }
 
@@ -214,7 +213,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return this JSONArray
      */
     public JSONArray put(int index, Map map) {
-        return put(index, Json.toJsonObject(map));
+        return put(index, toJsonObject(map));
     }
 
     /**
@@ -225,7 +224,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return this JSONArray
      */
     public JSONArray put(int index, Collection collection) {
-        return put(index, Json.toJsonArray(collection));
+        return put(index, toJsonArray(collection));
     }
 
     /**
@@ -552,7 +551,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
     }
 
     public Object get(int index) {
-        return new ToObjectMapper().apply(obj.get(index));
+        return MAPPER.apply(obj.get(index));
     }
 
 
@@ -562,7 +561,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      */
     @Override
     public String toString() {
-        return Json.toJson(obj);
+        return toJson(obj);
     }
 
     /**
@@ -571,7 +570,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return string json
      */
     public String toString(int indent) {
-        return Json.toPrettyJson(obj);
+        return toPrettyJson(obj);
     }
 
     /**
@@ -605,18 +604,6 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
         }
         JSONArray cst = (JSONArray) o;
         return this.obj.equals(cst.obj);
-    }
-
-    /**
-     * query the object graph using JSONPointer
-     * https://tools.ietf.org/html/rfc6901
-     *
-     * @param pattern the pointer to get
-     * @return the thing you asked for
-     */
-    public Object query(String pattern) {
-        JSONPointer point = JSONPointer.compile(pattern);
-        return point.queryFrom(this);
     }
 
     /**

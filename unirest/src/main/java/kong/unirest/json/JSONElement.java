@@ -25,11 +25,18 @@
 
 package kong.unirest.json;
 
-import com.google.gson.JsonElement;
+import com.google.gson.*;
 
 import java.io.Writer;
+import java.util.Collection;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public abstract class JSONElement {
+    protected static transient final ToObjectMapper MAPPER = new ToObjectMapper();
+    private static transient final Gson GSON = new Gson();
+    private static transient final Gson PRETTY_GSON = new Gson().newBuilder().setPrettyPrinting().create();
 
     private final JsonElement element;
 
@@ -41,7 +48,7 @@ public abstract class JSONElement {
      * @param sw the writer
      */
     public void write(Writer sw) {
-        Json.write(element, sw);
+        write(element, sw);
     }
 
     /**
@@ -50,10 +57,75 @@ public abstract class JSONElement {
      * @param sw the writer
      */
     public void write(Writer sw, int indentFactor, int indent) {
-        Json.writePretty(element, sw);
+        writePretty(element, sw);
+    }
+
+    /**
+     * query the object graph using JSONPointer
+     * https://tools.ietf.org/html/rfc6901
+     *
+     * @param query the pointer to get
+     * @return the thing you asked for
+     */
+    public Object query(String query) {
+        JSONPointer pointer = JSONPointer.compile(query);
+        return pointer.queryFrom(this);
     }
 
     JsonElement getElement() {
         return element;
+    }
+
+
+    static JsonObject toJsonObject(Map map){
+        return fromJson(JSONElement.toJson(map), JsonObject.class);
+    }
+
+    static <T> T fromJson(String json, Class<T> classOfT) {
+        try {
+            return GSON.fromJson(json, classOfT);
+        }catch (JsonSyntaxException e){
+            throw new JSONException("Invalid JSON");
+        }
+    }
+
+    static String toJson(Object collection) {
+        return GSON.toJson(collection);
+    }
+
+    static void write(JsonElement obj, Writer sw) {
+        GSON.toJson(obj, sw);
+    }
+
+    static Object unwrap(Object o) {
+        if(o instanceof Iterable){
+            return StreamSupport.stream(((Iterable)o).spliterator(), false)
+                    .map(JSONElement::unwrapObject)
+                    .collect(Collectors.toList());
+        }
+        return unwrapObject(o);
+    }
+
+    static Object unwrapObject(Object o){
+        if(o instanceof JSONElement){
+            return ((JSONElement)o).getElement();
+        }
+        return o;
+    }
+
+    static void writePretty(JsonElement obj, Writer sw) {
+        PRETTY_GSON.toJson(obj, sw);
+    }
+
+    static JsonArray toJsonArray(Collection collection) {
+        return fromJson(toJson(collection), JsonArray.class);
+    }
+
+    static String toPrettyJson(JsonElement obj) {
+        return PRETTY_GSON.toJson(obj);
+    }
+
+    static Map<String, Object> toMap(JsonObject obj) {
+        return GSON.fromJson(obj, Map.class);
     }
 }

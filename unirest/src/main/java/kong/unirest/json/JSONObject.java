@@ -45,7 +45,7 @@ import static java.util.Objects.requireNonNull;
  * represents a JSON Object
  */
 public class JSONObject extends JSONElement {
-    private static transient final ToObjectMapper MAPPER = new ToObjectMapper();
+
     private transient final JsonObject obj;
 
     /**
@@ -53,7 +53,7 @@ public class JSONObject extends JSONElement {
      * @param string a json object string
      */
     public JSONObject(String string) {
-        this(Json.fromJson(string, JsonObject.class));
+        this(fromJson(string, JsonObject.class));
     }
 
     /**
@@ -61,7 +61,7 @@ public class JSONObject extends JSONElement {
      * @param map a map representing the elements of a JSON Object
      */
     public JSONObject(Map<String, Object> map) {
-        this(Json.fromJson(Json.toJson(map), JsonObject.class));
+        this(fromJson(toJson(map), JsonObject.class));
     }
 
     /**
@@ -86,7 +86,7 @@ public class JSONObject extends JSONElement {
      */
     @Override
     public String toString() {
-        return Json.toJson(obj);
+        return toJson(obj);
     }
 
     /**
@@ -95,7 +95,7 @@ public class JSONObject extends JSONElement {
      * @return a JSON  String
      */
     public String toString(int i) {
-        return Json.toPrettyJson(obj);
+        return toPrettyJson(obj);
     }
 
     /**
@@ -626,7 +626,7 @@ public class JSONObject extends JSONElement {
      * get object as a map
      */
     public Map<String, Object> toMap() {
-        return Json.toMap(obj);
+        return toMap(obj);
     }
 
     /**
@@ -635,18 +635,6 @@ public class JSONObject extends JSONElement {
      */
     public JSONArray names() {
         return new JSONArray(keySet());
-    }
-
-    /**
-     * query the object graph using JSONPointer
-     * https://tools.ietf.org/html/rfc6901
-     *
-     * @param query the pointer to get
-     * @return the thing you asked for
-     */
-    public Object query(String query) {
-        JSONPointer pointer = JSONPointer.compile(query);
-        return pointer.queryFrom(this);
     }
 
     private JsonElement getProperty(String key) {
