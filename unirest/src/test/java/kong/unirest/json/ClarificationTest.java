@@ -25,18 +25,66 @@
 
 package kong.unirest.json;
 
+import BehaviorTests.Foo;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import kong.unirest.TestUtil;
+import org.json.JSONException;
 import org.junit.Test;
 import org.json.JSONPointer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static com.google.common.collect.ImmutableMap.of;
+import static org.junit.Assert.*;
 
 public class ClarificationTest {
+
+    public static Set<String> sigsArray(){
+        return Halp.getPublicMinus(JSONArray.class);
+    }
+
+    @Test
+    public void zipAnArray() {
+        JSONArray values = new JSONArray(Arrays.asList(1, "foo", false));
+        JSONArray names = new JSONArray(Arrays.asList("one", "two", "three", "four"));
+        JSONObject zipped = values.toJSONObject(names);
+        assertEquals(1, zipped.get("one"));
+        assertEquals("foo", zipped.get("two"));
+        assertEquals(false, zipped.get("three"));
+
+        TestUtil.assertException(() ->  values.toJSONObject(new JSONArray(Lists.newArrayList((String)null))),
+                JSONException.class,
+                "JSONArray[0] not a string.");
+
+    }
+
+    @Test
+    public void nullForSoManyReasonsWhenZipping() {
+        JSONArray array = new JSONArray();
+        assertNull(null, array.toJSONObject(new JSONArray(Arrays.asList("foo"))));
+        array.put(42L);
+        assertNull(null, array.toJSONObject(null));
+        assertNull(null, array.toJSONObject(new JSONArray()));
+    }
+
+    @Test
+    public void putObject() {
+        JSONArray array  = new JSONArray();
+        array.put(new Foo("fooooo"));
+        array.put((Object)"abc");
+        array.put((Object)new JSONObject(of("foo", "bar")));
+
+        assertEquals("Foo{bar=fooooo}", array.get(0).toString());
+        assertEquals("abc", array.get(1));
+        assertEquals("{\"foo\":\"bar\"}", array.get(2).toString());
+    }
 
     @Test
     public void name() {

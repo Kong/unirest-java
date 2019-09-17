@@ -30,6 +30,7 @@ import com.google.gson.JsonPrimitive;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -64,7 +65,8 @@ class ToObjectMapper {
                 .stream()
                 .filter(r -> r.getKey().test(e))
                 .map(r -> r.getValue().apply(e))
+                .filter(Objects::nonNull)
                 .findFirst()
-                .orElse("");
+                .orElse(null);
     }
 }

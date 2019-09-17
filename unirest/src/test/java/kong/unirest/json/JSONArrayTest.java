@@ -25,6 +25,9 @@
 
 package kong.unirest.json;
 
+import BehaviorTests.Foo;
+import com.google.common.collect.Lists;
+import com.google.gson.JsonArray;
 import kong.unirest.TestUtil;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -34,6 +37,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static java.util.Arrays.asList;
@@ -44,6 +48,62 @@ import static org.junit.Assert.*;
 
 public class JSONArrayTest {
 
+    @Test
+    public void signatures() {
+        //public java.math.BigDecimal JSONArray.getBigDecimal(int) throws JSONException
+        Set<String> orginal = ClarificationTest.sigsArray();
+        Set<String> mine = Halp.getPublicMinus(JSONArray.class);
+
+        orginal.removeAll(mine);
+        orginal.forEach(e -> System.out.println(e));
+    }
+
+    @Test
+    public void nullForSoManyReasonsWhenZipping() {
+        JSONArray array = new JSONArray();
+        assertNull(null, array.toJSONObject(new JSONArray(Arrays.asList("foo"))));
+        array.put(42L);
+        assertNull(null, array.toJSONObject(null));
+        assertNull(null, array.toJSONObject(new JSONArray()));
+    }
+
+    @Test
+    public void exeptionWhileZippingForNull() {
+        JSONArray values = new JSONArray(Arrays.asList(1, "foo", false));
+        JSONArray names = new JSONArray();
+        names.put((String)null);
+
+        assertException(() -> values.toJSONObject(names),
+                JSONException.class,
+                "JSONArray[0] not a string.");
+    }
+
+    @Test
+    public void zipAnArray() {
+        JSONArray values = new JSONArray(Arrays.asList(1, "foo", false));
+        JSONArray names = new JSONArray(Arrays.asList("one", "two", "three", "four"));
+        JSONObject zipped = values.toJSONObject(names);
+        assertEquals(1, zipped.get("one"));
+        assertEquals("foo", zipped.get("two"));
+        assertEquals(false, zipped.get("three"));
+    }
+
+    @Test
+    public void putObject() {
+        JSONArray array  = new JSONArray();
+        array.put(new Foo("fooooo"));
+        array.put((Object)"abc");
+        array.put((Object)new JSONObject(of("foo", "bar")));
+
+        assertEquals("Foo{bar=fooooo}", array.get(0).toString());
+        assertEquals("abc", array.get(1));
+        assertEquals("{\"foo\":\"bar\"}", array.get(2).toString());
+    }
+    @Test
+    public void putSomeGenericObject() {
+        JSONArray array = new JSONArray();
+
+    }
 
     @Test
     public void simpleConvert() {
@@ -391,7 +451,7 @@ public class JSONArrayTest {
 
     @Test
     public void constructArrayError() {
-        TestUtil.assertException(()-> new JSONArray(new Object()),
+        assertException(()-> new JSONArray(new Object()),
                 JSONException.class,
                 "JSONArray initial value should be a string or collection or array.");
     }

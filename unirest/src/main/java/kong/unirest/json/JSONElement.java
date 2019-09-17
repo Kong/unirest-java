@@ -72,6 +72,14 @@ public abstract class JSONElement {
         return pointer.queryFrom(this);
     }
 
+    public Object optQuery(String query){
+        try{
+            return query(query);
+        } catch (Exception e){
+            return null;
+        }
+    }
+
     JsonElement getElement() {
         return element;
     }

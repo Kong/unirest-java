@@ -124,6 +124,46 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
     }
 
     /**
+     * add a double to the array
+     * @param num a double
+     * @return this JSONArray
+     */
+    public JSONArray put(double num) throws JSONException {
+        obj.add(num);
+        return this;
+    }
+
+    /**
+     * add a int to the array
+     * @param num a int
+     * @return this JSONArray
+     */
+    public JSONArray put(int num) throws JSONException {
+        obj.add(num);
+        return this;
+    }
+
+    /**
+     * add a long to the array
+     * @param num a long
+     * @return this JSONArray
+     */
+    public JSONArray put(long num) throws JSONException {
+        obj.add(num);
+        return this;
+    }
+
+    /**
+     * add a float to the array
+     * @param num a float
+     * @return this JSONArray
+     */
+    public JSONArray put(float num) throws JSONException {
+        obj.add(num);
+        return this;
+    }
+
+    /**
      * add a Number to the array
      * @param num a Number
      * @return this JSONArray
@@ -184,6 +224,39 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
     }
 
     /**
+     * put a long at a specific instance
+     * if the index is beyond the currently length the array will be buffered with nulls
+     * @param index the index position to put to
+     * @param number a long
+     * @return this JSONArray
+     */
+    public JSONArray put(int index, long number) throws JSONException {
+        return put(index, new JsonPrimitive(number));
+    }
+
+    /**
+     * put a float at a specific instance
+     * if the index is beyond the currently length the array will be buffered with nulls
+     * @param index the index position to put to
+     * @param number a Number
+     * @return this JSONArray
+     */
+    public JSONArray put(int index, float number) throws JSONException {
+        return put(index, new JsonPrimitive(number));
+    }
+
+    /**
+     * put a int at a specific instance
+     * if the index is beyond the currently length the array will be buffered with nulls
+     * @param index the index position to put to
+     * @param number a int
+     * @return this JSONArray
+     */
+    public JSONArray put(int index, int number) throws JSONException {
+        return put(index, new JsonPrimitive(number));
+    }
+
+    /**
      * put a Number at a specific instance
      * if the index is beyond the currently length the array will be buffered with nulls
      * @param index the index position to put to
@@ -223,7 +296,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @param collection  a Collection of JSON types
      * @return this JSONArray
      */
-    public JSONArray put(int index, Collection collection) {
+    public JSONArray put(int index, Collection collection) throws JSONException {
         return put(index, toJsonArray(collection));
     }
 
@@ -255,7 +328,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * Must be a valid JSON type or else it will be turned into a string
      * @param object the JSON Typed object
      */
-    public void put(Object object) {
+    public JSONArray put(Object object) {
         if (object == null) {
             obj.add(JsonNull.INSTANCE);
         } else if (object instanceof Number) {
@@ -269,6 +342,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
         } else {
             put(String.valueOf(object));
         }
+        return this;
     }
 
     /**
@@ -293,7 +367,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return a JSONObject
      * @throws JSONException if the element is not a JSONObject or index is out of bounds
      */
-    public JSONObject getJSONObject(int index) {
+    public JSONObject getJSONObject(int index) throws JSONException {
         try {
             return new JSONObject(getElement(index));
         } catch (IllegalStateException e) {
@@ -317,7 +391,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return a Double
      * @throws JSONException if the element is not a Double or index is out of bounds
      */
-    public Double getDouble(int index) {
+    public Double getDouble(int index) throws JSONException {
         return tryNumber(() -> getElement(index).getAsDouble(), index);
     }
 
@@ -325,9 +399,8 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * get a Double at a specified index
      * @param index the array index position
      * @return a Double
-     * @throws JSONException if the element is not a Double or index is out of bounds
      */
-    public Double optDouble(int index) {
+    public double optDouble(int index) {
         return optDouble(index, Double.NaN);
     }
 
@@ -348,7 +421,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return a Float
      * @throws JSONException if the element is not a Float or index is out of bounds
      */
-    public Float getFloat(int index) {
+    public Float getFloat(int index) throws JSONException {
         return tryNumber(() -> getElement(index).getAsFloat(), index);
     }
 
@@ -379,7 +452,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return a long
      * @throws JSONException if the element is not a long or index is out of bounds
      */
-    public long getLong(int index) {
+    public long getLong(int index) throws JSONException {
         return tryNumber(() -> getElement(index).getAsLong(), index);
     }
 
@@ -405,12 +478,22 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
     }
 
     /**
+     * get a Number at a specified index
+     * @param index the array index position
+     * @return a int
+     * @throws JSONException if the element is not a Number or index is out of bounds
+     */
+    public Number getNumber(int index) throws JSONException {
+        return tryNumber(() -> getElement(index).getAsInt(), index);
+    }
+
+    /**
      * get a int at a specified index
      * @param index the array index position
      * @return a int
      * @throws JSONException if the element is not a int or index is out of bounds
      */
-    public int getInt(int index) {
+    public int getInt(int index) throws JSONException {
         return tryNumber(() -> getElement(index).getAsInt(), index);
     }
 
@@ -441,7 +524,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return a BigInteger
      * @throws JSONException if the element is not a BigInteger or index is out of bounds
      */
-    public BigInteger getBigInteger(int index) {
+    public BigInteger getBigInteger(int index) throws JSONException {
         return tryNumber(() -> getElement(index).getAsBigInteger(), index);
     }
 
@@ -462,7 +545,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return a BigDecimal
      * @throws JSONException if the element is not a BigDecimal or index is out of bounds
      */
-    public BigDecimal getBigDecimal(int index) {
+    public BigDecimal getBigDecimal(int index) throws JSONException {
         return tryNumber(() -> getElement(index).getAsBigDecimal(), index);
     }
 
@@ -483,7 +566,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return a String
      * @throws JSONException if the element is not a String or index is out of bounds
      */
-    public String getString(int index) {
+    public String getString(int index) throws JSONException {
         return getElement(index).getAsString();
     }
 
@@ -514,7 +597,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return a JSONArray
      * @throws JSONException if the element is not a JSONArray or index is out of bounds
      */
-    public JSONArray getJSONArray(int index) {
+    public JSONArray getJSONArray(int index) throws JSONException {
         try {
             return new JSONArray(getElement(index).getAsJsonArray());
         } catch (IllegalStateException e) {
@@ -550,8 +633,27 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
         return getOrDefault(() -> getEnum(enumClass, index), defaultValue);
     }
 
-    public Object get(int index) {
+    /**
+     * get the element at the index
+     * @param index the index number
+     * @return the object at that position
+     * @throws JSONException if index is out of bounds
+     */
+    public Object get(int index) throws JSONException {
         return MAPPER.apply(obj.get(index));
+    }
+
+    /**
+     * get the element at the index
+     * @param index the index number
+     * @return the object at that position
+     */
+    public Object opt(int index) {
+        try {
+            return get(index);
+        }catch (Exception e){
+            return null;
+        }
     }
 
 
@@ -662,5 +764,40 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
         } catch (NumberFormatException e) {
             throw new JSONException("JSONArray[%s] is not a number.", index);
         }
+    }
+
+    /**
+     * Produce a JSONObject by combining a JSONArray of names with the values of
+     * this JSONArray.
+     *
+     * @param names A JSONArray containing a list of key strings. These will be paired with the values.
+     * @return A JSONObject, or null if there are no names or if this JSONArray has no values.
+     * @throws JSONException If any of the names are null.
+     */
+    public JSONObject toJSONObject(JSONArray names) throws JSONException {
+        if(names == null || names.isEmpty() || isEmpty()){
+            return null;
+        }
+        JSONObject object = new JSONObject();
+        int index = 0;
+        for(Object key : names){
+            if(index >= length()){
+                break;
+            }
+            if(key == null){
+                throw new JSONException("JSONArray[%s] not a string.", index);
+            }
+            object.put(String.valueOf(key), get(index));
+            index++;
+        }
+        return  object;
+    }
+
+    /**
+     * returns if the array is empty
+     * @return bool if it be empty
+     */
+    public boolean isEmpty() {
+        return obj.size() == 0;
     }
 }
