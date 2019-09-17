@@ -138,7 +138,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @param num a int
      * @return this JSONArray
      */
-    public JSONArray put(int num) throws JSONException {
+    public JSONArray put(int num) {
         obj.add(num);
         return this;
     }
@@ -148,7 +148,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @param num a long
      * @return this JSONArray
      */
-    public JSONArray put(long num) throws JSONException {
+    public JSONArray put(long num) {
         obj.add(num);
         return this;
     }
@@ -178,7 +178,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @param bool a Boolean
      * @return this JSONArray
      */
-    public JSONArray put(Boolean bool) {
+    public JSONArray put(boolean bool) {
         obj.add(bool);
         return this;
     }
@@ -235,6 +235,52 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
     }
 
     /**
+     * put a double at a specific instance
+     * if the index is beyond the currently length the array will be buffered with nulls
+     * @param index the index position to put to
+     * @param number a double
+     * @return this JSONArray
+     */
+    public JSONArray put(int index, double number) throws JSONException {
+        return put(index, new JsonPrimitive(number));
+    }
+
+    /**
+     * put a boolean at a specific index
+     * @param index the index position to put to
+     * @param bool a bool value
+     * @return this JSONArray
+     */
+    public JSONArray put(int index, boolean bool) throws JSONException {
+        return put(index, new JsonPrimitive(bool));
+    }
+
+    /**
+     * put a object at a specific instance
+     * if the index is beyond the currently length the array will be buffered with nulls
+     * @param index the index position to put to
+     * @param object a long
+     * @return this JSONArray
+     * @throws JSONException
+     */
+    public JSONArray put(int index, Object object) throws JSONException {
+        if (object == null) {
+            put(index, JsonNull.INSTANCE);
+        } else if (object instanceof Number) {
+            put(index, (Number) object);
+        } else if (object instanceof Boolean) {
+            put(index, (boolean) object);
+        } else if (object instanceof JSONObject) {
+            put(index, ((JSONObject) object).getElement());
+        } else if (object instanceof JSONArray) {
+            put(index, ((JSONArray) object).getElement());
+        } else {
+            put(index, String.valueOf(object));
+        }
+        return this;
+    }
+
+    /**
      * put a float at a specific instance
      * if the index is beyond the currently length the array will be buffered with nulls
      * @param index the index position to put to
@@ -285,7 +331,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @param map a Map of String keys and values of JSON Types
      * @return this JSONArray
      */
-    public JSONArray put(int index, Map map) {
+    public JSONArray put(int index, Map map) throws JSONException {
         return put(index, toJsonObject(map));
     }
 
@@ -362,6 +408,38 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
     }
 
     /**
+     * get a boolean at a specified index
+     * @param index the array index position
+     * @return a boolean
+     * @throws JSONException if the element is not a boolean or index is out of bounds
+     */
+    public boolean getBoolean(int index) throws JSONException {
+        JsonElement e = getElement(index);
+        if (!e.isJsonPrimitive() || !e.getAsJsonPrimitive().isBoolean()) {
+            throw new JSONException("JSONArray[%s] is not a boolean.", index);
+        }
+        return e.getAsBoolean();
+    }
+
+    /**
+     * get a boolean at a specified index
+     * @param index the array index position
+     * @return a boolean
+     */
+    public boolean optBoolean(int index) {
+        return optBoolean(index, false);
+    }
+
+    /**
+     * get a boolean at a specified index
+     * @param index the array index position
+     * @return a boolean
+     */
+    public boolean optBoolean(int index, boolean defaultValue) {
+        return getOrDefault(() -> getElement(index).getAsBoolean(), defaultValue);
+    }
+
+    /**
      * get a JSONObject at a specified index
      * @param index the array index position
      * @return a JSONObject
@@ -391,7 +469,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return a Double
      * @throws JSONException if the element is not a Double or index is out of bounds
      */
-    public Double getDouble(int index) throws JSONException {
+    public double getDouble(int index) throws JSONException {
         return tryNumber(() -> getElement(index).getAsDouble(), index);
     }
 
@@ -421,7 +499,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return a Float
      * @throws JSONException if the element is not a Float or index is out of bounds
      */
-    public Float getFloat(int index) throws JSONException {
+    public float getFloat(int index) throws JSONException {
         return tryNumber(() -> getElement(index).getAsFloat(), index);
     }
 
@@ -431,7 +509,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @param index the array index position
      * @return a Float
      */
-    public Float optFloat(int index) {
+    public float optFloat(int index) {
         return optFloat(index, Float.NaN);
     }
 
@@ -442,7 +520,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @param defaultValue the default value to return if the index or value type are not valid
      * @return a Float
      */
-    public Float optFloat(int index, float defaultValue) {
+    public float optFloat(int index, float defaultValue) {
         return getOrDefault(() -> getFloat(index), defaultValue);
     }
 
@@ -480,11 +558,30 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
     /**
      * get a Number at a specified index
      * @param index the array index position
-     * @return a int
+     * @return a Number
      * @throws JSONException if the element is not a Number or index is out of bounds
      */
     public Number getNumber(int index) throws JSONException {
         return tryNumber(() -> getElement(index).getAsInt(), index);
+    }
+
+    /**
+     * get a Number at a specified index
+     * @param index the array index position
+     * @return a int
+     */
+    public Number optNumber(int index) {
+        return getOrDefault(() -> getNumber(index), null);
+    }
+
+    /**
+     * get a Number at a specified index
+     * @param index the array index position
+     * @param defaultValue the default value if the index does not exist or is not a number
+     * @return a Number
+     */
+    public Number optNumber(int index, Number defaultValue) {
+        return getOrDefault(() -> getNumber(index), defaultValue);
     }
 
     /**
@@ -615,7 +712,15 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
         return getOrDefault(() -> getJSONArray(index), null);
     }
 
-    public <T extends Enum<T>> T getEnum(Class<T> enumClass, int index) {
+    /**
+     * get a enum value based on name from a specific index
+     * @param enumClass the enum type
+     * @param index the index
+     * @param <T> the type of enum
+     * @return a enum value
+     * @throws JSONException if the index is out of bounds or the value cannot be converted to the enum type
+     */
+    public <T extends Enum<T>> T getEnum(Class<T> enumClass, int index) throws JSONException {
 
         String raw = getElement(index).getAsString();
         try {
@@ -651,7 +756,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
     public Object opt(int index) {
         try {
             return get(index);
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
@@ -671,7 +776,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @param indent  currently ignored until this is addressed by GSON
      * @return string json
      */
-    public String toString(int indent) {
+    public String toString(int indent) throws JSONException {
         return toPrettyJson(obj);
     }
 
@@ -680,7 +785,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @param token
      * @return a token delimited array
      */
-    public String join(String token) {
+    public String join(String token) throws JSONException {
         return StreamSupport.stream(obj.spliterator(), false)
                 .map(String::valueOf)
                 .collect(Collectors.joining(token));
@@ -730,7 +835,14 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
     }
 
     public boolean equals(Object o) {
-        return o == this || o instanceof JsonArray && ((JSONArray) o).obj.equals(this.obj);
+        if (o == this) {
+            return true;
+        } else if (o instanceof JsonArray) {
+            return this.obj.equals(o);
+        } else if (o instanceof JSONArray) {
+            return this.obj.equals(((JSONArray) o).obj);
+        }
+        return false;
     }
 
     public int hashCode() {
@@ -775,22 +887,22 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @throws JSONException If any of the names are null.
      */
     public JSONObject toJSONObject(JSONArray names) throws JSONException {
-        if(names == null || names.isEmpty() || isEmpty()){
+        if (names == null || names.isEmpty() || isEmpty()) {
             return null;
         }
         JSONObject object = new JSONObject();
         int index = 0;
-        for(Object key : names){
-            if(index >= length()){
+        for (Object key : names) {
+            if (index >= length()) {
                 break;
             }
-            if(key == null){
+            if (key == null) {
                 throw new JSONException("JSONArray[%s] not a string.", index);
             }
             object.put(String.valueOf(key), get(index));
             index++;
         }
-        return  object;
+        return object;
     }
 
     /**

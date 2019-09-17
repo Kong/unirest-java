@@ -25,24 +25,19 @@
 
 package kong.unirest.json;
 
-import BehaviorTests.Foo;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import kong.unirest.TestUtil;
-import org.json.JSONException;
-import org.junit.Test;
-import org.json.JSONPointer;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONPointer;
+import org.junit.Test;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.google.common.collect.ImmutableMap.of;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class ClarificationTest {
 
@@ -65,42 +60,7 @@ public class ClarificationTest {
 
     }
 
-    @Test
-    public void nullForSoManyReasonsWhenZipping() {
-        JSONArray array = new JSONArray();
-        assertNull(null, array.toJSONObject(new JSONArray(Arrays.asList("foo"))));
-        array.put(42L);
-        assertNull(null, array.toJSONObject(null));
-        assertNull(null, array.toJSONObject(new JSONArray()));
-    }
 
-    @Test
-    public void putObject() {
-        JSONArray array  = new JSONArray();
-        array.put(new Foo("fooooo"));
-        array.put((Object)"abc");
-        array.put((Object)new JSONObject(of("foo", "bar")));
-
-        assertEquals("Foo{bar=fooooo}", array.get(0).toString());
-        assertEquals("abc", array.get(1));
-        assertEquals("{\"foo\":\"bar\"}", array.get(2).toString());
-    }
-
-    @Test
-    public void name() {
-        JSONArray s = new JSONArray("[1]");
-        JSONObject o = new JSONObject();
-        System.out.println("s.remove(55) = " + s.remove(0));
-        System.out.println("s.length() = " + s.length());
-        assertEquals(null, o.remove("foo"));
-        assertEquals(null, s.remove(44));
-        o.put("bar", "X");
-        assertEquals("X",  o.remove("bar"));
-//        JSONArray array = new JSONArray("[1,2,3]");
-//        TestUtil.assertException(() -> array.remove(55),
-//                JSONException.class,
-//                "");
-    }
 
     @Test
     public void toStringReturnsOriginalString() {

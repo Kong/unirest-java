@@ -55,7 +55,7 @@ public class JSONArrayTest {
         Set<String> mine = Halp.getPublicMinus(JSONArray.class);
 
         orginal.removeAll(mine);
-        orginal.forEach(e -> System.out.println(e));
+        assertTrue(orginal.isEmpty());
     }
 
     @Test
@@ -117,6 +117,46 @@ public class JSONArrayTest {
     }
 
     @Test
+    public void putObjectAtElement() {
+        Object nul = null;
+        Object num = 42;
+        Object str = "hi";
+        Object bool = true;
+        Object arr = new JSONArray(asList(1,2,3));
+        Object obj = new JSONObject(of("f","b"));
+
+        JSONArray array = new JSONArray()
+        .put(5, obj)
+        .put(4, arr)
+        .put(3, bool)
+        .put(2, str)
+        .put(1, num)
+        .put(0, nul);
+
+        assertEquals(nul, array.get(0));
+        assertEquals(num, array.get(1));
+        assertEquals(str, array.get(2));
+        assertEquals(bool, array.get(3));
+        assertEquals(arr, array.get(4));
+        assertEquals(obj, array.get(5));
+    }
+
+    @Test
+    public void numbers() {
+        JSONArray obj = new JSONArray();
+        assertSame(obj, obj.put((Number)33));
+        obj.put("nan");
+
+        assertEquals(33, obj.getNumber(0));
+        assertNotFound(() -> obj.getNumber(5));
+        assertNotType(() -> obj.getNumber(1), "JSONArray[1] is not a number.");
+
+        assertEquals(33, obj.optNumber(0));
+        assertEquals(66.6d, obj.optNumber(1, (Number)66.6d));
+        assertEquals(null, obj.optNumber(5));
+    }
+
+    @Test
     public void doubles() {
         JSONArray obj = new JSONArray();
         assertSame(obj, obj.put(33.5d));
@@ -159,6 +199,21 @@ public class JSONArrayTest {
         assertEquals(33L, obj.optLong(0));
         assertEquals(66L, obj.optLong(5, 66));
         assertEquals(0L, obj.optLong(5));
+    }
+
+    @Test
+    public void bools() {
+        JSONArray obj = new JSONArray();
+        assertSame(obj, obj.put(true));
+        obj.put("nan");
+
+        assertEquals(true, obj.getBoolean(0));
+        assertNotFound(() -> obj.getBoolean(5));
+        assertNotType(() -> obj.getBoolean(1), "JSONArray[1] is not a boolean.");
+
+        assertEquals(true, obj.optBoolean(0));
+        assertEquals(true, obj.optBoolean(5, true));
+        assertEquals(false, obj.optBoolean(5));
     }
 
     @Test
