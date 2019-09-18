@@ -188,6 +188,11 @@ public interface HttpRequest<R extends HttpRequest>  {
      */
     HttpResponse<byte[]> asBytes();
 
+
+    CompletableFuture<HttpResponse<byte[]>> asBytesAsync();
+
+    CompletableFuture<HttpResponse<byte[]>> asBytesAsync(Callback<byte[]> callback);
+
     /**
      * Executes the request and returns the response with the body mapped into a JsonNode
      * @return response

@@ -32,6 +32,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static kong.unirest.CallbackFuture.wrap;
+
 abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     private Optional<ObjectMapper> objectMapper = Optional.empty();
@@ -170,7 +172,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public CompletableFuture<HttpResponse<Empty>> asEmptyAsync(Callback<Empty> callback) {
         return config.getAsyncClient()
-                .request(this, EmptyResponse::new, CallbackFuture.wrap(callback));
+                .request(this, EmptyResponse::new, wrap(callback));
     }
 
     @Override
@@ -187,13 +189,23 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync(Callback<String> callback) {
         return config.getAsyncClient()
-                .request(this, r -> new StringResponse(r, responseEncoding), CallbackFuture.wrap(callback));
+                .request(this, r -> new StringResponse(r, responseEncoding), wrap(callback));
     }
 
     @Override
     public HttpResponse<byte[]> asBytes() {
         return config.getClient()
-                .request(this, r -> new ByteResponse(r));
+                .request(this, ByteResponse::new);
+    }
+
+    @Override
+    public CompletableFuture<HttpResponse<byte[]>> asBytesAsync() {
+        return config.getAsyncClient().request(this, ByteResponse::new, new CompletableFuture<>());
+    }
+
+    @Override
+    public CompletableFuture<HttpResponse<byte[]>> asBytesAsync(Callback<byte[]> callback) {
+        return config.getAsyncClient().request(this, ByteResponse::new, wrap(callback));
     }
 
     @Override
@@ -210,7 +222,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback) {
 
-        return config.getAsyncClient().request(this, JsonResponse::new, CallbackFuture.wrap(callback));
+        return config.getAsyncClient().request(this, JsonResponse::new, wrap(callback));
     }
 
     @Override
@@ -243,7 +255,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback) {
 
-        return config.getAsyncClient().request(this, r -> new ObjectResponse<>(getObjectMapper(), r, responseClass), CallbackFuture.wrap(callback));
+        return config.getAsyncClient().request(this, r -> new ObjectResponse<>(getObjectMapper(), r, responseClass), wrap(callback));
     }
 
     @Override
@@ -255,7 +267,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType, Callback<T> callback) {
 
-        return config.getAsyncClient().request(this, r -> new ObjectResponse<>(getObjectMapper(), r, genericType), CallbackFuture.wrap(callback));
+        return config.getAsyncClient().request(this, r -> new ObjectResponse<>(getObjectMapper(), r, genericType), wrap(callback));
     }
 
     private <T> Function<RawResponse, HttpResponse<T>> funcResponse(Function<RawResponse, T> function) {
@@ -284,7 +296,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public CompletableFuture<HttpResponse<File>> asFileAsync(String path, Callback<File> callback) {
-        return config.getAsyncClient().request(this, r -> new FileResponse(r, path), CallbackFuture.wrap(callback));
+        return config.getAsyncClient().request(this, r -> new FileResponse(r, path), wrap(callback));
     }
 
     @Override
