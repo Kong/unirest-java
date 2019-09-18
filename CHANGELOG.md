@@ -1,3 +1,6 @@
+## 3.0.0
+Replace the dependency on org.json with a native kong.unirest library powered by gson. See the Upgrade Guide for details.
+
 ## 2.4.00 (pending)
 * add an entire new return type: ```asBytes()``` (as well as async versions) will return a raw byte[] array.
 

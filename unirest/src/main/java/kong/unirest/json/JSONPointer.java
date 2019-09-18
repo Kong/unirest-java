@@ -32,6 +32,7 @@ import java.util.Objects;
 /**
  * A Json Pointer query object following
  * https://tools.ietf.org/html/rfc6901
+ *
  */
 public class JSONPointer {
 
@@ -103,6 +104,12 @@ public class JSONPointer {
         return compileNext(query);
     }
 
+    /**
+     * Many of the path compiling code was borrowed from Jackson.
+     * It is, slightly modified but similar enough to give credit.
+     * please see com.fasterxml.jackson.core.JsonPointer
+     * @author Tatu Saloranta
+     */
     private static JSONPointer compileNext(String query) {
         final int end = query.length();
         for (int i = 1; i < end; ) {

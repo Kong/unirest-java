@@ -26,6 +26,7 @@
 package kong.unirest;
 
 import BehaviorTests.RequestCapture;
+import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -34,7 +35,7 @@ public class JacksonObjectMapperTest {
     private JacksonObjectMapper om = new JacksonObjectMapper();
 
     @Test
-    public void jsonPatch() {
+    public void jsonPatch() throws JSONException {
         JsonPatch patch = new JsonPatch();
         patch.add("/foo", "bar");
         patch.add("/baz", "qux");
@@ -48,7 +49,7 @@ public class JacksonObjectMapperTest {
     }
 
     @Test
-    public void jsonPatchInRequestCapture() {
+    public void jsonPatchInRequestCapture() throws JSONException {
         JsonPatch patch = new JsonPatch();
         patch.add("/foo", "bar");
         patch.add("/baz", "qux");

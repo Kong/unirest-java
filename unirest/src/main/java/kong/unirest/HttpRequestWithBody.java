@@ -25,8 +25,8 @@
 
 package kong.unirest;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import kong.unirest.json.JSONArray;
+import kong.unirest.json.JSONObject;
 
 import java.io.File;
 import java.io.InputStream;

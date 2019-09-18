@@ -61,7 +61,7 @@ public class GsonObjectMapperTest {
     private GsonObjectMapper om = new GsonObjectMapper();
 
     @Test
-    public void canWrite() {
+    public void canWrite() throws Exception {
         TestMe test = new TestMe("foo", 42, new TestMe("bar", 666, null));
 
         String json = om.writeValue(test);

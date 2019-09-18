@@ -89,12 +89,12 @@ public class JSONPointerTest {
     }
 
     @Test
-    public void testRef_all() {
+    public void testRef_all() throws Exception {
         assertQueryJson(RFC_TEST, "");
     }
 
     @Test
-    public void testRef_Array(){
+    public void testRef_Array() throws Exception {
         assertQueryJson("[\"bar\", \"baz\"]", "/foo");
     }
 
@@ -167,7 +167,7 @@ public class JSONPointerTest {
                 pointer.toString());
     }
 
-    private void assertQueryJson(String s, String s2) {
+    private void assertQueryJson(String s, String s2) throws Exception {
         JSONAssert.assertEquals(s, obj.query(s2).toString(), true);
     }
 

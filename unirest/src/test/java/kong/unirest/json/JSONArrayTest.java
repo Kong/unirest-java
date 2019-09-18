@@ -260,7 +260,7 @@ public class JSONArrayTest {
     }
 
     @Test
-    public void jsonObjects() {
+    public void jsonObjects() throws Exception {
         JSONObject subObj = new JSONObject("{\"derp\": 42}");
         JSONArray obj = new JSONArray();
         assertSame(obj, obj.put(subObj));
@@ -274,7 +274,7 @@ public class JSONArrayTest {
     }
 
     @Test
-    public void jsonArrays() {
+    public void jsonArrays() throws Exception {
         JSONArray subObj = new JSONArray("[42]");
         JSONArray obj = new JSONArray();
         assertSame(obj, obj.put(subObj));

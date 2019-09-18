@@ -29,8 +29,8 @@ import kong.unirest.JsonNode;
 import kong.unirest.MockCallback;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestConfigException;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import kong.unirest.json.JSONArray;
+import kong.unirest.json.JSONObject;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;

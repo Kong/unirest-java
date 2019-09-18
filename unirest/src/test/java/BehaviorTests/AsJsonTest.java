@@ -81,7 +81,7 @@ public class AsJsonTest extends BddTest {
         assertNull(response.getBody());
         UnirestParsingException ex = response.getParsingError().get();
         assertEquals("You did something bad", ex.getOriginalBody());
-        assertEquals("org.json.JSONException: A JSONArray text must start with '[' at 1 [character 2 line 1]",
+        assertEquals("kong.unirest.json.JSONException: Invalid JSON",
                 response.getParsingError().get().getMessage());
 
     }
@@ -93,7 +93,7 @@ public class AsJsonTest extends BddTest {
                     assertEquals(400, response.getStatus());
                     assertNull(response.getBody());
                     assertEquals(null, response.getBody());
-                    assertEquals("org.json.JSONException: A JSONArray text must start with '[' at 1 [character 2 line 1]",
+                    assertEquals("kong.unirest.json.JSONException: Invalid JSON",
                             response.getParsingError().get().getMessage());
 
                 }));

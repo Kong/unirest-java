@@ -27,7 +27,7 @@ package BehaviorTests;
 
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.nio.client.HttpAsyncClient;
-import org.json.JSONObject;
+import kong.unirest.json.JSONObject;
 import org.junit.Ignore;
 import kong.unirest.Unirest;
 import org.junit.Test;

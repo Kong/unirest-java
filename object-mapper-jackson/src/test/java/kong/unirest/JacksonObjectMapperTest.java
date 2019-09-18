@@ -49,6 +49,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 package kong.unirest;
 
+import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -60,7 +61,7 @@ public class JacksonObjectMapperTest {
     private JacksonObjectMapper om = new JacksonObjectMapper();
 
     @Test
-    public void canWrite() {
+    public void canWrite() throws JSONException {
         TestMe test = new TestMe("foo", 42, new TestMe("bar", 666, null));
 
         String json = om.writeValue(test);

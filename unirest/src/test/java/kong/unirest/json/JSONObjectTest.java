@@ -223,7 +223,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void jsonObjects() {
+    public void jsonObjects() throws Exception {
         JSONObject subObj = new JSONObject("{\"derp\": 42}");
         JSONObject obj = new JSONObject();
         obj.put("key", subObj);
@@ -238,7 +238,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void jsonArrays() {
+    public void jsonArrays() throws Exception {
         JSONArray subObj = new JSONArray("[42]");
         JSONObject obj = new JSONObject();
         obj.put("key", subObj);
@@ -591,7 +591,7 @@ public class JSONObjectTest {
         assertException(exRunnable, JSONException.class, message);
     }
 
-    public static void assertEqualJson(Object subObj, Object value) {
+    public static void assertEqualJson(Object subObj, Object value) throws org.json.JSONException {
         JSONAssert.assertEquals(subObj.toString(), value.toString(), true);
     }
 

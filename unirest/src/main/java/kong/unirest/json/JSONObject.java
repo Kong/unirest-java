@@ -129,15 +129,19 @@ public class JSONObject extends JSONElement {
             return new JSONArray((Collection)obj);
         }
         if(obj.getClass().isArray()){
-            JSONArray array = new JSONArray();
-            int length = Array.getLength(obj);
-            for (int i = 0; i < length; i ++) {
-                Object arrayElement = Array.get(obj, i);
-                array.put(arrayElement);
-            }
-            return array;
+            return wrapArray(obj);
         }
         return new JSONObject();
+    }
+
+    private static JSONArray wrapArray(Object obj) {
+        JSONArray array = new JSONArray();
+        int length = Array.getLength(obj);
+        for (int i = 0; i < length; i ++) {
+            Object arrayElement = Array.get(obj, i);
+            array.put(arrayElement);
+        }
+        return array;
     }
 
     private static boolean isPrimitive(Object o){
@@ -831,8 +835,10 @@ public class JSONObject extends JSONElement {
             put(key, (JSONObject) value);
         } else if (value instanceof Map){
             put(key, (Map) value);
-        } else if (value instanceof Collection){
+        } else if (value instanceof Collection) {
             put(key, (Collection) value);
+        } else if (value.getClass().isArray()){
+            put(key, wrapArray(value));
         } else {
             put(key, String.valueOf(value));
         }

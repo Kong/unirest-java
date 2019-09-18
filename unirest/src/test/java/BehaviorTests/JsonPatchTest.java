@@ -27,8 +27,8 @@ package BehaviorTests;
 
 import com.google.common.collect.ImmutableMap;
 import kong.unirest.Unirest;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import kong.unirest.json.JSONArray;
+import kong.unirest.json.JSONObject;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import kong.unirest.TestUtil;
@@ -141,7 +141,7 @@ public class JsonPatchTest extends BddTest {
     }
 
     @Test
-    public void thatsSomeValidJson() throws IOException {
+    public void thatsSomeValidJson() throws Exception {
         String patch = Unirest.jsonPatch(MockServer.PATCH)
                 .add("/fruits/-", "Apple")
                 .remove("/bugs")
