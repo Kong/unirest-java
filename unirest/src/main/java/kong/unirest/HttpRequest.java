@@ -183,6 +183,12 @@ public interface HttpRequest<R extends HttpRequest>  {
     CompletableFuture<HttpResponse<String>> asStringAsync(Callback<String> callback);
 
     /**
+     * Executes the request and returns the response with the body mapped into a byte[]
+     * @return response
+     */
+    HttpResponse<byte[]> asBytes();
+
+    /**
      * Executes the request and returns the response with the body mapped into a JsonNode
      * @return response
      */

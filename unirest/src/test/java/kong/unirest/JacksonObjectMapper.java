@@ -25,6 +25,7 @@
 
 package kong.unirest;
 
+import BehaviorTests.RequestCapture;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -94,6 +95,14 @@ public class JacksonObjectMapper implements ObjectMapper {
 	public <T> T readValue(InputStream rawBody, Class<T> as) {
 		try {
 			return om.readValue(rawBody, as);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public <T> T readValue(byte[] content, Class<T> clazz) {
+		try {
+			return om.readValue(content, clazz);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

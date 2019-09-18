@@ -191,6 +191,12 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
+    public HttpResponse<byte[]> asBytes() {
+        return config.getClient()
+                .request(this, r -> new ByteResponse(r));
+    }
+
+    @Override
     public HttpResponse<JsonNode> asJson() throws UnirestException {
         return config.getClient().request(this, JsonResponse::new);
     }
