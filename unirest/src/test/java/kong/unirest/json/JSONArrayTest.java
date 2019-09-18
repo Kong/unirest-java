@@ -26,8 +26,6 @@
 package kong.unirest.json;
 
 import BehaviorTests.Foo;
-import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
 import kong.unirest.TestUtil;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -37,7 +35,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static java.util.Arrays.asList;
@@ -47,16 +44,6 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
 public class JSONArrayTest {
-
-    @Test
-    public void signatures() {
-        //public java.math.BigDecimal JSONArray.getBigDecimal(int) throws JSONException
-        Set<String> orginal = ClarificationTest.sigsArray();
-        Set<String> mine = Halp.getPublicMinus(JSONArray.class);
-
-        orginal.removeAll(mine);
-        assertTrue(orginal.isEmpty());
-    }
 
     @Test
     public void nullForSoManyReasonsWhenZipping() {

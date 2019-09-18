@@ -46,17 +46,6 @@ import static org.junit.Assert.*;
 
 public class JSONObjectTest {
 
-
-    @Test
-    public void signatures() {
-        //public java.math.BigDecimal JSONArray.getBigDecimal(int) throws JSONException
-        Set<String> orginal = ClarificationTest.sigsObj();
-        Set<String> mine = Halp.getPublicMinus(JSONObject.class);
-
-        orginal.removeAll(mine);
-        orginal.stream().sorted().forEach(s -> System.out.println(s));
-    }
-
     @Test
     public void isEmpty() {
         JSONObject o = new JSONObject();

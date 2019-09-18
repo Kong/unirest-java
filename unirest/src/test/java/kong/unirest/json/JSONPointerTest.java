@@ -26,13 +26,11 @@
 package kong.unirest.json;
 
 import kong.unirest.TestUtil;
-import org.json.JSONArray;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import java.util.List;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class JSONPointerTest {
     // https://tools.ietf.org/html/rfc6901
