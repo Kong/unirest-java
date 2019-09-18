@@ -25,6 +25,7 @@
 
 package kong.unirest.json;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import kong.unirest.TestUtil;
 import org.json.JSONArray;
@@ -33,22 +34,45 @@ import org.json.JSONObject;
 import org.json.JSONPointer;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.*;
 
 public class ClarificationTest {
+
+    @Test
+    public void quoteWriter() throws IOException {
+        Object quote = JSONObject.wrap("foo");
+        assertEquals("foo", quote);
+    }
+
+    @Test
+    public void name() {
+        JSONObject o = new JSONObject();
+        o.putOnce("foo", 42);
+        TestUtil.assertException(() -> o.putOnce("foo", 55),
+                JSONException.class,
+                "Duplicate key \"foo\"");
+    }
 
     public static Set<String> sigsArray(){
         return Halp.getPublicMinus(JSONArray.class);
     }
 
+    public static Set<String> sigsObj(){
+        return Halp.getPublicMinus(JSONObject.class);
+    }
+
     @Test
     public void zipAnArray() {
-        JSONArray values = new JSONArray(Arrays.asList(1, "foo", false));
-        JSONArray names = new JSONArray(Arrays.asList("one", "two", "three", "four"));
+        JSONArray values = new JSONArray(asList(1, "foo", false));
+        JSONArray names = new JSONArray(asList("one", "two", "three", "four"));
         JSONObject zipped = values.toJSONObject(names);
         assertEquals(1, zipped.get("one"));
         assertEquals("foo", zipped.get("two"));

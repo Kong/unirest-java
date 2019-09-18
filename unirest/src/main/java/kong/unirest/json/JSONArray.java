@@ -380,7 +380,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
         } else if (object instanceof Number) {
             put((Number) object);
         } else if (object instanceof Boolean) {
-            put((Boolean) object);
+            put((boolean) object);
         } else if (object instanceof JSONObject) {
             put((JSONObject) object);
         } else if (object instanceof JSONArray) {

@@ -25,13 +25,13 @@
 
 package kong.unirest.json;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.*;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -46,6 +46,7 @@ import static java.util.Objects.requireNonNull;
  */
 public class JSONObject extends JSONElement {
 
+    public static final Object NULL = new NullObject();
     private transient final JsonObject obj;
 
     /**
@@ -76,6 +77,45 @@ public class JSONObject extends JSONElement {
         this.obj = jsonElement.getAsJsonObject();
     }
 
+    /**
+     * quite escape a string
+     * @param s a string
+     * @return a quoted string
+     */
+    public static String quote(String s) {
+        return new Gson().toJson(s);
+    }
+
+    /**
+     * quite escape a string
+     * @param s a string
+     * @return a quoted string
+     */
+    public static Writer quote(String s, Writer writer)  throws IOException {
+        writer.write(quote(s));
+        return writer;
+    }
+
+    /**
+     * convert a primitive JSON type in a string (bool, number, null) to its primitive type
+     * all decimal types will become doubles
+     * @param str a string
+     * @return a object
+     */
+    public static Object stringToValue(String str) {
+        if(str.contentEquals("null")){
+            return NULL;
+        } else if (str.equalsIgnoreCase("true")){
+            return true;
+        }else if (str.equalsIgnoreCase("false")) {
+            return false;
+        }
+        if(str.contains(".")){
+            return Double.valueOf(str);
+        } else {
+            return Integer.valueOf(str);
+        }
+    }
 
     JsonElement asElement() {
         return obj;
@@ -94,7 +134,7 @@ public class JSONObject extends JSONElement {
      * @param i (ignored due to limitations  in gson which uses a hardcoded indentation)
      * @return a JSON  String
      */
-    public String toString(int i) {
+    public String toString(int i)  throws JSONException {
         return toPrettyJson(obj);
     }
 
@@ -131,8 +171,9 @@ public class JSONObject extends JSONElement {
      * get and element by key as its native object
      * @param key the key element to operate on
      * @return the object, this could be an object, array or primitive
+     * @throws JSONException
      */
-    public Object get(String key) {
+    public Object get(String key) throws JSONException {
         return MAPPER.apply(getProperty(key));
     }
 
@@ -142,7 +183,7 @@ public class JSONObject extends JSONElement {
      * @return the element as a JSONObject
      * @throws JSONException  if it is not a object or the key does not exist
      */
-    public JSONObject getJSONObject(String key) {
+    public JSONObject getJSONObject(String key) throws JSONException {
         try {
             return new JSONObject(getProperty(key).getAsJsonObject());
         } catch (IllegalStateException e) {
@@ -165,7 +206,7 @@ public class JSONObject extends JSONElement {
      * @return the element as a JSONArray
      * @throws JSONException  if it is not an array or the key does not exist
      */
-    public JSONArray getJSONArray(String key) {
+    public JSONArray getJSONArray(String key) throws JSONException {
         try {
             return new JSONArray(getProperty(key).getAsJsonArray());
         } catch (IllegalStateException e) {
@@ -188,7 +229,7 @@ public class JSONObject extends JSONElement {
      * @return a string representation of the value
      * @throws JSONException if the key does not exist
      */
-    public String getString(String key) {
+    public String getString(String key) throws JSONException {
         return getProperty(key).getAsString();
     }
 
@@ -216,7 +257,7 @@ public class JSONObject extends JSONElement {
      * @return the value
      * @throws JSONException if the object is not a number or does not exist
      */
-    public double getDouble(String key) {
+    public double getDouble(String key) throws JSONException {
         return tryNumber(() -> getProperty(key).getAsDouble(), key);
     }
 
@@ -245,7 +286,7 @@ public class JSONObject extends JSONElement {
      * @return the value
      * @throws JSONException if the object is not a number or does not exist
      */
-    public float getFloat(String key) {
+    public float getFloat(String key) throws JSONException {
         return tryNumber(() -> getProperty(key).getAsFloat(), key);
     }
 
@@ -274,7 +315,7 @@ public class JSONObject extends JSONElement {
      * @return the value
      * @throws JSONException if the object is not a number or does not exist
      */
-    public long getLong(String key) {
+    public long getLong(String key) throws JSONException {
         return tryNumber(() -> getProperty(key).getAsLong(), key);
     }
 
@@ -298,12 +339,41 @@ public class JSONObject extends JSONElement {
     }
 
     /**
+     * get an element property as a Number
+     * @param key the key element to operate on
+     * @return the element as a Number if it can be cast to one.
+     * @throws JSONException  if it is not a number or the key does not exist
+     */
+    public Number getNumber(String key) throws JSONException {
+        return tryNumber(() -> getProperty(key).getAsInt(), key);
+    }
+
+    /**
+     * the value as int or 0
+     * @param key the key element to operate on
+     * @return the value as a int or 0 if the key doesn't exist or the value is not a number
+     */
+    public Number optNumber(String key) {
+        return optNumber(key, 0);
+    }
+
+    /**
+     * get the value as a Number or default value
+     * @param key the key element to operate on
+     * @param defaultValue the default value to return if the index or value type are not valid
+     * @return return value as long or a default value if value is not viable
+     */
+    public Number optNumber(String key, Number defaultValue) {
+        return getOrDefault(() -> getNumber(key), defaultValue);
+    }
+
+    /**
      * get an element property as a int
      * @param key the key element to operate on
      * @return the element as a int if it can be cast to one.
      * @throws JSONException  if it is not a number or the key does not exist
      */
-    public int getInt(String key) {
+    public int getInt(String key) throws JSONException {
         return tryNumber(() -> getProperty(key).getAsInt(), key);
     }
 
@@ -317,7 +387,7 @@ public class JSONObject extends JSONElement {
     }
 
     /**
-     * get the  value as a long or default value
+     * get the  value as a int or default value
      * @param key the key element to operate on
      * @param defaultValue the default value to return if the index or value type are not valid
      * @return return value as long or a default value if value is not viable
@@ -332,7 +402,7 @@ public class JSONObject extends JSONElement {
      * @return the element as a BigInteger if it can be cast to one.
      * @throws JSONException  if it is not a number or the key does not exist
      */
-    public BigInteger getBigInteger(String key) {
+    public BigInteger getBigInteger(String key) throws JSONException {
         return tryNumber(() -> getProperty(key).getAsBigInteger(), key);
     }
 
@@ -352,7 +422,7 @@ public class JSONObject extends JSONElement {
      * @return the element as a BigInteger if it can be cast to one.
      * @throws JSONException  if it is not a number or the key does not exist
      */
-    public BigDecimal getBigDecimal(String key) {
+    public BigDecimal getBigDecimal(String key) throws JSONException {
         return tryNumber(() -> getProperty(key).getAsBigDecimal(), key);
     }
 
@@ -366,6 +436,39 @@ public class JSONObject extends JSONElement {
         return getOrDefault(() -> getBigDecimal(key), defaultValue);
     }
 
+
+    /**
+     * gets a boolean value at a particular key
+     * @param key the key
+     * @return a boolean
+     * @throws JSONException if the element does not exist or is not a boolean
+     */
+    public boolean getBoolean(String key) throws JSONException {
+        JsonElement e = getProperty(key);
+        if (!e.isJsonPrimitive() || !e.getAsJsonPrimitive().isBoolean()) {
+            throw new JSONException("JSONObject[\"%s\"] is not a boolean.", key);
+        }
+        return e.getAsBoolean();
+    }
+
+    /**
+     * gets a boolean value at a particular key or false as default
+     * @param key the key
+     * @return a boolean
+     */
+    public boolean optBoolean(String key) {
+        return optBoolean(key, false);
+    }
+
+    /**
+     * gets a boolean value at a particular key or a default value
+     * @param key the key
+     * @return a boolean
+     */
+    public boolean optBoolean(String key, boolean defaultValue) {
+        return getOrDefault(() -> getBoolean(key), defaultValue);
+    }
+
     /**
      * get element as a enum value
      * @param <T> the type of enum you want
@@ -374,7 +477,7 @@ public class JSONObject extends JSONElement {
      * @return the value as a enum of T
      * @throws JSONException  if it does not map to a enum of T or the key does not exist
      */
-    public <T extends Enum<T>> T getEnum(Class<T> enumClass, String key) {
+    public <T extends Enum<T>> T getEnum(Class<T> enumClass, String key) throws JSONException {
         try {
             String v = getProperty(key).getAsString();
             return Enum.valueOf(enumClass, v);
@@ -412,7 +515,7 @@ public class JSONObject extends JSONElement {
      * @param object JSONObject
      * @return this JSONObject
      */
-    public JSONObject put(String key, JSONObject object) {
+    public JSONObject put(String key, JSONObject object) throws JSONException {
         obj.add(key, object.obj);
         return this;
     }
@@ -423,7 +526,7 @@ public class JSONObject extends JSONElement {
      * @param array JSONArray
      * @return this JSONObject
      */
-    public JSONObject put(String key, JSONArray array) {
+    public JSONObject put(String key, JSONArray array) throws JSONException {
         obj.add(key, array.getArray());
         return this;
     }
@@ -434,7 +537,7 @@ public class JSONObject extends JSONElement {
      * @param value
      * @return this JSONObject
      */
-    public JSONObject put(String key, Boolean value){
+    public JSONObject put(String key, boolean value) throws JSONException {
         obj.addProperty(key, value);
         return this;
     }
@@ -445,7 +548,55 @@ public class JSONObject extends JSONElement {
      * @param value Number
      * @return this JSONObject
      */
-    public JSONObject put(String key, Number value) {
+    public JSONObject put(String key, Number value) throws JSONException {
+        this.obj.addProperty(key, value);
+        return this;
+    }
+
+    /**
+     * put a double at a particular key
+     * @param key the key element to operate on
+     * @param value double
+     * @return this JSONObject
+     * @throws JSONException
+     */
+    public JSONObject put(String key, double value) throws JSONException {
+        this.obj.addProperty(key, value);
+        return this;
+    }
+
+    /**
+     * put a float at a particular key
+     * @param key the key element to operate on
+     * @param value float
+     * @return this JSONObject
+     * @throws JSONException
+     */
+    public JSONObject put(String key, float value) throws JSONException {
+        this.obj.addProperty(key, value);
+        return this;
+    }
+
+    /**
+     * put a long at a particular key
+     * @param key the key element to operate on
+     * @param value long
+     * @return this JSONObject
+     * @throws JSONException
+     */
+    public JSONObject put(String key, long value) throws JSONException {
+        this.obj.addProperty(key, value);
+        return this;
+    }
+
+    /**
+     * put a int at a particular key
+     * @param key the key element to operate on
+     * @param value int
+     * @return this JSONObject
+     * @throws JSONException
+     */
+    public JSONObject put(String key, int value) throws JSONException {
         this.obj.addProperty(key, value);
         return this;
     }
@@ -456,8 +607,30 @@ public class JSONObject extends JSONElement {
      * @param value Number
      * @return this JSONObject
      */
-    public JSONObject put(String key, String value) {
+    public JSONObject put(String key, String value) throws JSONException {
         this.obj.addProperty(key, value);
+        return this;
+    }
+
+    /**
+     * put a Collection as a JSONArray at a particular key
+     * @param key the key element to operate on
+     * @param value Collection
+     * @return this JSONObject
+     */
+    public JSONObject put(String key, Collection value) throws JSONException {
+        this.put(key, new JSONArray(value));
+        return this;
+    }
+
+    /**
+     * put a Collection as a JSONArray at a particular key
+     * @param key the key element to operate on
+     * @param value Collection
+     * @return this JSONObject
+     */
+    public JSONObject put(String key, Map value) throws JSONException {
+        this.put(key, new JSONObject(value));
         return this;
     }
 
@@ -467,7 +640,7 @@ public class JSONObject extends JSONElement {
      * @param enumvalue a enum
      * @return this JSONObject
      */
-    public <T extends Enum<T>> JSONObject put(String key, T enumvalue) {
+    public <T extends Enum<T>> JSONObject put(String key, T enumvalue) throws JSONException {
         obj.add(key, enumvalue == null ? JsonNull.INSTANCE : new JsonPrimitive(enumvalue.name()));
         return this;
     }
@@ -493,7 +666,7 @@ public class JSONObject extends JSONElement {
      * @param additionalValue value to append to the array
      * @return this JSONObject
      */
-    public JSONObject accumulate(String key, Object additionalValue) {
+    public JSONObject accumulate(String key, Object additionalValue) throws JSONException {
         requireNonNull(key, "Null key.");
         if (!obj.has(key)) {
             return this;
@@ -518,7 +691,7 @@ public class JSONObject extends JSONElement {
      * @throws JSONException if the value exists and is not an array
      * @return this JSONObject
      */
-    public JSONObject append(String key, Object value) {
+    public JSONObject append(String key, Object value) throws JSONException {
         requireNonNull(key, "Null key.");
         if (has(key)) {
             JSONArray arr = getJSONArray(key);
@@ -537,8 +710,9 @@ public class JSONObject extends JSONElement {
      * it does not exist.
      * @param key the key element to operate on
      * @return this JSONObject
+     * @throws JSONException
      */
-    public JSONObject increment(String key) {
+    public JSONObject increment(String key) throws JSONException {
         if (!has(key)) {
             put(key, 1);
         } else {
@@ -558,10 +732,10 @@ public class JSONObject extends JSONElement {
      * put a value to a key only if it does not exist
      * @param key the key element to operate on
      * @param value the object to put
-     * @throws JSONException if the key exists.
      * @return this JSONObject
+     * @throws JSONException if the key exists.
      */
-    public JSONObject putOnce(String key, Object value) {
+    public JSONObject putOnce(String key, Object value) throws JSONException {
         if(has(key)){
             throw new JSONException("Duplicate key \"foo\"");
         }
@@ -574,18 +748,23 @@ public class JSONObject extends JSONElement {
      * @param key the key element to operate on
      * @param value the  object to put
      * @return this JSONObject
+     * @throws JSONException
      */
-    public JSONObject put(String key, Object value){
+    public JSONObject put(String key, Object value) throws JSONException {
         if(value == null){
             put(key, (String) value);
         } else if (value instanceof Number){
-            put(key, (Number)value);
+            put(key, (Number) value);
         } else if (value instanceof Boolean){
-            put(key, (Boolean)value);
+            put(key, (boolean) value);
         } else if (value instanceof JSONArray) {
             put(key, (JSONArray) value);
         } else if (value instanceof JSONObject) {
             put(key, (JSONObject) value);
+        } else if (value instanceof Map){
+            put(key, (Map) value);
+        } else if (value instanceof Collection){
+            put(key, (Collection) value);
         } else {
             put(key, String.valueOf(value));
         }
@@ -598,8 +777,9 @@ public class JSONObject extends JSONElement {
      * @param key the key element to operate on
      * @param value the  object to put
      * @return this JSONObject
+     * @throws JSONException
      */
-    public JSONObject putOpt(String key, Object value) {
+    public JSONObject putOpt(String key, Object value) throws JSONException {
         if(key == null || value == null){
             return this;
         }
@@ -637,6 +817,23 @@ public class JSONObject extends JSONElement {
         return new JSONArray(keySet());
     }
 
+    /**
+     * creates an  array of the values for they keys you provide
+     * @param names a list of keys you want an array for
+     * @return a JSONArray of values
+     * @throws JSONException
+     */
+    public JSONArray toJSONArray(JSONArray names) throws JSONException {
+        if(names == null || names.isEmpty()){
+            return null;
+        }
+        JSONArray array = new JSONArray();
+        for(Object name : names){
+            array.put(opt(String.valueOf(name)));
+        }
+        return array;
+    }
+
     private JsonElement getProperty(String key) {
         if (!obj.has(key)) {
             throw new JSONException("JSONObject[\"%s\"] not found.", key);
@@ -668,5 +865,34 @@ public class JSONObject extends JSONElement {
     @Override
     public int hashCode() {
         return obj.hashCode();
+    }
+
+    /**
+     * optionally return the object or null if it doesn't exist
+     * @param key the key
+     * @return the object at the key or null
+     */
+    public Object opt(String key) {
+        try{
+            return get(key);
+        }catch (JSONException e){
+            return null;
+        }
+    }
+
+    /**
+     * @return boolean if the object is empty
+     */
+    public boolean isEmpty() {
+        return obj.size() == 0;
+    }
+
+    /**
+     * indicate if the key does not exist or its value is null
+     * @param key the key
+     * @return a boolean indicating null
+     */
+    public boolean isNull(String key) {
+        return !has(key) || get(key) == null;
     }
 }

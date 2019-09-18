@@ -82,7 +82,7 @@ public class ConsumerTest extends BddTest {
                     }
                 });
         while (!asyncDone){
-            System.out.println(".");
+            System.out.print(".");
         }
         assertEquals(null, error);
         assertEquals(200, status);

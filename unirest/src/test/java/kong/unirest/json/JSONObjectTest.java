@@ -29,19 +29,52 @@ import kong.unirest.TestUtil;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
+import java.io.IOException;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static com.google.common.collect.Sets.newHashSet;
+import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.assertException;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
 public class JSONObjectTest {
+
+
+    @Test
+    public void signatures() {
+        //public java.math.BigDecimal JSONArray.getBigDecimal(int) throws JSONException
+        Set<String> orginal = ClarificationTest.sigsObj();
+        Set<String> mine = Halp.getPublicMinus(JSONObject.class);
+
+        orginal.removeAll(mine);
+        orginal.stream().sorted().forEach(s -> System.out.println(s));
+    }
+
+    @Test
+    public void isEmpty() {
+        JSONObject o = new JSONObject();
+        assertTrue(o.isEmpty());
+        o.put("foo", "bar");
+        assertFalse(o.isEmpty());
+    }
+
+    @Test
+    public void isNull() {
+        JSONObject o = new JSONObject();
+        assertTrue(o.isNull("foo"));
+        o.put("foo", (Object)null);
+        assertTrue(o.isNull("foo"));
+        o.put("foo", 42);
+        assertFalse(o.isNull("foo"));
+    }
 
     @Test
     public void contructInvalid() {
@@ -110,6 +143,22 @@ public class JSONObjectTest {
     }
 
     @Test
+    public void booleans() {
+        JSONObject obj = new JSONObject();
+        obj.put("key", true);
+        obj.put("not", "nan");
+
+        assertEquals(true, obj.getBoolean("key"));
+        assertNotFound(() -> obj.getBoolean("boo"));
+        assertJSONEx(() -> obj.getBoolean("not"), "JSONObject[\"not\"] is not a boolean.");
+        isTypeAndValue(true, Boolean.class, obj.get("key"));
+
+        assertEquals(true, obj.optBoolean("key"));
+        assertEquals(true, obj.optBoolean("boo", true));
+        assertEquals(false, obj.optBoolean("boo"));
+    }
+
+    @Test
     public void ints() {
         JSONObject obj = new JSONObject();
         obj.put("key", 33);
@@ -123,6 +172,22 @@ public class JSONObjectTest {
         assertEquals(33, obj.optInt("key"));
         assertEquals(66, obj.optInt("boo", 66));
         assertEquals(0, obj.optInt("boo"));
+    }
+    @Test
+    public void numbers() {
+        Number tt =  33;
+        JSONObject obj = new JSONObject();
+        obj.put("key", tt);
+        obj.put("not", "nan");
+
+        assertEquals(tt, obj.getNumber("key"));
+        assertNotFound(() -> obj.getNumber("boo"));
+        assertJSONEx(() -> obj.getNumber("not"), "JSONObject[\"not\"] is not a number.");
+        isTypeAndValue(tt, Number.class, obj.getNumber("key"));
+
+        assertEquals(tt, obj.optNumber("key"));
+        assertEquals(66, obj.optNumber("boo", 66));
+        assertEquals(0, obj.optNumber("boo"));
     }
 
     @Test
@@ -430,6 +495,58 @@ public class JSONObjectTest {
                 newHashSet("foo", "bar", "baz"),
                 newHashSet(names.toList())
         );
+    }
+
+    @Test
+    public void toJSONArray() {
+        JSONObject o = new JSONObject(of("foo","bar","baz",42));
+
+        assertNull(o.toJSONArray(new JSONArray()));
+
+        assertEquals(new JSONArray(asList("bar", 42)),
+                o.toJSONArray(new JSONArray(asList("foo", "baz"))));
+
+        assertEquals(new JSONArray(asList(null, null)),
+                new JSONObject().toJSONArray(new JSONArray(asList("foo", "baz"))));
+    }
+
+    @Test
+    public void putCollection() {
+        JSONObject o = new JSONObject();
+        o.put("foo", asList(1,2,3));
+        assertEquals("{\"foo\":[1,2,3]}", o.toString());
+    }
+
+    @Test
+    public void putObjectAsMap() {
+        JSONObject o = new JSONObject();
+        o.put("foo", of("baz", 42));
+        assertEquals("{\"foo\":{\"baz\":42}}", o.toString());
+    }
+
+    @Test
+    public void stringToValue() {
+        assertSame(JSONObject.NULL, JSONObject.stringToValue("null"));
+        assertEquals(true, JSONObject.stringToValue("true"));
+        assertEquals(false, JSONObject.stringToValue("false"));
+        assertEquals(42, JSONObject.stringToValue("42"));
+        assertEquals(45.25, JSONObject.stringToValue("45.25"));
+        assertEquals(-45.25, JSONObject.stringToValue("-45.25"));
+        TestUtil.assertException(() -> JSONObject.stringToValue(null),
+                NullPointerException.class,
+                null);
+    }
+
+    @Test
+    public void quote() {
+        assertEquals("\"\\\"foo\\\"hoo\"", JSONObject.quote("\"foo\"hoo"));
+    }
+
+    @Test
+    public void quoteWriter() throws IOException {
+        StringWriter w = new StringWriter();
+        Writer quote = JSONObject.quote("\"foo\"hoo", w);
+        assertEquals("\"\\\"foo\\\"hoo\"", quote.toString());
     }
 
     private void assertNotFound(TestUtil.ExRunnable exRunnable) {
