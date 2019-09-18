@@ -29,12 +29,10 @@ import com.google.gson.*;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static java.util.Objects.requireNonNull;
@@ -115,6 +113,76 @@ public class JSONObject extends JSONElement {
         } else {
             return Integer.valueOf(str);
         }
+    }
+
+    public static Object wrap(Object obj) {
+        if(obj == null || obj.equals(NULL)){
+            return NULL;
+        }
+        if(isPrimitive(obj)){
+            return obj;
+        }
+        if(obj instanceof Map){
+            return new JSONObject((Map)obj);
+        }
+        if(obj instanceof Collection){
+            return new JSONArray((Collection)obj);
+        }
+        if(obj.getClass().isArray()){
+            JSONArray array = new JSONArray();
+            int length = Array.getLength(obj);
+            for (int i = 0; i < length; i ++) {
+                Object arrayElement = Array.get(obj, i);
+                array.put(arrayElement);
+            }
+            return array;
+        }
+        return new JSONObject();
+    }
+
+    private static boolean isPrimitive(Object o){
+        return (o instanceof String
+        || o instanceof Number
+        || o instanceof Boolean);
+    }
+
+    public static String doubleToString(double d) {
+        if (d == Math.floor(d) && !Double.isInfinite(d)) {
+            return Integer.toString((int)d);
+        }
+        return Double.toString(d);
+    }
+
+    public static String numberToString(Number number) throws JSONException {
+        return String.valueOf(number);
+    }
+
+    public static String valueToString(Object o) throws JSONException {
+        if(o == null){
+            return "null";
+        }
+        if(o instanceof JSONString){
+            return ((JSONString)o).toJSONString();
+        }
+        if(o instanceof JSONElement){
+            return o.toString();
+        }
+        return new Gson().toJson(o);
+    }
+
+    public static String[] getNames(JSONObject jsonObject) {
+        if(jsonObject == null || jsonObject.isEmpty()){
+            return null;
+        }
+        List<String> list = jsonObject.names().toList();
+        return list.toArray(new String[list.size()]);
+    }
+
+    public static String[] getNames(Object o) {
+        if(o instanceof JSONObject){
+            return getNames((JSONObject)o);
+        }
+        return new String[]{};
     }
 
     JsonElement asElement() {

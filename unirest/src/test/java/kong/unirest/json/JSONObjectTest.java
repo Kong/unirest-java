@@ -25,6 +25,7 @@
 
 package kong.unirest.json;
 
+import BehaviorTests.Foo;
 import kong.unirest.TestUtil;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -34,7 +35,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,7 +42,6 @@ import static com.google.common.collect.ImmutableMap.of;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.assertException;
-import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
 public class JSONObjectTest {
@@ -549,6 +548,52 @@ public class JSONObjectTest {
         assertEquals("\"\\\"foo\\\"hoo\"", quote.toString());
     }
 
+    @Test
+    public void wrapPrimitives() throws IOException {
+        assertEquals(42, JSONObject.wrap(42));
+        assertEquals(42.5, JSONObject.wrap(42.5));
+        assertSame(JSONObject.NULL, JSONObject.wrap(null));
+        assertEquals(true, JSONObject.wrap(true));
+    }
+
+    @Test
+    public void wrapObjects() throws IOException {
+        assertTrue(new JSONArray(asList(1,2,3)).similar(JSONObject.wrap(asList(1,2,3))));
+        assertTrue(new JSONArray(asList(1,2,3)).similar(JSONObject.wrap(new int[]{1,2,3})));
+        assertTrue(new JSONObject(of("f",1)).similar(JSONObject.wrap(of("f",1))));
+        assertTrue(new JSONObject().similar(JSONObject.wrap(new Foo("hi"))));
+    }
+
+    @Test
+    public void doubleToString() {
+        assertEquals("42", JSONObject.doubleToString(42));
+        assertEquals("42.5643", JSONObject.doubleToString(42.5643));
+    }
+
+    @Test
+    public void numberToString() {
+        assertEquals("42", JSONObject.numberToString(42));
+        assertEquals("42.5643", JSONObject.numberToString(42.5643f));
+    }
+
+    @Test
+    public void valueToString() {
+        assertEquals("null", JSONObject.valueToString(null));
+        assertEquals("42", JSONObject.valueToString(42));
+        assertEquals("42.5643", JSONObject.valueToString(42.5643f));
+        assertEquals("\"Hello World\"", JSONObject.valueToString("Hello World"));
+        assertEquals(ImmaJson.HI_MOM, JSONObject.valueToString(new ImmaJson()));
+        assertEquals("{\"bar\":\"me\"}", JSONObject.valueToString(new Foo("me")));
+        assertEquals("{}", JSONObject.valueToString(new JSONObject()));
+        assertEquals("[]", JSONObject.valueToString(new JSONArray()));
+    }
+
+    @Test
+    public void getNames() {
+        assertArrayEquals(null, JSONObject.getNames(new JSONObject()));
+        assertArrayEquals(new String[]{"a","b"}, JSONObject.getNames(new JSONObject(of("a",1,"b",2))));
+    }
+
     private void assertNotFound(TestUtil.ExRunnable exRunnable) {
         assertJSONEx(exRunnable, "JSONObject[\"boo\"] not found.");
     }
@@ -567,4 +612,14 @@ public class JSONObjectTest {
     }
 
     public enum fruit {orange, apple, pear;}
+
+    public static class ImmaJson implements JSONString {
+
+        public static final String HI_MOM = "Hi Mom";
+
+        @Override
+        public String toJSONString() {
+            return HI_MOM;
+        }
+    }
 }

@@ -25,6 +25,7 @@
 
 package kong.unirest.json;
 
+import BehaviorTests.Foo;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import kong.unirest.TestUtil;
@@ -32,6 +33,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONPointer;
+import org.json.JSONString;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -41,16 +43,28 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static com.google.common.collect.ImmutableMap.of;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 
 public class ClarificationTest {
 
     @Test
-    public void quoteWriter() throws IOException {
-        Object quote = JSONObject.wrap("foo");
-        assertEquals("foo", quote);
+    public void valueToString() {
+        assertArrayEquals(null, JSONObject.getNames(new JSONObject()));
+        assertArrayEquals(new String[]{"a","b"}, JSONObject.getNames(new JSONObject(ImmutableMap.of("a",1,"b",2))));
     }
+
+    public static class ImmaJson implements JSONString {
+
+        public static final String HI_MOM = "Hi Mom";
+
+        @Override
+        public String toJSONString() {
+            return HI_MOM;
+        }
+    }
+
 
     @Test
     public void name() {
