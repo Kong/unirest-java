@@ -189,8 +189,17 @@ public interface HttpRequest<R extends HttpRequest>  {
     HttpResponse<byte[]> asBytes();
 
 
+    /**
+     * Executes the request asynchronously and returns the response with the body mapped into a byte[]
+     * @return a CompletableFuture of a response
+     */
     CompletableFuture<HttpResponse<byte[]>> asBytesAsync();
 
+    /**
+     * Executes the request asynchronously and returns the response with the body mapped into a byte[]
+     * @param callback a callback handler
+     * @return a CompletableFuture of a response
+     */
     CompletableFuture<HttpResponse<byte[]>> asBytesAsync(Callback<byte[]> callback);
 
     /**

@@ -1,3 +1,6 @@
+## 2.4.00 (pending)
+* add an entire new return type: ```asBytes()``` (as well as async versions) will return a raw byte[] array.
+
 ## 2.3.17
 * Issue #292: Use per request Object Mapper for request bodies.
 
