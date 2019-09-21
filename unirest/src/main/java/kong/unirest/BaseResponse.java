@@ -39,6 +39,9 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
 
     protected BaseResponse(RawResponse response){
         this.headers = response.getHeaders();
+        // Unirest decompresses the content, so this should be removed as it is
+        // no longer encoded
+        this.headers.remove("Content-Encoding", "gzip");
         this.statusCode = response.getStatus();
         this.statusText = response.getStatusText();
         this.config = response.getConfig();

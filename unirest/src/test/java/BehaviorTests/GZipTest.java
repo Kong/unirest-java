@@ -25,29 +25,38 @@
 
 package BehaviorTests;
 
+import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class GZipTest extends BddTest {
     @Test
     public void testGzip() {
-        Unirest.get(MockServer.GZIP)
+        HttpResponse<RequestCapture> resp = Unirest.get(MockServer.GZIP)
                 .queryString("zipme", "up")
-                .asObject(RequestCapture.class)
-                .getBody()
+                .asObject(RequestCapture.class);
+
+        resp.getBody()
                 .assertParam("zipme", "up")
                 .assertHeader("Accept-Encoding","gzip");
+
+        assertEquals(0, resp.getHeaders().get("Content-Encoding").size());
     }
 
     @Test
     public void testGzipAsync() throws Exception {
-        Unirest.get(MockServer.GZIP)
+        HttpResponse<RequestCapture> resp = Unirest.get(MockServer.GZIP)
                 .queryString("zipme", "up")
                 .asObjectAsync(RequestCapture.class)
-                .get()
-                .getBody()
+                .get();
+
+        resp.getBody()
                 .assertParam("zipme", "up")
-                .assertHeader("Accept-Encoding","gzip");
+                .assertHeader("Accept-Encoding", "gzip");
+
+        assertEquals(0, resp.getHeaders().get("Content-Encoding").size());
     }
 
     @Test

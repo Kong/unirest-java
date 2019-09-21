@@ -143,11 +143,18 @@ public class Headers {
      * @return all the headers, in order
      */
     public List<Header> all() {
-        return this.headers;
+        return new ArrayList<>(this.headers);
     }
 
     private boolean isName(Header h, String name) {
         return Util.nullToEmpty(name).equalsIgnoreCase(h.getName());
+    }
+
+    void remove(String key, String value) {
+        List<Header> header = headers.stream().
+                filter(h -> key.equalsIgnoreCase(h.getName()) && value.equalsIgnoreCase(h.getValue()))
+                .collect(toList());
+        headers.removeAll(header);
     }
 
     static class Entry implements Header {
