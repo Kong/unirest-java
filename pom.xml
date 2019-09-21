@@ -279,7 +279,12 @@
                         </goals>
                         <configuration>
                             <rules>
-                                <banVulnerable implementation="org.sonatype.ossindex.maven.enforcer.BanVulnerableDependencies" />
+                                <banVulnerable implementation="org.sonatype.ossindex.maven.enforcer.BanVulnerableDependencies">
+                                    <excludeVulnerabilityIds>
+                                        <exclude>fc1e8802-77e5-458f-b987-eb778c6ac2fc</exclude>
+                                        <exclude>3242fdc1-bfe9-46a6-af0c-0b8f57f56eb7</exclude>
+                                    </excludeVulnerabilityIds>
+                                </banVulnerable>
                             </rules>
                         </configuration>
                     </execution>
