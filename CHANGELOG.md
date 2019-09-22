@@ -1,7 +1,8 @@
-## 3.0.0
-Replace the dependency on org.json with a native kong.unirest library powered by gson. See the Upgrade Guide for details.
+# 3.0.0
+* Replace the dependency on org.json with a native kong.unirest library powered by gson that matches org.json interfaces. See the [Upgrade Guide](UPGRADE_GUIDE.md) for details.
+* Issue #299. Remove gzip content-encoding header after decompression on async client
 
-## 2.4.00 (pending)
+## 2.4.00
 * add an entire new return type: ```asBytes()``` (as well as async versions) will return a raw byte[] array.
 
 ## 2.3.17
