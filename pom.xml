@@ -27,8 +27,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <!-- jackson-databind is now on 2.9.9.1 for security and not using this prop -->
-        <jackson.version>2.9.9</jackson.version>
+        <jackson.version>2.9.10</jackson.version>
         <main.dir>${project.basedir}</main.dir>
     </properties>
 
@@ -280,10 +279,6 @@
                         <configuration>
                             <rules>
                                 <banVulnerable implementation="org.sonatype.ossindex.maven.enforcer.BanVulnerableDependencies">
-                                    <excludeVulnerabilityIds>
-                                        <exclude>fc1e8802-77e5-458f-b987-eb778c6ac2fc</exclude>
-                                        <exclude>3242fdc1-bfe9-46a6-af0c-0b8f57f56eb7</exclude>
-                                    </excludeVulnerabilityIds>
                                 </banVulnerable>
                             </rules>
                         </configuration>
