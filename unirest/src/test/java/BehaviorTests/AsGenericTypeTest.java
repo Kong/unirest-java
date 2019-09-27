@@ -25,7 +25,7 @@
 
 package BehaviorTests;
 
-import kong.unirest.GsonObjectMapper;
+import kong.unirest.JsonObjectMapper;
 import kong.unirest.Unirest;
 import kong.unirest.GenericType;
 import org.junit.Test;
@@ -96,7 +96,7 @@ public class AsGenericTypeTest extends BddTest {
 
     @Test
     public void itAlsoWorksWithGson() {
-        Unirest.config().setObjectMapper(new GsonObjectMapper());
+        Unirest.config().setObjectMapper(new JsonObjectMapper());
 
         MockServer.setJsonAsResponse(new WeirdType<>(foos, "hey"));
 

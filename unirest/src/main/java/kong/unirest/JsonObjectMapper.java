@@ -27,7 +27,7 @@ package kong.unirest;
 
 import com.google.gson.Gson;
 
-public class GsonObjectMapper implements ObjectMapper {
+public class JsonObjectMapper implements ObjectMapper {
 
     private final Gson gson = new Gson();
 
