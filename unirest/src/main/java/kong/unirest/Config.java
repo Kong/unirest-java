@@ -54,7 +54,7 @@ public class Config {
 
     private Optional<Client> client = Optional.empty();
     private Optional<AsyncClient> asyncClient = Optional.empty();
-    private Optional<ObjectMapper> objectMapper = Optional.empty();
+    private Optional<ObjectMapper> objectMapper = Optional.of(new JsonObjectMapper());
 
     private List<HttpRequestInterceptor> interceptors = new ArrayList<>();
     private Headers headers;
