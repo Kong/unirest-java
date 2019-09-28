@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -78,6 +79,7 @@ public class Config {
     private String cookieSpec;
     private UniMetric metrics = new NoopMetric();
     private long ttl = -1;
+    private Consumer<HttpResponse<?>> errorHandler;
 
     public Config() {
         setDefaults();
@@ -98,6 +100,7 @@ public class Config {
         verifySsl = true;
         keystore = null;
         keystorePassword = null;
+        errorHandler = null;
         this.objectMapper = Optional.of(new JsonObjectMapper());
         try {
             asyncBuilder = ApacheAsyncClient::new;
@@ -418,6 +421,15 @@ public class Config {
     }
 
     /**
+     * Sets a global error handler
+     * If the response was NOT a 200-series response or a mapping exception happened. Invoke this consumer
+     * @param consumer a function to consume a HttpResponse
+     */
+    public void errorHandler(Consumer<HttpResponse<?>> consumer) {
+        this.errorHandler = consumer;
+    }
+
+    /**
      * Turn on or off requesting all content as compressed. (GZIP encoded)
      * Default is true
      *
@@ -732,4 +744,7 @@ public class Config {
     }
 
 
+    public Consumer<HttpResponse<?>> getErrorHandler() {
+        return errorHandler;
+    }
 }

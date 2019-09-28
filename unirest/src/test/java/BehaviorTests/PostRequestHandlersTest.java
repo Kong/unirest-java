@@ -30,6 +30,8 @@ import org.junit.Test;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 
+import java.util.function.Consumer;
+
 import static org.junit.Assert.*;
 
 public class PostRequestHandlersTest extends BddTest {
@@ -81,6 +83,37 @@ public class PostRequestHandlersTest extends BddTest {
         assertEquals(200, captured.getStatus());
         assertTrue(captured.getParsingError().isPresent());
         assertEquals("not what you expect", captured.getParsingError().get().getOriginalBody());
+    }
+
+    @Test
+    public void canConfigureAGlobalErrorHandler(){
+        Error error = new Error();
+        Unirest.config().errorHandler(error);
+
+        Unirest.get(MockServer.INVALID_REQUEST).asEmpty();
+
+        assertEquals(400, error.httpResponse.getStatus());
+    }
+
+    @Test
+    public void canConfigureAGlobalErrorHandlerAsync()  throws Exception {
+        Error error = new Error();
+        Unirest.config().errorHandler(error);
+
+        Unirest.get(MockServer.INVALID_REQUEST).asEmptyAsync().get();
+
+        assertEquals(400, error.httpResponse.getStatus());
+    }
+
+    private class Error implements Consumer<HttpResponse<?>> {
+
+        public HttpResponse<?> httpResponse;
+
+        @Override
+        public void accept(HttpResponse<?> httpResponse) {
+
+            this.httpResponse = httpResponse;
+        }
     }
 
 

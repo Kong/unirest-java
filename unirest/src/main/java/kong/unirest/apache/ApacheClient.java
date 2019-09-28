@@ -127,6 +127,7 @@ public class ApacheClient extends BaseApacheClient implements Client {
             metric.complete(t.toSummary(), null);
             HttpResponse<T> httpResponse = transformBody(transformer, t);
             requestObj.releaseConnection();
+            handleError(config, httpResponse);
             return httpResponse;
         } catch (Exception e) {
             metric.complete(null, e);
