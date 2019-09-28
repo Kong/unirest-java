@@ -43,9 +43,11 @@ public abstract class JSONElement {
     protected JSONElement(JsonElement e){
         this.element = e;
     }
+
     /**
      * Write the JSON to a Writer
      * @param sw the writer
+     * @return the same Writer
      * @throws JSONException for IO problems
      */
     public Writer write(Writer sw) throws JSONException {
@@ -59,6 +61,7 @@ public abstract class JSONElement {
      * @param sw the writer
      * @param indentFactor currently ignored
      * @param indent currently ignored
+     * @return the same Writer
      * @throws JSONException for IO problems
      */
     public Writer write(Writer sw, int indentFactor, int indent) throws JSONException {

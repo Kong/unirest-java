@@ -70,6 +70,7 @@ public class JSONObject extends JSONElement {
         this(new JsonObject());
     }
 
+
     JSONObject(JsonElement jsonElement) {
         super(jsonElement);
         this.obj = jsonElement.getAsJsonObject();
@@ -87,9 +88,11 @@ public class JSONObject extends JSONElement {
     /**
      * quite escape a string
      * @param s a string
-     * @return a quoted string
+     * @param writer a writer to write the string to
+     * @return the same writer
+     * @throws IOException if some IO thing goes wrong
      */
-    public static Writer quote(String s, Writer writer)  throws IOException {
+    public static Writer quote(String s, Writer writer) throws IOException {
         writer.write(quote(s));
         return writer;
     }
@@ -115,6 +118,16 @@ public class JSONObject extends JSONElement {
         }
     }
 
+    /**
+     * Convert an object to a object that can be added to a JSONElement
+     *    If the object is null return the NULL object
+     *    If the object is primitive return the original object
+     *    If the object is a map convert it to a JSONObject
+     *    If the object is a Collection or array return a JSONArray
+     *    If the object is anything else return a empty JSON Object
+     * @param obj the object
+     * @return another object suitable for use as JSON
+     */
     public static Object wrap(Object obj) {
         if(obj == null || obj.equals(NULL)){
             return NULL;
@@ -144,12 +157,12 @@ public class JSONObject extends JSONElement {
         return array;
     }
 
-    private static boolean isPrimitive(Object o){
-        return (o instanceof String
-        || o instanceof Number
-        || o instanceof Boolean);
-    }
-
+    /**
+     * convert a primitive number to a string
+     * if the double can be converted to a whole number the decimal will be dropped
+     * @param d a double
+     * @return a string representation of the double
+     */
     public static String doubleToString(double d) {
         if (d == Math.floor(d) && !Double.isInfinite(d)) {
             return Integer.toString((int)d);
@@ -157,10 +170,22 @@ public class JSONObject extends JSONElement {
         return Double.toString(d);
     }
 
+    /**
+     * Convert a number to a string
+     * @param number the number to convert
+     * @return a string representation of that number
+     * @throws JSONException if something goes wrong
+     */
     public static String numberToString(Number number) throws JSONException {
         return String.valueOf(number);
     }
 
+    /**
+     * Converts an object to a JSON String
+     * @param o any object
+     * @return a json string
+     * @throws JSONException if something goes wrong
+     */
     public static String valueToString(Object o) throws JSONException {
         if(o == null){
             return "null";
@@ -174,6 +199,11 @@ public class JSONObject extends JSONElement {
         return new Gson().toJson(o);
     }
 
+    /**
+     * get all of the keys of a JSONObject
+     * @param jsonObject a JSONObject
+     * @return a String[] of the objects keys
+     */
     public static String[] getNames(JSONObject jsonObject) {
         if(jsonObject == null || jsonObject.isEmpty()){
             return null;
@@ -182,6 +212,11 @@ public class JSONObject extends JSONElement {
         return list.toArray(new String[list.size()]);
     }
 
+    /**
+     * get all of the keys of a JSONObject or a empty array if not an JSONObject
+     * @param o a Object
+     * @return a String[] of the objects keys
+     */
     public static String[] getNames(Object o) {
         if(o instanceof JSONObject){
             return getNames((JSONObject)o);
@@ -212,7 +247,7 @@ public class JSONObject extends JSONElement {
 
     /**
      * indicates if a JSONObject has the same elements as another JSONObject
-     * @param o
+     * @param o another object
      * @return a bool
      */
     public boolean similar(Object o) {
@@ -243,7 +278,7 @@ public class JSONObject extends JSONElement {
      * get and element by key as its native object
      * @param key the key element to operate on
      * @return the object, this could be an object, array or primitive
-     * @throws JSONException
+     * @throws JSONException if the key does not exist
      */
     public Object get(String key) throws JSONException {
         return MAPPER.apply(getProperty(key));
@@ -317,6 +352,7 @@ public class JSONObject extends JSONElement {
     /**
      * get a element property as a string
      * @param key the key element to operate on
+     * @param defaultValue default value if the key does not exist or cannot be converted to a string
      * @return a string representation of the value or default value
      */
     public String optString(String key, String defaultValue) {
@@ -535,6 +571,7 @@ public class JSONObject extends JSONElement {
     /**
      * gets a boolean value at a particular key or a default value
      * @param key the key
+     * @param defaultValue a default value if the key does not exist or value is not a boolean
      * @return a boolean
      */
     public boolean optBoolean(String key, boolean defaultValue) {
@@ -606,8 +643,9 @@ public class JSONObject extends JSONElement {
     /**
      * put a boolean at a particular key
      * @param key the key element to operate on
-     * @param value
+     * @param value the boolean value to put
      * @return this JSONObject
+     * @throws JSONException if something goes wrong
      */
     public JSONObject put(String key, boolean value) throws JSONException {
         obj.addProperty(key, value);
@@ -630,7 +668,7 @@ public class JSONObject extends JSONElement {
      * @param key the key element to operate on
      * @param value double
      * @return this JSONObject
-     * @throws JSONException
+     * @throws JSONException if something goes wrong
      */
     public JSONObject put(String key, double value) throws JSONException {
         this.obj.addProperty(key, value);
@@ -642,7 +680,7 @@ public class JSONObject extends JSONElement {
      * @param key the key element to operate on
      * @param value float
      * @return this JSONObject
-     * @throws JSONException
+     * @throws JSONException if something goes wrong
      */
     public JSONObject put(String key, float value) throws JSONException {
         this.obj.addProperty(key, value);
@@ -654,7 +692,7 @@ public class JSONObject extends JSONElement {
      * @param key the key element to operate on
      * @param value long
      * @return this JSONObject
-     * @throws JSONException
+     * @throws JSONException if something goes wrong
      */
     public JSONObject put(String key, long value) throws JSONException {
         this.obj.addProperty(key, value);
@@ -666,7 +704,7 @@ public class JSONObject extends JSONElement {
      * @param key the key element to operate on
      * @param value int
      * @return this JSONObject
-     * @throws JSONException
+     * @throws JSONException if something goes wrong
      */
     public JSONObject put(String key, int value) throws JSONException {
         this.obj.addProperty(key, value);
@@ -708,9 +746,11 @@ public class JSONObject extends JSONElement {
 
     /**
      * put a enum at a particular key. The enum will be stored as a string by name
+     * @param <T> a type of enum
      * @param key the key element to operate on
      * @param enumvalue a enum
      * @return this JSONObject
+     * @throws JSONException if something goes wrong
      */
     public <T extends Enum<T>> JSONObject put(String key, T enumvalue) throws JSONException {
         obj.add(key, enumvalue == null ? JsonNull.INSTANCE : new JsonPrimitive(enumvalue.name()));
@@ -782,7 +822,7 @@ public class JSONObject extends JSONElement {
      * it does not exist.
      * @param key the key element to operate on
      * @return this JSONObject
-     * @throws JSONException
+     * @throws JSONException if something goes wrong
      */
     public JSONObject increment(String key) throws JSONException {
         if (!has(key)) {
@@ -820,7 +860,7 @@ public class JSONObject extends JSONElement {
      * @param key the key element to operate on
      * @param value the  object to put
      * @return this JSONObject
-     * @throws JSONException
+     * @throws JSONException if something goes wrong
      */
     public JSONObject put(String key, Object value) throws JSONException {
         if(value == null){
@@ -851,7 +891,7 @@ public class JSONObject extends JSONElement {
      * @param key the key element to operate on
      * @param value the  object to put
      * @return this JSONObject
-     * @throws JSONException
+     * @throws JSONException if something goes wrong
      */
     public JSONObject putOpt(String key, Object value) throws JSONException {
         if(key == null || value == null){
@@ -877,7 +917,8 @@ public class JSONObject extends JSONElement {
     }
 
     /**
-     * get object as a map
+     * converts this object to a map
+     * @return this object as a map
      */
     public Map<String, Object> toMap() {
         return toMap(obj);
@@ -894,8 +935,8 @@ public class JSONObject extends JSONElement {
     /**
      * creates an  array of the values for they keys you provide
      * @param names a list of keys you want an array for
-     * @return a JSONArray of values
-     * @throws JSONException
+     * @return a JSONArray of values or null of the array is null or empty
+     * @throws JSONException if something goes wrong
      */
     public JSONArray toJSONArray(JSONArray names) throws JSONException {
         if(names == null || names.isEmpty()){
@@ -968,5 +1009,12 @@ public class JSONObject extends JSONElement {
      */
     public boolean isNull(String key) {
         return !has(key) || get(key) == null;
+    }
+
+
+    private static boolean isPrimitive(Object o){
+        return (o instanceof String
+                || o instanceof Number
+                || o instanceof Boolean);
     }
 }

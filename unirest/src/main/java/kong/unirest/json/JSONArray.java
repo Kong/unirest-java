@@ -261,7 +261,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @param index the index position to put to
      * @param object a long
      * @return this JSONArray
-     * @throws JSONException
+     * @throws JSONException if something goes wrong
      */
     public JSONArray put(int index, Object object) throws JSONException {
         if (object == null) {
@@ -349,8 +349,9 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
     /**
      * put a Enum name at a specific index as a string
      * if the index is beyond the currently length the array will be buffered with nulls
+     * @param <T> a type of enum
      * @param index the index position to put to
-     * @param enumValue
+     * @param enumValue a enum value to put
      * @return this JSONArray
      */
     public <T extends Enum> JSONArray put(int index, T enumValue) {
@@ -373,6 +374,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * add a Object to the array
      * Must be a valid JSON type or else it will be turned into a string
      * @param object the JSON Typed object
+     * @return this JSONArray
      */
     public JSONArray put(Object object) {
         if (object == null) {
@@ -433,6 +435,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
     /**
      * get a boolean at a specified index
      * @param index the array index position
+     * @param defaultValue a default value if the index position does not exist or is not a boolean
      * @return a boolean
      */
     public boolean optBoolean(int index, boolean defaultValue) {
@@ -775,6 +778,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * returns the String representation of the JSONArray
      * @param indent  currently ignored until this is addressed by GSON
      * @return string json
+     * @throws JSONException if something goes wrong
      */
     public String toString(int indent) throws JSONException {
         return toPrettyJson(obj);
@@ -782,8 +786,9 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
 
     /**
      * return the array as a string delimited by a specific token
-     * @param token
+     * @param token the delimitation token
      * @return a token delimited array
+     * @throws JSONException if something goes wrong
      */
     public String join(String token) throws JSONException {
         return StreamSupport.stream(obj.spliterator(), false)
