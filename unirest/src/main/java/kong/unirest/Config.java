@@ -98,6 +98,7 @@ public class Config {
         verifySsl = true;
         keystore = null;
         keystorePassword = null;
+        this.objectMapper = Optional.of(new JsonObjectMapper());
         try {
             asyncBuilder = ApacheAsyncClient::new;
             clientBuilder = ApacheClient::new;

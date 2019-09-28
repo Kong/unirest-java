@@ -33,8 +33,28 @@ import org.junit.Test;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 public class AsObjectTest extends BddTest {
+
+    @Test
+    public void basicJsonObjectMapperIsTheDefault() {
+        Unirest.config().shutDown(true);
+        assertThat(Unirest.config().getObjectMapper(), instanceOf(JsonObjectMapper.class));
+    }
+
+    @Test
+    public void basicJsonObjectMapperIsGoodEnough() {
+        Unirest.config().shutDown(true);
+        MockServer.setStringResponse(new Gson().toJson(new Foo("bar")));
+
+        Foo f = Unirest.get(MockServer.GET)
+                .asObject(Foo.class)
+                .getBody();
+
+        assertEquals("bar", f.bar);
+    }
 
     @Test
     public void whenNoBodyIsReturned() {
