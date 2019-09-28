@@ -424,9 +424,11 @@ public class Config {
      * Sets a global error handler
      * If the response was NOT a 200-series response or a mapping exception happened. Invoke this consumer
      * @param consumer a function to consume a HttpResponse
+     * @return this config object
      */
-    public void errorHandler(Consumer<HttpResponse<?>> consumer) {
+    public Config errorHandler(Consumer<HttpResponse<?>> consumer) {
         this.errorHandler = consumer;
+        return this;
     }
 
     /**
