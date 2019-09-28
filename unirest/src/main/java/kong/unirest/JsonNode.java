@@ -75,4 +75,12 @@ public class JsonNode {
             return jsonObject.toString();
         }
     }
+
+    public String toPrettyString() {
+        if (isArray()) {
+            return jsonArray.toString(2);
+        } else {
+            return jsonObject.toString(2);
+        }
+    }
 }

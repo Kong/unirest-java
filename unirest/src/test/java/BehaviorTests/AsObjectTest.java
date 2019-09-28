@@ -47,7 +47,7 @@ public class AsObjectTest extends BddTest {
     @Test
     public void basicJsonObjectMapperIsGoodEnough() {
         Unirest.config().shutDown(true);
-        MockServer.setStringResponse(new Gson().toJson(new Foo("bar")));
+        MockServer.setJsonAsResponse(new Foo("bar"));
 
         Foo f = Unirest.get(MockServer.GET)
                 .asObject(Foo.class)

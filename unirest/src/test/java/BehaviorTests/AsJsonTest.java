@@ -26,8 +26,10 @@
 package BehaviorTests;
 
 import kong.unirest.*;
+import kong.unirest.json.JSONObject;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 import static org.junit.Assert.assertEquals;
@@ -41,6 +43,29 @@ public class AsJsonTest extends BddTest {
 
         assertEquals(200, i.getStatus());
         assertEquals("{}", i.getBody().toString());
+    }
+
+    @Test
+    public void toStringAObject() {
+        MockServer.setStringResponse(new JSONObject().put("f",1).put("a", Arrays.asList(2,3,4)).toString());
+        HttpResponse<JsonNode> i = Unirest.get(MockServer.GET).asJson();
+
+        assertEquals("{\"f\":1,\"a\":[2,3,4]}", i.getBody().toString());
+    }
+
+    @Test
+    public void toPrettyStringAObject() {
+        MockServer.setStringResponse(new JSONObject().put("f",1).put("a", Arrays.asList(2,3,4)).toString());
+        HttpResponse<JsonNode> i = Unirest.get(MockServer.GET).asJson();
+
+        assertEquals("{\n" +
+                "  \"f\": 1,\n" +
+                "  \"a\": [\n" +
+                "    2,\n" +
+                "    3,\n" +
+                "    4\n" +
+                "  ]\n" +
+                "}", i.getBody().toPrettyString());
     }
 
     @Test
