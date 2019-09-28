@@ -154,13 +154,8 @@ Unirest.post("http://httpbin.org")
 ```
 
 You can also post as a Object that is serialized using a configured ObjectMapper. (see [Object Mappers](#object-mappers) for implementation details.
-
+Unirest comes with a default mapper that will serialize to json using the popular Google Gson library
 ```java
-// Object Mappers can be configured globally, per config, or on a per-request basis.
-// We will set it up in the global config here:
-
-Unirest.config().setObjectMapper(new JacksonObjectMapper());
-
 Unirest.post("http://httpbin.org")
             .header("Content-Type", "application/json")
             .body(new SomeUserObject("Bob"))
@@ -320,18 +315,18 @@ String body = Unirest.get("http://httpbin.org")
 ```
 
 ## Object Mapped Responses
-Most of the time when consuming RESTful services you probably want to map the response into an object. For this you need to provide the Unirest configuration with a implementation of ```ObjectMapper``` (see [Object Mappers](#object-mappers) for details.). Unirest has several modules that can be included for popular JSON object mappers like Jackson and GSON.
+Most of the time when consuming RESTful services you probably want to map the response into an object. 
 
-Before an `asObject(Class)` it is necessary to provide a custom implementation of the `ObjectMapper` interface. This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
+For this you need to provide the Unirest configuration with a implementation of ```ObjectMapper``` (see [Object Mappers](#object-mappers) for details.).
+
+If the response is JSON you are in luck and Unirest comes with a basic ```JsonObjectMapper``` basic on Google GSON  
+
+Before an `asObject(Class)` it is necessary to provide a custom implementation of the `ObjectMapper` interface (if you do not wish to use the default mapper). This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
 
 Unirest offers a few plug-ins implementing popular object mappers like Jackson and Gson. See [mvn central](https://mvnrepository.com/artifact/com.konghq) for details.
 
-For example, serializing Json from\to Object using the popular Jackson ObjectMapper takes only few lines
-
+For example, 
 ```java
-// Only one time
-Unirest.config().setObjectMapper(new JacksonObjectMapper());
-
 // Response to Object
 Book book = Unirest.get("http://httpbin.org/books/1")
                    .asObject(Book.class)
@@ -466,6 +461,7 @@ Changing Unirest's config should ideally be done once, or rarely. There are seve
 | ```clientCertificateStore(String,String)``` | Add a PKCS12 KeyStore by path for doing client certificates |  |
 | ```clientCertificateStore(KeyStore,String)``` | Add a PKCS12 KeyStore for doing client certificates |  |
 | ```connectionTTL(long,TimeUnit)``` | Total time to live (TTL)  defines maximum life span of persistent connections regardless of their expiration setting. No persistent connection will be re-used past its TTL value.| -1  |
+| ```errorHandler(Consumer<HttpResponse<?>> consumer)``` | Set a global error handler that will be invoked for any status > 400 or a parsing error | | 
 
 
 ## Custom Apache Clients
