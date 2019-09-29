@@ -1,4 +1,9 @@
-# 3.0.0
+# 3.1.00
+* #301 Unirest is now configured by default with a JsonObjectMapper
+* #302 Support a globally configured error consumer 
+* JsonNode now has a ```toPrettyString``` method for getting a formatted json string
+
+# 3.0.00
 * Replace the dependency on org.json with a native kong.unirest library powered by gson that matches org.json interfaces. See the [Upgrade Guide](UPGRADE_GUIDE.md) for details.
 * Issue #299. Remove gzip content-encoding header after decompression on async client
 
@@ -238,7 +243,7 @@ File file = Unirest.get("https://someplace/file.tar.gz")
 ### OpenUnirest:3.0.01
 * Support for authenticated proxies with ```Unirest.config().proxy("proxy.server.host", 80, "username","password")```
 
-### OpenUnirest:3.0.00
+### OpenUnirest:3.1.00
 * This is a **major** release with several **breaking changes** which (other than the namespace change) should ONLY impact you if you are using some of Unirests more advanced features or custom configurations.
 * The maven artifact has changed to ```open-unirest-java```
 * The namespace has been shortened to just **unirest** (inspired by Java Spark)

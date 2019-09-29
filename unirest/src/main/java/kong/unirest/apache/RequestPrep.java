@@ -42,7 +42,7 @@ class RequestPrep {
     private static final String CONTENT_TYPE = "content-type";
     private static final String ACCEPT_ENCODING_HEADER = "accept-encoding";
     private static final String USER_AGENT_HEADER = "user-agent";
-    private static final String USER_AGENT = "unirest-java/3.0.00";
+    private static final String USER_AGENT = "unirest-java/3.1.00";
     private static final Map<HttpMethod, Function<String, HttpRequestBase>> FACTORIES;
     private final HttpRequest request;
     private Config config;
