@@ -5,36 +5,39 @@ rightmenu: true
 ---
 
 <div id="spy-nav" class="right-menu" markdown="1">
-* [Requests](#requests)
-    * [Route Parameters](#route-parameters)
-    * [Query Parameters](#query-parameters)
-    * [Headers](#headers)
-    * [Basic Authentication](#basic-authentication)
-    * [Body Data](#body-data)
-        * [Entity Bodies](#entity-bodies)
-        * [JSON Patch Bodies](#json-patch-bodies)
-        * [Basic Forms](#basic-forms)
-        * [File Uploads](#file-uploads)
-        * [Upload Progress Monitoring](#upload-progress-monitoring)
-    * [Asynchronous Requests](#asynchronous-requests)
-    * [Paged Requests](#paged-requests)
-    * [Client Certificates](#client-certificates)
-    * [Proxies](#proxies)
-* [Responses](#responses)
-    * [Empty Responses](#empty-responses)
-    * [String Responses](#string-responses)
-    * [Object Mapped Responses](#object-mapped-responses)
-    * [File Responses](#file-responses)
-    * [JSON Responses](#json-responses)
-    * [Large Responses](#large-responses)
-    * [Error Handling](#error-handling)
-* [Configuration](#configuration)
-    * [Config Options](#config-options)
-    * [Custom Apache Clients](#custom-apache-clients)
-    * [Multiple Configurations](#multiple-configurations)
-    * [Object Mappers](#object-mappers)
-    * [Metrics](#metrics)
-* [Shutting Down](#shutting-down)
+- [Requests](#requests)
+  - [Route Parameters](#route-parameters)
+  - [Query Parameters](#query-parameters)
+  - [Headers](#headers)
+    - [Basic Authentication](#basic-authentication)
+  - [Body Data](#body-data)
+    - [Entity Bodies](#entity-bodies)
+    - [JSON Patch Bodies](#json-patch-bodies)
+    - [Basic Forms](#basic-forms)
+    - [File Uploads](#file-uploads)
+    - [Upload Progress Monitoring](#upload-progress-monitoring)
+  - [Asynchronous Requests](#asynchronous-requests)
+  - [Paged Requests](#paged-requests)
+  - [Client Certificates](#client-certificates)
+  - [Proxies](#proxies)
+- [Responses](#responses)
+  - [Empty Responses](#empty-responses)
+  - [String Responses](#string-responses)
+  - [Object Mapped Responses](#object-mapped-responses)
+    - [Errors in Object or JSON parsing](#errors-in-object-or-json-parsing)
+    - [Mapping Error Objects](#mapping-error-objects)
+    - [Mapping one body type to another without an object mapper](#mapping-one-body-type-to-another-without-an-object-mapper)
+  - [File Responses](#file-responses)
+  - [JSON responses](#json-responses)
+  - [Large Responses](#large-responses)
+  - [Error Handling](#error-handling)
+- [Configuration](#configuration)
+  - [Config Options](#config-options)
+  - [Custom Apache Clients](#custom-apache-clients)
+  - [Multiple Configurations](#multiple-configurations)
+  - [Object Mappers](#object-mappers)
+  - [Metrics](#metrics)
+- [Shutting Down](#shutting-down)
 </div>
 
 <h1 class="no-margin-top">Documentation</h1>
@@ -331,7 +334,8 @@ For example,
 Book book = Unirest.get("http://httpbin.org/books/1")
                    .asObject(Book.class)
                    .getBody();
-		   
+
+// Generic types can be resolved by using a GenericType subclass to avoid erasure
 List<Book> books = Unirest.get("http://httpbin.org/books/")
 			  .asObject(new GenericType<List<Book>>(){})
 			  .getBody();
@@ -352,6 +356,33 @@ UnirestParsingException ex = response.getParsingError().get();
 ex.getOriginalBody(); // Has the original body as a string.
 ex.getMessage(); // Will have the parsing exception.
 ex.getCause(); // of course will have the original parsing exception itself.
+```
+
+### Mapping Error Objects
+Sometimes with REST API's the service will return a error object that can be parsed. You can optionally map this into an POJO like
+
+```java
+    HttpResponse<Book> book = Unirest.get("http://httpbin.org/books/{id}")
+                                     .asObject(Book.class);
+
+    // This will be null if there wasn't an error
+    Error er = book.mapError(Error.class);
+
+    // You can also take advantage of this inside of the ifFailure method
+    Unirest.get("http://httpbin.org/books/{id}")
+           .asObject(Book.class)
+           .ifFailure(Error.class, r -> {
+                    Error e = r.getBody();
+           });
+```
+
+### Mapping one body type to another without an object mapper
+If you don't want to provide a full ObjectMapper implimentation you may  use  a simple function to map the response
+
+```java
+    int body = Unirest.get("http://httpbin/count")
+                      .asString()
+                      .mapBody(Integer::valueOf);
 ```
 
 ## File Responses
@@ -529,8 +560,8 @@ Unirest has hooks for collecting metrics on your runtime code. This is a simple 
    1. The moment just before the actual request is made
    1. The moment just after the actual request is make
 
-Context inforation like method and request path are given to you so that you can collect based on whatever your needs are.
-In it's simplest form it might like this:
+Context information like method and request path are given to you so that you can collect based on whatever your needs are.
+In its simplest form it might look like this:
 
 ```java
    Unirest.config().instrumentWith(requestSummary -> {

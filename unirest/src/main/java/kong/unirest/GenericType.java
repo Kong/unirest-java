@@ -28,18 +28,28 @@ package kong.unirest;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-/*
-Parts of this file were taken from Jackson/core TypeReference<T> under the Apache License:
-
-Apache (Software) License, version 2.0 ("the License").
-See the License for details about distribution rights, and the
-specific rights regarding derivate works.
-
-You may obtain a copy of the License at:
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-*/
+/**
+ * Parts of this file were taken from Jackson/core TypeReference under the Apache License:
+ *
+ * Apache (Software) License, version 2.0 ("the License").
+ * See the License for details about distribution rights, and the
+ * specific rights regarding derivate works.
+ *
+ * You may obtain a copy of the License at:
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  
+ * A class to hold onto generic type params for object mapping by creating a anonymous subtype.
+ * This is a common "trick" commonly used in Java to avoid issues with type erasure.
+ *
+ * Other examples can be found in popular libraries like Jackson, GSON, and Spring
+ *
+ * <pre>
+ *  GenericType ref = new GenericType&lt;List&lt;Integer&gt;&gt;() { };
+ * </pre>
+ * @param <T> the generic type you wish to represent.
+ */
 public abstract class GenericType<T> implements Comparable<GenericType<T>> {
     protected final Type type;
 
@@ -52,6 +62,9 @@ public abstract class GenericType<T> implements Comparable<GenericType<T>> {
         }
     }
 
+    /**
+     * @return the Type which includes generic type information
+     */
     public Type getType() {
         return this.type;
     }

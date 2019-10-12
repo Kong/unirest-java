@@ -42,9 +42,18 @@ All main classes are now in the ```kong.unirest``` package. Classes related to t
 
 
 ### Configuration
-Previous versions of unirest had configuration split across several different places. Sometimes it was done on ```Unirest```, sometimes it was done on ```Option```, sometimes it was somewhere else.
-All configuration is now done through ```Unirest.config()```
+Previous versions of unirest had configuration split across several different places. 
 
+```java
+   // Sometimes it was on Unirest
+    Unirest.setTimeouts(5000, 10000);
+    Unirest.setConcurrency(25, 10);
+
+   //Sometimes it was on Options
+   Options.setOption(HTTPCLIENT, client);
+```
+
+Often you could do it in both places with different impacts on the lifecycle of the client. All configuration has now been centralized in ```Unirest.config()```
 
 #### Unirest.config()
 Unirest config allows easy access to build a configuration just like you would build a request:
