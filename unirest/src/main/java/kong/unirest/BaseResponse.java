@@ -115,13 +115,35 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     @Override
     public <E> E mapError(Class<? extends E> errorClass) {
         if(!isSuccess()){
+            String errorBody = getErrorBody();
             try {
-                return config.getObjectMapper().readValue(getParsingError().get().getOriginalBody(), errorClass);
+                return config.getObjectMapper().readValue(errorBody, errorClass);
             }catch (RuntimeException e) {
-                setParsingException(getParsingError().get().getOriginalBody(), e);
+                setParsingException(errorBody, e);
             }
         }
         return null;
+    }
+
+    private String getErrorBody() {
+        if(getParsingError().isPresent()){
+            return getParsingError().get().getOriginalBody();
+        }
+        T body = getBody();
+        if(body == null){
+            return null;
+        }
+        else if(body instanceof String){
+            return (String) body;
+        } else if(body instanceof JsonNode){
+            return body.toString();
+        } else {
+            try {
+                return config.getObjectMapper().writeValue(body);
+            } catch (Exception e){
+                return String.valueOf(body);
+            }
+        }
     }
 
     @Override
