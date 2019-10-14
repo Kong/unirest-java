@@ -45,6 +45,24 @@ public class ErrorParsingTest extends BddTest {
     }
 
     @Test
+    public void parsingAnAlternativeErrorObject_StringBody() {
+        ErrorThing e = Unirest.get(MockServer.ERROR_RESPONSE)
+                .asString()
+                .mapError(ErrorThing.class);
+
+        assertErrorThing(e);
+    }
+
+    @Test
+    public void parsingAnAlternativeErrorObject_JsonBody() {
+        ErrorThing e = Unirest.get(MockServer.ERROR_RESPONSE)
+                .asJson()
+                .mapError(ErrorThing.class);
+
+        assertErrorThing(e);
+    }
+
+    @Test
     public void ifNoErrorThenGetTheRegularBody() {
         ErrorThing error = Unirest.get(MockServer.GET)
                 .asObject(RequestCapture.class)
