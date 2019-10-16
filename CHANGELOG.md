@@ -1,11 +1,17 @@
-# 3.1.00
+## 3.1.02
+* #308 When parsing an error body allow for non-parsing error bodies
+
+## 3.1.00
 * #301 Unirest is now configured by default with a JsonObjectMapper
 * #302 Support a globally configured error consumer 
 * JsonNode now has a ```toPrettyString``` method for getting a formatted json string
 
-# 3.0.00
+## 3.0.00
 * Replace the dependency on org.json with a native kong.unirest library powered by gson that matches org.json interfaces. See the [Upgrade Guide](UPGRADE_GUIDE.md) for details.
 * Issue #299. Remove gzip content-encoding header after decompression on async client
+
+## 2.4.01
+* #308 When parsing an error body allow for non-parsing error bodies
 
 ## 2.4.00
 * add an entire new return type: ```asBytes()``` (as well as async versions) will return a raw byte[] array.
@@ -226,7 +232,7 @@ File file = Unirest.get("https://someplace/file.tar.gz")
 ### OpenUnirest:3.1.01
 * Detect if the async client has stopped for some reason and construct a new one. This one may be different from the one that was originally configured so we need to add a way to configure a supplier for clients rather than a direct client.
 
-### OpenUnirest:3.1.00
+### OpenUnirest:3.1.02
 * Deprecate methods that expose Apache. In the 4 line we will start supporting other clients. Primarily the java one supplied in Java9 (apache will still exist for 8-)
 * Add several functional methods for dealing with the raw response before the connection is closed. This is nice for large responses.
 
@@ -243,7 +249,7 @@ File file = Unirest.get("https://someplace/file.tar.gz")
 ### OpenUnirest:3.0.01
 * Support for authenticated proxies with ```Unirest.config().proxy("proxy.server.host", 80, "username","password")```
 
-### OpenUnirest:3.1.00
+### OpenUnirest:3.1.02
 * This is a **major** release with several **breaking changes** which (other than the namespace change) should ONLY impact you if you are using some of Unirests more advanced features or custom configurations.
 * The maven artifact has changed to ```open-unirest-java```
 * The namespace has been shortened to just **unirest** (inspired by Java Spark)
