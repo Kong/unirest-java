@@ -96,6 +96,16 @@ public class PostRequestHandlersTest extends BddTest {
     }
 
     @Test
+    public void canUseWithConsumer(){
+        Error error = new Error();
+        Unirest.config().errorHandler(error);
+
+        Unirest.get(MockServer.INVALID_REQUEST).thenConsume(e -> {});
+
+        assertEquals(400, error.httpResponse.getStatus());
+    }
+
+    @Test
     public void canConfigureAGlobalErrorHandlerAsync()  throws Exception {
         Error error = new Error();
         Unirest.config().errorHandler(error);
