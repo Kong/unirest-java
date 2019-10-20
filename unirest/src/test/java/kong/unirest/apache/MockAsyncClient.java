@@ -23,29 +23,23 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
+package kong.unirest.apache;
 
-public class ResponseSummary implements HttpResponseSummary {
-    private final int status;
-    private final String statusText;
+import kong.unirest.Config;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.nio.client.HttpAsyncClient;
 
-    ResponseSummary(RawResponse response) {
-        this.status = response.getStatus();
-        this.statusText = response.getStatusText();
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class MockAsyncClient extends ApacheAsyncClient {
+    public MockAsyncClient(Config config) {
+        super(mock(HttpAsyncClient.class), config);
     }
 
-    public ResponseSummary(HttpResponse response){
-        this.status = response.getStatus();
-        this.statusText = response.getStatusText();
-    }
-
-    @Override
-    public int getStatus() {
-        return status;
-    }
-
-    @Override
-    public String getStatusText() {
-        return statusText;
+    public void errorOnAccess(RuntimeException e) {
+        when(getClient().execute(any(HttpUriRequest.class), any(FutureCallback.class))).thenThrow(e);
     }
 }

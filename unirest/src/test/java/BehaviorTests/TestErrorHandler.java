@@ -23,29 +23,23 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
+package BehaviorTests;
 
-public class ResponseSummary implements HttpResponseSummary {
-    private final int status;
-    private final String statusText;
+import kong.unirest.ErrorHandler;
+import kong.unirest.HttpRequest;
+import kong.unirest.HttpResponse;
 
-    ResponseSummary(RawResponse response) {
-        this.status = response.getStatus();
-        this.statusText = response.getStatusText();
-    }
+public class TestErrorHandler implements ErrorHandler {
+    public Exception caught;
+    public HttpResponse<?> response;
+    @Override
+    public void accept(HttpResponse<?> response) {
 
-    public ResponseSummary(HttpResponse response){
-        this.status = response.getStatus();
-        this.statusText = response.getStatusText();
     }
 
     @Override
-    public int getStatus() {
-        return status;
-    }
-
-    @Override
-    public String getStatusText() {
-        return statusText;
+    public HttpResponse<?> handle(HttpRequest<?> request, Exception e) {
+        caught = e;
+        return response;
     }
 }

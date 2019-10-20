@@ -25,27 +25,27 @@
 
 package kong.unirest;
 
-public class ResponseSummary implements HttpResponseSummary {
-    private final int status;
-    private final String statusText;
+import java.util.function.Consumer;
 
-    ResponseSummary(RawResponse response) {
-        this.status = response.getStatus();
-        this.statusText = response.getStatusText();
+class SimpleHandler implements ErrorHandler {
+
+    private Consumer<HttpResponse<?>> consumer;
+
+    SimpleHandler(Consumer<HttpResponse<?>> consumer) {
+        this.consumer = consumer;
     }
 
-    public ResponseSummary(HttpResponse response){
-        this.status = response.getStatus();
-        this.statusText = response.getStatusText();
-    }
-
-    @Override
-    public int getStatus() {
-        return status;
+    public SimpleHandler() {
+        this.consumer = r -> {};
     }
 
     @Override
-    public String getStatusText() {
-        return statusText;
+    public void accept(HttpResponse<?> response) {
+        consumer.accept(response);
+    }
+
+    @Override
+    public HttpResponse<?> handle(HttpRequest<?> request, Exception e) {
+        throw new UnirestException(e);
     }
 }

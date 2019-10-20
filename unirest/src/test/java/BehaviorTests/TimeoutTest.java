@@ -27,33 +27,37 @@
 
 package BehaviorTests;
 
-import kong.unirest.Config;
-import kong.unirest.Unirest;
-import kong.unirest.UnirestException;
+import kong.unirest.*;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.net.InetAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @Ignore
 public class TimeoutTest extends BddTest {
 
     @Test
+    public void timeoutCatching(){
+        TestErrorHandler handler = new TestErrorHandler();
+        Unirest.config().errorHandler(handler);
+        assertNull(Unirest.get("http://localhost:0").asString());
+        assertEquals("Connect to localhost:80 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused (Connection refused)", handler.caught.getMessage());
+    }
+
+    @Test
     public void testSetTimeouts() {
-        String address = MockServer.GET;
+        String address = "http://localhost:0";
         long start = System.currentTimeMillis();
         try {
             Unirest.get(address).asString();
+            fail("should have thrown");
         } catch (Exception e) {
             if (System.currentTimeMillis() - start > Config.DEFAULT_CONNECTION_TIMEOUT + 100) { // Add 100ms for code execution
                 fail();
@@ -65,6 +69,7 @@ public class TimeoutTest extends BddTest {
         start = System.currentTimeMillis();
         try {
             Unirest.get(address).asString();
+            fail("should have thrown");
         } catch (Exception e) {
             if (System.currentTimeMillis() - start > 2100) { // Add 100ms for code execution
                 fail();
@@ -137,14 +142,4 @@ public class TimeoutTest extends BddTest {
         }
     }
 
-    private String findAvailableIpAddress() throws IOException {
-        for (int i = 100; i <= 255; i++) {
-            String ip = "192.168.1." + i;
-            if (!InetAddress.getByName(ip).isReachable(1000)) {
-                return ip;
-            }
-        }
-
-        throw new RuntimeException("Couldn't find an available IP address in the range of 192.168.0.100-255");
-    }
 }

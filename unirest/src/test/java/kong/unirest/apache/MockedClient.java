@@ -23,29 +23,33 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
+package kong.unirest.apache;
 
-public class ResponseSummary implements HttpResponseSummary {
-    private final int status;
-    private final String statusText;
+import kong.unirest.Config;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.mockito.Answers;
 
-    ResponseSummary(RawResponse response) {
-        this.status = response.getStatus();
-        this.statusText = response.getStatusText();
+import java.io.IOException;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class MockedClient extends ApacheClient {
+    public MockedClient(Config config) {
+        super(mock(HttpClient.class, Answers.RETURNS_DEEP_STUBS),
+                config,
+                mock(PoolingHttpClientConnectionManager.class, Answers.RETURNS_DEEP_STUBS),
+                mock(SyncIdleConnectionMonitorThread.class, Answers.RETURNS_DEEP_STUBS));
     }
 
-    public ResponseSummary(HttpResponse response){
-        this.status = response.getStatus();
-        this.statusText = response.getStatusText();
-    }
-
-    @Override
-    public int getStatus() {
-        return status;
-    }
-
-    @Override
-    public String getStatusText() {
-        return statusText;
+    public void errorOnAccess(RuntimeException e) {
+        try {
+            when(getClient().execute(any(HttpRequestBase.class))).thenThrow(e);
+        } catch (IOException io) {
+            throw new RuntimeException(io);
+        }
     }
 }

@@ -131,7 +131,7 @@ public class ApacheClient extends BaseApacheClient implements Client {
             return httpResponse;
         } catch (Exception e) {
             metric.complete(null, e);
-            throw new UnirestException(e);
+            return handleError(config, request, e);
         } finally {
             requestObj.releaseConnection();
         }

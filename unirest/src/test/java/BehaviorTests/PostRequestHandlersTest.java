@@ -25,14 +25,20 @@
 
 package BehaviorTests;
 
+import kong.unirest.apache.MockAsyncClient;
+import kong.unirest.apache.MockedClient;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 
+import java.net.ConnectException;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 public class PostRequestHandlersTest extends BddTest {
 
@@ -115,15 +121,28 @@ public class PostRequestHandlersTest extends BddTest {
         assertEquals(400, error.httpResponse.getStatus());
     }
 
-    private class Error implements Consumer<HttpResponse<?>> {
+    @Test
+    public void monitorTotalFailure() {
+        MockedClient httpClient = new MockedClient(Unirest.config());
+        RuntimeException e = new RuntimeException();
+        httpClient.errorOnAccess(e);
 
-        public HttpResponse<?> httpResponse;
+        TestErrorHandler handler = new TestErrorHandler();
+        handler.response = mock(HttpResponse.class);
+        Unirest.config().httpClient(httpClient).errorHandler(handler);
 
-        @Override
-        public void accept(HttpResponse<?> httpResponse) {
+        assertSame(handler.response, Unirest.get(MockServer.GET).asString());
+        assertSame(e, handler.caught);
+    }
 
-            this.httpResponse = httpResponse;
-        }
+    @Test @Ignore
+    public void monitorTotalFailure_async() throws ExecutionException, InterruptedException {
+        TestErrorHandler handler = new TestErrorHandler();
+        handler.response = mock(HttpResponse.class);
+        Unirest.config().errorHandler(handler);
+
+        assertSame(handler.response, Unirest.get("http://localhost:00").asStringAsync().get());
+        assertTrue(handler.caught instanceof ConnectException);
     }
 
 
@@ -155,5 +174,16 @@ public class PostRequestHandlersTest extends BddTest {
             .asObject(RequestCapture.class);
 
         assertFalse(response.isSuccess());
+    }
+
+    private class Error implements Consumer<HttpResponse<?>> {
+
+        public HttpResponse<?> httpResponse;
+
+        @Override
+        public void accept(HttpResponse<?> httpResponse) {
+
+            this.httpResponse = httpResponse;
+        }
     }
 }

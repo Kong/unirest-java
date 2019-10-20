@@ -34,7 +34,6 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import java.util.function.Function;
 
 abstract class BaseApacheClient {
-
     protected RequestConfigFactory configFactory = new DefaultFactory();
 
 
@@ -66,9 +65,13 @@ abstract class BaseApacheClient {
     }
 
     protected <T> void handleError(Config config, HttpResponse<T> httpResponse) {
-        if(config.getErrorHandler() != null && !httpResponse.isSuccess()){
+        if(!httpResponse.isSuccess()){
             config.getErrorHandler().accept(httpResponse);
         }
+    }
+
+    protected <T> HttpResponse<T> handleError(Config config, HttpRequest<?> request, Exception e) {
+        return (HttpResponse<T>)config.getErrorHandler().handle(request, e);
     }
 
 

@@ -167,7 +167,6 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
             HttpRequest request,
             Function<RawResponse, HttpResponse<T>> transformer,
             CompletableFuture<HttpResponse<T>> callback) {
-
         Objects.requireNonNull(callback);
 
         HttpUriRequest requestObj = new RequestPrep(request, config, true).prepare(configFactory);
@@ -184,8 +183,19 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
 
             @Override
             public void failed(Exception e) {
-                metric.complete(null, e);
-                callback.completeExceptionally(e);
+                try {
+                    HttpResponse<T> maybeRecover = handleError(config, request, e);
+                    if(maybeRecover == null){
+                        callback.completeExceptionally(e);
+                        metric.complete(null, e);
+                    } else {
+                        callback.complete(maybeRecover);
+                        metric.complete(new ResponseSummary(maybeRecover), e);
+                    }
+                }catch (Exception ee){
+                    metric.complete(null, ee);
+                    callback.completeExceptionally(ee);
+                }
             }
 
             @Override

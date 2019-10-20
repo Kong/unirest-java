@@ -52,6 +52,7 @@ public class Config {
     public static final int DEFAULT_MAX_PER_ROUTE = 20;
     public static final int DEFAULT_CONNECT_TIMEOUT = 10000;
     public static final int DEFAULT_SOCKET_TIMEOUT = 60000;
+    private static final ErrorHandler DEFAULT_ERROR_HANDLER = new SimpleHandler();
 
     private Optional<Client> client = Optional.empty();
     private Optional<AsyncClient> asyncClient = Optional.empty();
@@ -79,7 +80,7 @@ public class Config {
     private String cookieSpec;
     private UniMetric metrics = new NoopMetric();
     private long ttl = -1;
-    private Consumer<HttpResponse<?>> errorHandler;
+    private ErrorHandler errorHandler = DEFAULT_ERROR_HANDLER;
 
     public Config() {
         setDefaults();
@@ -93,6 +94,7 @@ public class Config {
         socketTimeout = DEFAULT_SOCKET_TIMEOUT;
         maxTotal = DEFAULT_MAX_CONNECTIONS;
         maxPerRoute = DEFAULT_MAX_PER_ROUTE;
+        errorHandler = DEFAULT_ERROR_HANDLER;
         followRedirects = true;
         cookieManagement = true;
         requestCompressionOn = true;
@@ -100,7 +102,6 @@ public class Config {
         verifySsl = true;
         keystore = null;
         keystorePassword = null;
-        errorHandler = null;
         this.objectMapper = Optional.of(new JsonObjectMapper());
         try {
             asyncBuilder = ApacheAsyncClient::new;
@@ -421,13 +422,24 @@ public class Config {
     }
 
     /**
-     * Sets a global error handler
+     * Sets a simple global error handler as a lambda
      * If the response was NOT a 200-series response or a mapping exception happened. Invoke this consumer
      * @param consumer a function to consume a HttpResponse
      * @return this config object
      */
     public Config errorHandler(Consumer<HttpResponse<?>> consumer) {
-        this.errorHandler = consumer;
+        this.errorHandler = new SimpleHandler(consumer);
+        return this;
+    }
+
+    /**
+     * Sets a global error handler
+     * If the response was NOT a 200-series response or a mapping exception happened. Invoke this consumer
+     * @param handler a function to consume a HttpResponse
+     * @return this config object
+     */
+    public Config errorHandler(ErrorHandler handler) {
+        this.errorHandler = handler;
         return this;
     }
 
@@ -746,7 +758,7 @@ public class Config {
     }
 
 
-    public Consumer<HttpResponse<?>> getErrorHandler() {
+    public ErrorHandler getErrorHandler() {
         return errorHandler;
     }
 }

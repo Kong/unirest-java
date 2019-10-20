@@ -25,27 +25,29 @@
 
 package kong.unirest;
 
-public class ResponseSummary implements HttpResponseSummary {
-    private final int status;
-    private final String statusText;
+/**
+ * a error handler for various failure scenarios
+ */
+public interface ErrorHandler {
+    /**
+     * Handler method for response errors.
+     * Invoked if the response was NOT a 200-series response or a mapping exception happened.
+     * @param response The HTTP Response
+     */
+    void accept(HttpResponse<?> response);
 
-    ResponseSummary(RawResponse response) {
-        this.status = response.getStatus();
-        this.statusText = response.getStatusText();
+    /**
+     * Handler method for request errors.
+     * Invoked if something terrible happened when attempting to make the request
+     * this could be due to connection failures or other systemic issues.
+     * No response is available in this case. Although though this handler a response may be attempted.
+     *
+     * @param request The current request object. Note that it may be in a partially consumed state and may not be re-requestable.
+     * @param e The exception that occured which failed the request.
+     * @return A HttpResponse object. Normally unirest thows the exception and ho response is returned.
+     */
+    default HttpResponse<?> handle(HttpRequest<?> request, Exception e){
+        throw new UnirestException(e);
     }
 
-    public ResponseSummary(HttpResponse response){
-        this.status = response.getStatus();
-        this.statusText = response.getStatusText();
-    }
-
-    @Override
-    public int getStatus() {
-        return status;
-    }
-
-    @Override
-    public String getStatusText() {
-        return statusText;
-    }
 }
