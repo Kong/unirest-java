@@ -76,7 +76,7 @@ HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post")
       .queryString("apiKey", "123")
       .field("parameter", "value")
       .field("foo", "bar")
-      .asString();
+      .asJson();
 ```
 
 Requests are made when `as[Type]()` is invoked, possible types include `Json`, `String`, `Object` `Empty` and `File`.
