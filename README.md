@@ -1,6 +1,6 @@
 # Unirest for Java 
 
-[![Actions Status](https://github.com/com.konghq/unirest-java/workflows/Verify/badge.svg)](https://github.com/com.konghq/unirest-java/actions)
+[![Actions Status](https://github.com/kong/unirest-java/workflows/Verify/badge.svg)](https://github.com/kong/unirest-java/actions)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.konghq/unirest-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kong/unirest-java)
 [![Javadocs](http://www.javadoc.io/badge/com.konghq/unirest-java.svg)](http://www.javadoc.io/doc/com.konghq/unirest-java)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/Kong/unirest-java)
