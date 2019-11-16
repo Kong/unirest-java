@@ -26,10 +26,12 @@
 package BehaviorTests;
 
 import kong.unirest.HttpRequest;
+import kong.unirest.HttpResponse;
 import kong.unirest.Interceptor;
 import kong.unirest.Unirest;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequestInterceptor;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -37,25 +39,31 @@ import java.util.concurrent.ExecutionException;
 
 public class InterceptorTest extends BddTest {
 
+    private UniInterceptor interceptor;
+
+    @Before
+    public void setUp() {
+        super.setUp();
+        interceptor = new UniInterceptor();
+    }
+
     @Test
     public void canAddInterceptor() {
-        Unirest.config().addInterceptor(new UniInterceptor());
+        Unirest.config().addInterceptor(interceptor);
+        Unirest.get(MockServer.GET).asObject(RequestCapture.class);
 
-        Unirest.get(MockServer.GET)
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertHeader("x-custom", "foo");
+        interceptor.cap.assertHeader("x-custom", "foo");
     }
 
     @Test
     public void canAddInterceptorToAsync() throws ExecutionException, InterruptedException {
-        Unirest.config().addInterceptor(new UniInterceptor());
+        Unirest.config().addInterceptor(interceptor);
 
         Unirest.get(MockServer.GET)
                 .asObjectAsync(RequestCapture.class)
-                .get()
-                .getBody()
-                .assertHeader("x-custom", "foo");
+                .get();
+
+        interceptor.cap.assertHeader("x-custom", "foo");
     }
 
     @Test @Deprecated
@@ -87,9 +95,16 @@ public class InterceptorTest extends BddTest {
     }
 
     private class UniInterceptor implements Interceptor {
+        public RequestCapture cap;
+
         @Override
         public void onRequest(HttpRequest<?> request) {
             request.header("x-custom", "foo");
+        }
+
+        @Override
+        public void onResponse(HttpResponse<?> response) {
+            cap = (RequestCapture)response.getBody();
         }
     }
 }

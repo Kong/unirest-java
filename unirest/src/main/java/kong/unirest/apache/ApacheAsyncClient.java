@@ -179,6 +179,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
                 metric.complete(t.toSummary(), null);
                 HttpResponse<T> response = transformBody(transformer, t);
                 handleError(config, response);
+                config.getUniInterceptors().forEach(i -> i.onResponse(response));
                 callback.complete(response);
             }
 

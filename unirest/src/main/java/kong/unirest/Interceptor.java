@@ -26,5 +26,6 @@
 package kong.unirest;
 
 public interface Interceptor {
-    void onRequest(HttpRequest<?> request);
+    default void onRequest(HttpRequest<?> request){}
+    default void onResponse(HttpResponse<?> response){}
 }
