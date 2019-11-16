@@ -116,6 +116,7 @@ public class ApacheClient extends BaseApacheClient implements Client {
     @Override
     public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
 
+        config.getUniInterceptors().forEach(i -> i.onRequest(request));
         HttpRequestBase requestObj = new RequestPrep(request, config, false).prepare(configFactory);
         MetricContext metric = config.getMetric().begin(request.toSummary());
         try {

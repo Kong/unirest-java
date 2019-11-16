@@ -58,7 +58,7 @@ public class Config {
     private Optional<AsyncClient> asyncClient = Optional.empty();
     private Optional<ObjectMapper> objectMapper = Optional.of(new JsonObjectMapper());
 
-    private List<HttpRequestInterceptor> interceptors = new ArrayList<>();
+    private List<HttpRequestInterceptor> apacheinterceptors = new ArrayList<>();
     private Headers headers;
     private Proxy proxy;
     private int connectionTimeout;
@@ -82,13 +82,14 @@ public class Config {
     private long ttl = -1;
     private Consumer<HttpResponse<?>> errorHandler;
     private SSLContext sslContext;
+    private List<Interceptor> interceptors = new ArrayList<>();
 
     public Config() {
         setDefaults();
     }
 
     private void setDefaults() {
-        interceptors.clear();
+        apacheinterceptors.clear();
         proxy = null;
         headers = new Headers();
         connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
@@ -388,15 +389,27 @@ public class Config {
     }
 
     /**
+     * Add a Interceptor which will be called before and after the request;
+     * @param interceptor The Interceptor
+     * @return this config object
+     */
+    public Config addInterceptor(Interceptor interceptor) {
+        interceptors.add(interceptor);
+        return this;
+    }
+
+    /**
      * Add a HttpRequestInterceptor to the clients. This can be called multiple times to add as many as you like.
      * https://hc.apache.org/httpcomponents-core-ga/httpcore/apidocs/org/apache/http/HttpRequestInterceptor.html
      *
      * @param interceptor The addInterceptor
      * @return this config object
+     * @deprecated use the Unirest Interceptors rather than Apache
      */
+    @Deprecated
     public Config addInterceptor(HttpRequestInterceptor interceptor) {
         validateClientsNotRunning();
-        interceptors.add(interceptor);
+        apacheinterceptors.add(interceptor);
         return this;
     }
 
@@ -728,7 +741,7 @@ public class Config {
     }
 
     public List<HttpRequestInterceptor> getInterceptors() {
-        return interceptors;
+        return apacheinterceptors;
     }
 
     public Proxy getProxy() {
@@ -778,5 +791,9 @@ public class Config {
 
     public SSLContext getSslContext() {
         return sslContext;
+    }
+
+    public List<Interceptor> getUniInterceptors() {
+        return interceptors;
     }
 }

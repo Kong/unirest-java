@@ -169,7 +169,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
             CompletableFuture<HttpResponse<T>> callback) {
 
         Objects.requireNonNull(callback);
-
+        config.getUniInterceptors().forEach(i -> i.onRequest(request));
         HttpUriRequest requestObj = new RequestPrep(request, config, true).prepare(configFactory);
         MetricContext metric = config.getMetric().begin(request.toSummary());
         client.execute(requestObj, new FutureCallback<org.apache.http.HttpResponse>() {

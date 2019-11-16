@@ -25,20 +25,21 @@
 
 package BehaviorTests;
 
+import kong.unirest.HttpRequest;
+import kong.unirest.Interceptor;
 import kong.unirest.Unirest;
 import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.protocol.HttpContext;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 public class InterceptorTest extends BddTest {
+
     @Test
     public void canAddInterceptor() {
-        Unirest.config().addInterceptor(new TestInterceptor());
+        Unirest.config().addInterceptor(new UniInterceptor());
 
         Unirest.get(MockServer.GET)
                 .asObject(RequestCapture.class)
@@ -48,6 +49,27 @@ public class InterceptorTest extends BddTest {
 
     @Test
     public void canAddInterceptorToAsync() throws ExecutionException, InterruptedException {
+        Unirest.config().addInterceptor(new UniInterceptor());
+
+        Unirest.get(MockServer.GET)
+                .asObjectAsync(RequestCapture.class)
+                .get()
+                .getBody()
+                .assertHeader("x-custom", "foo");
+    }
+
+    @Test @Deprecated
+    public void canAddApacheInterceptor() {
+        Unirest.config().addInterceptor(new TestInterceptor());
+
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("x-custom", "foo");
+    }
+
+    @Test @Deprecated
+    public void canAddApacheInterceptorToAsync() throws ExecutionException, InterruptedException {
         Unirest.config().addInterceptor(new TestInterceptor());
 
         Unirest.get(MockServer.GET)
@@ -59,8 +81,15 @@ public class InterceptorTest extends BddTest {
 
     private class TestInterceptor implements HttpRequestInterceptor {
         @Override
-        public void process(HttpRequest httpRequest, HttpContext httpContext) throws HttpException, IOException {
+        public void process(org.apache.http.HttpRequest httpRequest, org.apache.http.protocol.HttpContext httpContext) throws HttpException, IOException {
             httpRequest.addHeader("x-custom", "foo");
+        }
+    }
+
+    private class UniInterceptor implements Interceptor {
+        @Override
+        public void onRequest(HttpRequest<?> request) {
+            request.header("x-custom", "foo");
         }
     }
 }
