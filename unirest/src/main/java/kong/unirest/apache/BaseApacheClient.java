@@ -65,12 +65,6 @@ abstract class BaseApacheClient {
         }
     }
 
-    protected <T> void handleError(Config config, HttpResponse<T> httpResponse) {
-        if(config.getErrorHandler() != null && !httpResponse.isSuccess()){
-            config.getErrorHandler().accept(httpResponse);
-        }
-    }
-
 
     public void setConfigFactory(RequestConfigFactory configFactory) {
         this.configFactory = configFactory;

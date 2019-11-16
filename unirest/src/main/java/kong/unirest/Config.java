@@ -80,7 +80,6 @@ public class Config {
     private String cookieSpec;
     private UniMetric metrics = new NoopMetric();
     private long ttl = -1;
-    private Consumer<HttpResponse<?>> errorHandler;
     private SSLContext sslContext;
     private List<Interceptor> interceptors = new ArrayList<>();
 
@@ -104,7 +103,8 @@ public class Config {
         keystore = null;
         keystorePassword = null;
         sslContext = null;
-        errorHandler = null;
+        interceptors.clear();
+        interceptors.add(new DefaultInterceptor());
         this.objectMapper = Optional.of(new JsonObjectMapper());
         try {
             asyncBuilder = ApacheAsyncClient::new;
@@ -389,6 +389,19 @@ public class Config {
     }
 
     /**
+     * Sets a global error handler
+     * If the response was NOT a 200-series response or a mapping exception happened. Invoke this consumer
+     * @param consumer a function to consume a HttpResponse
+     * @return this config object
+     * @deprecated this is merging with the interceptor concept. see addInterceptor(Interceptor interceptor)
+     */
+    @Deprecated
+    public Config errorHandler(Consumer<HttpResponse<?>> consumer) {
+        getDefaultInterceptor().setConsumer(consumer);
+        return this;
+    }
+
+    /**
      * Add a Interceptor which will be called before and after the request;
      * @param interceptor The Interceptor
      * @return this config object
@@ -456,17 +469,6 @@ public class Config {
      */
     public Config useSystemProperties(boolean value) {
         this.useSystemProperties = value;
-        return this;
-    }
-
-    /**
-     * Sets a global error handler
-     * If the response was NOT a 200-series response or a mapping exception happened. Invoke this consumer
-     * @param consumer a function to consume a HttpResponse
-     * @return this config object
-     */
-    public Config errorHandler(Consumer<HttpResponse<?>> consumer) {
-        this.errorHandler = consumer;
         return this;
     }
 
@@ -785,8 +787,21 @@ public class Config {
     }
 
 
+    @Deprecated
     public Consumer<HttpResponse<?>> getErrorHandler() {
-        return errorHandler;
+        return getDefaultInterceptor().getConsumer();
+    }
+
+    private DefaultInterceptor getDefaultInterceptor() {
+        return interceptors.stream()
+                .filter(e -> e instanceof DefaultInterceptor)
+                .findFirst()
+                .map(DefaultInterceptor.class::cast)
+                .orElseGet(() ->{
+                    DefaultInterceptor e = new DefaultInterceptor();
+                    interceptors.add(e);
+                    return e;
+                });
     }
 
     public SSLContext getSslContext() {

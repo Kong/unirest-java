@@ -25,8 +25,29 @@
 
 package kong.unirest;
 
-public interface Interceptor {
-    default void onRequest(HttpRequest<?> request){}
-    default void onResponse(HttpResponse<?> response){}
-    default void onFail(Exception e, HttpRequest<?> request){}
+import java.util.function.Consumer;
+
+class DefaultInterceptor implements Interceptor {
+
+    private Consumer<HttpResponse<?>> consumer;
+
+    @Override
+    public void onResponse(HttpResponse<?> response) {
+        if(consumer != null && !response.isSuccess()){
+            consumer.accept(response);
+        }
+    }
+
+    @Override
+    public void onFail(Exception e, HttpRequest<?> request) {
+        throw new UnirestException(e);
+    }
+
+    Consumer<HttpResponse<?>> getConsumer(){
+        return consumer;
+    }
+
+    void setConsumer(Consumer<HttpResponse<?>> consumer) {
+        this.consumer = consumer;
+    }
 }
