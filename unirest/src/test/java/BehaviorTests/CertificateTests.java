@@ -69,6 +69,7 @@ public class CertificateTests extends BddTest {
                 .ifSuccess(r -> System.out.println(" woot "));;
     }
 
+
     @Test
     public void canLoadKeyStoreByPath() {
         Unirest.config().clientCertificateStore("src/test/resources/certs/badssl.com-client.p12", "badssl.com");
@@ -77,6 +78,18 @@ public class CertificateTests extends BddTest {
                 .asString()
                 .ifFailure(r -> Assert.fail(r.getStatus() + " request failed " + r.getBody()))
                 .ifSuccess(r -> System.out.println(" woot "));;
+    }
+
+    @Test
+    public void loadWithSSLContext() throws Exception {
+        SSLContext sslContext = SSLContexts.custom()
+                .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
+                .build();
+
+        Unirest.config().setSSLContext(sslContext);
+
+        int response = Unirest.get("https://client.badssl.com/").asEmpty().getStatus();
+        assertEquals(200, response);
     }
 
     @Test

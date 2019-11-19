@@ -31,6 +31,7 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.HttpClient;
 import org.apache.http.nio.client.HttpAsyncClient;
 
+import javax.net.ssl.SSLContext;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
@@ -80,6 +81,7 @@ public class Config {
     private UniMetric metrics = new NoopMetric();
     private long ttl = -1;
     private Consumer<HttpResponse<?>> errorHandler;
+    private SSLContext sslContext;
 
     public Config() {
         setDefaults();
@@ -100,6 +102,7 @@ public class Config {
         verifySsl = true;
         keystore = null;
         keystorePassword = null;
+        sslContext = null;
         errorHandler = null;
         this.objectMapper = Optional.of(new JsonObjectMapper());
         try {
@@ -222,6 +225,11 @@ public class Config {
      */
     public Config setObjectMapper(ObjectMapper om) {
         this.objectMapper = Optional.ofNullable(om);
+        return this;
+    }
+
+    public Config setSSLContext(SSLContext SSLContext) {
+        this.sslContext = SSLContext;
         return this;
     }
 
@@ -748,5 +756,9 @@ public class Config {
 
     public Consumer<HttpResponse<?>> getErrorHandler() {
         return errorHandler;
+    }
+
+    public SSLContext getSslContext() {
+        return sslContext;
     }
 }
