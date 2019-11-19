@@ -67,7 +67,7 @@ class SecurityConfig {
         try {
             if (!config.isVerifySsl()) {
                 return createDisabledSSLContext();
-            } else if (config.getKeystore() != null) {
+            } else if (config.getKeystore() != null || config.getSslContext() != null) {
                 return createCustomSslContext();
             } else {
                 return createDefaultRegistry();
@@ -110,15 +110,19 @@ class SecurityConfig {
     }
     private SSLContext createSslContext() {
         if(sslContext == null) {
-            try {
-                char[] pass = Optional.ofNullable(config.getKeyStorePassword())
-                        .map(String::toCharArray)
-                        .orElse(null);
-                sslContext = SSLContexts.custom()
-                        .loadKeyMaterial(config.getKeystore(), pass)
-                        .build();
-            } catch (Exception e) {
-                throw new UnirestConfigException(e);
+            if(config.getSslContext() != null){
+                sslContext = config.getSslContext();
+            } else {
+                try {
+                    char[] pass = Optional.ofNullable(config.getKeyStorePassword())
+                            .map(String::toCharArray)
+                            .orElse(null);
+                    sslContext = SSLContexts.custom()
+                            .loadKeyMaterial(config.getKeystore(), pass)
+                            .build();
+                } catch (Exception e) {
+                    throw new UnirestConfigException(e);
+                }
             }
         }
         return sslContext;

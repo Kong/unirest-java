@@ -49,8 +49,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLPeerUnverifiedException;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
 
@@ -86,7 +84,7 @@ public class CertificateTests extends BddTest {
                 .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
                 .build();
 
-        Unirest.config().setSSLContext(sslContext);
+        Unirest.config().sslContext(sslContext);
 
         int response = Unirest.get("https://client.badssl.com/").asEmpty().getStatus();
         assertEquals(200, response);

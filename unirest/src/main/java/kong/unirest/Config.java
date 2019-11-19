@@ -228,9 +228,23 @@ public class Config {
         return this;
     }
 
-    public Config setSSLContext(SSLContext SSLContext) {
-        this.sslContext = SSLContext;
+    /**
+     * Set a custom SSLContext.
+     *
+     * @param ssl the SSLContext to use for custom ssl context
+     * @return this config object
+     * @throws UnirestConfigException if a keystore was already configured.
+     */
+    public Config sslContext(SSLContext ssl) {
+        verifySecurityConfig(this.keystore);
+        this.sslContext = ssl;
         return this;
+    }
+
+    private void verifySecurityConfig(Object thing) {
+        if(thing != null){
+            throw new UnirestConfigException("You may only configure a SSLContext OR a Keystore, but not both");
+        }
     }
 
     /**
@@ -239,8 +253,10 @@ public class Config {
      * @param store the keystore to use for a custom ssl context
      * @param password the password for the store
      * @return this config object
+     * @throws UnirestConfigException if a SSLContext was already configured.
      */
     public Config clientCertificateStore(KeyStore store, String password) {
+        verifySecurityConfig(this.sslContext);
         this.keystore = store;
         this.keystorePassword = () -> password;
         return this;
@@ -252,8 +268,10 @@ public class Config {
      * @param fileLocation the path keystore to use for a custom ssl context
      * @param password the password for the store
      * @return this config object
+     * @throws UnirestConfigException if a SSLContext was already configured.
      */
     public Config clientCertificateStore(String fileLocation, String password) {
+        verifySecurityConfig(this.sslContext);
         try (InputStream keyStoreStream = Util.getFileInputStream(fileLocation)) {
             this.keystorePassword = () -> password;
             this.keystore = KeyStore.getInstance("PKCS12");

@@ -41,7 +41,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
+import java.security.KeyStore;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
@@ -265,6 +267,34 @@ public class ConfigTest {
 
         config.proxy("local3", 7777, "barb", "12345");
         assertProxy("local3", 7777, "barb", "12345");
+    }
+
+    @Test
+    public void cannotConfigASslContextIfAKeystoreIsPresent() {
+        KeyStore store = mock(KeyStore.class);
+        SSLContext context = mock(SSLContext.class);
+
+        config.clientCertificateStore(store, "foo");
+
+        TestUtil.assertException(() -> config.sslContext(context),
+                UnirestConfigException.class,
+                "You may only configure a SSLContext OR a Keystore, but not both");
+    }
+
+    @Test
+    public void cannotConfigAKeyStoreIfASSLContextIsPresent() {
+        KeyStore store = mock(KeyStore.class);
+        SSLContext context = mock(SSLContext.class);
+
+        config.sslContext(context);
+
+        TestUtil.assertException(() -> config.clientCertificateStore(store, "foo"),
+                UnirestConfigException.class,
+                "You may only configure a SSLContext OR a Keystore, but not both");
+
+        TestUtil.assertException(() -> config.clientCertificateStore("/a/path/file.pk12", "foo"),
+                UnirestConfigException.class,
+                "You may only configure a SSLContext OR a Keystore, but not both");
     }
 
     private void assertProxy(String host, Integer port, String username, String password) {

@@ -81,9 +81,6 @@ public class ApacheClient extends BaseApacheClient implements Client {
         this.syncMonitor = null;
     }
 
-
-
-
     private void setOptions(HttpClientBuilder cb) {
         security.configureSecurity(cb);
         if (!config.isAutomaticRetries()) {
