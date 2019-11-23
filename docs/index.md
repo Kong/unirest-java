@@ -399,6 +399,7 @@ Unirest offers a lightweight JSON response type when you don't need a full Objec
 
 ```java
 String result = Unirest.get("http://some.json.com")
+				       .asJson()
 				       .getBody()
 				       .getObject()
 				       .getJSONObject("thing")
