@@ -46,6 +46,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static kong.unirest.Util.tryCast;
+
 
 public class Config {
     public static final int DEFAULT_CONNECTION_TIMEOUT = 10000;
@@ -81,7 +83,7 @@ public class Config {
     private UniMetric metrics = new NoopMetric();
     private long ttl = -1;
     private SSLContext sslContext;
-    private List<Interceptor> interceptors = new ArrayList<>();
+    private Interceptor interceptor = new DefaultInterceptor();
 
     public Config() {
         setDefaults();
@@ -103,8 +105,7 @@ public class Config {
         keystore = null;
         keystorePassword = null;
         sslContext = null;
-        interceptors.clear();
-        interceptors.add(new DefaultInterceptor());
+        interceptor = new DefaultInterceptor();
         this.objectMapper = Optional.of(new JsonObjectMapper());
         try {
             asyncBuilder = ApacheAsyncClient::new;
@@ -389,25 +390,33 @@ public class Config {
     }
 
     /**
-     * Sets a global error handler
-     * If the response was NOT a 200-series response or a mapping exception happened. Invoke this consumer
+     * Sets a global error handler by wrapping it in a default interceptor
+     * If the response was NOT a 200-series response or a mapping exception happened. Invoke this consumer,
+     * this function is deprecated in favor of a full interceptor pattern.
+     *
+     * Setting a custom interceptor will make this function throw an exception
      * @param consumer a function to consume a HttpResponse
      * @return this config object
-     * @deprecated this is merging with the interceptor concept. see addInterceptor(Interceptor interceptor)
+     * @deprecated this is merging with the interceptor concept. see interceptor(Interceptor value)
      */
     @Deprecated
     public Config errorHandler(Consumer<HttpResponse<?>> consumer) {
-        getDefaultInterceptor().setConsumer(consumer);
+        Optional<DefaultInterceptor> df = getDefaultInterceptor();
+        df.ifPresent(d -> d.setConsumer(consumer));
+        df.orElseThrow(() -> new UnirestConfigException(
+                "You attempted to set a custom error handler while also overriding the Unirest interceptor.\n" +
+                "please use the interceptor only. This function is deprecated"));
         return this;
     }
 
     /**
      * Add a Interceptor which will be called before and after the request;
-     * @param interceptor The Interceptor
+     * @param value The Interceptor
      * @return this config object
      */
-    public Config addInterceptor(Interceptor interceptor) {
-        interceptors.add(interceptor);
+    public Config interceptor(Interceptor value) {
+        Objects.requireNonNull(value, "Interceptor may not be null");
+        this.interceptor = value;
         return this;
     }
 
@@ -415,14 +424,14 @@ public class Config {
      * Add a HttpRequestInterceptor to the clients. This can be called multiple times to add as many as you like.
      * https://hc.apache.org/httpcomponents-core-ga/httpcore/apidocs/org/apache/http/HttpRequestInterceptor.html
      *
-     * @param interceptor The addInterceptor
+     * @param value The addInterceptor
      * @return this config object
      * @deprecated use the Unirest Interceptors rather than Apache
      */
     @Deprecated
-    public Config addInterceptor(HttpRequestInterceptor interceptor) {
+    public Config addInterceptor(HttpRequestInterceptor value) {
         validateClientsNotRunning();
-        apacheinterceptors.add(interceptor);
+        apacheinterceptors.add(value);
         return this;
     }
 
@@ -742,7 +751,7 @@ public class Config {
         }
     }
 
-    public List<HttpRequestInterceptor> getInterceptors() {
+    public List<HttpRequestInterceptor> getInterceptor() {
         return apacheinterceptors;
     }
 
@@ -786,29 +795,22 @@ public class Config {
         return ttl;
     }
 
+    public Interceptor getUniInterceptor() {
+        return interceptor;
+    }
 
     @Deprecated
     public Consumer<HttpResponse<?>> getErrorHandler() {
-        return getDefaultInterceptor().getConsumer();
-    }
-
-    private DefaultInterceptor getDefaultInterceptor() {
-        return interceptors.stream()
-                .filter(e -> e instanceof DefaultInterceptor)
-                .findFirst()
-                .map(DefaultInterceptor.class::cast)
-                .orElseGet(() ->{
-                    DefaultInterceptor e = new DefaultInterceptor();
-                    interceptors.add(e);
-                    return e;
-                });
+        return getDefaultInterceptor()
+                .map(DefaultInterceptor::getConsumer)
+                .orElseGet(() -> r -> {});
     }
 
     public SSLContext getSslContext() {
         return sslContext;
     }
 
-    public List<Interceptor> getUniInterceptors() {
-        return interceptors;
+    private Optional<DefaultInterceptor> getDefaultInterceptor() {
+        return tryCast(getUniInterceptor(), DefaultInterceptor.class);
     }
 }

@@ -124,7 +124,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
         if (!config.getEnabledCookieManagement()) {
             ab.disableCookieManagement();
         }
-        config.getInterceptors().forEach(ab::addInterceptorFirst);
+        config.getInterceptor().forEach(ab::addInterceptorFirst);
     }
 
     private PoolingNHttpClientConnectionManager createConnectionManager() throws Exception {
@@ -169,7 +169,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
             CompletableFuture<HttpResponse<T>> callback) {
 
         Objects.requireNonNull(callback);
-        config.getUniInterceptors().forEach(i -> i.onRequest(request));
+        config.getUniInterceptor().onRequest(request);
         HttpUriRequest requestObj = new RequestPrep(request, config, true).prepare(configFactory);
         MetricContext metric = config.getMetric().begin(request.toSummary());
         client.execute(requestObj, new FutureCallback<org.apache.http.HttpResponse>() {
@@ -178,7 +178,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
                 ApacheResponse t = new ApacheResponse(httpResponse, config);
                 metric.complete(t.toSummary(), null);
                 HttpResponse<T> response = transformBody(transformer, t);
-                config.getUniInterceptors().forEach(i -> i.onResponse(response));
+                config.getUniInterceptor().onResponse(response);
                 callback.complete(response);
             }
 

@@ -49,7 +49,7 @@ public class InterceptorTest extends BddTest {
 
     @Test
     public void canAddInterceptor() {
-        Unirest.config().addInterceptor(interceptor);
+        Unirest.config().interceptor(interceptor);
         Unirest.get(MockServer.GET).asObject(RequestCapture.class);
 
         interceptor.cap.assertHeader("x-custom", "foo");
@@ -57,7 +57,7 @@ public class InterceptorTest extends BddTest {
 
     @Test
     public void canAddInterceptorToAsync() throws ExecutionException, InterruptedException {
-        Unirest.config().addInterceptor(interceptor);
+        Unirest.config().interceptor(interceptor);
 
         Unirest.get(MockServer.GET)
                 .asObjectAsync(RequestCapture.class)

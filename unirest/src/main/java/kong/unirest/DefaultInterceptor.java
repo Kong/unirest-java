@@ -39,7 +39,7 @@ class DefaultInterceptor implements Interceptor {
     }
 
     @Override
-    public void onFail(Exception e, HttpRequest<?> request) {
+    public HttpResponse<?> onFail(Exception e, HttpRequest<?> request) {
         throw new UnirestException(e);
     }
 

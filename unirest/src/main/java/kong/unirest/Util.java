@@ -35,6 +35,13 @@ import java.util.stream.Stream;
 
 class Util {
 
+    static <T, M extends T> Optional<M> tryCast(T original, Class<M> too) {
+        if (original != null && too.isAssignableFrom(original.getClass())) {
+            return Optional.of((M) original);
+        }
+        return Optional.empty();
+    }
+
     //In Java 9 this has been added as Optional::stream. Remove this whenever we get there.
     static <T> Stream<T> stream(Optional<T> opt) {
         return opt.map(Stream::of).orElseGet(Stream::empty);

@@ -98,7 +98,7 @@ public class ApacheClient extends BaseApacheClient implements Client {
         if (!config.getEnabledCookieManagement()) {
             cb.disableCookieManagement();
         }
-        config.getInterceptors().stream().forEach(cb::addInterceptorFirst);
+        config.getInterceptor().stream().forEach(cb::addInterceptorFirst);
         if (config.shouldAddShutdownHook()) {
             registerShutdownHook();
         }
@@ -116,7 +116,7 @@ public class ApacheClient extends BaseApacheClient implements Client {
     @Override
     public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
 
-        config.getUniInterceptors().forEach(i -> i.onRequest(request));
+        config.getUniInterceptor().onRequest(request);
         HttpRequestBase requestObj = new RequestPrep(request, config, false).prepare(configFactory);
         MetricContext metric = config.getMetric().begin(request.toSummary());
         try {
@@ -125,11 +125,12 @@ public class ApacheClient extends BaseApacheClient implements Client {
             metric.complete(t.toSummary(), null);
             HttpResponse<T> httpResponse = transformBody(transformer, t);
             requestObj.releaseConnection();
-            config.getUniInterceptors().forEach(i -> i.onResponse(httpResponse));
+            config.getUniInterceptor().onResponse(httpResponse);
             return httpResponse;
         } catch (Exception e) {
             metric.complete(null, e);
-            throw new UnirestException(e);
+            config.getUniInterceptor().onFail(e, request);
+            return null;
         } finally {
             requestObj.releaseConnection();
         }

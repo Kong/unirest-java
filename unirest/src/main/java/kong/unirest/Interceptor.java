@@ -28,5 +28,7 @@ package kong.unirest;
 public interface Interceptor {
     default void onRequest(HttpRequest<?> request){}
     default void onResponse(HttpResponse<?> response){}
-    default void onFail(Exception e, HttpRequest<?> request){}
+    default HttpResponse<?> onFail(Exception e, HttpRequest<?> request){
+        throw new UnirestException(e);
+    }
 }
