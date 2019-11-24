@@ -129,8 +129,7 @@ public class ApacheClient extends BaseApacheClient implements Client {
             return httpResponse;
         } catch (Exception e) {
             metric.complete(null, e);
-            config.getUniInterceptor().onFail(e, request);
-            return null;
+            return (HttpResponse<T>) config.getUniInterceptor().onFail(e, request, config);
         } finally {
             requestObj.releaseConnection();
         }

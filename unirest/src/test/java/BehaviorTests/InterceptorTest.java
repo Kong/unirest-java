@@ -25,21 +25,27 @@
 
 package BehaviorTests;
 
-import kong.unirest.HttpRequest;
-import kong.unirest.HttpResponse;
-import kong.unirest.Interceptor;
-import kong.unirest.Unirest;
+import kong.unirest.*;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.protocol.HttpContext;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class InterceptorTest extends BddTest {
 
     private UniInterceptor interceptor;
+    private String  ioErrorMessage = "Something horrible happened";;
 
     @Before
     public void setUp() {
@@ -64,6 +70,56 @@ public class InterceptorTest extends BddTest {
                 .get();
 
         interceptor.cap.assertHeader("x-custom", "foo");
+    }
+
+    @Test
+    public void totalFailure() throws Exception {
+        Unirest.config().httpClient(getFailureClient()).interceptor(interceptor);
+
+        TestUtil.assertException(() -> Unirest.get(MockServer.GET).asEmpty(),
+                UnirestException.class,
+                "java.io.IOException: " + ioErrorMessage);
+    }
+
+    @Test
+    public void canReturnEmptyResultRatherThanThrow() throws Exception {
+        Unirest.config().httpClient(getFailureClient()).interceptor(interceptor);
+        interceptor.failResponse = true;
+
+        HttpResponse<String> response = Unirest.get(MockServer.GET).asString();
+
+        assertEquals(542, response.getStatus());
+        assertEquals(ioErrorMessage, response.getStatusText());
+    }
+
+    @Test
+    public void totalAsyncFailure() throws Exception {
+        Unirest.config().addInterceptor((r, c) -> {
+            throw new IOException(ioErrorMessage);
+        }).interceptor(interceptor);
+
+        TestUtil.assertException(() -> Unirest.get(MockServer.GET).asStringAsync().get(),
+                ExecutionException.class,
+                "java.io.IOException: " + ioErrorMessage);
+    }
+
+    @Test
+    public void totalAsyncFailure_Recovery() throws Exception {
+        interceptor.failResponse = true;
+        Unirest.config().addInterceptor((r, c) -> {
+            throw new IOException(ioErrorMessage);
+        }).interceptor(interceptor);
+
+        HttpResponse<String> response = Unirest.get(MockServer.GET).asStringAsync().get();
+
+        assertEquals(542, response.getStatus());
+        assertEquals(ioErrorMessage, response.getStatusText());
+    }
+
+    private HttpClient getFailureClient() throws IOException {
+        HttpClient client = mock(HttpClient.class);
+        when(client.execute(any(HttpUriRequest.class))).thenThrow(new IOException(ioErrorMessage));
+        return client;
     }
 
     @Test @Deprecated
@@ -95,7 +151,8 @@ public class InterceptorTest extends BddTest {
     }
 
     private class UniInterceptor implements Interceptor {
-        public RequestCapture cap;
+        RequestCapture cap;
+        boolean failResponse;
 
         @Override
         public void onRequest(HttpRequest<?> request) {
@@ -105,6 +162,14 @@ public class InterceptorTest extends BddTest {
         @Override
         public void onResponse(HttpResponse<?> response) {
             cap = (RequestCapture)response.getBody();
+        }
+
+        @Override
+        public HttpResponse<?> onFail(Exception e, HttpRequest<?> request, Config config) {
+            if(failResponse){
+                return new FailedResponse(e);
+            }
+            return Interceptor.super.onFail(e, request, config);
         }
     }
 }

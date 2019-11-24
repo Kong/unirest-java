@@ -3,10 +3,10 @@
 <!DOCTYPE suppressions PUBLIC
         "-//Puppy Crawl//DTD Suppressions 1.0//EN"
         "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
-
 <suppressions>
     <suppress checks="MethodCount" files="Config.java"/>
     <suppress checks="MethodCount" files="JSONArray.java"/>
     <suppress checks="MethodCount" files="JSONObject.java"/>
     <suppress checks="FileLength" files="JSONObject.java"/>
+    <suppress checks="MethodLength" files="ApacheAsyncClient.java"/>
 </suppressions>

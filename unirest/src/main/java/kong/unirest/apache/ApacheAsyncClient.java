@@ -185,7 +185,12 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
             @Override
             public void failed(Exception e) {
                 metric.complete(null, e);
-                callback.completeExceptionally(e);
+                try {
+                    HttpResponse r = config.getUniInterceptor().onFail(e, request, config);
+                    callback.complete(r);
+                } catch (Exception ee){
+                    callback.completeExceptionally(e);
+                }
             }
 
             @Override
@@ -193,6 +198,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
                 UnirestException canceled = new UnirestException("canceled");
                 metric.complete(null, canceled);
                 callback.completeExceptionally(canceled);
+                config.getUniInterceptor().onFail(canceled, request, config);
             }
         });
         return callback;
