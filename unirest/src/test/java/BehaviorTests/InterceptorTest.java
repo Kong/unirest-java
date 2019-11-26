@@ -30,7 +30,6 @@ import org.apache.http.HttpException;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.protocol.HttpContext;
 import org.junit.Before;
 import org.junit.Test;
 

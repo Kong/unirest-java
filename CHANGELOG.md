@@ -1,3 +1,11 @@
+## 3.2.00 (pending)
+* Allow users to inject a custom SSLContext into the Config for security
+* Allow for a custom interceptor that is called when
+   * Before the request
+   * After the request
+   * When a fatal connection error happens.
+* Directly exposing Apache Interceptors is now deprecated
+
 ## 3.1.02
 * #308 When parsing an error body allow for non-parsing error bodies
 
