@@ -32,14 +32,14 @@ class DefaultInterceptor implements Interceptor {
     private Consumer<HttpResponse<?>> consumer;
 
     @Override
-    public void onResponse(HttpResponse<?> response) {
+    public void onResponse(HttpResponse<?> response, HttpRequestSummary request, Config config) {
         if(consumer != null && !response.isSuccess()){
             consumer.accept(response);
         }
     }
 
     @Override
-    public HttpResponse<?> onFail(Exception e, HttpRequest<?> request, Config config) {
+    public HttpResponse<?> onFail(Exception e, HttpRequestSummary request, Config config) {
         throw new UnirestException(e);
     }
 

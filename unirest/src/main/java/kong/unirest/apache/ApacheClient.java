@@ -116,20 +116,21 @@ public class ApacheClient extends BaseApacheClient implements Client {
     @Override
     public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
 
-        config.getUniInterceptor().onRequest(request);
+        HttpRequestSummary reqSum = request.toSummary();
+        config.getUniInterceptor().onRequest(request, config);
         HttpRequestBase requestObj = new RequestPrep(request, config, false).prepare(configFactory);
-        MetricContext metric = config.getMetric().begin(request.toSummary());
+        MetricContext metric = config.getMetric().begin(reqSum);
         try {
             org.apache.http.HttpResponse execute = client.execute(requestObj);
             ApacheResponse t = new ApacheResponse(execute, config);
             metric.complete(t.toSummary(), null);
             HttpResponse<T> httpResponse = transformBody(transformer, t);
             requestObj.releaseConnection();
-            config.getUniInterceptor().onResponse(httpResponse);
+            config.getUniInterceptor().onResponse(httpResponse, reqSum, config);
             return httpResponse;
         } catch (Exception e) {
             metric.complete(null, e);
-            return (HttpResponse<T>) config.getUniInterceptor().onFail(e, request, config);
+            return (HttpResponse<T>) config.getUniInterceptor().onFail(e, reqSum, config);
         } finally {
             requestObj.releaseConnection();
         }

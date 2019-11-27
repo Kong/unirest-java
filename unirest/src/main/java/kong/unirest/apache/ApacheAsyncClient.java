@@ -169,16 +169,17 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
             CompletableFuture<HttpResponse<T>> callback) {
 
         Objects.requireNonNull(callback);
-        config.getUniInterceptor().onRequest(request);
+        config.getUniInterceptor().onRequest(request, config);
         HttpUriRequest requestObj = new RequestPrep(request, config, true).prepare(configFactory);
-        MetricContext metric = config.getMetric().begin(request.toSummary());
+        HttpRequestSummary reqSum = request.toSummary();
+        MetricContext metric = config.getMetric().begin(reqSum);
         client.execute(requestObj, new FutureCallback<org.apache.http.HttpResponse>() {
             @Override
             public void completed(org.apache.http.HttpResponse httpResponse) {
                 ApacheResponse t = new ApacheResponse(httpResponse, config);
                 metric.complete(t.toSummary(), null);
                 HttpResponse<T> response = transformBody(transformer, t);
-                config.getUniInterceptor().onResponse(response);
+                config.getUniInterceptor().onResponse(response, reqSum, config);
                 callback.complete(response);
             }
 
@@ -186,7 +187,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
             public void failed(Exception e) {
                 metric.complete(null, e);
                 try {
-                    HttpResponse r = config.getUniInterceptor().onFail(e, request, config);
+                    HttpResponse r = config.getUniInterceptor().onFail(e, reqSum, config);
                     callback.complete(r);
                 } catch (Exception ee){
                     callback.completeExceptionally(e);
@@ -198,7 +199,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
                 UnirestException canceled = new UnirestException("canceled");
                 metric.complete(null, canceled);
                 callback.completeExceptionally(canceled);
-                config.getUniInterceptor().onFail(canceled, request, config);
+                config.getUniInterceptor().onFail(canceled, reqSum, config);
             }
         });
         return callback;

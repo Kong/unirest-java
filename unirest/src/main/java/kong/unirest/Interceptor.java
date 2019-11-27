@@ -41,16 +41,20 @@ public interface Interceptor {
      *      - Record metrics
      * The default implementation does nothing at all
      * @param request the request
+     * @param config the current configuration
      */
-    default void onRequest(HttpRequest<?> request){}
+    default void onRequest(HttpRequest<?> request, Config config) {
+    }
 
     /**
      * Called just after the request. This can be used to view the response,
      * Perhaps for logging purposes or just because you're curious.
-     *
-     * @param response the response
+     *  @param response the response
+     *  @param request a summary of the request
+     *  @param config the current configuration
      */
-    default void onResponse(HttpResponse<?> response){}
+    default void onResponse(HttpResponse<?> response, HttpRequestSummary request, Config config) {
+    }
 
     /**
      * Called in the case of a total failure.
@@ -70,7 +74,7 @@ public interface Interceptor {
      * @param config the current config
      * @return a alternative response.
      */
-    default HttpResponse<?> onFail(Exception e, HttpRequest<?> request, Config config) throws UnirestException {
+    default HttpResponse<?> onFail(Exception e, HttpRequestSummary request, Config config) throws UnirestException {
         throw new UnirestException(e);
     }
 }

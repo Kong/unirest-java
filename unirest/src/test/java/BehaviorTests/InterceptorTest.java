@@ -58,6 +58,7 @@ public class InterceptorTest extends BddTest {
         Unirest.get(MockServer.GET).asObject(RequestCapture.class);
 
         interceptor.cap.assertHeader("x-custom", "foo");
+        assertEquals(MockServer.GET, interceptor.reqSum.getUrl());
     }
 
     @Test
@@ -151,20 +152,22 @@ public class InterceptorTest extends BddTest {
 
     private class UniInterceptor implements Interceptor {
         RequestCapture cap;
+        HttpRequestSummary reqSum;
         boolean failResponse;
 
         @Override
-        public void onRequest(HttpRequest<?> request) {
+        public void onRequest(HttpRequest<?> request, Config config) {
             request.header("x-custom", "foo");
         }
 
         @Override
-        public void onResponse(HttpResponse<?> response) {
+        public void onResponse(HttpResponse<?> response, HttpRequestSummary request, Config config) {
             cap = (RequestCapture)response.getBody();
+            reqSum = request;
         }
 
         @Override
-        public HttpResponse<?> onFail(Exception e, HttpRequest<?> request, Config config) {
+        public HttpResponse<?> onFail(Exception e, HttpRequestSummary request, Config config) {
             if(failResponse){
                 return new FailedResponse(e);
             }

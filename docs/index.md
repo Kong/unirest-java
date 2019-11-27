@@ -496,6 +496,9 @@ Changing Unirest's config should ideally be done once, or rarely. There are seve
 | ```errorHandler(Consumer<HttpResponse<?>> consumer)``` | Set a global error handler that will be invoked for any status > 400 or a parsing error | | 
 | ```interceptor(Interceptor value)``` | Set a global Interceptor handler that will be invoked before and after each request | | 
 
+##  Global Interceptor
+You can set a global interceptor for your configuration. This is invoked before and after each request.
+This can be useful for logging or injecting common attributes.
 
 ## Custom Apache Clients
 Unirest leverages Apache Http Client under the hood, this is not considered to be a permemant requirement and future versions of Unirest may replace Apache with something else.
