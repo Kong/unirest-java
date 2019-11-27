@@ -38,6 +38,14 @@ public class RawUrlTest extends BddTest {
     }
 
     @Test
+    public void canCallRawPathWithTab() {
+        Unirest.get(MockServer.GET + "/foo/passed/Moody\tBlues")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertUrl("http://localhost:4567/get/foo/passed/Moody%09Blues");
+    }
+
+    @Test
     public void doesNotImpactPathParams() {
         Unirest.get(MockServer.GET + "/{first param}/passed/{file name}")
                 .routeParam("first param", "foo")

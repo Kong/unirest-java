@@ -332,7 +332,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     private String escape(String string) {
-        return string.replaceAll(" ","%20");
+        return string.replaceAll(" ","%20").replaceAll("\t","%09");
     }
 
     @Override
