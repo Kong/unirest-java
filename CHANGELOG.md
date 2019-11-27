@@ -5,6 +5,7 @@
    * After the request
    * When a fatal connection error happens.
 * Directly exposing Apache Interceptors is now deprecated
+* #319 escape spaces and tabs in raw urls
 
 ## 3.1.02
 * #308 When parsing an error body allow for non-parsing error bodies
