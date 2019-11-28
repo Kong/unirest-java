@@ -157,6 +157,18 @@ public class Headers {
         headers.removeAll(header);
     }
 
+    /**
+     * @return list all headers like this: <pre>Content-Length: 42
+     * Cache-Control: no-cache
+     * ...</pre>
+     */
+    @Override
+    public String toString() {
+       final StringBuilder sb = new StringBuilder();
+        headers.forEach(header -> sb.append(header.getName()).append(": ").append(header.getValue()).append(System.lineSeparator()));
+        return sb.toString();
+    }
+
     static class Entry implements Header {
 
         private final String name;
