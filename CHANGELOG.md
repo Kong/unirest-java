@@ -6,6 +6,7 @@
    * When a fatal connection error happens.
 * Directly exposing Apache Interceptors is now deprecated
 * #319 escape spaces and tabs in raw urls
+* Override  toString on Headers for better logging pr #321
 
 ## 3.1.02
 * #308 When parsing an error body allow for non-parsing error bodies
