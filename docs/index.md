@@ -500,6 +500,8 @@ Changing Unirest's config should ideally be done once, or rarely. There are seve
 You can set a global interceptor for your configuration. This is invoked before and after each request.
 This can be useful for logging or injecting common attributes.
 
+See [Interceptor.java](https://github.com/Kong/unirest-java/blob/master/unirest/src/main/java/kong/unirest/Interceptor.java) for details.
+
 ## Custom Apache Clients
 Unirest leverages Apache Http Client under the hood, this is not considered to be a permemant requirement and future versions of Unirest may replace Apache with something else.
 

@@ -66,9 +66,10 @@ public interface Interceptor {
      *
      * The default implimentation simply wraps the exception in a UnirestException and throws it.
      * It is possible to return a different response object from the original if you really
-     * didn't want to every throw exceptions. Keep in mind that this is a lie.
+     * didn't want to every throw exceptions. Keep in mind that this is a lie
      *
      * Nevertheless, you could return something like a kong.unirest.FailedResponse
+     * 
      * @param e the exception
      * @param request the original request
      * @param config the current config
