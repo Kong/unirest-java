@@ -30,7 +30,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class HeadersTest {
-
+    private String ls  = System.lineSeparator();
     @Test
     public void canGetApacheHeaders() {
         Headers headers = new Headers();
@@ -48,5 +48,19 @@ public class HeadersTest {
         h.add(null, "foo");
 
         assertEquals(0, h.size());
+    }
+
+    @Test
+    public void toStringOverride() {
+        Headers h  = new Headers();
+        h.add("a", "1");
+        h.add(null, "2");
+        h.add("c", () -> "3");
+        h.add("d", (String) null);
+
+        String toString = h.toString();
+        assertEquals("a: 1" + ls +
+                "c: 3" + ls +
+                "d: null" + ls, toString);
     }
 }
