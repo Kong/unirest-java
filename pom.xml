@@ -21,6 +21,7 @@
         <module>unirest</module>
         <module>object-mapper-gson</module>
         <module>object-mapper-jackson</module>
+        <module>unirest-mocks</module>
         <!--<module>bad-maven-test</module>-->
     </modules>
 
@@ -426,6 +427,13 @@
             <groupId>org.skyscreamer</groupId>
             <artifactId>jsonassert</artifactId>
             <version>1.5.0</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>28.0-jre</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
