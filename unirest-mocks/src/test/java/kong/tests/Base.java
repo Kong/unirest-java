@@ -54,11 +54,15 @@ public class Base {
             runnable.run();
             fail("Expected exception but got none.");
         } catch (UnirestAssertion e){
-            if (!e.getClass().isAssignableFrom(UnirestAssertion.class)) {
-                fail("Expected wrong exception type \n Expected: UnirestAssertion\n but got " + e.getClass() + "\n\n" + Throwables.getStackTraceAsString(e));
-            }
             assertEquals("Wrong Error Message", message, e.getMessage());
         }
+    }
+
+    public static void assertException(ExRunnable runnable) {
+        try{
+            runnable.run();
+            fail("Expected exception but got none.");
+        } catch (UnirestAssertion e){ }
     }
 
     @FunctionalInterface

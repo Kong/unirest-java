@@ -26,23 +26,28 @@
 package kong.unirest;
 
 import kong.unirest.json.JSONElement;
+import org.apache.http.client.utils.URIBuilder;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
 class Invocation implements Expectation, ExpectedResponse {
-    private Paths paths;
+    private Routes routes;
     private String response;
     private Headers expectedHeaders = new Headers();
+    private Headers expectedQueryParams = new Headers();
     private List<HttpRequest> requests = new ArrayList<>();
     private Headers responseHeaders = new Headers();
+    private Boolean expected = false;
 
-    public Invocation(Paths paths){
-        this.paths = paths;
+    public Invocation(Routes routes){
+        this.routes = routes;
+        this.expected = true;
     }
 
-    public Invocation(Paths paths, HttpRequest request) {
-        this.paths = paths;
+    public Invocation(Routes routes, HttpRequest request) {
+        this.routes = routes;
         this.expectedHeaders = request.getHeaders();
     }
 
@@ -83,8 +88,15 @@ class Invocation implements Expectation, ExpectedResponse {
     }
 
     @Override
-    public void andHeader(String key, String value) {
+    public Expectation header(String key, String value) {
         expectedHeaders.add(key, value);
+        return this;
+    }
+
+    @Override
+    public Expectation queryString(String key, String value) {
+        expectedQueryParams.add(key, value);
+        return this;
     }
 
     @Override
@@ -99,7 +111,7 @@ class Invocation implements Expectation, ExpectedResponse {
     }
 
     private String details() {
-        return String.format("%s %s\nHeaders:\n%s", paths.getMethod(), paths.getPath(), expectedHeaders);
+        return String.format("%s %s\nHeaders:\n%s", routes.getMethod(), routes.getPath(), expectedHeaders);
     }
 
 
@@ -120,5 +132,54 @@ class Invocation implements Expectation, ExpectedResponse {
     public ExpectedResponse withHeader(String key, String value) {
         this.responseHeaders.add(key, value);
         return this;
+    }
+
+    public Boolean isExpected() {
+        return expected;
+    }
+
+    public Integer scoreMatch(HttpRequest request) {
+        int score = 0;
+        score += scoreHeaders(request);
+        score += scoreQuery(request);
+        return score;
+    }
+
+    private URIBuilder foo(HttpRequest request) {
+        try {
+            URIBuilder b = new URIBuilder(request.getUrl());
+            return b;
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private int scoreHeaders(HttpRequest request) {
+        if(expectedHeaders.size() > 0){
+            long b = expectedHeaders.all().stream().filter(h ->
+                    request.getHeaders().get(h.getName()).contains(h.getValue()))
+                    .count();
+
+            if(b != expectedHeaders.size()){
+                return -1000;
+            }
+            return Long.valueOf(b).intValue();
+        }
+        return 0;
+    }
+
+    private int scoreQuery(HttpRequest request) {
+        if(expectedQueryParams.size() > 0){
+            URIBuilder p = foo(request);
+            long b = expectedQueryParams.all().stream().filter(h ->
+                    p.getQueryParams().stream().anyMatch(q -> q.getName().equalsIgnoreCase(h.getName())
+                            && q.getValue().equalsIgnoreCase(h.getValue())))
+                    .count();
+            if(b != expectedQueryParams.size()){
+                return -1000;
+            }
+            return Long.valueOf(b).intValue();
+        }
+        return 0;
     }
 }

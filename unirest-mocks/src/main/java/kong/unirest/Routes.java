@@ -25,23 +25,24 @@
 
 package kong.unirest;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-class Paths implements Assert  {
+class Routes implements Assert {
     private final String path;
     private final HttpMethod method;
     private final List<Invocation> invokes = new ArrayList<>();
 
-    Paths(HttpMethod method, String path) {
-        this.method = method;
-        this.path = path;
+
+    Routes(HttpRequest request) {
+        Path p = new Path(request.getUrl());
+        this.method = request.getHttpMethod();
+        this.path = p.baseUrl();
+        invokes.add(new Invocation(this, request));
     }
 
-    Paths(HttpRequest request) {
-        this.method = request.getHttpMethod();
-        this.path = request.getUrl();
-        invokes.add(new Invocation(this, request));
+    public Routes(HttpMethod method, Path p) {
+        this.method = method;
+        this.path = p.baseUrl();
     }
 
     Expectation newExpectation() {
@@ -51,17 +52,14 @@ class Paths implements Assert  {
     }
 
     boolean matches(HttpRequest request) {
+        Path p = new Path(request.getUrl());
         return this.method.equals(request.getHttpMethod())
-                && this.path.equalsIgnoreCase(request.getUrl());
+                && this.path.equalsIgnoreCase(p.baseUrl());
     }
 
     RawResponse exchange(HttpRequest request) {
-                return invokes.stream()
-                        .findFirst()
-                        .map(e -> {
-                            e.log(request);
-                            return e.getResponse();
-                        })
+        return getBestMatch(request)
+                .map(Invocation::getResponse)
                 .orElseGet(() -> {
                     Invocation i = new Invocation(this);
                     i.log(request);
@@ -70,17 +68,43 @@ class Paths implements Assert  {
                 });
     }
 
-    boolean matches(HttpMethod httpMethod, String url) {
+    boolean matches(HttpMethod httpMethod, Path url) {
         return this.method.equals(httpMethod)
-                && this.path.equals(url);
+                && this.path.equals(url.baseUrl());
+    }
+
+    private Optional<Invocation> getBestMatch(HttpRequest request) {
+        Optional<Invocation> i = getBestMatch(request, true);
+        if(i.isPresent()){
+            return i;
+        }
+        return getBestMatch(request, false);
+    }
+
+    private Optional<Invocation> getBestMatch(HttpRequest request, boolean expected) {
+        Map<Integer, Invocation> map = new TreeMap<>();
+        invokes.stream()
+                //.filter(m -> m.isExpected() == expected)
+                .forEach(i -> {
+                    Integer score = i.scoreMatch(request);
+                    if(score >= 0) {
+                        map.put(score, i);
+                    }
+                });
+        if (map.size() == 0) {
+            return Optional.empty();
+        }
+        Invocation value = map.get(Collections.max(map.keySet()));
+        value.log(request);
+        return Optional.of(value);
     }
 
     @Override
     public void assertHeader(String key, String value) {
-        if(invokes.stream().noneMatch(i -> i.hasExpectedHeader(key, value))){
+        if (invokes.stream().noneMatch(i -> i.hasExpectedHeader(key, value))) {
             throw new UnirestAssertion(
-                        "No invocation found with header [%s: %s]\nFound:\n%s",
-                            key, value, allHeaders());
+                    "No invocation found with header [%s: %s]\nFound:\n%s",
+                    key, value, allHeaders());
         }
     }
 
@@ -88,7 +112,7 @@ class Paths implements Assert  {
         return invokes.stream()
                 .flatMap(i -> i.getRequests().stream())
                 .map(HttpRequest::getHeaders)
-                .reduce((l,r) -> {
+                .reduce((l, r) -> {
                     l.putAll(r);
                     return l;
                 }).orElseGet(Headers::new);
@@ -97,11 +121,11 @@ class Paths implements Assert  {
     @Override
     public void assertInvokedTimes(int i) {
         Integer sum = sumInvokes();
-        if(sum != i){
-             throw new UnirestAssertion(
-                     "Incorrect number of invocations. Expected %s got %s\n%s %s",
+        if (sum != i) {
+            throw new UnirestAssertion(
+                    "Incorrect number of invocations. Expected %s got %s\n%s %s",
                     i, sum, method, path);
-         }
+        }
     }
 
     private Integer sumInvokes() {

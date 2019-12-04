@@ -112,6 +112,13 @@ class Path {
         return rawPath;
     }
 
+    public String baseUrl() {
+        if(url.contains("?")){
+            return url.substring(0, url.indexOf("?"));
+        }
+        return url;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) { return true; }
@@ -125,3 +132,4 @@ class Path {
         return Objects.hash(url);
     }
 }
+

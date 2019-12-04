@@ -35,8 +35,17 @@ public interface Expectation {
      * A expected header for a request
      * @param key the header key
      * @param value the header value
+     * @return this Expectation
      */
-    void andHeader(String key, String value);
+    Expectation header(String key, String value);
+
+    /**
+     * A expected header for a request
+     * @param key the query key
+     * @param value the query value
+     * @return this Expectation
+     */
+    Expectation queryString(String key, String value);
 
     /**
      * expect a null response

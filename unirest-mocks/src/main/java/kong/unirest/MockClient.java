@@ -25,6 +25,7 @@
 
 package kong.unirest;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,25 +38,25 @@ import java.util.stream.Stream;
  * This implements both sync and async clients
  */
 public class MockClient implements Client, AsyncClient {
-    private List<Paths> paths = new ArrayList<>();
+    private List<Routes> routes = new ArrayList<>();
 
     @Override
     public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
-        Paths exp = findExpecation(request);
+        Routes exp = findExpecation(request);
         RawResponse response = exp.exchange(request);
         return transformer.apply(response);
     }
 
-    private Paths findExpecation(HttpRequest request) {
-        return paths.stream()
+    private Routes findExpecation(HttpRequest request) {
+        return routes.stream()
                 .filter(e -> e.matches(request))
                 .findFirst()
                 .orElseGet(() -> createNewPath(request));
     }
 
-    private Paths createNewPath(HttpRequest request) {
-        Paths p = new Paths(request);
-        paths.add(p);
+    private Routes createNewPath(HttpRequest request) {
+        Routes p = new Routes(request);
+        routes.add(p);
         return p;
     }
 
@@ -80,25 +81,26 @@ public class MockClient implements Client, AsyncClient {
     }
 
     public Expectation expect(HttpMethod method, String path) {
-        Paths exp = findByPath(method, path).orElseGet(() -> new Paths(method, path));
-        if(!this.paths.contains(exp)) {
-            this.paths.add(exp);
+        Path p = new Path(path);
+        Routes exp = findByPath(method, p).orElseGet(() -> new Routes(method, p));
+        if(!this.routes.contains(exp)) {
+            this.routes.add(exp);
         }
         return exp.newExpectation();
     }
 
     public Assert assertThat(HttpMethod get, String path) {
-        return findByPath(get, path)
+        return findByPath(get, new Path(path))
                 .orElseThrow(() -> new UnirestAssertion(String.format("No Matching Invocation:: %s %s", get, path)));
     }
 
-    private Optional<Paths> findByPath(HttpMethod get, String path) {
-        return paths.stream()
+    private Optional<Routes> findByPath(HttpMethod get, Path path) {
+        return routes.stream()
                     .filter(e -> e.matches(get, path))
                     .findFirst();
     }
 
     public void verifyAll() {
-        paths.forEach(e -> e.verifyAll());
+        routes.forEach(e -> e.verifyAll());
     }
 }
