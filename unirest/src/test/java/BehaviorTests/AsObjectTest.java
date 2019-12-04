@@ -25,10 +25,14 @@
 
 package BehaviorTests;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.gson.Gson;
 import kong.unirest.*;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNull;
@@ -154,6 +158,26 @@ public class AsObjectTest extends BddTest {
         assertEquals("kong.unirest.UnirestException: com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'You': was expecting ('true', 'false' or 'null')\n" +
                 " at [Source: (String)\"You did something bad\"; line: 1, column: 4]", request.getParsingError().get().getMessage());
         assertEquals("You did something bad", request.getParsingError().get().getOriginalBody());
+    }
+
+    @Test
+    public void canSetObjectMapperToFailOnUnknown() {
+        com.fasterxml.jackson.databind.ObjectMapper jack = new com.fasterxml.jackson.databind.ObjectMapper();
+        jack.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+
+        Unirest.config().setObjectMapper(new JacksonObjectMapper(jack));
+
+        MockServer.setStringResponse("{\"foo\": [1,2,3] }");
+
+        Error error = Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .mapError(Error.class);
+
+        assertEquals(Arrays.asList(1,2,3), error.foo);
+    }
+
+    public static class Error {
+        public List<Integer> foo;
     }
 
     public static class TestingMapper implements ObjectMapper {

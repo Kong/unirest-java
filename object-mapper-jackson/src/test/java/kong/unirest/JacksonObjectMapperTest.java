@@ -49,6 +49,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 package kong.unirest;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -99,6 +101,21 @@ public class JacksonObjectMapperTest {
         assertEquals(null, test.another.another);
     }
 
+    @Test
+    public void configSoItFails() {
+        ObjectMapper jom = new ObjectMapper();
+        jom.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+        JacksonObjectMapper j = new JacksonObjectMapper(jom);
+
+        try {
+            j.readValue("{\"something\": [1,2,3] }", TestMe.class);
+            fail("Should have thrown");
+        }catch (Exception e) {
+            assertEquals("com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field \"something\" (class kong.unirest.JacksonObjectMapperTest$TestMe), not marked as ignorable (3 known properties: \"another\", \"text\", \"nmbr\"])\n" +
+                    " at [Source: (String)\"{\"something\": [1,2,3] }\"; line: 1, column: 16] (through reference chain: kong.unirest.JacksonObjectMapperTest$TestMe[\"something\"])",
+                    e.getMessage());
+        }
+    }
 
     public static class TestMe {
         public String text;

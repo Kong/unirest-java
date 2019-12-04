@@ -25,7 +25,6 @@
 
 package kong.unirest;
 
-import BehaviorTests.RequestCapture;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -43,9 +42,14 @@ import java.io.InputStream;
 
 public class JacksonObjectMapper implements ObjectMapper {
 
-	private com.fasterxml.jackson.databind.ObjectMapper om = new com.fasterxml.jackson.databind.ObjectMapper();
+	private final com.fasterxml.jackson.databind.ObjectMapper om;
+
+	public JacksonObjectMapper(com.fasterxml.jackson.databind.ObjectMapper om){
+		this.om = om;
+	}
 
 	public JacksonObjectMapper(){
+		this(new com.fasterxml.jackson.databind.ObjectMapper());
 		om.registerModule(new GuavaModule());
 		SimpleModule simpleModule = new SimpleModule();
 		simpleModule.addSerializer(JsonPatchItem.class, new PatchSerializer());
