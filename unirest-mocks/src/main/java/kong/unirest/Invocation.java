@@ -31,6 +31,9 @@ import org.apache.http.client.utils.URIBuilder;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static java.lang.System.lineSeparator;
 
 class Invocation implements Expectation, ExpectedResponse {
     private Routes routes;
@@ -40,6 +43,7 @@ class Invocation implements Expectation, ExpectedResponse {
     private List<HttpRequest> requests = new ArrayList<>();
     private Headers responseHeaders = new Headers();
     private Boolean expected = false;
+    private String expectedBody;
 
     public Invocation(Routes routes){
         this.routes = routes;
@@ -100,6 +104,12 @@ class Invocation implements Expectation, ExpectedResponse {
     }
 
     @Override
+    public Expectation body(String body) {
+        expectedBody = body;
+        return this;
+    }
+
+    @Override
     public ExpectedResponse thenReturn() {
         return this;
     }
@@ -111,7 +121,22 @@ class Invocation implements Expectation, ExpectedResponse {
     }
 
     private String details() {
-        return String.format("%s %s\nHeaders:\n%s", routes.getMethod(), routes.getPath(), expectedHeaders);
+        StringBuilder sb  = new StringBuilder(routes.getMethod().name())
+                .append(" ")
+                .append(routes.getPath()).append(lineSeparator());
+        if(expectedHeaders.size() > 0){
+            sb.append("Headers:\n");
+            sb.append(expectedHeaders);
+        }
+        if(expectedQueryParams.size() > 0){
+            sb.append("Params:\n");
+            sb.append(expectedQueryParams);
+        }
+        if(expectedBody != null){
+            sb.append("Body:\n");
+            sb.append("\t" + expectedBody);
+        }
+        return sb.toString();
     }
 
 
@@ -142,10 +167,37 @@ class Invocation implements Expectation, ExpectedResponse {
         int score = 0;
         score += scoreHeaders(request);
         score += scoreQuery(request);
+        score += scoreBody(request);
         return score;
     }
 
-    private URIBuilder foo(HttpRequest request) {
+    private int scoreBody(HttpRequest request) {
+        if(expectedBody != null){
+            return tryCast(request, HttpRequestUniBody.class)
+                    .map(HttpRequestUniBody::getBody)
+                    .flatMap(b -> b)
+                    .map(this::matchBody)
+                    .orElse(-1000);
+        }
+        return 0;
+    }
+
+    private Integer matchBody(Body b) {
+        if(b.isEntityBody()){
+            BodyPart bodyPart = b.uniPart();
+            if(bodyPart == null && expectedBody == null){
+                return 1;
+            } else if(String.class.isAssignableFrom(bodyPart.getPartType())
+            && expectedBody.equalsIgnoreCase((String) bodyPart.getValue())){
+                return 1;
+            } else if (expectedBody != null) {
+                return -1000;
+            }
+        }
+        return 0;
+    }
+
+    private URIBuilder geturi(HttpRequest request) {
         try {
             URIBuilder b = new URIBuilder(request.getUrl());
             return b;
@@ -170,7 +222,7 @@ class Invocation implements Expectation, ExpectedResponse {
 
     private int scoreQuery(HttpRequest request) {
         if(expectedQueryParams.size() > 0){
-            URIBuilder p = foo(request);
+            URIBuilder p = geturi(request);
             long b = expectedQueryParams.all().stream().filter(h ->
                     p.getQueryParams().stream().anyMatch(q -> q.getName().equalsIgnoreCase(h.getName())
                             && q.getValue().equalsIgnoreCase(h.getValue())))
@@ -181,5 +233,12 @@ class Invocation implements Expectation, ExpectedResponse {
             return Long.valueOf(b).intValue();
         }
         return 0;
+    }
+
+    private static <T, M extends T> Optional<M> tryCast(T original, Class<M> too) {
+        if (original != null && too.isAssignableFrom(original.getClass())) {
+            return Optional.of((M) original);
+        }
+        return Optional.empty();
     }
 }

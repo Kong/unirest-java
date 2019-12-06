@@ -25,15 +25,14 @@
 
 package kong.tests;
 
-import com.google.common.base.Throwables;
 import kong.unirest.MockClient;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestAssertion;
 import kong.unirest.UnirestInstance;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class Base {
     protected MockClient client;
@@ -41,7 +40,7 @@ public class Base {
     protected String path = "http://basic";;
     protected String otherPath = "http://other";;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         client = new MockClient();
         uni = Unirest.spawnInstance();
@@ -54,7 +53,7 @@ public class Base {
             runnable.run();
             fail("Expected exception but got none.");
         } catch (UnirestAssertion e){
-            assertEquals("Wrong Error Message", message, e.getMessage());
+            assertEquals(message, e.getMessage(), "Wrong Error Message");
         }
     }
 

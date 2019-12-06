@@ -48,6 +48,10 @@ class Path {
         }
     }
 
+    public Path(String url) {
+        this(url, null);
+    }
+
     public void param(Map<String, Object> params) {
         params.forEach((key, value) -> param(key, String.valueOf(value)));
     }

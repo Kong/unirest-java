@@ -48,6 +48,13 @@ public interface Expectation {
     Expectation queryString(String key, String value);
 
     /**
+     * A expected body for a request
+     * @param body the expected body
+     * @return this Expectation
+     */
+    Expectation body(String body);
+
+    /**
      * expect a null response
      * @return The ExpectedResponse
      */

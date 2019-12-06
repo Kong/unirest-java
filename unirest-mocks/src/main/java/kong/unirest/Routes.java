@@ -84,7 +84,6 @@ class Routes implements Assert {
     private Optional<Invocation> getBestMatch(HttpRequest request, boolean expected) {
         Map<Integer, Invocation> map = new TreeMap<>();
         invokes.stream()
-                //.filter(m -> m.isExpected() == expected)
                 .forEach(i -> {
                     Integer score = i.scoreMatch(request);
                     if(score >= 0) {
