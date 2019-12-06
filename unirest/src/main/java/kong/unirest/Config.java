@@ -31,6 +31,7 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.HttpClient;
 import org.apache.http.nio.client.HttpAsyncClient;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -84,6 +85,7 @@ public class Config {
     private long ttl = -1;
     private SSLContext sslContext;
     private Interceptor interceptor = new DefaultInterceptor();
+    private HostnameVerifier hostnameVerifier;
 
     public Config() {
         setDefaults();
@@ -240,6 +242,16 @@ public class Config {
     public Config sslContext(SSLContext ssl) {
         verifySecurityConfig(this.keystore);
         this.sslContext = ssl;
+        return this;
+    }
+
+    /**
+     * Set a custom HostnameVerifier
+     * @param value the verifier
+     * @return this config object
+     */
+    public Config hostnameVerifier(HostnameVerifier value) {
+        this.hostnameVerifier = value;
         return this;
     }
 
@@ -812,5 +824,9 @@ public class Config {
 
     private Optional<DefaultInterceptor> getDefaultInterceptor() {
         return tryCast(getUniInterceptor(), DefaultInterceptor.class);
+    }
+
+    public HostnameVerifier getHostnameVerifier() {
+        return hostnameVerifier;
     }
 }

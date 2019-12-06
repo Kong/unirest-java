@@ -39,6 +39,7 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -104,10 +105,18 @@ class SecurityConfig {
 
     private SSLConnectionSocketFactory getSocketFactory() {
         if(sslSocketFactory == null) {
-            sslSocketFactory = new SSLConnectionSocketFactory(createSslContext(), new NoopHostnameVerifier());
+            sslSocketFactory = new SSLConnectionSocketFactory(createSslContext(), getHostnameVerifier());
         }
         return sslSocketFactory;
     }
+
+    private HostnameVerifier getHostnameVerifier() {
+        if(config.getHostnameVerifier() != null){
+            return config.getHostnameVerifier();
+        }
+        return NoopHostnameVerifier.INSTANCE;
+    }
+
     private SSLContext createSslContext() {
         if(sslContext == null) {
             if(config.getSslContext() != null){

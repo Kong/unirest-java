@@ -91,6 +91,14 @@ public class CertificateTests extends BddTest {
     }
 
     @Test
+    public void canSetHoestNameVerifyer() throws Exception {
+        Unirest.config().hostnameVerifier(new NoopHostnameVerifier());
+
+        int response = Unirest.get("https://badssl.com/").asEmpty().getStatus();
+        assertEquals(200, response);
+    }
+
+    @Test
     public void rawApacheClientCert() throws Exception {
         SSLContext sslContext = SSLContexts.custom()
                 .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
