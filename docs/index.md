@@ -48,14 +48,14 @@ rightmenu: true
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>3.2.00</version>
+    <version>3.3.00</version>
 </dependency>
 
 <!-- OR as a snazzy new standalone jar with shaded dependencies -->
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>3.2.00</version>
+    <version>3.3.00</version>
     <classifier>standalone</classifier>
 </dependency>
 
@@ -495,6 +495,7 @@ Changing Unirest's config should ideally be done once, or rarely. There are seve
 | ```connectionTTL(long,TimeUnit)``` | Total time to live (TTL)  defines maximum life span of persistent connections regardless of their expiration setting. No persistent connection will be re-used past its TTL value.| -1  |
 | ```errorHandler(Consumer<HttpResponse<?>> consumer)``` | Set a global error handler that will be invoked for any status > 400 or a parsing error | | 
 | ```interceptor(Interceptor value)``` | Set a global Interceptor handler that will be invoked before and after each request | | 
+| ```hostNameVerifier(HostNameVerifier value)``` | Set a custom HostNameVerifier for the security configuration | DefaultHostNameVerifier | 
 
 ##  Global Interceptor
 You can set a global interceptor for your configuration. This is invoked before and after each request.
@@ -548,7 +549,7 @@ Unirest offers a few different Object Mapper's based on popular JSON libraries (
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-objectmapper-jackson</artifactId>
-    <version>3.2.00</version>
+    <version>3.3.00</version>
 </dependency>
 
 
@@ -556,7 +557,7 @@ Unirest offers a few different Object Mapper's based on popular JSON libraries (
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-object-mappers-gson</artifactId>
-    <version>3.2.00</version>
+    <version>3.3.00</version>
 </dependency>
 ```
 

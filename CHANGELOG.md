@@ -1,3 +1,7 @@
+## 3.3.00
+* Allow setting a custom HostNameVerifier for issue #322
+* By default use DefaultHostNameVerifier rather than the noop one
+
 ## 3.2.00
 * Allow users to inject a custom SSLContext into the Config for security
 * Allow for a custom interceptor that is called when
@@ -226,7 +230,7 @@ Unirest.get("http://some.file.with.windows.encoding/file.txt")
 ### OpenUnirest:3.2.01
 * add method to replace a header rather than append to it.
 
-### OpenUnirest:3.2.00
+### OpenUnirest:3.3.00
 * Now you can stream the results into a file!
    * It doesn't need to be a file either. It could be any result. Unirest will shove it in a file.
 ```java
@@ -235,14 +239,14 @@ File file = Unirest.get("https://someplace/file.tar.gz")
                    .getBody();
 ```
 
-### OpenUnirest:3.2.00
+### OpenUnirest:3.3.00
 * When encountering a parsing error with asObject or asJson capture the body in a UnirestParsingException
 * New BETA feature asFile method to stream the response into a file.
 
 ### OpenUnirest:3.1.01
 * Detect if the async client has stopped for some reason and construct a new one. This one may be different from the one that was originally configured so we need to add a way to configure a supplier for clients rather than a direct client.
 
-### OpenUnirest:3.2.00
+### OpenUnirest:3.3.00
 * Deprecate methods that expose Apache. In the 4 line we will start supporting other clients. Primarily the java one supplied in Java9 (apache will still exist for 8-)
 * Add several functional methods for dealing with the raw response before the connection is closed. This is nice for large responses.
 
@@ -259,7 +263,7 @@ File file = Unirest.get("https://someplace/file.tar.gz")
 ### OpenUnirest:3.0.01
 * Support for authenticated proxies with ```Unirest.config().proxy("proxy.server.host", 80, "username","password")```
 
-### OpenUnirest:3.2.00
+### OpenUnirest:3.3.00
 * This is a **major** release with several **breaking changes** which (other than the namespace change) should ONLY impact you if you are using some of Unirests more advanced features or custom configurations.
 * The maven artifact has changed to ```open-unirest-java```
 * The namespace has been shortened to just **unirest** (inspired by Java Spark)
