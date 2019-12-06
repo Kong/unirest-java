@@ -31,6 +31,7 @@ import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.DefaultHostnameVerifier;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
@@ -114,7 +115,7 @@ class SecurityConfig {
         if(config.getHostnameVerifier() != null){
             return config.getHostnameVerifier();
         }
-        return NoopHostnameVerifier.INSTANCE;
+        return new DefaultHostnameVerifier();
     }
 
     private SSLContext createSslContext() {
