@@ -1,9 +1,10 @@
 name: Verify
 
-on: [push]
-  # Sequence of patterns matched against refs/heads
-  branches-ignore:
-    apache5
+on:
+  push:
+    # Sequence of patterns matched against refs/heads
+    branches-ignore:    
+      - apache5
 
 jobs:
   build:
