@@ -117,4 +117,10 @@ public interface HttpResponse<T> {
      * @return the error object
      */
     <E> E mapError(Class<? extends E> errorClass);
+
+    /**
+     * return a cookie collection parse from the set-cookie header
+     * @return a Cookies collection
+     */
+    Cookies getCookies();
 }

@@ -25,9 +25,16 @@
 
 package BehaviorTests;
 
+import kong.unirest.Cookie;
+import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.apache.http.client.config.CookieSpecs;
 import org.junit.Test;
+
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class CookieTest extends BddTest {
     @Test
@@ -38,6 +45,39 @@ public class CookieTest extends BddTest {
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertCookie("JSESSIONID", "ABC123");
+    }
+
+    @Test
+    public void canGetCookiesFromTheResponse() {
+        MockServer.expectCookie("JSESSIONID", "ABC123");
+        MockServer.expectCookie("color", "ruby");
+
+        HttpResponse response = Unirest.get(MockServer.GET).asEmpty();
+
+        assertEquals("ABC123", response.getCookies().getNamed("JSESSIONID").getValue());
+        assertEquals("ruby", response.getCookies().getNamed("color").getValue());
+    }
+
+    @Test
+    public void complicatedCookies(){
+        javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie("color", "blue");
+        cookie.setDomain("localhost");
+        cookie.setPath("/get");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setMaxAge(42);
+        MockServer.expectCookie(cookie);
+
+        HttpResponse response = Unirest.get(MockServer.GET).asEmpty();
+
+        Cookie back = response.getCookies().getNamed("color");
+        assertEquals("blue", back.getValue());
+        assertEquals("localhost", back.getDomain());
+        assertEquals("/get", back.getPath());
+        assertTrue(back.isHttpOnly());
+        assertFalse(back.isSecure());
+        assertEquals(42, back.getMaxAge());
+
     }
 
     @Test
