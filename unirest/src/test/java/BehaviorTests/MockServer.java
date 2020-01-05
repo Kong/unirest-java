@@ -26,7 +26,7 @@
 
 package BehaviorTests;
 
-import kong.unirest.Headers;
+import org.eclipse.jetty.util.UrlEncoded;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
@@ -35,9 +35,9 @@ import kong.unirest.JacksonObjectMapper;
 import kong.unirest.TestUtil;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.Cookie;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -50,7 +50,7 @@ public class MockServer {
     private static int pages = 1;
 	private static int onPage = 1;
 	private static final List<Pair<String,String>> responseHeaders = new ArrayList<>();
-	private static final List<Pair<String,String>> cookies = new ArrayList<>();
+	private static final List<Cookie> cookies = new ArrayList<>();
 
 	private static final JacksonObjectMapper om = new JacksonObjectMapper();
 	private static Object responseBody;
@@ -207,7 +207,7 @@ public class MockServer {
 	}
 
 	private static Optional<Object> simpleResponse(Request req, Response res) {
-		cookies.forEach(c -> res.cookie(c.key, c.value));
+		cookies.forEach(c -> res.raw().addCookie(c));
 		responseHeaders.forEach(h -> res.header(h.key, h.value));
 
 		if(responseBody != null) {
@@ -251,6 +251,10 @@ public class MockServer {
 	}
 
 	public static void expectCookie(String name, String value) {
-		cookies.add(new Pair<>(name, value));
+		cookies.add(new Cookie(name, UrlEncoded.encodeString(value)));
+	}
+
+	public static void expectCookie(Cookie cookie) {
+		cookies.add(cookie);
 	}
 }

@@ -166,4 +166,9 @@ public class FailedResponse<T> implements HttpResponse<T> {
         return null;
     }
 
+    @Override
+    public Cookies getCookies() {
+        return new Cookies();
+    }
+
 }
