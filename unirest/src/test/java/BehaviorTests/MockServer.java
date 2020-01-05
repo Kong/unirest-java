@@ -26,6 +26,7 @@
 
 package BehaviorTests;
 
+import org.eclipse.jetty.util.UrlEncoded;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
@@ -250,7 +251,7 @@ public class MockServer {
 	}
 
 	public static void expectCookie(String name, String value) {
-		cookies.add(new Cookie(name, value));
+		cookies.add(new Cookie(name, UrlEncoded.encodeString(value)));
 	}
 
 	public static void expectCookie(Cookie cookie) {

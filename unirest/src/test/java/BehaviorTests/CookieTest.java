@@ -59,6 +59,24 @@ public class CookieTest extends BddTest {
     }
 
     @Test
+    public void canGetUnicode() {
+        MockServer.expectCookie("nepali", "फनकी");
+
+        HttpResponse response = Unirest.get(MockServer.GET).asEmpty();
+
+        assertEquals("फनकी", response.getCookies().getNamed("nepali").getValue());
+    }
+
+    @Test
+    public void canGetValuesWithBadCharacters() {
+        MockServer.expectCookie("odd", "1=2;3=4");
+
+        HttpResponse response = Unirest.get(MockServer.GET).asEmpty();
+
+        assertEquals("1=2;3=4", response.getCookies().getNamed("odd").getValue());
+    }
+
+    @Test
     public void complicatedCookies(){
         javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie("color", "blue");
         cookie.setDomain("localhost");

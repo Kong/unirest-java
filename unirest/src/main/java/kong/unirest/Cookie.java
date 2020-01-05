@@ -25,6 +25,8 @@
 
 package kong.unirest;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -62,12 +64,20 @@ public class Cookie {
             if(pos == 0){
                 String[] sub = s.split("=");
                 name = sub[0];
-                value = sub[1];
+                value = getDecode(sub[1]);
             } else {
                 String[] sub = s.split("=");
                 parseSection(sub);
             }
             pos++;
+        }
+    }
+
+    private String getDecode(String sub) {
+        try {
+            return URLDecoder.decode(sub, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return sub;
         }
     }
 
@@ -95,6 +105,7 @@ public class Cookie {
             }
             case "secure": {
                 secure = true;
+                break;
             }
         }
     }
