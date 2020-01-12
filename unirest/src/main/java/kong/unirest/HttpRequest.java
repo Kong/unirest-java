@@ -109,6 +109,21 @@ public interface HttpRequest<R extends HttpRequest>  {
     R headers(Map<String, String> headerMap);
 
     /**
+     * Add a simple cookie header
+     * @param name the name of the cookie
+     * @param value the value of the cookie
+     * @return this request builder
+     */
+    R cookie(String name, String value);
+
+    /**
+     * Add a simple cookie header
+     * @param cookie a cookie
+     * @return this request builder
+     */
+    R cookie(Cookie cookie);
+
+    /**
      * add a query param to the url. The value will be URL-Encoded
      * @param name the name of the param
      * @param value the value of the param

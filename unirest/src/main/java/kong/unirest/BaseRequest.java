@@ -116,6 +116,18 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
+    public R cookie(String name, String value) {
+        this.headers.cookie(new Cookie(name, value));
+        return (R)this;
+    }
+
+    @Override
+    public R cookie(Cookie cookie) {
+        this.headers.cookie(cookie);
+        return (R)this;
+    }
+
+    @Override
     public R queryString(String name, Collection<?> value) {
         url.queryString(name, value);
         return (R)this;

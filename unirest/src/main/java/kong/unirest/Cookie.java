@@ -52,6 +52,11 @@ public class Cookie {
     private ZonedDateTime expires;
     private boolean secure;
 
+    public Cookie(String name, String value){
+        this.name = name;
+        this.value = value;
+    }
+
     /**
      * Construct a cookie from a set-cookie value
      * @param v cookie string value
@@ -151,6 +156,18 @@ public class Cookie {
             pairs.add(new Pair("Secure", null));
         }
         return pairs.stream().map(Pair::toString).collect(Collectors.joining(";"));
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public void setHttpOnly(boolean httpOnly) {
+        this.httpOnly = httpOnly;
     }
 
 

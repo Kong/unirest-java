@@ -31,12 +31,32 @@ import kong.unirest.Unirest;
 import org.apache.http.client.config.CookieSpecs;
 import org.junit.Test;
 
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class CookieTest extends BddTest {
+
+    @Test
+    public void canSetCookie(){
+        Unirest.get(MockServer.GET)
+                .cookie("flavor","snickerdoodle")
+                .cookie("size", "large")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertCookie("flavor", "snickerdoodle")
+                .assertCookie("size", "large");
+    }
+
+    @Test
+    public void canSetAsCookie(){
+        Unirest.get(MockServer.GET)
+                .cookie(new Cookie("flavor", "snickerdoodle"))
+                .cookie(new Cookie("size", "large"))
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertCookie("flavor", "snickerdoodle")
+                .assertCookie("size", "large");
+    }
+
     @Test
     public void willManageCookiesByDefault() {
         MockServer.expectCookie("JSESSIONID", "ABC123");
