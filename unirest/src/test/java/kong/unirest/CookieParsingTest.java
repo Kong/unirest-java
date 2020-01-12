@@ -54,4 +54,11 @@ public class CookieParsingTest {
         assertEquals(ZonedDateTime.of(2020,1,5,15,0,20, 0, ZoneId.of("GMT")),
                 c.getExpiration());
     }
+
+    @Test
+    public void parseBackOutToString() {
+        String v = "color=blue;Path=/get;Domain=localhost;Expires=Sun, 05-Jan-2020 15:00:20 GMT;Max-Age=42;HttpOnly";
+        Cookie c = new Cookie(v);
+        assertEquals(v, c.toString());
+    }
 }

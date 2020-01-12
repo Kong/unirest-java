@@ -30,8 +30,10 @@ import java.net.URLDecoder;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents a cookie parsed from the set-cookie header
@@ -46,7 +48,7 @@ public class Cookie {
     private String domain;
     private String path;
     private boolean httpOnly;
-    private int maxAge;
+    private Integer maxAge;
     private ZonedDateTime expires;
     private boolean secure;
 
@@ -109,9 +111,10 @@ public class Cookie {
             }
         }
     }
-    
+
+    public static final DateTimeFormatter DEFAULT_PATTERN = DateTimeFormatter.ofPattern("EEE, dd-MMM-yyyy HH:mm:ss zzz");
     private static final List<DateTimeFormatter> FORMATS = Arrays.asList(
-            DateTimeFormatter.ofPattern("EEE, dd-MMM-yyyy HH:mm:ss zzz"),
+            DEFAULT_PATTERN,
             DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz")
     );
 
@@ -123,6 +126,50 @@ public class Cookie {
 
                 }
             });
+    }
+
+    @Override
+    public String toString() {
+        List<Pair> pairs = new ArrayList<>();
+        pairs.add(new Pair(name, value));
+        if(path != null){
+            pairs.add(new Pair("Path", path));
+        }
+        if(domain != null){
+            pairs.add(new Pair("Domain", domain));
+        }
+        if(expires != null){
+            pairs.add(new Pair("Expires", expires.format(DEFAULT_PATTERN)));
+        }
+        if(maxAge != null){
+            pairs.add(new Pair("Max-Age", String.valueOf(maxAge)));
+        }
+        if(httpOnly){
+            pairs.add(new Pair("HttpOnly", null));
+        }
+        if(secure){
+            pairs.add(new Pair("Secure", null));
+        }
+        return pairs.stream().map(Pair::toString).collect(Collectors.joining(";"));
+    }
+
+
+    private static class Pair {
+        final String key;
+        final String value;
+
+        public Pair(String key, String value){
+            this.key = key;
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            if(value == null){
+                return key;
+            }
+            return key + "=" + value;
+        }
     }
 
     /**
@@ -192,4 +239,6 @@ public class Cookie {
     public ZonedDateTime getExpiration() {
         return expires;
     }
+
+
 }
