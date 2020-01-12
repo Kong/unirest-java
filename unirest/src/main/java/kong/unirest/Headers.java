@@ -169,6 +169,10 @@ public class Headers {
         return sb.toString();
     }
 
+    public void cookie(Cookie cookie) {
+        headers.add(new Entry("cookie", cookie.toString()));
+    }
+
     static class Entry implements Header {
 
         private final String name;

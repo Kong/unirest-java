@@ -294,10 +294,11 @@ public class RequestCapture {
         return assertContentType("application/x-www-form-urlencoded; charset=UTF-8");
     }
 
-    public void assertCookie(String name, String value) {
+    public RequestCapture assertCookie(String name, String value) {
         String c = cookies.get(name);
         assertNotNull("expected a cookie to be passed to the server but got none. Name: " + name, c);
         assertEquals(value, c);
+        return this;
     }
 
     public void assertNoCookie(String name) {
