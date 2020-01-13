@@ -1,3 +1,6 @@
+## 3.4.00 (pending)
+* Add methods to add cookies to the request and read cookie from the response
+
 ## 3.3.00
 * Allow setting a custom HostNameVerifier for issue #322
 * By default use DefaultHostNameVerifier rather than the noop one
