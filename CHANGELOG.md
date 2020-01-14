@@ -1,4 +1,4 @@
-## 3.4.00 (pending)
+## 3.4.00
 * Add methods to add cookies to the request and read cookie from the response
 
 ## 3.3.00
