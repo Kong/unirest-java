@@ -68,5 +68,27 @@ public class CookieParsingTest {
         Cookie c = new Cookie(v);
         assertEquals("", c.getValue());
         assertTrue(c.isHttpOnly());
+        assertEquals(".admin.virginia.edu", c.getDomain());
+    }
+
+    @Test
+    public void theValieCanBeDoubleQuoted() {
+        String v = "SignOnDefault=\" woh \";";
+        Cookie c = new Cookie(v);
+        assertEquals(" woh ", c.getValue());
+    }
+
+    @Test
+    public void justEmptyQuotes() {
+        String v = "SignOnDefault=\"\";";
+        Cookie c = new Cookie(v);
+        assertEquals("", c.getValue());
+    }
+
+    @Test
+    public void justOneQuote() {
+        String v = "SignOnDefault=\";";
+        Cookie c = new Cookie(v);
+        assertEquals("\"", c.getValue());
     }
 }

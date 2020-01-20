@@ -86,10 +86,17 @@ public class Cookie {
 
     private String getDecode(String sub) {
         try {
-            return URLDecoder.decode(sub, "UTF-8");
+            return URLDecoder.decode(stripQuoteWrapper(sub), "UTF-8");
         } catch (UnsupportedEncodingException e) {
             return sub;
         }
+    }
+
+    private String stripQuoteWrapper(String sub) {
+        if(sub.startsWith("\"") && sub.endsWith("\"") && sub.length() > 1){
+            return sub.substring(1, sub.length() -1);
+        }
+        return sub;
     }
 
     private void parseSection(String[] sub) {

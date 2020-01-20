@@ -26,10 +26,12 @@
 package BehaviorTests;
 
 import kong.unirest.Cookie;
+import kong.unirest.Cookies;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.apache.http.client.config.CookieSpecs;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import static org.junit.Assert.*;
 
@@ -139,5 +141,22 @@ public class CookieTest extends BddTest {
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertNoCookie("JSESSIONID");
+    }
+
+    @Test
+    public void doubleQuotedValues() {
+        MockServer.expectCookie(new javax.servlet.http.Cookie("foo", "\"bar\""));
+
+        HttpResponse<RequestCapture> res = Unirest.get(MockServer.GET)
+                .cookie("baz", "\"  wut  \"")
+                .asObject(RequestCapture.class);
+
+        res.getBody().assertCookie("baz", "  wut  ");
+
+        Cookie cookie = res
+                .getCookies()
+                .getNamed("foo");
+
+        assertEquals("bar", cookie.getValue());
     }
 }
