@@ -61,4 +61,12 @@ public class CookieParsingTest {
         Cookie c = new Cookie(v);
         assertEquals(v, c.toString());
     }
+
+    @Test
+    public void emptyValue() {
+        String v = "SignOnDefault=; domain=.admin.virginia.edu; path=/; HttpOnly";
+        Cookie c = new Cookie(v);
+        assertEquals("", c.getValue());
+        assertTrue(c.isHttpOnly());
+    }
 }

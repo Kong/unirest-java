@@ -71,7 +71,11 @@ public class Cookie {
             if(pos == 0){
                 String[] sub = s.split("=");
                 name = sub[0];
-                value = getDecode(sub[1]);
+                if (sub.length == 2) {
+                    value = getDecode(sub[1]);
+                } else {
+                    value = "";
+                }
             } else {
                 String[] sub = s.split("=");
                 parseSection(sub);
@@ -89,7 +93,7 @@ public class Cookie {
     }
 
     private void parseSection(String[] sub) {
-        switch (sub[0].toLowerCase()) {
+        switch (sub[0].toLowerCase().trim()) {
             case "path": {
                 path = sub[1];
                 break;
