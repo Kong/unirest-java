@@ -1,3 +1,7 @@
+## 3.4.01
+* #331 ArrayIndexOutOfBoundsException when parsing cookie
+* Handle quoted cookie values
+
 ## 3.4.00
 * Add methods to add cookies to the request and read cookie from the response
 
