@@ -78,6 +78,12 @@
        <property name="message" value="Line has trailing spaces."/>
     </module>-->
 
+    <!-- Checks for Size Violations.                    -->
+    <!-- See http://checkstyle.sf.net/config_sizes.html -->
+    <module name="LineLength">
+        <property name="max" value="186"/>
+    </module>
+    
     <module name="SuppressWarningsFilter" />
     <module name="TreeWalker">
         <module name="SuppressWarningsHolder"/>
@@ -136,11 +142,7 @@
         <module name="UnusedImports"/>
 
 
-        <!-- Checks for Size Violations.                    -->
-        <!-- See http://checkstyle.sf.net/config_sizes.html -->
-        <module name="LineLength">
-            <property name="max" value="186"/>
-        </module>
+
         <module name="MethodLength">
             <property name="max" value="35"/>
         </module>
