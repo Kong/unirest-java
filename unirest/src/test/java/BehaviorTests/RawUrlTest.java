@@ -52,6 +52,6 @@ public class RawUrlTest extends BddTest {
                 .routeParam("file name", "Moody Blues")
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertUrl("http://localhost:4567/get/foo/passed/Moody+Blues");
+                .assertUrl("http://localhost:4567/get/foo/passed/Moody%20Blues");
     }
 }

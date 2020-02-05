@@ -54,7 +54,14 @@ class Path {
         if (count == 0) {
             throw new UnirestException("Can't find route parameter name \"" + name + "\"");
         }
-        this.url = url.replaceAll("\\{" + name + "\\}", Util.encode(value));
+        this.url = url.replaceAll("\\{" + name + "\\}", encodePath(value));
+    }
+
+    private String encodePath(String value) {
+        if(value == null){
+            return "";
+        }
+        return Util.encode(value).replaceAll("\\+", "%20");
     }
 
     public void queryString(String name, Collection<?> value){

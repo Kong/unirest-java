@@ -122,4 +122,26 @@ public class PathParamTest extends BddTest {
                 .assertUrl("http://localhost:4567/get/%2F%3F%D0%8A%D0%AF%D0%AF/passed")
                 .assertPathParam("params", value);
     }
+
+    @Test
+    public void spacesAndPluses() {
+        String value = "Hunky Dory+Cheese Wiz";
+
+        Unirest.get(MockServer.PASSED_PATH_PARAM)
+                .routeParam("params", value)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertUrl("http://localhost:4567/get/Hunky%20Dory%2BCheese%20Wiz/passed")
+                .assertPathParam("params", value);
+    }
+
+    @Test
+    public void nulls() {
+        Unirest.get(MockServer.PASSED_PATH_PARAM)
+                .routeParam("params", null)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertUrl("http://localhost:4567/get//passed")
+                .assertPathParam("params", null);
+    }
 }
