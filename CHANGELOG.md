@@ -1,3 +1,8 @@
+## 3.4.02
+* #333 Spaces in route parameters
+* added the SameSite cookie attribute to the cookie parser
+* Updated checkstyle test dependency for security
+
 ## 3.4.01
 * #331 ArrayIndexOutOfBoundsException when parsing cookie
 * Handle quoted cookie values
