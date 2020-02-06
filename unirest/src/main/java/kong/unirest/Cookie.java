@@ -30,9 +30,7 @@ import java.net.URLDecoder;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +49,7 @@ public class Cookie {
     private Integer maxAge;
     private ZonedDateTime expires;
     private boolean secure;
+    private SameSite sameSite;
 
     public Cookie(String name, String value){
         this.name = name;
@@ -125,6 +124,9 @@ public class Cookie {
                 secure = true;
                 break;
             }
+            case "samesite": {
+                sameSite = SameSite.parse(sub[1]);
+            }
         }
     }
 
@@ -180,7 +182,6 @@ public class Cookie {
     public void setHttpOnly(boolean httpOnly) {
         this.httpOnly = httpOnly;
     }
-
 
     private static class Pair {
         final String key;
@@ -243,7 +244,7 @@ public class Cookie {
      * Per Wikipedia:
      * The Secure attribute is meant to keep cookie communication limited to encrypted transmission,
      * directing browsers to use cookies only via secure/encrypted connections.
-     * @return
+     * @return a boolean of if the cookie is secure
      */
     public boolean isSecure() {
         return secure;
@@ -253,7 +254,7 @@ public class Cookie {
      * Per Wikipedia:
      * the Max-Age attribute can be used to set the cookie's expiration as an interval of seconds in the future,
      * relative to the time the browser received the cookie.
-     * @return
+     * @return Max-Age attribute
      */
     public int getMaxAge() {
         return maxAge;
@@ -268,5 +269,24 @@ public class Cookie {
         return expires;
     }
 
+    /**
+     * returns the SameSite attribute
+     * @return the SameSite attribute if set. or null
+     */
+    public SameSite getSameSite() {
+        return sameSite;
+    }
 
+    public enum SameSite {
+        None, Strict, Lax;
+
+        private static EnumSet<SameSite> all = EnumSet.allOf(SameSite.class);
+
+        public static SameSite parse(String value) {
+            return all.stream()
+                    .filter(e -> e.name().equalsIgnoreCase(value))
+                    .findFirst()
+                    .orElse(null);
+        }
+    }
 }

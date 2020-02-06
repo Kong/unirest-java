@@ -46,6 +46,7 @@ public class CookieParsingTest {
         assertTrue(c.isHttpOnly());
         assertFalse(c.isSecure());
         assertEquals(42, c.getMaxAge());
+        assertNull(c.getSameSite());
     }
 
     @Test
@@ -60,6 +61,13 @@ public class CookieParsingTest {
         String v = "color=blue;Path=/get;Domain=localhost;Expires=Sun, 05-Jan-2020 15:00:20 GMT;Max-Age=42;HttpOnly";
         Cookie c = new Cookie(v);
         assertEquals(v, c.toString());
+    }
+
+    @Test
+    public void sameSite() {
+        String v = "color=blue;SameSite=Strict";
+        Cookie c = new Cookie(v);
+        assertEquals(Cookie.SameSite.Strict, c.getSameSite());
     }
 
     @Test
