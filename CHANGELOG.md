@@ -1,4 +1,4 @@
-## 3.4.03 (pending)
+## 3.4.03
 * Patch bump of all Apache dependencies
 * Patch bump of gson
 * Minor bump of test dependencies: junit, mockito, etc

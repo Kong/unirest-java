@@ -12,14 +12,14 @@
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>3.4.02</version>
+    <version>3.4.03</version>
 </dependency>
 
 <!-- OR as a snazzy new standalone jar with shaded dependencies -->
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>3.4.02</version>
+    <version>3.4.03</version>
     <classifier>standalone</classifier>
 </dependency>
 
