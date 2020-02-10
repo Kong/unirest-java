@@ -1,3 +1,8 @@
+## 3.4.03 (pending)
+* Patch bump of all Apache dependencies
+* Patch bump of gson
+* Minor bump of test dependencies: junit, mockito, etc
+
 ## 3.4.02
 * #333 Spaces in route parameters
 * added the SameSite cookie attribute to the cookie parser
