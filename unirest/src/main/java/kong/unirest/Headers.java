@@ -185,7 +185,7 @@ public class Headers {
 
         public Entry(String name, Supplier<String> value) {
             this.name = name;
-            this.value = value;
+            this.value = value == null ? () -> null : value;
         }
 
         @Override
@@ -196,6 +196,20 @@ public class Headers {
         @Override
         public String getValue() {
             return value.get();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)  { return true; }
+            if (o == null || getClass() != o.getClass()) { return false; }
+            Entry entry = (Entry) o;
+            return Objects.equals(name, entry.name) &&
+                    Objects.equals(value.get(), entry.value.get());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, value.get());
         }
     }
 }
