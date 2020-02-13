@@ -173,6 +173,19 @@ public class Headers {
         headers.add(new Entry("cookie", cookie.toString()));
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) { return true;}
+        if (o == null || getClass() != o.getClass()) { return false; }
+        Headers headers1 = (Headers) o;
+        return Objects.equals(headers, headers1.headers);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(headers);
+    }
+
     static class Entry implements Header {
 
         private final String name;

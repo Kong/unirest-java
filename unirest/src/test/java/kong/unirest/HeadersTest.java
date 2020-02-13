@@ -28,6 +28,7 @@ package kong.unirest;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 public class HeadersTest {
     private String ls  = System.lineSeparator();
@@ -62,5 +63,29 @@ public class HeadersTest {
         assertEquals("a: 1" + ls +
                 "c: 3" + ls +
                 "d: null" + ls, toString);
+    }
+
+    @Test
+    public void headersAreEqualIfEntryListIsEqual() {
+        Headers h  = new Headers();
+        h.add("foo", "bar");
+
+        Headers j  = new Headers();
+        j.add("foo", "bar");
+
+        assertEquals(h, j);
+    }
+
+    @Test
+    public void headersAreEqualIfEntryListIsEqual_orderMatters() {
+        Headers h  = new Headers();
+        h.add("foo", "bar");
+        h.add("foo", "baz");
+
+        Headers j  = new Headers();
+        j.add("foo", "baz");
+        j.add("foo", "bar");
+
+        assertNotEquals(h, j);
     }
 }
