@@ -29,6 +29,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -103,5 +104,18 @@ class Path {
 
     public String rawPath() {
         return rawPath;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) { return false; }
+        Path path = (Path) o;
+        return Objects.equals(url, path.url);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(url);
     }
 }
