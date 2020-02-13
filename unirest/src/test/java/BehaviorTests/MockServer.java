@@ -53,7 +53,7 @@ public class MockServer {
 	private static final List<Cookie> cookies = new ArrayList<>();
 
 	private static final JacksonObjectMapper om = new JacksonObjectMapper();
-	private static Object responseBody;
+	private static String responseBody;
 	public static final int PORT = 4567;
 	public static final String HOST = "http://localhost:" + PORT;
 	public static final String WINDOWS_LATIN_1_FILE = HOST + "data/cp1250.txt";
@@ -143,7 +143,7 @@ public class MockServer {
 	}
 
 	private static Object error(Request request, Response response) {
-		return Spark.halt(400, om.writeValue(new ErrorThing("boom!")));
+		return Spark.halt(400, responseBody);
 	}
 
 	private static Object echo(Request request, Response response) {

@@ -37,6 +37,8 @@ public class ErrorParsingTest extends BddTest {
 
     @Test
     public void parsingAnAlternativeErrorObject() {
+        MockServer.setJsonAsResponse(new ErrorThing("boom!"));
+
         ErrorThing e = Unirest.get(MockServer.ERROR_RESPONSE)
                 .asObject(RequestCapture.class)
                 .mapError(ErrorThing.class);
@@ -46,6 +48,8 @@ public class ErrorParsingTest extends BddTest {
 
     @Test
     public void parsingAnAlternativeErrorObject_StringBody() {
+        MockServer.setJsonAsResponse(new ErrorThing("boom!"));
+
         ErrorThing e = Unirest.get(MockServer.ERROR_RESPONSE)
                 .asString()
                 .mapError(ErrorThing.class);
@@ -55,6 +59,8 @@ public class ErrorParsingTest extends BddTest {
 
     @Test
     public void parsingAnAlternativeErrorObject_JsonBody() {
+        MockServer.setJsonAsResponse(new ErrorThing("boom!"));
+
         ErrorThing e = Unirest.get(MockServer.ERROR_RESPONSE)
                 .asJson()
                 .mapError(ErrorThing.class);
@@ -73,6 +79,8 @@ public class ErrorParsingTest extends BddTest {
 
     @Test
     public void failsIfErrorResponseCantBeMapped() {
+        MockServer.setJsonAsResponse(new ErrorThing("boom!"));
+
         HttpResponse<RequestCapture> request = Unirest.get(MockServer.ERROR_RESPONSE)
                 .asObject(RequestCapture.class);
 
@@ -84,6 +92,8 @@ public class ErrorParsingTest extends BddTest {
 
     @Test
     public void mapTheErrorWithAFunction() {
+        MockServer.setJsonAsResponse(new ErrorThing("boom!"));
+
         errorCalled = false;
         Unirest.get(MockServer.ERROR_RESPONSE)
                 .asObject(RequestCapture.class)
@@ -101,7 +111,6 @@ public class ErrorParsingTest extends BddTest {
     }
 
     public static class NotTheError {
-
         @JsonProperty("merp")
         public String merp;
     }
