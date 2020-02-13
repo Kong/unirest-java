@@ -28,6 +28,8 @@ package BehaviorTests;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import static org.junit.Assert.assertEquals;
+
 public class ErrorThing {
 
     private final String message;
@@ -39,5 +41,9 @@ public class ErrorThing {
 
     public String getMessage() {
         return message;
+    }
+
+    public void assertError(String s) {
+        assertEquals(s, message);
     }
 }

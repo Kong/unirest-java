@@ -28,10 +28,7 @@ package kong.unirest;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import kong.unirest.json.JSONObject;
@@ -42,7 +39,7 @@ import java.io.InputStream;
 
 public class JacksonObjectMapper implements ObjectMapper {
 
-	private final com.fasterxml.jackson.databind.ObjectMapper om;
+	public final com.fasterxml.jackson.databind.ObjectMapper om;
 
 	public JacksonObjectMapper(com.fasterxml.jackson.databind.ObjectMapper om){
 		this.om = om;
@@ -58,6 +55,8 @@ public class JacksonObjectMapper implements ObjectMapper {
 		simpleModule.addDeserializer(JsonPatch.class, new JsonPatchDeSerializer());
 		simpleModule.addSerializer(HttpMethod.class, new HttpMethodSerializer());
 		simpleModule.addDeserializer(HttpMethod.class, new HttpMethodDeSerializer());
+		om.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
+		om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		om.registerModule(simpleModule);
 	}
 

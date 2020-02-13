@@ -26,7 +26,10 @@
 package BehaviorTests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import kong.unirest.HttpResponse;
+import kong.unirest.JacksonObjectMapper;
 import kong.unirest.Unirest;
 import org.junit.Test;
 
@@ -79,14 +82,19 @@ public class ErrorParsingTest extends BddTest {
 
     @Test
     public void failsIfErrorResponseCantBeMapped() {
+        JacksonObjectMapper om = new JacksonObjectMapper();
+        om.om.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, false);
+        om.om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+
         MockServer.setJsonAsResponse(new ErrorThing("boom!"));
 
         HttpResponse<RequestCapture> request = Unirest.get(MockServer.ERROR_RESPONSE)
+                .withObjectMapper(om)
                 .asObject(RequestCapture.class);
 
         NotTheError error = request.mapError(NotTheError.class);
 
-        assertEquals(null, error);
+        assertEquals(null, error.merp);
         assertEquals("{\"message\":\"boom!\"}", request.getParsingError().get().getOriginalBody());
     }
 
@@ -104,6 +112,17 @@ public class ErrorParsingTest extends BddTest {
                 }).ifSuccess(e -> {throw new AssertionError("No");});
 
         assertTrue(errorCalled);
+    }
+
+    @Test
+    public void willKeepBodyAroundOnFailures_WhenJacksonIsPassive() {
+        MockServer.setJsonAsResponse(new ErrorThing("boom!"));
+
+        Unirest.get(MockServer.ERROR_RESPONSE)
+                .asObject(RequestCapture.class)
+                .mapError(ErrorThing.class)
+                .assertError("boom!");
+
     }
 
     private void assertErrorThing(ErrorThing e) {

@@ -32,6 +32,7 @@ import java.util.function.Function;
 class ObjectResponse<T> extends BaseResponse<T> {
     private final T body;
     private final ObjectMapper om;
+    private String rawBody;
 
     ObjectResponse(ObjectMapper om, RawResponse response, Class<? extends T> to) {
         super(response);
@@ -53,7 +54,11 @@ class ObjectResponse<T> extends BaseResponse<T> {
         if(!response.hasContent()){
             return Optional.empty();
         }
-        return Optional.of(response.getContentAsString());
+        String s = response.getContentAsString();
+        if(response.getStatus() >= 400){
+            rawBody = s;
+        }
+        return Optional.of(s);
     }
 
     private T getBody(String b, Function<String, T> func){
@@ -68,5 +73,10 @@ class ObjectResponse<T> extends BaseResponse<T> {
     @Override
     public T getBody() {
         return body;
+    }
+
+    @Override
+    protected String getRawBody() {
+        return rawBody;
     }
 }

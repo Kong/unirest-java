@@ -130,6 +130,8 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     private String getErrorBody() {
         if(getParsingError().isPresent()){
             return getParsingError().get().getOriginalBody();
+        } else if (getRawBody() != null){
+            return getRawBody();
         }
         T body = getBody();
         if(body == null){
@@ -166,4 +168,7 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     }
 
 
+    protected String getRawBody(){
+        return null;
+    }
 }
