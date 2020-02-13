@@ -57,4 +57,9 @@ public class JsonResponse extends BaseResponse<JsonNode> {
     public JsonNode getBody() {
         return node;
     }
+
+    @Override
+    protected String getRawBody() {
+        return node.toString();
+    }
 }

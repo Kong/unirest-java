@@ -37,4 +37,9 @@ public class StringResponse extends BaseResponse<String> {
     public String getBody() {
         return body;
     }
+
+    @Override
+    protected String getRawBody() {
+        return body;
+    }
 }

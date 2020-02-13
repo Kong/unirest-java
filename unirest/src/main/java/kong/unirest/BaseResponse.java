@@ -39,7 +39,7 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     private Cookies cookies;
 
 
-    protected BaseResponse(RawResponse response){
+    protected BaseResponse(RawResponse response) {
         this.headers = response.getHeaders();
         // Unirest decompresses the content, so this should be removed as it is
         // no longer encoded
@@ -49,7 +49,7 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
         this.config = response.getConfig();
     }
 
-    protected BaseResponse(BaseResponse other){
+    protected BaseResponse(BaseResponse other) {
         this.headers = other.headers;
         this.statusCode = other.statusCode;
         this.statusText = other.statusText;
@@ -80,7 +80,7 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     }
 
     @Override
-    public <V> V mapBody(Function<T, V> func){
+    public <V> V mapBody(Function<T, V> func) {
         return func.apply(getBody());
     }
 
@@ -100,7 +100,7 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
 
     @Override
     public HttpResponse<T> ifSuccess(Consumer<HttpResponse<T>> consumer) {
-        if(isSuccess()){
+        if (isSuccess()) {
             consumer.accept(this);
         }
         return this;
@@ -108,7 +108,7 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
 
     @Override
     public HttpResponse<T> ifFailure(Consumer<HttpResponse<T>> consumer) {
-        if(!isSuccess()){
+        if (!isSuccess()) {
             consumer.accept(this);
         }
         return this;
@@ -116,11 +116,11 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
 
     @Override
     public <E> E mapError(Class<? extends E> errorClass) {
-        if(!isSuccess()){
+        if (!isSuccess()) {
             String errorBody = getErrorBody();
             try {
                 return config.getObjectMapper().readValue(errorBody, errorClass);
-            }catch (RuntimeException e) {
+            } catch (RuntimeException e) {
                 setParsingException(errorBody, e);
             }
         }
@@ -128,31 +128,25 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     }
 
     private String getErrorBody() {
-        if(getParsingError().isPresent()){
+        if (getParsingError().isPresent()) {
             return getParsingError().get().getOriginalBody();
-        } else if (getRawBody() != null){
+        } else if (getRawBody() != null) {
             return getRawBody();
         }
         T body = getBody();
-        if(body == null){
+        if (body == null) {
             return null;
         }
-        else if(body instanceof String){
-            return (String) body;
-        } else if(body instanceof JsonNode){
-            return body.toString();
-        } else {
-            try {
-                return config.getObjectMapper().writeValue(body);
-            } catch (Exception e){
-                return String.valueOf(body);
-            }
+        try {
+            return config.getObjectMapper().writeValue(body);
+        } catch (Exception e) {
+            return String.valueOf(body);
         }
     }
 
     @Override
     public <E> HttpResponse<T> ifFailure(Class<? extends E> errorClass, Consumer<HttpResponse<E>> consumer) {
-        if(!isSuccess()){
+        if (!isSuccess()) {
             E error = mapError(errorClass);
             consumer.accept(new SimpleResponse(error, this));
         }
@@ -161,14 +155,14 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
 
     @Override
     public Cookies getCookies() {
-        if(cookies == null){
+        if (cookies == null) {
             cookies = new Cookies(headers.get("set-cookie"));
         }
         return cookies;
     }
 
 
-    protected String getRawBody(){
+    protected String getRawBody() {
         return null;
     }
 }
