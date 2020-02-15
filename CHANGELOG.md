@@ -1,3 +1,7 @@
+## 3.4.04
+* #335 keep around failure bodies for mapping to error objects
+* Request objects implement equals for future feature to support request caching
+
 ## 3.4.03
 * Patch bump of all Apache dependencies
 * Patch bump of gson

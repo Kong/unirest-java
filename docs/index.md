@@ -48,14 +48,14 @@ rightmenu: true
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>3.4.03</version>
+    <version>3.4.04</version>
 </dependency>
 
 <!-- OR as a snazzy new standalone jar with shaded dependencies -->
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>3.4.03</version>
+    <version>3.4.04</version>
     <classifier>standalone</classifier>
 </dependency>
 
@@ -549,7 +549,7 @@ Unirest offers a few different Object Mapper's based on popular JSON libraries (
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-objectmapper-jackson</artifactId>
-    <version>3.4.03</version>
+    <version>3.4.04</version>
 </dependency>
 
 
@@ -557,7 +557,7 @@ Unirest offers a few different Object Mapper's based on popular JSON libraries (
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-object-mappers-gson</artifactId>
-    <version>3.4.03</version>
+    <version>3.4.04</version>
 </dependency>
 ```
 
