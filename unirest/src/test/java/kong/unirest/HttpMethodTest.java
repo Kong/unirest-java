@@ -25,43 +25,23 @@
 
 package kong.unirest;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import org.junit.Test;
 
-public class HttpMethod {
-	private static final Map<String, HttpMethod> REGISTRY = new HashMap<>();
+import static org.junit.Assert.*;
 
-	public static final HttpMethod GET = valueOf("GET");
-	public static final HttpMethod POST = valueOf("POST");
-	public static final HttpMethod PUT = valueOf("PUT");
-	public static final HttpMethod DELETE = valueOf("DELETE");
-	public static final HttpMethod PATCH = valueOf("PATCH");
-	public static final HttpMethod HEAD = valueOf("HEAD");
-	public static final HttpMethod OPTIONS = valueOf("OPTIONS");
-	public static final HttpMethod TRACE = valueOf("TRACE");
+public class HttpMethodTest {
 
-	private final String name;
+    @Test
+    public void equalsTest() {
+        assertEquals(HttpMethod.valueOf("GET"), HttpMethod.valueOf("GET"));
+        assertEquals(HttpMethod.GET, HttpMethod.GET);
+        assertNotEquals(HttpMethod.valueOf("GET"), HttpMethod.valueOf("PUT"));
+        assertNotEquals(HttpMethod.GET, HttpMethod.PUT);
+    }
 
-	private HttpMethod(String name){
-		this.name = name;
-	}
 
-	public static HttpMethod valueOf(String verb){
-		return REGISTRY.computeIfAbsent(String.valueOf(verb).toUpperCase(), HttpMethod::new);
-	}
-
-	public Set<HttpMethod> all(){
-		return new HashSet<>(REGISTRY.values());
-	}
-
-	public String name() {
-		return name;
-	}
-
-	@Override
-	public String toString() {
-		return name;
-	}
+    @Test
+    public void notCaseSensative() {
+        assertEquals(HttpMethod.valueOf("GET"), HttpMethod.valueOf("get"));
+    }
 }
