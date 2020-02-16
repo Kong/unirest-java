@@ -1,5 +1,10 @@
+## 3.5.00
+* Re-package the object mapper sub-modules to work with Java 11 per issue #324.
+* Update Jackson to 2.10.2
+* Update various build tools to work with Java 11
+
 ## 3.4.04
-* #335 keep around failure bodies for mapping to error objects
+* issue #335 keep around failure bodies for mapping to error objects
 * Request objects implement equals for future feature to support request caching
 
 ## 3.4.03
