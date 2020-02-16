@@ -47,51 +47,72 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-package kong.unirest;
+package kong.unirest.gson;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import kong.unirest.GenericType;
+import kong.unirest.gson.GsonObjectMapper;
+import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 
-import java.io.IOException;
 
-public class JacksonObjectMapper implements ObjectMapper {
-    private final com.fasterxml.jackson.databind.ObjectMapper om;
+import java.util.List;
 
-    public JacksonObjectMapper() {
-        this(new com.fasterxml.jackson.databind.ObjectMapper());
-        om.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
-        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+import static org.junit.Assert.*;
+
+public class GsonObjectMapperTest {
+    private GsonObjectMapper om = new GsonObjectMapper();
+
+    @Test
+    public void canWrite() throws Exception {
+        TestMe test = new TestMe("foo", 42, new TestMe("bar", 666, null));
+
+        String json = om.writeValue(test);
+
+        JSONAssert.assertEquals(
+                "{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666}}"
+                , json
+                , true
+        );
     }
 
-    public JacksonObjectMapper(com.fasterxml.jackson.databind.ObjectMapper om){
-        this.om = om;
+    @Test
+    public void canRead(){
+        TestMe test = om.readValue("{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666}}",
+                TestMe.class);
+
+        assertEquals("foo", test.text);
+        assertEquals(42, test.nmbr);
+        assertEquals("bar", test.another.text);
+        assertEquals(666, test.another.nmbr);
+        assertEquals(null, test.another.another);
     }
 
-    @Override
-    public <T> T readValue(String value, Class<T> valueType) {
-        try {
-            return om.readValue(value, valueType);
-        } catch (IOException e) {
-            throw new UnirestException(e);
-        }
+    @Test
+    public void canReadGenerics(){
+        List<TestMe> testList = om.readValue("[{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666,\"another\":null}}]",
+                new GenericType<List<TestMe>>(){});
+
+        TestMe test = testList.get(0);
+
+        assertEquals("foo", test.text);
+        assertEquals(42, test.nmbr);
+        assertEquals("bar", test.another.text);
+        assertEquals(666, test.another.nmbr);
+        assertEquals(null, test.another.another);
     }
 
-    @Override
-    public <T> T readValue(String value, GenericType<T> genericType) {
-        try {
-            return om.readValue(value,  om.constructType(genericType.getType()));
-        } catch (IOException e) {
-            throw new UnirestException(e);
-        }
-    }
 
-    @Override
-    public String writeValue(Object value) {
-        try {
-            return om.writeValueAsString(value);
-        } catch (JsonProcessingException e) {
-            throw new UnirestException(e);
+    public static class TestMe {
+        public String text;
+        public int nmbr;
+        public TestMe another;
+
+        public TestMe(){}
+
+        public TestMe(String text, Integer nmbr, TestMe another) {
+            this.text = text;
+            this.nmbr = nmbr;
+            this.another = another;
         }
     }
 }

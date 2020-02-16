@@ -47,10 +47,12 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-package kong.unirest;
+package kong.unirest.jackson;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kong.unirest.GenericType;
+import kong.unirest.jackson.JacksonObjectMapper;
 import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -111,8 +113,8 @@ public class JacksonObjectMapperTest {
             j.readValue("{\"something\": [1,2,3] }", TestMe.class);
             fail("Should have thrown");
         }catch (Exception e) {
-            assertEquals("com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field \"something\" (class kong.unirest.JacksonObjectMapperTest$TestMe), not marked as ignorable (3 known properties: \"another\", \"text\", \"nmbr\"])\n" +
-                    " at [Source: (String)\"{\"something\": [1,2,3] }\"; line: 1, column: 16] (through reference chain: kong.unirest.JacksonObjectMapperTest$TestMe[\"something\"])",
+            assertEquals("com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field \"something\" (class kong.unirest.jackson.JacksonObjectMapperTest$TestMe), not marked as ignorable (3 known properties: \"another\", \"text\", \"nmbr\"])\n" +
+                            " at [Source: (String)\"{\"something\": [1,2,3] }\"; line: 1, column: 16] (through reference chain: kong.unirest.jackson.JacksonObjectMapperTest$TestMe[\"something\"])",
                     e.getMessage());
         }
     }

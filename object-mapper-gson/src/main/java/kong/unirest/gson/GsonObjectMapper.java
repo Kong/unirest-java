@@ -47,70 +47,35 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-package kong.unirest;
+package kong.unirest.gson;
 
-import org.junit.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
+import com.google.gson.Gson;
+import kong.unirest.GenericType;
+import kong.unirest.ObjectMapper;
 
+public class GsonObjectMapper implements ObjectMapper {
+    private Gson om;
 
-import java.util.List;
-
-import static org.junit.Assert.*;
-
-public class JsonObjectMapperTest {
-    private GsonObjectMapper om = new GsonObjectMapper();
-
-    @Test
-    public void canWrite() throws Exception {
-        TestMe test = new TestMe("foo", 42, new TestMe("bar", 666, null));
-
-        String json = om.writeValue(test);
-
-        JSONAssert.assertEquals(
-                "{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666}}"
-                , json
-                , true
-        );
+    public GsonObjectMapper() {
+        this(new Gson());
     }
 
-    @Test
-    public void canRead(){
-        TestMe test = om.readValue("{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666}}",
-                TestMe.class);
-
-        assertEquals("foo", test.text);
-        assertEquals(42, test.nmbr);
-        assertEquals("bar", test.another.text);
-        assertEquals(666, test.another.nmbr);
-        assertEquals(null, test.another.another);
+    public GsonObjectMapper(Gson om) {
+        this.om = om;
     }
 
-    @Test
-    public void canReadGenerics(){
-        List<TestMe> testList = om.readValue("[{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666,\"another\":null}}]",
-                new GenericType<List<TestMe>>(){});
-
-        TestMe test = testList.get(0);
-
-        assertEquals("foo", test.text);
-        assertEquals(42, test.nmbr);
-        assertEquals("bar", test.another.text);
-        assertEquals(666, test.another.nmbr);
-        assertEquals(null, test.another.another);
+    @Override
+    public <T> T readValue(String value, Class<T> valueType) {
+        return om.fromJson(value, valueType);
     }
 
+    @Override
+    public <T> T readValue(String value, GenericType<T> genericType) {
+        return om.fromJson(value, genericType.getType());
+    }
 
-    public static class TestMe {
-        public String text;
-        public int nmbr;
-        public TestMe another;
-
-        public TestMe(){}
-
-        public TestMe(String text, Integer nmbr, TestMe another) {
-            this.text = text;
-            this.nmbr = nmbr;
-            this.another = another;
-        }
+    @Override
+    public String writeValue(Object value) {
+        return om.toJson(value);
     }
 }

@@ -47,33 +47,54 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-package kong.unirest;
+package kong.unirest.jackson;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import kong.unirest.GenericType;
+import kong.unirest.ObjectMapper;
+import kong.unirest.UnirestException;
 
-public class GsonObjectMapper implements ObjectMapper {
-    private Gson om;
+import java.io.IOException;
 
-    public GsonObjectMapper() {
-        this(new Gson());
+public class JacksonObjectMapper implements ObjectMapper {
+    private final com.fasterxml.jackson.databind.ObjectMapper om;
+
+    public JacksonObjectMapper() {
+        this(new com.fasterxml.jackson.databind.ObjectMapper());
+        om.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
+        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    public GsonObjectMapper(Gson om) {
+    public JacksonObjectMapper(com.fasterxml.jackson.databind.ObjectMapper om){
         this.om = om;
     }
 
     @Override
     public <T> T readValue(String value, Class<T> valueType) {
-        return om.fromJson(value, valueType);
+        try {
+            return om.readValue(value, valueType);
+        } catch (IOException e) {
+            throw new UnirestException(e);
+        }
     }
 
     @Override
     public <T> T readValue(String value, GenericType<T> genericType) {
-        return om.fromJson(value, genericType.getType());
+        try {
+            return om.readValue(value,  om.constructType(genericType.getType()));
+        } catch (IOException e) {
+            throw new UnirestException(e);
+        }
     }
 
     @Override
     public String writeValue(Object value) {
-        return om.toJson(value);
+        try {
+            return om.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            throw new UnirestException(e);
+        }
     }
 }

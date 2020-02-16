@@ -13,7 +13,6 @@
     <description>Jackson based object mapper for Unirest</description>
 
     <properties>
-        <jackson.version>2.9.10</jackson.version>
         <main.dir>${project.parent.basedir}</main.dir>
     </properties>
 
@@ -27,7 +26,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.databind.version}</version>
+            <version>${jackson.version}</version>
         </dependency>
     </dependencies>
 
