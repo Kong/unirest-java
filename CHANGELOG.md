@@ -3,7 +3,7 @@
 * Update Jackson to 2.10.2
 * Update various build tools to work with Java 11
 
-## 3.4.04
+## 3.5.00
 * issue #335 keep around failure bodies for mapping to error objects
 * Request objects implement equals for future feature to support request caching
 
