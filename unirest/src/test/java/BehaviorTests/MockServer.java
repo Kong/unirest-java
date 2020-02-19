@@ -168,6 +168,7 @@ public class MockServer {
 		 File f = TestUtil.rezFile("/spidey.jpg");
 		 response.raw().setContentType("application/octet-stream");
 		 response.raw().setHeader("Content-Disposition", "attachment;filename=image.jpg");
+		 response.raw().setHeader("Content-Length", String.valueOf(f.length()));
 		 response.status(200);
 		 final ServletOutputStream out = response.raw().getOutputStream();
 		 final FileInputStream in = new FileInputStream(f);

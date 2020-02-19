@@ -32,8 +32,10 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import static kong.unirest.TestUtil.rezFile;
+import static org.junit.Assert.assertTrue;
 
 public class DownloadProgressTest extends BddTest {
     @Rule
@@ -41,14 +43,11 @@ public class DownloadProgressTest extends BddTest {
     private File targeFolder;
 
     private TestMonitor monitor;
-    private File spidey;
 
     @Override
     public void setUp() {
         super.setUp();
         this.monitor = new TestMonitor();
-        spidey = rezFile("/spidey.jpg");
-
         try {
             targeFolder = disk.newFolder("test");
         } catch (IOException e) {
@@ -58,11 +57,21 @@ public class DownloadProgressTest extends BddTest {
 
     @Test
     public void canAddUploadProgress() {
-        Unirest.post(MockServer.BINARYFILE)
-                //.uploadMonitor(monitor)
-                .asFile(targeFolder.getPath());
+        Unirest.get(MockServer.BINARYFILE)
+                .downloadMonitor(monitor)
+                .asFile(targeFolder.getPath() + "/spidey.jpg");
 
-        //assertSpideyFileUpload("spidey.jpg");
+        monitor.assertSpideyFileDownload("spidey.jpg");
+    }
+
+    @Test
+    public void canAddUploadProgressAsync() throws Exception {
+        Unirest.get(MockServer.BINARYFILE)
+                .downloadMonitor(monitor)
+                .asFileAsync(targeFolder.getPath() + "/spidey.jpg")
+                .get();
+
+        monitor.assertSpideyFileDownload("spidey.jpg");
     }
 
 }
