@@ -102,7 +102,7 @@ public class AsFileTest extends BddTest {
 
     @Test
     public void canDownloadABinaryFile() throws Exception {
-        File f1 = TestUtil.rezFile("/image.jpg");
+        File f1 = TestUtil.rezFile("/spidey.jpg");
 
         File f2 = Unirest.get(MockServer.BINARYFILE)
                 .asFile(test.toString())

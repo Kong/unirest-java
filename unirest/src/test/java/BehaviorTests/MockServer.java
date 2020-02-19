@@ -165,7 +165,7 @@ public class MockServer {
 	}
 
 	private static Object file(Request request, Response response) throws Exception {
-		 File f = TestUtil.rezFile("/image.jpg");
+		 File f = TestUtil.rezFile("/spidey.jpg");
 		 response.raw().setContentType("application/octet-stream");
 		 response.raw().setHeader("Content-Disposition", "attachment;filename=image.jpg");
 		 response.status(200);
