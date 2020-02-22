@@ -72,7 +72,7 @@ public interface HttpRequest<R extends HttpRequest>  {
     R basicAuth(String username, String password);
 
     /**
-     * The Accept heder to send (e.g. application/json
+     * The Accept header to send (e.g. application/json
      * @param value a valid mime type for the Accept header
      * @return this request builder
      */
