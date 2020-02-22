@@ -394,6 +394,17 @@ File result = Unirest.get("http://some.file.location/file.zip")
                 .getBody();
 ```
 
+### Download Progress Monitoring
+If you are uploading large files you might want to provide some time of progress bar to a user. You can monitor this progress by providing a ProgresMonitor.
+
+```java
+          Unirest.get("http://httpbin.org")
+                .downLoadMonitor((b, fileName, bytesWritten, totalBytes) -> {
+                    updateProgressBarWithBytesLeft(totalBytes - bytesWritten);
+                })
+                .asFile("/disk/location/file.zip");
+```
+
 ## JSON responses
 Unirest offers a lightweight JSON response type when you don't need a full Object Mapper.
 
