@@ -45,6 +45,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     private Integer socketTimeout;
     private Integer connectTimeout;
     private Proxy proxy;
+    private ProgressMonitor downloadMonitor;
 
     BaseRequest(BaseRequest httpRequest) {
         this.config = httpRequest.config;
@@ -167,6 +168,12 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     public R withObjectMapper(ObjectMapper mapper) {
         Objects.requireNonNull(mapper, "ObjectMapper may not be null");
         this.objectMapper = Optional.of(mapper);
+        return (R)this;
+    }
+
+    @Override
+    public R downloadMonitor(ProgressMonitor monitor) {
+        this.downloadMonitor = monitor;
         return (R)this;
     }
 
@@ -298,17 +305,17 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public HttpResponse<File> asFile(String path) {
-        return config.getClient().request(this, r -> new FileResponse(r, path));
+        return config.getClient().request(this, r -> new FileResponse(r, path, downloadMonitor));
     }
 
     @Override
     public CompletableFuture<HttpResponse<File>> asFileAsync(String path) {
-        return config.getAsyncClient().request(this, r -> new FileResponse(r, path), new CompletableFuture<>());
+        return config.getAsyncClient().request(this, r -> new FileResponse(r, path, downloadMonitor), new CompletableFuture<>());
     }
 
     @Override
     public CompletableFuture<HttpResponse<File>> asFileAsync(String path, Callback<File> callback) {
-        return config.getAsyncClient().request(this, r -> new FileResponse(r, path), wrap(callback));
+        return config.getAsyncClient().request(this, r -> new FileResponse(r, path, downloadMonitor), wrap(callback));
     }
 
     @Override

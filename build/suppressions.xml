@@ -6,6 +6,7 @@
 <suppressions>
     <suppress checks="MethodCount" files="Config.java"/>
     <suppress checks="MethodCount" files="HttpRequest.java"/>
+    <suppress checks="MethodCount" files="BaseRequest.java"/>
     <suppress checks="MethodCount" files="JSONArray.java"/>
     <suppress checks="MethodCount" files="JSONObject.java"/>
     <suppress checks="FileLength" files="JSONObject.java"/>

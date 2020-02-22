@@ -179,6 +179,13 @@ public interface HttpRequest<R extends HttpRequest>  {
     R proxy(String host, int port);
 
     /**
+     * sets a download monitor for monitoring the response. this could be used for drawing a progress bar
+     * @param monitor a ProgressMonitor
+     * @return
+     */
+    R downloadMonitor(ProgressMonitor monitor);
+
+    /**
      * Executes the request and returns the response with the body mapped into a String
      * @return response
      */

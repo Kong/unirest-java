@@ -1,3 +1,6 @@
+## 3.6.00 (pending)
+* issue #336 Add ProgressMonitor for file downloads.
+
 ## 3.5.00
 * Re-package the object mapper sub-modules to work with Java 11 per issue #324.
 * Update Jackson to 2.10.2
