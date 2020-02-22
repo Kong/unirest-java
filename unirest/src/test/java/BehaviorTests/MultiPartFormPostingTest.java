@@ -42,12 +42,12 @@ public class MultiPartFormPostingTest extends BddTest {
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
                 .field("funky","bunch")
-                .field("file", rezFile("/test"))
+                .field("file", rezFile("/test.txt"))
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertParam("name", "Mark")
                 .assertMultiPartContentType()
-                .getFile("test")
+                .getFile("test.txt")
                 .assertBody("This is a test file")
                 .assertFileType("application/octet-stream");
     }
@@ -83,7 +83,7 @@ public class MultiPartFormPostingTest extends BddTest {
 
     @Test
     public void canSendRawInputStreamsWithoutAFileName()  throws Exception {
-        FileInputStream stream = new FileInputStream(rezFile("/test"));
+        FileInputStream stream = new FileInputStream(rezFile("/test.txt"));
 
         Unirest.post(MockServer.POST)
                 .field("file", stream)
@@ -126,11 +126,11 @@ public class MultiPartFormPostingTest extends BddTest {
     public void testMultipartInputStreamContentTypeAsync() throws Exception {
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
-                .field("file", new FileInputStream(rezFile("/test")), ContentType.APPLICATION_OCTET_STREAM, "test")
+                .field("file", new FileInputStream(rezFile("/test.txt")), ContentType.APPLICATION_OCTET_STREAM, "test.txt")
                 .asJsonAsync(new MockCallback<>(this, r -> parse(r)
                         .assertParam("name", "Mark")
                         .assertMultiPartContentType()
-                        .getFile("test")
+                        .getFile("test.txt")
                         .assertFileType("application/octet-stream"))
                 );
 
@@ -153,16 +153,16 @@ public class MultiPartFormPostingTest extends BddTest {
 
     @Test
     public void testMultipartByteContentTypeAsync() throws Exception {
-        final byte[] bytes = getFileBytes("/test");
+        final byte[] bytes = getFileBytes("/test.txt");
 
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
-                .field("file", bytes, "test")
+                .field("file", bytes, "test.txt")
                 .asJsonAsync(new MockCallback<>(this, r ->
                         parse(r)
                                 .assertParam("name", "Mark")
                                 .assertMultiPartContentType()
-                                .getFile("test")
+                                .getFile("test.txt")
                                 .assertFileType("application/octet-stream"))
                 );
 
@@ -175,12 +175,12 @@ public class MultiPartFormPostingTest extends BddTest {
     public void testMultipartAsync() throws Exception {
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
-                .field("file", rezFile("/test"))
+                .field("file", rezFile("/test.txt"))
                 .asJsonAsync(new MockCallback<>(this, r ->
                         parse(r)
                                 .assertParam("name", "Mark")
                                 .assertMultiPartContentType()
-                                .getFile("test")
+                                .getFile("test.txt")
                                 .assertFileType("application/octet-stream")
                                 .assertBody("This is a test file"))
                 );
@@ -302,21 +302,21 @@ public class MultiPartFormPostingTest extends BddTest {
     @Test
     public void testPostMulipleFIles() {
         RequestCapture cap = Unirest.post(MockServer.POST)
-                .field("name", asList(rezFile("/test"), rezFile("/test2")))
+                .field("name", asList(rezFile("/test.txt"), rezFile("/test2.txt")))
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertMultiPartContentType();
 
-        cap.getFile("test").assertBody("This is a test file");
-        cap.getFile("test2").assertBody("this is another test");
+        cap.getFile("test.txt").assertBody("This is a test file");
+        cap.getFile("test2.txt").assertBody("this is another test");
     }
 
     @Test
     public void testPostMultipleFiles()throws Exception {
         Unirest.post(MockServer.POST)
                 .field("param3", "wot")
-                .field("file1", rezFile("/test"))
-                .field("file2", rezFile("/test"))
+                .field("file1", rezFile("/test.txt"))
+                .field("file2", rezFile("/test.txt"))
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertMultiPartContentType()
@@ -330,7 +330,7 @@ public class MultiPartFormPostingTest extends BddTest {
         Unirest.post(MockServer.POST)
                 .header("Accept", ContentType.MULTIPART_FORM_DATA.getMimeType())
                 .field("param3", "こんにちは")
-                .field("file", rezFile("/test"))
+                .field("file", rezFile("/test.txt"))
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertMultiPartContentType()
@@ -341,7 +341,7 @@ public class MultiPartFormPostingTest extends BddTest {
     @Test
     public void testMultipeInputStreams() throws FileNotFoundException {
         Unirest.post(MockServer.POST)
-                .field("name", asList(new FileInputStream(rezFile("/test")), new FileInputStream(rezFile("/test2"))))
+                .field("name", asList(new FileInputStream(rezFile("/test.txt")), new FileInputStream(rezFile("/test2.txt"))))
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertMultiPartContentType()
@@ -353,7 +353,7 @@ public class MultiPartFormPostingTest extends BddTest {
     public void multiPartInputStream() throws FileNotFoundException {
         Unirest.post(MockServer.POST)
                 .field("foo", "bar")
-                .field("filecontents", new FileInputStream(rezFile("/test")), ContentType.WILDCARD)
+                .field("filecontents", new FileInputStream(rezFile("/test.txt")), ContentType.WILDCARD)
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertMultiPartContentType()
@@ -401,7 +401,7 @@ public class MultiPartFormPostingTest extends BddTest {
         String body = Unirest.post(MockServer.ECHO_RAW)
                 .field("marky","mark")
                 .field("funky","bunch")
-                .field("file", rezFile("/test"))
+                .field("file", rezFile("/test.txt"))
                 .asString()
                 .getBody();
 

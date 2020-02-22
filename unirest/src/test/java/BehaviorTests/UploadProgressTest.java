@@ -68,7 +68,7 @@ public class UploadProgressTest extends BddTest {
     public void canKeepTrackOfMultipleFiles() {
         Unirest.post(MockServer.POST)
                 .field("spidey", monitor.spidey)
-                .field("other", rezFile("/test"))
+                .field("other", rezFile("/test.txt"))
                 .uploadMonitor(monitor)
                 .asEmpty();
 
@@ -87,7 +87,7 @@ public class UploadProgressTest extends BddTest {
     }
 
     private void assertOtherFileUpload() {
-        TestMonitor.Stats stat = monitor.get("test");
+        TestMonitor.Stats stat = monitor.get("test.txt");
         assertEquals(1, stat.timesCalled);
         assertEquals(asList(19L), stat.progress);
         assertEquals(19L, stat.total);

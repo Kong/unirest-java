@@ -1,5 +1,5 @@
 --IDENTIFIER
-Content-Disposition: form-data; name="file"; filename="test"
+Content-Disposition: form-data; name="file"; filename="test.txt"
 Content-Type: application/octet-stream
 
 This is a test file

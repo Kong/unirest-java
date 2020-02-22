@@ -95,7 +95,16 @@
                     <header>${main.dir}/build/fileHeader.txt</header>
                     <strictCheck>true</strictCheck>
                     <excludes>
+                        <exclude>**/*.scss</exclude>
+                        <exclude>**/*.b64</exclude>
+                        <exclude>**/*.svg</exclude>
+                        <exclude>**/Gemfile</exclude>
+                        <exclude>.java-version</exclude>
+                        <exclude>.java-version</exclude>
                         <exclude>**/*.js</exclude>
+                        <exclude>**/*.json</exclude>
+                        <exclude>**/*.p12</exclude>
+                        <exclude>**/*.pem</exclude>
                         <exclude>**/*.html</exclude>
                         <exclude>**/*.xml</exclude>
                         <exclude>**/*.txt</exclude>
