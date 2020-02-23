@@ -179,19 +179,19 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public HttpResponse asEmpty() {
-        return config.getClient().request(this, EmptyResponse::new);
+        return config.getClient().request(this, BasicResponse::new);
     }
 
     @Override
     public CompletableFuture<HttpResponse<Empty>> asEmptyAsync() {
         return config.getAsyncClient()
-                .request(this, EmptyResponse::new, new CompletableFuture<>());
+                .request(this, BasicResponse::new, new CompletableFuture<>());
     }
 
     @Override
     public CompletableFuture<HttpResponse<Empty>> asEmptyAsync(Callback<Empty> callback) {
         return config.getAsyncClient()
-                .request(this, EmptyResponse::new, wrap(callback));
+                .request(this, BasicResponse::new, wrap(callback));
     }
 
     @Override

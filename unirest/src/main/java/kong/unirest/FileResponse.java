@@ -58,4 +58,9 @@ public class FileResponse extends BaseResponse<File> {
     public File getBody() {
         return body;
     }
+
+    @Override
+    protected String getRawBody() {
+        return null;
+    }
 }

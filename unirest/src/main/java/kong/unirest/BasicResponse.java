@@ -28,9 +28,19 @@ package kong.unirest;
 public class BasicResponse<T> extends BaseResponse<T> {
     private final T body;
 
+    BasicResponse(BaseResponse response, T body) {
+        super(response);
+        this.body = body;
+    }
+
     public BasicResponse(RawResponse httpResponse, T body) {
         super(httpResponse);
         this.body = body;
+    }
+
+    public BasicResponse(RawResponse httpResponse) {
+        super(httpResponse);
+        this.body = null;
     }
 
     public BasicResponse(RawResponse httpResponse, String ogBody, RuntimeException ex) {
@@ -41,5 +51,10 @@ public class BasicResponse<T> extends BaseResponse<T> {
     @Override
     public T getBody() {
         return body;
+    }
+
+    @Override
+    protected String getRawBody() {
+        return null;
     }
 }

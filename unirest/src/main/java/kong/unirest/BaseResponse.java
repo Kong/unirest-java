@@ -86,7 +86,7 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
 
     @Override
     public <V> HttpResponse<V> map(Function<T, V> func) {
-        return new MappedResponse(this, mapBody(func));
+        return new BasicResponse(this, mapBody(func));
     }
 
     protected void setParsingException(String originalBody, RuntimeException e) {
@@ -148,7 +148,7 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     public <E> HttpResponse<T> ifFailure(Class<? extends E> errorClass, Consumer<HttpResponse<E>> consumer) {
         if (!isSuccess()) {
             E error = mapError(errorClass);
-            consumer.accept(new SimpleResponse(error, this));
+            consumer.accept(new BasicResponse(this, error));
         }
         return this;
     }
@@ -162,7 +162,5 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     }
 
 
-    protected String getRawBody() {
-        return null;
-    }
+    protected abstract String getRawBody();
 }

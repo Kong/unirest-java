@@ -71,6 +71,14 @@ public class CookieParsingTest {
     }
 
     @Test
+    public void secure() {
+        String v = "color=blue;Secure";
+        Cookie c = new Cookie(v);
+        assertEquals(true, c.isSecure());
+        assertEquals("color=blue;Secure", c.toString());
+    }
+
+    @Test
     public void emptyValue() {
         String v = "SignOnDefault=; domain=.admin.virginia.edu; path=/; HttpOnly";
         Cookie c = new Cookie(v);
@@ -98,5 +106,12 @@ public class CookieParsingTest {
         String v = "SignOnDefault=\";";
         Cookie c = new Cookie(v);
         assertEquals("\"", c.getValue());
+    }
+
+    @Test
+    public void justOneSideOfquotes() {
+        String v = "SignOnDefault=\"foo;";
+        Cookie c = new Cookie(v);
+        assertEquals("\"foo", c.getValue());
     }
 }

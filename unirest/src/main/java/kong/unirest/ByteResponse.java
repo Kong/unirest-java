@@ -37,4 +37,9 @@ public class ByteResponse extends BaseResponse<byte[]> {
     public byte[] getBody() {
         return body;
     }
+
+    @Override
+    protected String getRawBody() {
+        return null;
+    }
 }

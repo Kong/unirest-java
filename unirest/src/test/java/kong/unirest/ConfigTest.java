@@ -35,6 +35,8 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.apache.http.nio.client.HttpAsyncClient;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -295,6 +297,20 @@ public class ConfigTest {
         TestUtil.assertException(() -> config.clientCertificateStore("/a/path/file.pk12", "foo"),
                 UnirestConfigException.class,
                 "You may only configure a SSLContext OR a Keystore, but not both");
+    }
+
+    @Test
+    public void isRunningIfStandardClientIsRunning() {
+        assertFalse(config.isRunning());
+        config.getClient();
+        assertTrue(config.isRunning());
+    }
+
+    @Test
+    public void isRunningIfAsyncClientIsRunning() {
+        assertFalse(config.isRunning());
+        config.getAsyncClient();
+        assertTrue(config.isRunning());
     }
 
     private void assertProxy(String host, Integer port, String username, String password) {
