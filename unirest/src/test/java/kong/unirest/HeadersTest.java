@@ -27,26 +27,29 @@ package kong.unirest;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 public class HeadersTest {
     private String ls  = System.lineSeparator();
+
     @Test
-    public void canGetApacheHeaders() {
+    public void canGetHeaders() {
         Headers headers = new Headers();
-        headers.add("foo","bar");
+        headers.add("Accepts","application/json");
 
         Header h = headers.all().get(0);
 
-        assertEquals("foo", h.getName());
-        assertEquals("bar", h.getValue());
+        assertEquals("Accepts", h.getName());
+        assertEquals("application/json", h.getValue());
     }
 
     @Test
     public void dontBombOnNull(){
         Headers h = new Headers();
-        h.add(null, "foo");
+        h.add(null, "application/json");
 
         assertEquals(0, h.size());
     }
@@ -68,10 +71,10 @@ public class HeadersTest {
     @Test
     public void headersAreEqualIfEntryListIsEqual() {
         Headers h  = new Headers();
-        h.add("foo", "bar");
+        h.add("Accepts", "application/json");
 
         Headers j  = new Headers();
-        j.add("foo", "bar");
+        j.add("Accepts", "application/json");
 
         assertEquals(h, j);
     }
@@ -87,5 +90,16 @@ public class HeadersTest {
         j.add("foo", "bar");
 
         assertNotEquals(h, j);
+    }
+
+    @Test
+    public void canCreateHeadersFromACollection() {
+        Headers h = new Headers(Arrays.asList(
+                new Headers.Entry("Accepts", "application/json"),
+                new Headers.Entry("Content-Type", "application/xml"))
+        );
+
+        assertEquals("application/json", h.getFirst("Accepts"));
+        assertEquals("application/xml", h.getFirst("Content-Type"));
     }
 }

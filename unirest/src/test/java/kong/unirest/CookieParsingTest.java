@@ -79,6 +79,13 @@ public class CookieParsingTest {
     }
 
     @Test
+    public void futurePropsDontBreak() {
+        String v = "color=blue;TheFuture";
+        Cookie c = new Cookie(v);
+        assertEquals("color=blue", c.toString());
+    }
+
+    @Test
     public void emptyValue() {
         String v = "SignOnDefault=; domain=.admin.virginia.edu; path=/; HttpOnly";
         Cookie c = new Cookie(v);
