@@ -61,10 +61,10 @@ public class AsBytesTest extends BddTest {
     @Test
     public void getGetResultAsBytesAsyncCallback() throws Exception {
         Unirest.get(MockServer.GET)
-                .queryString("foo","bar")
+                .queryString("fruit","apple")
                 .asBytesAsync(r -> {
                     RequestCapture cap = om.readValue(r.getBody(), RequestCapture.class);
-                    cap.assertParam("foo", "bar");
+                    cap.assertParam("fruit","apple");
                     asyncSuccess();
                 })
                 .get()

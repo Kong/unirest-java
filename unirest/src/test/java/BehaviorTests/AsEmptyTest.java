@@ -35,33 +35,33 @@ public class AsEmptyTest extends BddTest {
 
     @Test
     public void canDoAEmptyRequestThatDoesNotParseBodyAtAll() {
-        MockServer.addResponseHeader("foo", "bar");
+        MockServer.addResponseHeader("Content-Type", "json");
         HttpResponse res = Unirest.get(MockServer.GET).asEmpty();
 
         assertEquals(200, res.getStatus());
         assertEquals(null, res.getBody());
-        assertEquals("bar", res.getHeaders().getFirst("foo"));
+        assertEquals("json", res.getHeaders().getFirst("Content-Type"));
     }
 
     @Test
     public void canDoEmptyAsync() throws Exception {
-        MockServer.addResponseHeader("foo", "bar");
+        MockServer.addResponseHeader("Content-Type", "json");
         HttpResponse res = Unirest.get(MockServer.GET).asEmptyAsync().get();
 
         assertEquals(200, res.getStatus());
         assertEquals(null, res.getBody());
-        assertEquals("bar", res.getHeaders().getFirst("foo"));
+        assertEquals("json", res.getHeaders().getFirst("Content-Type"));
     }
 
     @Test
     public void canDoEmptyAsyncWithCallback() {
-        MockServer.addResponseHeader("foo", "bar");
+        MockServer.addResponseHeader("Content-Type", "json");
 
         Unirest.get(MockServer.GET)
                 .asEmptyAsync(res -> {
                     assertEquals(200, res.getStatus());
                     assertEquals(null, res.getBody());
-                    assertEquals("bar", res.getHeaders().getFirst("foo"));
+                    assertEquals("json", res.getHeaders().getFirst("Content-Type"));
                     asyncSuccess();
                 });
 

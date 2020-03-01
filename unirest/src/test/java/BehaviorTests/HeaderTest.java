@@ -267,15 +267,15 @@ public class HeaderTest extends BddTest {
 
     @Test //https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
     public void canHaveTheSameHeaderAddedTwice() {
-        Unirest.config().setDefaultHeader("foo", "bar");
+        Unirest.config().setDefaultHeader("x-fruit", "orange");
 
         Unirest.get(MockServer.GET)
-                .header("foo", "qux")
+                .header("x-fruit", "apple")
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertHeaderSize("foo", 2)
-                .assertHeader("foo", "bar")
-                .assertHeader("foo", "qux");
+                .assertHeaderSize("x-fruit", 2)
+                .assertHeader("x-fruit", "orange")
+                .assertHeader("x-fruit", "apple");
     }
 
     @Test

@@ -29,6 +29,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -82,19 +83,19 @@ public class HeadersTest {
     @Test
     public void headersAreEqualIfEntryListIsEqual_orderMatters() {
         Headers h  = new Headers();
-        h.add("foo", "bar");
-        h.add("foo", "baz");
+        h.add("Accepts", "application/json");
+        h.add("Content-Type", "application/xml");
 
         Headers j  = new Headers();
-        j.add("foo", "baz");
-        j.add("foo", "bar");
+        j.add("Content-Type", "application/xml");
+        j.add("Accepts", "application/json");
 
         assertNotEquals(h, j);
     }
 
     @Test
     public void canCreateHeadersFromACollection() {
-        Headers h = new Headers(Arrays.asList(
+        Headers h = new Headers(asList(
                 new Headers.Entry("Accepts", "application/json"),
                 new Headers.Entry("Content-Type", "application/xml"))
         );

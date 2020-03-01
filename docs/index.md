@@ -75,7 +75,7 @@ HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post")
       .header("accept", "application/json")
       .queryString("apiKey", "123")
       .field("parameter", "value")
-      .field("foo", "bar")
+      .field("firstname", "Gary")
       .asJson();
 ```
 
@@ -413,8 +413,8 @@ String result = Unirest.get("http://some.json.com")
 				       .asJson()
 				       .getBody()
 				       .getObject()
-				       .getJSONObject("thing")
-				       .getJSONArray("foo")
+				       .getJSONObject("car")
+				       .getJSONArray("wheels")
 				       .get(0)
 ```
 
@@ -426,7 +426,7 @@ can use several functional methods like:
 
 ```java
    Map r = Unirest.get(MockServer.GET)
-                .queryString("foo", "bar")
+                .queryString("firstname", "Gary")
                 .asObject(i -> new Gson().fromJson(i.getContentReader(), HashMap.class))
                 .getBody();
 
