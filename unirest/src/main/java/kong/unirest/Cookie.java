@@ -68,10 +68,10 @@ public class Cookie {
         int pos = 0;
         for(String s : split){
             if(pos == 0){
-                String[] sub = s.split("=");
+                String[] sub = s.split("=",2);
                 name = sub[0];
                 if (sub.length == 2) {
-                    value = getDecode(sub[1]);
+                    value = stripQuoteWrapper(sub[1]);
                 } else {
                     value = "";
                 }
@@ -85,7 +85,7 @@ public class Cookie {
 
     private String getDecode(String sub) {
         try {
-            return URLDecoder.decode(stripQuoteWrapper(sub), "UTF-8");
+            return URLDecoder.decode(sub, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             return sub;
         }
@@ -181,6 +181,10 @@ public class Cookie {
 
     public void setHttpOnly(boolean httpOnly) {
         this.httpOnly = httpOnly;
+    }
+
+    public String getUrlDecodedValue() {
+        return getDecode(value);
     }
 
     private static class Pair {

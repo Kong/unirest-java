@@ -86,7 +86,7 @@ public class CookieTest extends BddTest {
 
         HttpResponse response = Unirest.get(MockServer.GET).asEmpty();
 
-        assertEquals("फनकी", response.getCookies().getNamed("nepali").getValue());
+        assertEquals("फनकी", response.getCookies().getNamed("nepali").getUrlDecodedValue());
     }
 
     @Test
@@ -95,7 +95,7 @@ public class CookieTest extends BddTest {
 
         HttpResponse response = Unirest.get(MockServer.GET).asEmpty();
 
-        assertEquals("1=2;3=4", response.getCookies().getNamed("odd").getValue());
+        assertEquals("1=2;3=4", response.getCookies().getNamed("odd").getUrlDecodedValue());
     }
 
     @Test

@@ -25,6 +25,7 @@
 
 package kong.unirest;
 
+import org.eclipse.jetty.server.CookieCutter;
 import org.junit.Test;
 
 import java.time.ZoneId;
@@ -78,6 +79,19 @@ public class CookieParsingTest {
         assertEquals("color=blue;Secure", c.toString());
     }
 
+
+    @Test
+    public void matchJettyParsing() {
+        String s = "_id=A528A0D64DA61CB01241EF6E18E4D675170DDB56CB430000AF58625E920CF940~pl1ZYwDDdoAnfY3RtqZ2Ti1MYOf7Q8jRrFQLneSGK7qQoUX1GHW/xDcqweGyclm5rm/g/YFCV3ohuHoz2oad5M0MX9Ru9V7bFr2s08d1lHxbn39gw71AI+ZVejq5FpMHKBzyjoBGG6NY6xYVTwP9NHo14SY0CXs60k2UTpJsOTNzAHIZaedg7o6R/8qyAQ8GF25K2o773pFLrYtjgKHohkk5ukz/yEGQitq8NgC5hiqX0=; expires=Fri, 06 Mar 2020 16:05:35 GMT; max-age=7200; path=/; domain=xxx.com; HttpOnly";
+        CookieCutter cutter = new CookieCutter();
+        cutter.addCookieField(s);
+        javax.servlet.http.Cookie jetty = cutter.getCookies()[0];
+
+        Cookie unirest = new Cookie(s);
+
+        assertEquals(jetty.getValue(), unirest.getValue());
+    }
+
     @Test
     public void futurePropsDontBreak() {
         String v = "color=blue;TheFuture";
@@ -106,6 +120,13 @@ public class CookieParsingTest {
         String v = "SignOnDefault=\"\";";
         Cookie c = new Cookie(v);
         assertEquals("", c.getValue());
+    }
+
+    @Test
+    public void valuesCanHaveEquals() {
+        String v = "SignOnDefault====;";
+        Cookie c = new Cookie(v);
+        assertEquals("===", c.getValue());
     }
 
     @Test
