@@ -1,3 +1,8 @@
+## 3.6.01
+* Issue #341:
+   * Do not URLDecode cookie values because they may not be and decoding can remove legit values like +
+   * Split cookie pairs on the first = only so values can have =
+
 ## 3.6.00
 * issue #336 Add ProgressMonitor for file downloads.
 
