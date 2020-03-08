@@ -183,10 +183,6 @@ public class Cookie {
         this.httpOnly = httpOnly;
     }
 
-    public String getUrlDecodedValue() {
-        return getDecode(value);
-    }
-
     private static class Pair {
         final String key;
         final String value;
@@ -217,6 +213,13 @@ public class Cookie {
      */
     public String getValue() {
         return value;
+    }
+
+    /**
+     * @return the cookie-value, url-decoded
+     */
+    public String getUrlDecodedValue() {
+        return getDecode(value);
     }
 
     /**

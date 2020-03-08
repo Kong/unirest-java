@@ -181,7 +181,7 @@ public interface HttpRequest<R extends HttpRequest>  {
     /**
      * sets a download monitor for monitoring the response. this could be used for drawing a progress bar
      * @param monitor a ProgressMonitor
-     * @return
+     * @return this request builder
      */
     R downloadMonitor(ProgressMonitor monitor);
 
