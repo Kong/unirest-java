@@ -49,7 +49,6 @@ import java.util.stream.Stream;
 
 import static kong.unirest.Util.tryCast;
 
-
 public class Config {
     public static final int DEFAULT_CONNECTION_TIMEOUT = 10000;
     public static final int DEFAULT_MAX_CONNECTIONS = 200;
@@ -86,6 +85,7 @@ public class Config {
     private SSLContext sslContext;
     private Interceptor interceptor = new DefaultInterceptor();
     private HostnameVerifier hostnameVerifier;
+    private String defaultBaseUrl;
 
     public Config() {
         setDefaults();
@@ -578,6 +578,20 @@ public class Config {
     }
 
     /**
+     * set a default base url for all routes.
+     * this is overridden if the url contains a valid base already
+     * the url may contain path params
+     *
+     * for example. Setting a default path of 'http://somwhere'
+     * and then calling Unirest with Unirest.get('/place')
+     * will result in a path of 'https://somwehre/place'
+     * @param value
+     */
+    public void defaultBaseUrl(String value) {
+        this.defaultBaseUrl = value;
+    }
+
+    /**
      * Return default headers that are added to every request
      *
      * @return Headers
@@ -828,5 +842,9 @@ public class Config {
 
     public HostnameVerifier getHostnameVerifier() {
         return hostnameVerifier;
+    }
+
+    String getDefaultBaseUrl() {
+        return this.defaultBaseUrl;
     }
 }

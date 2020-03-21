@@ -61,7 +61,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     BaseRequest(Config config, HttpMethod method, String url) {
         this.config = config;
         this.method = method;
-        this.url = new Path(url);
+        this.url = new Path(url, config.getDefaultBaseUrl());
         headers.putAll(config.getDefaultHeaders());
     }
 
@@ -323,7 +323,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         PagedList<T> all = new PagedList<>();
         String nextLink = this.getUrl();
         do {
-            this.url = new Path(nextLink);
+            this.url = new Path(nextLink, config.getDefaultBaseUrl());
             HttpResponse<T> next = mappingFunction.apply(this);
             all.add(next);
             nextLink = linkExtractor.apply(next);

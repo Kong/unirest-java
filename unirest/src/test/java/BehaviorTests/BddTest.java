@@ -28,6 +28,8 @@ package BehaviorTests;
 import kong.unirest.*;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
@@ -41,7 +43,7 @@ public class BddTest {
     private boolean status;
     private String fail;
 
-    @Before
+    @Before @BeforeEach
     public void setUp() {
         //TestUtil.debugApache();
         MockServer.reset();
@@ -50,7 +52,7 @@ public class BddTest {
         status = false;
     }
 
-    @After
+    @After @AfterEach
     public void tearDown() {
         Unirest.shutDown(true);
     }

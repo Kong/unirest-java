@@ -37,9 +37,15 @@ class Path {
     private String url;
     private String rawPath;
 
-    Path(String url) {
-        this.url = url;
-        this.rawPath = url;
+    Path(String url, String defaultBasePath) {
+        if(defaultBasePath != null && url != null && !url.toLowerCase().startsWith("http")){
+            String full = defaultBasePath + url;
+            this.url = full;
+            this.rawPath = full;
+        } else {
+            this.url = url;
+            this.rawPath = url;
+        }
     }
 
     public void param(Map<String, Object> params) {

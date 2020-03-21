@@ -32,19 +32,19 @@ import static org.junit.Assert.*;
 public class PathTest {
     @Test
     public void pathIsTheSameIfUrlIs() {
-        Path p = new Path("https://localhost/apples");
-        Path o = new Path("https://localhost/apples");
+        Path p = new Path("https://localhost/apples", null);
+        Path o = new Path("https://localhost/apples", null);
         assertEquals(p, o);
     }
 
     @Test
     public void pathsWithDifferentParams() {
         String raw = "http://somewhere/fruits/{id}";
-        Path q = new Path(raw);
+        Path q = new Path(raw, null);
         q.param("id", "apple");
-        Path w = new Path(raw);
+        Path w = new Path(raw, null);
         w.param("id", "apple");
-        Path e = new Path(raw);
+        Path e = new Path(raw, null);
         e.param("id", "oranges");
 
         assertEquals(q,w);
@@ -54,14 +54,24 @@ public class PathTest {
     @Test
     public void queryParamsMatter() {
         String raw = "http://somewhere/fruits/}";
-        Path q = new Path(raw);
+        Path q = new Path(raw, null);
         q.queryString("id", "apple");
-        Path w = new Path(raw);
+        Path w = new Path(raw, null);
         w.queryString("id", "apple");
-        Path e = new Path(raw);
+        Path e = new Path(raw, null);
         e.queryString("id", "oranges");
 
         assertEquals(q,w);
         assertNotEquals(q, e);
+    }
+
+    @Test
+    public void canBuildUsingDefaultBase() {
+        assertEquals("http://somwhere/fruit", new Path("/fruit","http://somwhere").toString());
+    }
+
+    @Test
+    public void willNotAddBaseIfPrimaryPathIsFull() {
+        assertEquals("http://somwhere/fruit", new Path("http://somwhere/fruit","http://elsewhere/rocks").toString());
     }
 }

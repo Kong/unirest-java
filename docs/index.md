@@ -92,11 +92,21 @@ Unirest.get("http://httpbin.org/{fruit}")
 
 // Results in `http://httpbin.org/apple`
 ```
-Basically the placeholder `{method}` will be replaced with `apple`.
+The placeholder `{fruit}` will be replaced with `apple`.
 
-The placeholder's format is as easy as: `{custom_name}`
+The placeholder's format is as easy as wrapping in curly braces: `{custom_name}`
 
 All param values will be URL-Encoded for you
+
+## Default Base URLs
+You  can configure a default base URL to be used for all requests that do not contain a full URL.
+
+This configuration will result in a GET to "http://homestar.com/runner"
+```java
+   Unirest.config().defaultBaseUrl("http://homestar.com");
+    
+   Unirest.get("/runner").asString();
+``` 
 
 ## Query Parameters
 Query-string params can be built up one by one
@@ -507,6 +517,7 @@ Changing Unirest's config should ideally be done once, or rarely. There are seve
 | ```errorHandler(Consumer<HttpResponse<?>> consumer)``` | Set a global error handler that will be invoked for any status > 400 or a parsing error | | 
 | ```interceptor(Interceptor value)``` | Set a global Interceptor handler that will be invoked before and after each request | | 
 | ```hostNameVerifier(HostNameVerifier value)``` | Set a custom HostNameVerifier for the security configuration | DefaultHostNameVerifier | 
+| ```defaultBaseUrl(String value)``` | Set a default base URL to be used for all requests that do not already contain a scheme |  | 
 
 ##  Global Interceptor
 You can set a global interceptor for your configuration. This is invoked before and after each request.
