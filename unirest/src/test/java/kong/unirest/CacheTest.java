@@ -32,6 +32,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static kong.unirest.HttpMethod.GET;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CacheTest {
@@ -48,8 +49,8 @@ class CacheTest {
     @Test
     void cacheSameRequests() {
         assertSame(
-                cache.wrap(client).request(new HttpRequestNoBody(config, HttpMethod.GET, "/"), null),
-                cache.wrap(client).request(new HttpRequestNoBody(config, HttpMethod.GET, "/"), null)
+                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/"), null),
+                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/"), null)
         );
 
         assertEquals(1, client.invokes);
@@ -58,11 +59,21 @@ class CacheTest {
     @Test
     void cacheSameRequestsAsync() {
         assertSame(
-                cache.wrapAsync(client).request(new HttpRequestNoBody(config, HttpMethod.GET, "/"), null,null),
-                cache.wrapAsync(client).request(new HttpRequestNoBody(config, HttpMethod.GET, "/"), null,null)
+                cache.wrapAsync(client).request(new HttpRequestNoBody(config, GET, "/"), null,null),
+                cache.wrapAsync(client).request(new HttpRequestNoBody(config, GET, "/"), null,null)
         );
 
         assertEquals(1, client.invokes);
+    }
+
+    @Test
+    void asyncAndSyncrequestsAreDifferent() {
+        assertNotSame(
+                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/"), null),
+                cache.wrapAsync(client).request(new HttpRequestNoBody(config, GET, "/"), null,null)
+        );
+
+        assertEquals(2, client.invokes);
     }
 
     private class MockClient implements Client, AsyncClient {

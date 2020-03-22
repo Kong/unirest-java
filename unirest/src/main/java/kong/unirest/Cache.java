@@ -27,6 +27,7 @@ package kong.unirest;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -45,12 +46,17 @@ public class Cache {
         return wrapper;
     }
 
-    public AsyncClient wrapAsync(AsyncClient client) {
+    AsyncClient wrapAsync(AsyncClient client) {
         this.originalAsync = client;
         return asyncWrapper;
     }
 
+    private int getHash(HttpRequest request, Boolean isAsync) {
+        return Objects.hash(request.hashCode(), isAsync);
+    }
+
     class CacheWrapper implements Client {
+
         @Override
         public Object getClient() {
             return originalClient.getClient();
@@ -58,14 +64,13 @@ public class Cache {
 
         @Override
         public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
-            return (HttpResponse<T>) map.computeIfAbsent(request.hashCode(), r -> originalClient.request(request, transformer));
+            return (HttpResponse<T>) map.computeIfAbsent(getHash(request, false), r -> originalClient.request(request, transformer));
         }
 
         @Override
         public Stream<Exception> close() {
             return originalClient.close();
         }
-
         @Override
         public void registerShutdownHook() {
             originalClient.registerShutdownHook();
@@ -80,7 +85,7 @@ public class Cache {
 
         @Override
         public <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, CompletableFuture<HttpResponse<T>> callback) {
-            return (CompletableFuture<HttpResponse<T>>)map.computeIfAbsent(request.hashCode(), k -> originalAsync.request(request, transformer, callback));
+            return (CompletableFuture<HttpResponse<T>>)map.computeIfAbsent(getHash(request, true), k -> originalAsync.request(request, transformer, callback));
         }
 
         @Override
