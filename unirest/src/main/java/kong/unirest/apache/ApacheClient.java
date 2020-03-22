@@ -114,7 +114,8 @@ public class ApacheClient extends BaseApacheClient implements Client {
 
 
     @Override
-    public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
+    public <T> HttpResponse<T> request(HttpRequest request,
+                                       Function<RawResponse, HttpResponse<T>> transformer) {
 
         HttpRequestSummary reqSum = request.toSummary();
         config.getUniInterceptor().onRequest(request, config);

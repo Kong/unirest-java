@@ -40,8 +40,22 @@ public interface Client {
      * @param request the prepared request object
      * @param transformer the function to transform the response
      * @return a HttpResponse with a transformed body
+     * @deprecated use the version with the resultType
      */
+    @Deprecated
     <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer);
+
+    /**
+     * Make a request
+     * @param <T> The type of the body
+     * @param request the prepared request object
+     * @param transformer the function to transform the response
+     * @param resultType the final body result type. This is a hint to downstream systems to make up for type erasure.
+     * @return a HttpResponse with a transformed body
+     */
+    default <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, Class<?> resultType){
+        return request(request, transformer);
+    }
 
     /**
      * @return a stream of exceptions possibly thrown while closing all the things.

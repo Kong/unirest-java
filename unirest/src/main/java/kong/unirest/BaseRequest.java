@@ -68,19 +68,19 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public R routeParam(String name, String value) {
         url.param(name, value);
-        return (R)this;
+        return (R) this;
     }
 
     @Override
     public R routeParam(Map<String, Object> params) {
         url.param(params);
-        return (R)this;
+        return (R) this;
     }
 
     @Override
     public R basicAuth(String username, String password) {
         this.headers.replace("Authorization", Util.toBasicAuthValue(username, password));
-        return (R)this;
+        return (R) this;
     }
 
     @Override
@@ -91,19 +91,19 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public R responseEncoding(String encoding) {
         this.responseEncoding = encoding;
-        return (R)this;
+        return (R) this;
     }
 
     @Override
     public R header(String name, String value) {
         this.headers.add(name.trim(), value);
-        return (R)this;
+        return (R) this;
     }
 
     @Override
     public R headerReplace(String name, String value) {
         this.headers.replace(name, value);
-        return (R)this;
+        return (R) this;
     }
 
     @Override
@@ -113,19 +113,19 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
                 header(entry.getKey(), entry.getValue());
             }
         }
-        return (R)this;
+        return (R) this;
     }
 
     @Override
     public R cookie(String name, String value) {
         this.headers.cookie(new Cookie(name, value));
-        return (R)this;
+        return (R) this;
     }
 
     @Override
     public R cookie(Cookie cookie) {
         this.headers.cookie(cookie);
-        return (R)this;
+        return (R) this;
     }
 
     @Override
@@ -137,162 +137,168 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public R queryString(String name, Collection<?> value) {
         url.queryString(name, value);
-        return (R)this;
+        return (R) this;
     }
 
     @Override
     public R queryString(String name, Object value) {
         url.queryString(name, value);
-        return (R)this;
+        return (R) this;
     }
 
     @Override
     public R queryString(Map<String, Object> parameters) {
-       url.queryString(parameters);
-        return (R)this;
+        url.queryString(parameters);
+        return (R) this;
     }
 
     @Override
     public R socketTimeout(int millies) {
         this.socketTimeout = millies;
-        return (R)this;
+        return (R) this;
     }
 
     @Override
     public R connectTimeout(int millies) {
         this.connectTimeout = millies;
-        return (R)this;
+        return (R) this;
     }
 
     @Override
     public R proxy(String host, int port) {
         this.proxy = new Proxy(host, port);
-        return (R)this;
+        return (R) this;
     }
 
     @Override
     public R withObjectMapper(ObjectMapper mapper) {
         Objects.requireNonNull(mapper, "ObjectMapper may not be null");
         this.objectMapper = Optional.of(mapper);
-        return (R)this;
+        return (R) this;
     }
 
     @Override
     public R downloadMonitor(ProgressMonitor monitor) {
         this.downloadMonitor = monitor;
-        return (R)this;
+        return (R) this;
     }
 
     @Override
     public HttpResponse asEmpty() {
-        return config.getClient().request(this, BasicResponse::new);
+        return config.getClient().request(this, BasicResponse::new, Empty.class);
     }
 
     @Override
     public CompletableFuture<HttpResponse<Empty>> asEmptyAsync() {
         return config.getAsyncClient()
-                .request(this, BasicResponse::new, new CompletableFuture<>());
+                .request(this, BasicResponse::new, new CompletableFuture<>(), Empty.class);
     }
 
     @Override
     public CompletableFuture<HttpResponse<Empty>> asEmptyAsync(Callback<Empty> callback) {
         return config.getAsyncClient()
-                .request(this, BasicResponse::new, wrap(callback));
+                .request(this, BasicResponse::new, wrap(callback), Empty.class);
     }
 
     @Override
     public HttpResponse<String> asString() throws UnirestException {
-        return config.getClient().request(this, r -> new StringResponse(r, responseEncoding));
+        return config.getClient().request(this, r -> new StringResponse(r, responseEncoding), String.class);
     }
 
     @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync() {
         return config.getAsyncClient()
-                .request(this, r -> new StringResponse(r, responseEncoding), new CompletableFuture<>());
+                .request(this, r -> new StringResponse(r, responseEncoding), new CompletableFuture<>(), String.class);
     }
 
     @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync(Callback<String> callback) {
         return config.getAsyncClient()
-                .request(this, r -> new StringResponse(r, responseEncoding), wrap(callback));
+                .request(this, r -> new StringResponse(r, responseEncoding), wrap(callback), String.class);
     }
 
     @Override
     public HttpResponse<byte[]> asBytes() {
         return config.getClient()
-                .request(this, ByteResponse::new);
+                .request(this, ByteResponse::new, byte[].class);
     }
 
     @Override
     public CompletableFuture<HttpResponse<byte[]>> asBytesAsync() {
-        return config.getAsyncClient().request(this, ByteResponse::new, new CompletableFuture<>());
+        return config.getAsyncClient().request(this, ByteResponse::new, new CompletableFuture<>(), byte[].class);
     }
 
     @Override
     public CompletableFuture<HttpResponse<byte[]>> asBytesAsync(Callback<byte[]> callback) {
-        return config.getAsyncClient().request(this, ByteResponse::new, wrap(callback));
+        return config.getAsyncClient().request(this, ByteResponse::new, wrap(callback), byte[].class);
     }
 
     @Override
     public HttpResponse<JsonNode> asJson() throws UnirestException {
-        return config.getClient().request(this, JsonResponse::new);
+        return config.getClient().request(this, JsonResponse::new, JsonNode.class);
     }
 
     @Override
     public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync() {
 
-        return config.getAsyncClient().request(this, JsonResponse::new, new CompletableFuture<>());
+        return config.getAsyncClient().request(this, JsonResponse::new, new CompletableFuture<>(), JsonNode.class);
     }
 
     @Override
     public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback) {
-
-        return config.getAsyncClient().request(this, JsonResponse::new, wrap(callback));
+        return config.getAsyncClient().request(this, JsonResponse::new, wrap(callback), JsonNode.class);
     }
 
     @Override
     public <T> HttpResponse<T> asObject(Class<? extends T> responseClass) throws UnirestException {
-        return config.getClient().request(this, r -> new ObjectResponse<T>(getObjectMapper(), r, responseClass));
+        return config.getClient().request(this, r -> new ObjectResponse<T>(getObjectMapper(), r, responseClass), responseClass);
     }
 
     @Override
     public <T> HttpResponse<T> asObject(GenericType<T> genericType) throws UnirestException {
-        return config.getClient().request(this, r -> new ObjectResponse<T>(getObjectMapper(), r, genericType));
+        return config.getClient().request(this, r -> new ObjectResponse<T>(getObjectMapper(), r, genericType), genericType.getTypeClass());
     }
 
     @Override
     public <T> HttpResponse<T> asObject(Function<RawResponse, T> function) {
-        return config.getClient().request(this, funcResponse(function));
+        return config.getClient().request(this, funcResponse(function), Object.class);
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Function<RawResponse, T> function) {
-
-        return config.getAsyncClient().request(this, funcResponse(function), new CompletableFuture<>());
+        return config.getAsyncClient().request(this, funcResponse(function), new CompletableFuture<>(), JsonNode.class);
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass) {
-
-        return config.getAsyncClient().request(this, r -> new ObjectResponse<T>(getObjectMapper(), r, responseClass), new CompletableFuture<>());
+        return config.getAsyncClient().request(this,
+                r -> new ObjectResponse<T>(getObjectMapper(), r, responseClass),
+                new CompletableFuture<>(),
+                responseClass);
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback) {
-
-        return config.getAsyncClient().request(this, r -> new ObjectResponse<>(getObjectMapper(), r, responseClass), wrap(callback));
+        return config.getAsyncClient().request(this,
+                r -> new ObjectResponse<>(getObjectMapper(), r, responseClass),
+                wrap(callback),
+                responseClass);
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType) {
-
-        return config.getAsyncClient().request(this, r -> new ObjectResponse<>(getObjectMapper(), r, genericType), new CompletableFuture<>());
+        return config.getAsyncClient().request(this,
+                r -> new ObjectResponse<>(getObjectMapper(), r, genericType),
+                new CompletableFuture<>(),
+                genericType.getTypeClass());
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType, Callback<T> callback) {
-
-        return config.getAsyncClient().request(this, r -> new ObjectResponse<>(getObjectMapper(), r, genericType), wrap(callback));
+        return config.getAsyncClient().request(this,
+                r -> new ObjectResponse<>(getObjectMapper(), r, genericType),
+                wrap(callback),
+                genericType.getTypeClass());
     }
 
     private <T> Function<RawResponse, HttpResponse<T>> funcResponse(Function<RawResponse, T> function) {
@@ -301,27 +307,33 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public void thenConsume(Consumer<RawResponse> consumer) {
-        config.getClient().request(this, getConsumer(consumer));
+        config.getClient().request(this, getConsumer(consumer), Object.class);
     }
 
     @Override
     public void thenConsumeAsync(Consumer<RawResponse> consumer) {
-        config.getAsyncClient().request(this, getConsumer(consumer), new CompletableFuture<>());
+        config.getAsyncClient().request(this, getConsumer(consumer), new CompletableFuture<>(), Object.class);
     }
 
     @Override
     public HttpResponse<File> asFile(String path) {
-        return config.getClient().request(this, r -> new FileResponse(r, path, downloadMonitor));
+        return config.getClient().request(this, r -> new FileResponse(r, path, downloadMonitor), File.class);
     }
 
     @Override
     public CompletableFuture<HttpResponse<File>> asFileAsync(String path) {
-        return config.getAsyncClient().request(this, r -> new FileResponse(r, path, downloadMonitor), new CompletableFuture<>());
+        return config.getAsyncClient().request(this,
+                r -> new FileResponse(r, path, downloadMonitor),
+                new CompletableFuture<>(),
+                File.class);
     }
 
     @Override
     public CompletableFuture<HttpResponse<File>> asFileAsync(String path, Callback<File> callback) {
-        return config.getAsyncClient().request(this, r -> new FileResponse(r, path, downloadMonitor), wrap(callback));
+        return config.getAsyncClient().request(this,
+                r -> new FileResponse(r, path, downloadMonitor),
+                wrap(callback),
+                File.class);
     }
 
     @Override
@@ -333,10 +345,9 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
             HttpResponse<T> next = mappingFunction.apply(this);
             all.add(next);
             nextLink = linkExtractor.apply(next);
-        }while (!Util.isNullOrEmpty(nextLink));
+        } while (!Util.isNullOrEmpty(nextLink));
         return all;
     }
-
 
 
     private Function<RawResponse, HttpResponse<Object>> getConsumer(Consumer<RawResponse> consumer) {
@@ -357,7 +368,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     private String escape(String string) {
-        return string.replaceAll(" ","%20").replaceAll("\t","%09");
+        return string.replaceAll(" ", "%20").replaceAll("\t", "%09");
     }
 
     @Override
@@ -389,8 +400,8 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         return new RequestSummary(this);
     }
 
-    private <T> T valueOr(T x, Supplier<T> o){
-        if(x != null){
+    private <T> T valueOr(T x, Supplier<T> o) {
+        if (x != null) {
             return x;
         }
         return o.get();
@@ -402,8 +413,12 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) { return true;}
-        if (o == null || getClass() != o.getClass()) {return false;}
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         BaseRequest<?> that = (BaseRequest<?>) o;
         return Objects.equals(headers, that.headers) &&
                 Objects.equals(method, that.method) &&

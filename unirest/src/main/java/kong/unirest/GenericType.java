@@ -72,4 +72,8 @@ public abstract class GenericType<T> implements Comparable<GenericType<T>> {
     public int compareTo(GenericType<T> o) {
         return 0;
     }
+
+    public Class<?> getTypeClass(){
+        return this.type.getClass();
+    }
 }

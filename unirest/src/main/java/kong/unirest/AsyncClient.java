@@ -26,7 +26,6 @@
 package kong.unirest;
 
 
-
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -35,7 +34,7 @@ public interface AsyncClient {
     /**
      * @param <T> the underlying client
      * @return the underlying client if this instance is wrapping another library (like Apache).
-      */
+     */
     <T> T getClient();
 
     /**
@@ -45,8 +44,28 @@ public interface AsyncClient {
      * @param transformer the function to transform the response
      * @param callback the CompletableFuture that will handle the eventual response
      * @return a CompletableFuture of a response
+     * @deprecated use the version with the resultType
      */
-    <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, CompletableFuture<HttpResponse<T>> callback);
+    @Deprecated
+    <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request,
+                                                   Function<RawResponse, HttpResponse<T>> transformer,
+                                                   CompletableFuture<HttpResponse<T>> callback);
+
+    /**
+     * Make a Async request
+     * @param <T> The type of the body
+     * @param request the prepared request object
+     * @param transformer the function to transform the response
+     * @param callback the CompletableFuture that will handle the eventual response
+     * @param resultType the final body result type. This is a hint to downstream systems to make up for type erasure.
+     * @return a CompletableFuture of a response
+     */
+    default <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request,
+                                                   Function<RawResponse, HttpResponse<T>> transformer,
+                                                   CompletableFuture<HttpResponse<T>> callback,
+                                                   Class<?> resultType){
+        return request(request, transformer, callback);
+    }
 
     /**
      * @return a stream of exceptions possibly thrown while closing all the things.

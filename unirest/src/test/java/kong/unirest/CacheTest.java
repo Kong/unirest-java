@@ -49,8 +49,8 @@ class CacheTest {
     @Test
     void cacheSameRequests() {
         assertSame(
-                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/"), null),
-                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/"), null)
+                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/"), null, Object.class),
+                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/"), null, Object.class)
         );
 
         assertEquals(1, client.invokes);
@@ -59,21 +59,32 @@ class CacheTest {
     @Test
     void cacheSameRequestsAsync() {
         assertSame(
-                cache.wrapAsync(client).request(new HttpRequestNoBody(config, GET, "/"), null,null),
-                cache.wrapAsync(client).request(new HttpRequestNoBody(config, GET, "/"), null,null)
+                cache.wrapAsync(client).request(new HttpRequestNoBody(config, GET, "/"), null,null, Empty.class),
+                cache.wrapAsync(client).request(new HttpRequestNoBody(config, GET, "/"), null,null, Empty.class)
         );
 
         assertEquals(1, client.invokes);
     }
 
+
     @Test
     void asyncAndSyncrequestsAreDifferent() {
         assertNotSame(
-                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/"), null),
-                cache.wrapAsync(client).request(new HttpRequestNoBody(config, GET, "/"), null,null)
+                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/"), null, Object.class),
+                cache.wrapAsync(client).request(new HttpRequestNoBody(config, GET, "/"), null, null, Object.class)
         );
 
         assertEquals(2, client.invokes);
+    }
+
+    @Test
+    void responsesWillCacheRegardlessOfResponseType() {
+        assertSame(
+                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/"), r -> new StringResponse(new MockRawResponse(), ""), String.class),
+                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/"), r -> new BasicResponse(new MockRawResponse(), ""), Empty.class)
+        );
+
+        assertEquals(1, client.invokes);
     }
 
     private class MockClient implements Client, AsyncClient {

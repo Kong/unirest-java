@@ -33,6 +33,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 
+
 public class Cache {
     private CacheWrapper wrapper = new CacheWrapper();
     private AsyncWrapper asyncWrapper = new AsyncWrapper();
@@ -51,8 +52,8 @@ public class Cache {
         return asyncWrapper;
     }
 
-    private int getHash(HttpRequest request, Boolean isAsync) {
-        return Objects.hash(request.hashCode(), isAsync);
+    private <T> int  getHash(HttpRequest request, Boolean isAsync, Class<?> responseType) {
+        return Objects.hash(request.hashCode(), isAsync, responseType);
     }
 
     class CacheWrapper implements Client {
@@ -64,7 +65,15 @@ public class Cache {
 
         @Override
         public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
-            return (HttpResponse<T>) map.computeIfAbsent(getHash(request, false), r -> originalClient.request(request, transformer));
+            return request(request, transformer, Object.class);
+        }
+
+        @Override
+        public <T> HttpResponse<T> request(HttpRequest request,
+                                           Function<RawResponse, HttpResponse<T>> transformer,
+                                           Class<?> responseType) {
+            return (HttpResponse<T>) map.computeIfAbsent(getHash(request, false, responseType),
+                    r -> originalClient.request(request, transformer, responseType));
         }
 
         @Override
@@ -84,8 +93,19 @@ public class Cache {
         }
 
         @Override
-        public <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, CompletableFuture<HttpResponse<T>> callback) {
-            return (CompletableFuture<HttpResponse<T>>)map.computeIfAbsent(getHash(request, true), k -> originalAsync.request(request, transformer, callback));
+        public <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request,
+                                                              Function<RawResponse, HttpResponse<T>> transformer,
+                                                              CompletableFuture<HttpResponse<T>> callback) {
+            return request(request, transformer, callback, Object.class);
+        }
+
+        @Override
+        public <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request,
+                                                              Function<RawResponse, HttpResponse<T>> transformer,
+                                                              CompletableFuture<HttpResponse<T>> callback,
+                                                              Class<?> responseType) {
+            return (CompletableFuture<HttpResponse<T>>)map.computeIfAbsent(getHash(request, true, responseType),
+                    k -> originalAsync.request(request, transformer, callback, responseType));
         }
 
         @Override

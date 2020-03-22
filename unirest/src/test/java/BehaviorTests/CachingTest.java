@@ -25,12 +25,15 @@
 
 package BehaviorTests;
 
+import com.google.common.collect.Sets;
 import kong.unirest.Unirest;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CachingTest extends BddTest {
 
@@ -62,5 +65,40 @@ public class CachingTest extends BddTest {
 
         assertEquals(1,  MockServer.timesCalled);
         assertEquals(r1, r2);
+    }
+
+    @Test
+    void theSameRequestForDifferentTypesAreDifferent() {
+        Unirest.config().cacheResponses(true);
+
+        assertSame(
+                Unirest.get(MockServer.GET).asString(),
+                Unirest.get(MockServer.GET).asString()
+        );
+
+        assertNotSame(
+                Unirest.get(MockServer.GET).asString(),
+                Unirest.get(MockServer.GET).asObject(RequestCapture.class)
+        );
+
+        assertEquals(2, MockServer.timesCalled);
+    }
+
+    @Test
+    void allTheTypesAreUniqueSnowflakes() {
+        Unirest.config().cacheResponses(true);
+
+        assertNull(Unirest.get(MockServer.GET).asEmpty().getBody());
+        assertNull(Unirest.get(MockServer.GET).asEmpty().getBody());
+        assertNotNull(Unirest.get(MockServer.GET).asObject(RequestCapture.class).getBody());
+        assertNotNull(Unirest.get(MockServer.GET).asObject(RequestCapture.class).getBody());
+        assertNotNull(Unirest.get(MockServer.GET).asString().getBody());
+        assertNotNull(Unirest.get(MockServer.GET).asString().getBody());
+        assertNotNull(Unirest.get(MockServer.GET).asJson().getBody());
+        assertNotNull(Unirest.get(MockServer.GET).asJson().getBody());
+        assertNotNull(Unirest.get(MockServer.GET).asBytes().getBody());
+        assertNotNull(Unirest.get(MockServer.GET).asBytes().getBody());
+
+        assertEquals(5, MockServer.timesCalled);
     }
 }
