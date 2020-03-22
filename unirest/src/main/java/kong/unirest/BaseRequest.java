@@ -399,4 +399,19 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     Path getPath() {
         return url;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) { return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
+        BaseRequest<?> that = (BaseRequest<?>) o;
+        return Objects.equals(headers, that.headers) &&
+                Objects.equals(method, that.method) &&
+                Objects.equals(url, that.url);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(headers, method, url);
+    }
 }

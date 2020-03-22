@@ -52,6 +52,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RequestCapture {
+    public String requestId = UUID.randomUUID().toString();
     public ListMultimap<String, String> headers = LinkedListMultimap.create();
     public List<FormPart> files = new ArrayList<>();
     public ArrayListMultimap<String, String> params = ArrayListMultimap.create();

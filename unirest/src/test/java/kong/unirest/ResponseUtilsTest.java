@@ -30,10 +30,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -43,7 +39,7 @@ public class ResponseUtilsTest {
     @Mock
     private Config config;
     @InjectMocks
-    TestResponse test;
+    MockRawResponse test;
 
     @Test
     public void getCharsetDefaults() {
@@ -78,72 +74,4 @@ public class ResponseUtilsTest {
         return test.getCharSet();
     }
 
-    public static class TestResponse extends RawResponseBase {
-
-        public String type;
-
-        protected TestResponse(Config config) {
-            super(config);
-        }
-
-        @Override
-        public int getStatus() {
-            return 0;
-        }
-
-        @Override
-        public String getStatusText() {
-            return null;
-        }
-
-        @Override
-        public Headers getHeaders() {
-            return null;
-        }
-
-        @Override
-        public InputStream getContent() {
-            return null;
-        }
-
-        @Override
-        public byte[] getContentAsBytes() {
-            return new byte[0];
-        }
-
-        @Override
-        public String getContentAsString() {
-            return null;
-        }
-
-        @Override
-        public String getContentAsString(String charset) {
-            return null;
-        }
-
-        @Override
-        public InputStreamReader getContentReader() {
-            return null;
-        }
-
-        @Override
-        public boolean hasContent() {
-            return false;
-        }
-
-        @Override
-        public String getContentType() {
-            return type;
-        }
-
-        @Override
-        public String getEncoding() {
-            return null;
-        }
-
-        @Override
-        public HttpResponseSummary toSummary() {
-            return null;
-        }
-    }
 }

@@ -47,6 +47,7 @@ import java.util.stream.Stream;
 import static spark.Spark.*;
 
 public class MockServer {
+    public static int timesCalled;
     private static int pages = 1;
 	private static int onPage = 1;
 	private static final List<Pair<String,String>> responseHeaders = new ArrayList<>();
@@ -88,12 +89,14 @@ public class MockServer {
 		cookies.clear();
 		pages = 1;
 		onPage = 1;
+		timesCalled = 0;
 	}
 
 	static {
 		port(PORT);
 		Spark.staticFileLocation("data");
 		Spark.notFound(MockServer::notFound);
+		Spark.before((p,f) -> timesCalled++);
 		delete("/delete", MockServer::jsonResponse);
 		get("/sparkle/:spark/yippy", MockServer::sparkle);
 		post("/post", MockServer::jsonResponse);

@@ -87,6 +87,7 @@ public class Config {
     private Interceptor interceptor = new DefaultInterceptor();
     private HostnameVerifier hostnameVerifier;
     private String defaultBaseUrl;
+    private Cache cache;
 
     public Config() {
         setDefaults();
@@ -537,6 +538,18 @@ public class Config {
     }
 
     /**
+     * Enable Response Caching with default options
+     * @param value enable or disable response caching
+     */
+    public void cacheResponses(boolean value) {
+        if(value){
+            this.cache = Cache.DEFAULT;
+        } else {
+            this.cache = null;
+        }
+    }
+
+    /**
      * Set the default encoding that will be used for serialization into Strings.
      * The default-default is UTF-8
      *
@@ -671,7 +684,15 @@ public class Config {
         if (!client.isPresent()) {
             buildClient();
         }
-        return client.get();
+        return getFinalClient();
+    }
+
+    private Client getFinalClient(){
+        if(cache == null){
+            return client.get();
+        } else {
+            return cache.wrap(client.get());
+        }
     }
 
     private synchronized void buildClient() {
