@@ -33,17 +33,21 @@ import java.util.stream.Stream;
 
 
 public class Cache {
-    public static final Cache DEFAULT = new Cache();
     private CacheWrapper wrapper = new CacheWrapper();
     private AsyncWrapper asyncWrapper = new AsyncWrapper();
     private CacheMap map = new CacheMap(100);
 
     private Client originalClient;
-    private AsyncClient asyncClient;
+    private AsyncClient originalAsync;
 
     Client wrap(Client client) {
         this.originalClient = client;
         return wrapper;
+    }
+
+    public AsyncClient wrapAsync(AsyncClient client) {
+        this.originalAsync = client;
+        return asyncWrapper;
     }
 
     class CacheWrapper implements Client {
@@ -71,32 +75,32 @@ public class Cache {
     private class AsyncWrapper implements AsyncClient {
         @Override
         public <T> T getClient() {
-            return asyncClient.getClient();
+            return originalAsync.getClient();
         }
 
         @Override
         public <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, CompletableFuture<HttpResponse<T>> callback) {
-            return asyncClient.request(request, transformer, callback);
+            return (CompletableFuture<HttpResponse<T>>)map.computeIfAbsent(request.hashCode(), k -> originalAsync.request(request, transformer, callback));
         }
 
         @Override
         public void registerShutdownHook() {
-            asyncClient.registerShutdownHook();
+            originalAsync.registerShutdownHook();
         }
 
         @Override
         public Stream<Exception> close() {
-            return asyncClient.close();
+            return originalAsync.close();
         }
 
         @Override
         public boolean isRunning() {
-            return asyncClient.isRunning();
+            return originalAsync.isRunning();
         }
     }
 
 
-    private class CacheMap<R extends HttpRequest, T> extends LinkedHashMap<Integer, HttpResponse<T>> {
+    private class CacheMap<R extends HttpRequest, T> extends LinkedHashMap<Integer, Object> {
         private final int maxSize;
 
         public CacheMap(int maxSize) {
@@ -104,7 +108,7 @@ public class Cache {
         }
 
         @Override
-        protected boolean removeEldestEntry(Map.Entry<Integer, HttpResponse<T>> eldest) {
+        protected boolean removeEldestEntry(Map.Entry<Integer, Object> eldest) {
             return size() > maxSize;
         }
     }

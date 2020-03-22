@@ -28,11 +28,14 @@ package BehaviorTests;
 import kong.unirest.Unirest;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.ExecutionException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CachingTest extends BddTest {
+
     @Test
-    void doesNotCacheByDefault() {
+    public void doesNotCacheByDefault() {
         Unirest.get(MockServer.GET).asEmpty();
         Unirest.get(MockServer.GET).asEmpty();
 
@@ -40,11 +43,22 @@ public class CachingTest extends BddTest {
     }
 
     @Test
-    void canCacheEqualResponses() {
+    public void canCacheResponsesForEqualRequests() {
         Unirest.config().cacheResponses(true);
 
         String r1 = Unirest.get(MockServer.GET).asObject(RequestCapture.class).getBody().requestId;
         String r2 = Unirest.get(MockServer.GET).asObject(RequestCapture.class).getBody().requestId;
+
+        assertEquals(1,  MockServer.timesCalled);
+        assertEquals(r1, r2);
+    }
+
+    @Test
+    public void canCacheResponsesForEqualRequests_async() throws Exception {
+        Unirest.config().cacheResponses(true);
+
+        String r1 = Unirest.get(MockServer.GET).asObjectAsync(RequestCapture.class).get().getBody().requestId;
+        String r2 = Unirest.get(MockServer.GET).asObjectAsync(RequestCapture.class).get().getBody().requestId;
 
         assertEquals(1,  MockServer.timesCalled);
         assertEquals(r1, r2);

@@ -41,7 +41,7 @@ class CacheTest {
 
     @BeforeEach
     void setUp() {
-        cache = Cache.DEFAULT;
+        cache = new Cache();
         client = new MockClient();
     }
 
@@ -50,6 +50,16 @@ class CacheTest {
         assertSame(
                 cache.wrap(client).request(new HttpRequestNoBody(config, HttpMethod.GET, "/"), null),
                 cache.wrap(client).request(new HttpRequestNoBody(config, HttpMethod.GET, "/"), null)
+        );
+
+        assertEquals(1, client.invokes);
+    }
+
+    @Test
+    void cacheSameRequestsAsync() {
+        assertSame(
+                cache.wrapAsync(client).request(new HttpRequestNoBody(config, HttpMethod.GET, "/"), null,null),
+                cache.wrapAsync(client).request(new HttpRequestNoBody(config, HttpMethod.GET, "/"), null,null)
         );
 
         assertEquals(1, client.invokes);
