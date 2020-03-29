@@ -25,20 +25,19 @@
 
 package BehaviorTests;
 
-import com.google.common.collect.Sets;
+import kong.unirest.Cache;
 import kong.unirest.Unirest;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
+import java.util.stream.IntStream;
 
+import static kong.unirest.Cache.builder;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CachingTest extends BddTest {
 
     @Test
-    public void doesNotCacheByDefault() {
+    void doesNotCacheByDefault() {
         Unirest.get(MockServer.GET).asEmpty();
         Unirest.get(MockServer.GET).asEmpty();
 
@@ -46,7 +45,7 @@ public class CachingTest extends BddTest {
     }
 
     @Test
-    public void canCacheResponsesForEqualRequests() {
+    void canCacheResponsesForEqualRequests() {
         Unirest.config().cacheResponses(true);
 
         String r1 = Unirest.get(MockServer.GET).asObject(RequestCapture.class).getBody().requestId;
@@ -57,7 +56,7 @@ public class CachingTest extends BddTest {
     }
 
     @Test
-    public void canCacheResponsesForEqualRequests_async() throws Exception {
+    void canCacheResponsesForEqualRequests_async() throws Exception {
         Unirest.config().cacheResponses(true);
 
         String r1 = Unirest.get(MockServer.GET).asObjectAsync(RequestCapture.class).get().getBody().requestId;
@@ -100,5 +99,26 @@ public class CachingTest extends BddTest {
         assertNotNull(Unirest.get(MockServer.GET).asBytes().getBody());
 
         assertEquals(5, MockServer.timesCalled);
+    }
+
+    @Test
+    void canSetAMaxDepthOfCache() {
+        Unirest.config().cacheResponses(builder().depth(5));
+
+        IntStream.range(0,10).forEach(i -> {
+            Unirest.get(MockServer.GET).queryString("no",i).asEmpty();
+            Unirest.get(MockServer.GET).queryString("no",i).asEmpty();
+        });
+
+        IntStream.range(5,10).forEach(i -> {
+            Unirest.get(MockServer.GET).queryString("no",i).asEmpty();
+            Unirest.get(MockServer.GET).queryString("no",i).asEmpty();
+        });
+
+        assertEquals(10, MockServer.timesCalled);
+
+        Unirest.get(MockServer.GET).queryString("no",0).asEmpty();
+
+        assertEquals(11, MockServer.timesCalled);
     }
 }

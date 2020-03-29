@@ -551,6 +551,14 @@ public class Config {
     }
 
     /**
+     * Enable Response Caching with custom options
+     * @param value enable or disable response caching
+     */
+    public void cacheResponses(Cache.Builder value) {
+        this.cache = value.build();
+    }
+
+    /**
      * Set the default encoding that will be used for serialization into Strings.
      * The default-default is UTF-8
      *

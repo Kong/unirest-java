@@ -35,12 +35,21 @@ import java.util.stream.Stream;
 
 
 public class Cache {
+
     private CacheWrapper wrapper = new CacheWrapper();
     private AsyncWrapper asyncWrapper = new AsyncWrapper();
     private CacheMap map = new CacheMap(100);
 
     private Client originalClient;
     private AsyncClient originalAsync;
+
+    public Cache() {
+        this(100);
+    }
+
+    public Cache(int depth) {
+        map = new CacheMap(depth);
+    }
 
     Client wrap(Client client) {
         this.originalClient = client;
@@ -124,17 +133,32 @@ public class Cache {
         }
     }
 
-
     private class CacheMap<R extends HttpRequest, T> extends LinkedHashMap<Integer, Object> {
         private final int maxSize;
 
-        public CacheMap(int maxSize) {
+        CacheMap(int maxSize) {
             this.maxSize = maxSize;
         }
 
         @Override
         protected boolean removeEldestEntry(Map.Entry<Integer, Object> eldest) {
             return size() > maxSize;
+        }
+    }
+
+    public static Builder builder(){
+        return new Builder();
+    }
+    public static class Builder {
+        private int depth = 100;
+
+        public Cache build() {
+            return new Cache(depth);
+        }
+
+        public Builder depth(int value) {
+            this.depth = value;
+            return this;
         }
     }
 }
