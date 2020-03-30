@@ -52,6 +52,13 @@ public class JSONPointerTest {
     }
 
     @Test
+    public void invalidPathQuery_downpath() {
+        TestUtil.assertException(() -> obj.query("/shwoop/dedoop"),
+                JSONPointerException.class,
+                "Path Segment Missing: shwoop");
+    }
+
+    @Test
     public void arrayPartThatDoesNotExist() {
         TestUtil.assertException(() -> obj.query("/foo/5"),
                 JSONPointerException.class,

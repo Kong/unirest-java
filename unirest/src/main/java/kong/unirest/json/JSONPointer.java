@@ -178,6 +178,9 @@ public class JSONPointer {
         Queryable e = verify(object);
         Object o = e.querySection(section);
         if (next != null) {
+            if(o == null){
+                throw new JSONPointerException("Path Segment Missing: " + section);
+            }
             return next.queryFrom(o);
         }
         return o;
