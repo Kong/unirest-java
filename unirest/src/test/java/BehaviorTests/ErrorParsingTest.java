@@ -50,6 +50,17 @@ public class ErrorParsingTest extends BddTest {
     }
 
     @Test
+    public void mapTheErrorToAString() {
+        MockServer.setJsonAsResponse(new ErrorThing("boom!"));
+
+        String e = Unirest.get(MockServer.ERROR_RESPONSE)
+                .asObject(RequestCapture.class)
+                .mapError(String.class);
+
+        assertEquals("{\"message\":\"boom!\"}", e);
+    }
+
+    @Test
     public void parsingAnAlternativeErrorObject_StringBody() {
         MockServer.setJsonAsResponse(new ErrorThing("boom!"));
 

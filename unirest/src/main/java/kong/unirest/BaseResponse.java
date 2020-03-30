@@ -118,6 +118,9 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     public <E> E mapError(Class<? extends E> errorClass) {
         if (!isSuccess()) {
             String errorBody = getErrorBody();
+            if(String.class.equals(errorClass)){
+                return (E) errorBody;
+            }
             try {
                 return config.getObjectMapper().readValue(errorBody, errorClass);
             } catch (RuntimeException e) {
