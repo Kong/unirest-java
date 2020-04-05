@@ -184,7 +184,7 @@ public class Cache {
         }
     }
 
-    public static class Key {
+    private static class Key {
         private final int hash;
         private final Instant time;
 
@@ -195,8 +195,8 @@ public class Cache {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {return true;}
+            if (o == null || getClass() != o.getClass()) {return false;}
             Key key = (Key) o;
             return hash == key.hash;
         }
