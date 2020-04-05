@@ -588,7 +588,7 @@ If you have some other need you can supply your own Object mapper by implementin
 ## Metrics
 Unirest has hooks for collecting metrics on your runtime code. This is a simple and lightweight framework that marks two events:
    1. The moment just before the actual request is made
-   1. The moment just after the actual request is make
+   1. The moment just after the actual request is made
 
 Context information like method and request path are given to you so that you can collect based on whatever your needs are.
 In its simplest form it might look like this:
