@@ -26,6 +26,7 @@
 package kong.unirest;
 
 import java.io.File;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -430,4 +431,9 @@ public interface HttpRequest<R extends HttpRequest>  {
      * @return a summary for the response, used in metrics
      */
     HttpRequestSummary toSummary();
+
+    /**
+     * @return the instant the request object was created in UTC (not when it was sent).
+     */
+    Instant getCreationTime();
 }

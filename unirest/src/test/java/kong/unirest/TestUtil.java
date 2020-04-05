@@ -35,6 +35,7 @@ import com.google.common.io.Resources;
 
 import java.io.*;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -179,6 +180,14 @@ public class TestUtil {
             return supplier.get();
         }
         return t;
+    }
+
+    public static void freeze(Instant now) {
+        Util.freezeClock(now);
+    }
+
+    public static void reset() {
+        Util.resetClock();
     }
 
     @FunctionalInterface

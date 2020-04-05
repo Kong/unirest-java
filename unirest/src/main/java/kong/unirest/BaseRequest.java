@@ -26,6 +26,7 @@
 package kong.unirest;
 
 import java.io.File;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -36,6 +37,7 @@ import static kong.unirest.CallbackFuture.wrap;
 
 abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
+    private Instant creation = Util.now();
     private Optional<ObjectMapper> objectMapper = Optional.empty();
     private String responseEncoding;
     protected Headers headers = new Headers();
@@ -398,6 +400,11 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public HttpRequestSummary toSummary() {
         return new RequestSummary(this);
+    }
+
+    @Override
+    public Instant getCreationTime() {
+        return creation;
     }
 
     private <T> T valueOr(T x, Supplier<T> o) {

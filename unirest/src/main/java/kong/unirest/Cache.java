@@ -25,10 +25,13 @@
 
 package kong.unirest;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -36,19 +39,19 @@ import java.util.stream.Stream;
 
 public class Cache {
 
-    private CacheWrapper wrapper = new CacheWrapper();
-    private AsyncWrapper asyncWrapper = new AsyncWrapper();
-    private CacheMap map = new CacheMap(100);
+    private final CacheWrapper wrapper = new CacheWrapper();
+    private final AsyncWrapper asyncWrapper = new AsyncWrapper();
+    private final CacheMap map;
 
     private Client originalClient;
     private AsyncClient originalAsync;
 
     public Cache() {
-        this(100);
+        this(100, 0);
     }
 
-    public Cache(int depth) {
-        map = new CacheMap(depth);
+    public Cache(int depth, long ttl) {
+        map = new CacheMap(depth, ttl);
     }
 
     Client wrap(Client client) {
@@ -61,8 +64,8 @@ public class Cache {
         return asyncWrapper;
     }
 
-    private <T> int  getHash(HttpRequest request, Boolean isAsync, Class<?> responseType) {
-        return Objects.hash(request.hashCode(), isAsync, responseType);
+    private <T> Key  getHash(HttpRequest request, Boolean isAsync, Class<?> responseType) {
+        return new Key(request, isAsync, responseType);
     }
 
     class CacheWrapper implements Client {
@@ -81,6 +84,7 @@ public class Cache {
         public <T> HttpResponse<T> request(HttpRequest request,
                                            Function<RawResponse, HttpResponse<T>> transformer,
                                            Class<?> responseType) {
+
             return (HttpResponse<T>) map.computeIfAbsent(getHash(request, false, responseType),
                     r -> originalClient.request(request, transformer, responseType));
         }
@@ -133,15 +137,26 @@ public class Cache {
         }
     }
 
-    private class CacheMap<R extends HttpRequest, T> extends LinkedHashMap<Integer, Object> {
+    private class CacheMap extends LinkedHashMap<Key, Object> {
         private final int maxSize;
+        private long ttl;
 
-        CacheMap(int maxSize) {
+        CacheMap(int maxSize, long ttl) {
             this.maxSize = maxSize;
+            this.ttl = ttl;
         }
 
         @Override
-        protected boolean removeEldestEntry(Map.Entry<Integer, Object> eldest) {
+        public Object computeIfAbsent(Key key, Function<? super Key, ?> mappingFunction) {
+            if(ttl > 0) {
+                Instant now = Util.now();
+                keySet().removeIf(k -> ChronoUnit.MILLIS.between(k.getTime(), now) > ttl);
+            }
+            return super.computeIfAbsent(key, mappingFunction);
+        }
+
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<Key, Object> eldest) {
             return size() > maxSize;
         }
     }
@@ -149,16 +164,50 @@ public class Cache {
     public static Builder builder(){
         return new Builder();
     }
+
     public static class Builder {
         private int depth = 100;
+        private long ttl = 0;
 
         public Cache build() {
-            return new Cache(depth);
+            return new Cache(depth, ttl);
         }
 
         public Builder depth(int value) {
             this.depth = value;
             return this;
+        }
+
+        public Builder maxAge(long number, TimeUnit units) {
+            this.ttl = units.toMillis(number);
+            return this;
+        }
+    }
+
+    public static class Key {
+        private final int hash;
+        private final Instant time;
+
+        public Key(HttpRequest request, Boolean isAsync, Class<?> responseType) {
+            hash = Objects.hash(request.hashCode(), isAsync, responseType);
+            time = request.getCreationTime();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Key key = (Key) o;
+            return hash == key.hash;
+        }
+
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+
+        public Instant getTime() {
+            return time;
         }
     }
 }

@@ -29,11 +29,26 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 class Util {
+    private static Supplier<Instant> clock = Instant::now;
+
+    static void freezeClock(Instant instant){
+        clock = () -> instant;
+    }
+
+    static void resetClock(){
+        clock = Instant::now;
+    }
+
+    static Instant now(){
+        return clock.get();
+    }
 
     static <T, M extends T> Optional<M> tryCast(T original, Class<M> too) {
         if (original != null && too.isAssignableFrom(original.getClass())) {

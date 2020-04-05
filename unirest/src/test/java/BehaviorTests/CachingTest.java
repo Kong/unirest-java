@@ -25,10 +25,13 @@
 
 package BehaviorTests;
 
-import kong.unirest.Cache;
+import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static kong.unirest.Cache.builder;
@@ -120,5 +123,24 @@ public class CachingTest extends BddTest {
         Unirest.get(MockServer.GET).queryString("no",0).asEmpty();
 
         assertEquals(11, MockServer.timesCalled);
+    }
+
+    @Test
+    void canSetATTLOfACacheEntry() {
+        Instant now = Instant.now();
+        TestUtil.freeze(now);
+
+        Unirest.config().cacheResponses(builder().maxAge(5, TimeUnit.MINUTES));
+
+        Unirest.get(MockServer.GET).asEmpty();
+        Unirest.get(MockServer.GET).asEmpty();
+
+        assertEquals(1, MockServer.timesCalled);
+
+        TestUtil.freeze(now.plus(10, ChronoUnit.MINUTES));
+
+        Unirest.get(MockServer.GET).asEmpty();
+
+        assertEquals(2, MockServer.timesCalled);
     }
 }
