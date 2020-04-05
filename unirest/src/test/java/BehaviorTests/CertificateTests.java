@@ -43,6 +43,7 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.http.util.EntityUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.net.ssl.SSLContext;
@@ -54,7 +55,7 @@ import java.security.KeyStore;
 
 import static org.junit.Assert.assertEquals;
 
-//@Ignore // dont normally run these because they depend on badssl.com
+@Ignore // dont normally run these because they depend on badssl.com
 public class CertificateTests extends BddTest {
 
     @Test
@@ -187,7 +188,7 @@ public class CertificateTests extends BddTest {
                 SSLPeerUnverifiedException.class,
                 "javax.net.ssl.SSLPeerUnverifiedException: " +
                         "Host name 'wrong.host.badssl.com' does not match the certificate subject provided by the peer " +
-                        "(CN=*.badssl.com, O=Lucas Garron, L=Walnut Creek, ST=California, C=US)");
+                        "(CN=*.badssl.com, O=Lucas Garron Torres, L=Walnut Creek, ST=California, C=US)");
         disableSsl();
         canCallAsync("https://wrong.host.badssl.com/");
     }

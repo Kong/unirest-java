@@ -29,7 +29,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <jackson.version>2.10.2</jackson.version>
         <main.dir>${project.basedir}</main.dir>
-        <junit.version>5.6.0</junit.version>
+        <junit.version>5.6.1</junit.version>
     </properties>
 
     <scm>
@@ -114,8 +114,11 @@
                         <exclude>**/*.yml</exclude>
                         <exclude>.idea/**</exclude>
                         <exclude>.github/**</exclude>
+                        <exclude>**/*.scssc</exclude>
+                        <exclude>**/.jekyll-metadata</exclude>
                         <exclude>.git*</exclude>
                         <exclude>LICENSE</exclude>
+                        <exclude>Gemfile.lock</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -168,6 +171,16 @@
                     <consoleOutput>true</consoleOutput>
                     <linkXRef>false</linkXRef>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.22.2</version>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -385,6 +398,12 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>

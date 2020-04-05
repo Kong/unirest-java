@@ -26,8 +26,10 @@
 package BehaviorTests;
 
 import kong.unirest.Unirest;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
@@ -44,7 +46,8 @@ public class DownloadProgressTest extends BddTest {
 
     private TestMonitor monitor;
 
-    @Override
+    @Before
+    @BeforeEach
     public void setUp() {
         super.setUp();
         this.monitor = new TestMonitor();

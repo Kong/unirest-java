@@ -39,6 +39,7 @@ import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.defaultIfNull;
 import static kong.unirest.TestUtil.rezFile;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 class TestMonitor implements ProgressMonitor {
     public File spidey = rezFile("/spidey.jpg");
@@ -75,24 +76,13 @@ class TestMonitor implements ProgressMonitor {
     public void assertSpideyFileUpload(String name) {
         Stats stat = get(name);
         assertEquals("Wrong Expected Length", spidey.length(), stat.total);
-        assertEquals(12, stat.timesCalled);
-        assertEquals(asList(
-                4096L, 8192L, 12288L, 16384L,
-                20480L, 24576L, 28672L, 32768L,
-                36864L, 40960L, 45056L, 46246L),
-                stat.progress);
+        assertTrue(stat.timesCalled > 1);
     }
 
     public void assertSpideyFileDownload(String name) {
         Stats stat = get(name);
         assertEquals("Wrong Expected Length", spidey.length(), stat.total);
-        assertEquals(14, stat.timesCalled);
-        assertEquals(asList(
-                8192L, 16384L, 24576L, 32768L,
-                40960L, 49152L, 57344L, 65536L,
-                73728L, 81920L, 87206L, 92492L,
-                92491L, 92490L),
-                stat.progress);
+        assertTrue(stat.timesCalled > 1);
     }
 
     static class Stats {
