@@ -35,8 +35,6 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.apache.http.nio.client.HttpAsyncClient;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -46,6 +44,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.security.KeyStore;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
@@ -149,8 +148,12 @@ public class ConfigTest {
     @Test
     public void settingTTl() {
         assertEquals(-1, config.getTTL());
+
         assertEquals(42, config.connectionTTL(42, TimeUnit.MILLISECONDS).getTTL());
         assertEquals(2520000, config.connectionTTL(42, TimeUnit.MINUTES).getTTL());
+
+        assertEquals(43, config.connectionTTL(Duration.ofMillis(43)).getTTL());
+        assertEquals(2580000, config.connectionTTL(Duration.ofMinutes(43)).getTTL());
     }
 
     @Test

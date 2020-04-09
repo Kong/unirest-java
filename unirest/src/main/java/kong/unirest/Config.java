@@ -36,6 +36,7 @@ import javax.net.ssl.SSLContext;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -558,6 +559,20 @@ public class Config {
      */
     public Config connectionTTL(long duration, TimeUnit unit) {
         this.ttl = unit.toMillis(duration);
+        return this;
+    }
+
+
+    /**
+     * Sugar!
+     * Total time to live (TTL)  defines maximum life span of persistent connections regardless of their expiration setting.
+     * No persistent connection will be re-used past its TTL value.
+     *
+     * @param duration of ttl.
+     * @return this config object
+     */
+    public Config connectionTTL(Duration duration){
+        this.ttl = duration.toMillis();
         return this;
     }
 

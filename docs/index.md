@@ -514,6 +514,7 @@ Changing Unirest's config should ideally be done once, or rarely. There are seve
 | ```clientCertificateStore(String,String)``` | Add a PKCS12 KeyStore by path for doing client certificates |  |
 | ```clientCertificateStore(KeyStore,String)``` | Add a PKCS12 KeyStore for doing client certificates |  |
 | ```connectionTTL(long,TimeUnit)``` | Total time to live (TTL)  defines maximum life span of persistent connections regardless of their expiration setting. No persistent connection will be re-used past its TTL value.| -1  |
+| ```connectionTTL(Duration)``` | Add total time to live (TTL) by [Duration](https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html). Good for moderns Java APIs. | -1  |
 | ```errorHandler(Consumer<HttpResponse<?>> consumer)``` | Set a global error handler that will be invoked for any status > 400 or a parsing error | | 
 | ```interceptor(Interceptor value)``` | Set a global Interceptor handler that will be invoked before and after each request | | 
 | ```hostNameVerifier(HostNameVerifier value)``` | Set a custom HostNameVerifier for the security configuration | DefaultHostNameVerifier | 
