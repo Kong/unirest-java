@@ -30,8 +30,17 @@ import kong.unirest.Unirest;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class GZipTest extends BddTest {
+    @Test
+    public void emptyGzip() {
+        HttpResponse<String> result = Unirest.post(MockServer.EMPTY_GZIP)
+                .asString();
+        assertFalse(result.getParsingError().isPresent());
+        assertEquals("", result.getBody());
+    }
+
     @Test
     public void testGzip() {
         HttpResponse<RequestCapture> resp = Unirest.get(MockServer.GZIP)
