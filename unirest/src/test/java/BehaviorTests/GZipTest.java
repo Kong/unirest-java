@@ -26,14 +26,11 @@
 package BehaviorTests;
 
 import kong.unirest.HttpResponse;
-import kong.unirest.ObjectMapper;
 import kong.unirest.Unirest;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-
-import java.util.Map;
 
 public class GZipTest extends BddTest {
     @Test
