@@ -38,24 +38,10 @@ import java.util.Map;
 public class GZipTest extends BddTest {
     @Test
     public void emptyGzip() {
-        ObjectMapper om = Unirest.config().getObjectMapper();
-        ObjectMapper omWithNull = new ObjectMapper() {
-          @Override
-          public <T> T readValue(String value, Class<T> valueType) {
-            return value == null || value.trim().isEmpty() ? null : om.readValue(value, valueType);
-          }
-          @Override
-          public String writeValue(Object value) {
-            return om.writeValue(value);
-          }
-        };
-        Unirest.config().setObjectMapper(omWithNull);
-        HttpResponse<Map<?,?>> resp = Unirest.post(MockServer.EMPTY_GZIP)
-                .header("Content-Type", "application/json")
-                .accept( "application/json")
-                .asObject(Map.class);
-        Unirest.config().setObjectMapper(om);
-        assertFalse(resp.getParsingError().isPresent());
+        HttpResponse<String> result = Unirest.post(MockServer.EMPTY_GZIP)
+                .asString();
+        assertFalse(result.getParsingError().isPresent());
+        assertEquals("", result.getBody());
     }
 
     @Test

@@ -199,7 +199,6 @@ public class MockServer {
     response.raw().setHeader("Content-Encoding", "gzip");
     response.raw().setContentType("application/json");
     response.raw().setStatus(200);
-    response.raw().getOutputStream().write(new byte[0]);
     response.raw().getOutputStream().close();
     return null;
   }

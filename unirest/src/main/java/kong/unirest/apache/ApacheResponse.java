@@ -81,12 +81,10 @@ class ApacheResponse extends RawResponseBase {
         }
         try {
             InputStream is = getContent();
-            byte[] bytes = getBytes(is);
-            if (bytes.length > 0 && isGzipped(getEncoding())) {
-              is = new GZIPInputStream(new ByteArrayInputStream(bytes));
-              return getBytes(is);
+            if (is.available() > 0 && isGzipped(getEncoding())) {
+              is = new GZIPInputStream(getContent());
             }
-            return bytes;
+            return getBytes(is);
         } catch (IOException e2) {
             throw new UnirestException(e2);
         } finally {
