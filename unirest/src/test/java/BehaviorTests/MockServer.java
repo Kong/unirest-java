@@ -68,6 +68,7 @@ public class MockServer {
 	public static final String ERROR_RESPONSE = HOST + "/error";
 	public static final String DELETE = HOST + "/delete";
 	public static final String GZIP = HOST + "/gzip";
+	public static final String EMPTY_GZIP = HOST + "/empty-gzip";
 	public static final String PATCH = HOST + "/patch";
 	public static final String INVALID_REQUEST = HOST + "/invalid";
 	public static final String PASSED_PATH_PARAM = GET + "/{params}/passed";
@@ -98,6 +99,7 @@ public class MockServer {
 		post("/post", MockServer::jsonResponse);
 		get("/get", MockServer::jsonResponse);
 		get("/gzip", MockServer::gzipResponse);
+		post("/empty-gzip", MockServer::emptyGzipResponse);
 		get("/redirect", MockServer::redirect);
 		patch("/patch", MockServer::jsonResponse);
 		get("/invalid", MockServer::inValid);
@@ -193,6 +195,15 @@ public class MockServer {
 		return "You did something bad";
 	}
 
+  private static Object emptyGzipResponse(Request request, Response response) throws Exception {
+    response.raw().setHeader("Content-Encoding", "gzip");
+    response.raw().setContentType("application/json");
+    response.raw().setStatus(200);
+    response.raw().getOutputStream().write(new byte[0]);
+    response.raw().getOutputStream().close();
+    return null;
+  }
+
 	private static Object gzipResponse(Request request, Response response) {
 		response.header("Content-Encoding", "gzip");
 		return jsonResponse(request, response);
@@ -248,7 +259,7 @@ public class MockServer {
 	}
 
 	public static void main(String[] args){
-		
+
 	}
 
 	public static void expectCookie(String name, String value) {

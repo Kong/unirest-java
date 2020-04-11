@@ -26,12 +26,38 @@
 package BehaviorTests;
 
 import kong.unirest.HttpResponse;
+import kong.unirest.ObjectMapper;
 import kong.unirest.Unirest;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
+import java.util.Map;
 
 public class GZipTest extends BddTest {
+    @Test
+    public void emptyGzip() {
+        ObjectMapper om = Unirest.config().getObjectMapper();
+        ObjectMapper omWithNull = new ObjectMapper() {
+          @Override
+          public <T> T readValue(String value, Class<T> valueType) {
+            return value == null || value.trim().isEmpty() ? null : om.readValue(value, valueType);
+          }
+          @Override
+          public String writeValue(Object value) {
+            return om.writeValue(value);
+          }
+        };
+        Unirest.config().setObjectMapper(omWithNull);
+        HttpResponse<Map<?,?>> resp = Unirest.post(MockServer.EMPTY_GZIP)
+                .header("Content-Type", "application/json")
+                .accept( "application/json")
+                .asObject(Map.class);
+        Unirest.config().setObjectMapper(om);
+        assertFalse(resp.getParsingError().isPresent());
+    }
+
     @Test
     public void testGzip() {
         HttpResponse<RequestCapture> resp = Unirest.get(MockServer.GZIP)
