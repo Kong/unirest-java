@@ -1,3 +1,11 @@
+## 3.7.02
+* Issue #348 Add 'Duration' as flavor to configure connection TTL
+* Issue #350 Parsing error occurs when POST response is empty gzip content type
+
+## 3.7.01
+* Issue #345 better error for path segment missing in JSONPointer
+* Support ```mapError``` to  map into a String
+
 ## 3.7.00
 * Issue #342: Add a default base URL configuration
 
