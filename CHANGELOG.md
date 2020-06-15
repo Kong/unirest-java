@@ -1,3 +1,6 @@
+## 3.7.03 (pending)
+*  fix defaultBaseUrl to return the config builder
+
 ## 3.7.02
 * Issue #348 Add 'Duration' as flavor to configure connection TTL
 * Issue #350 Parsing error occurs when POST response is empty gzip content type
