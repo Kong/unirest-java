@@ -601,9 +601,11 @@ public class Config {
      * and then calling Unirest with Unirest.get('/place')
      * will result in a path of 'https://somwehre/place'
      * @param value
+     * @return  this config object
      */
-    public void defaultBaseUrl(String value) {
+    public Config defaultBaseUrl(String value) {
         this.defaultBaseUrl = value;
+        return this;
     }
 
     /**
