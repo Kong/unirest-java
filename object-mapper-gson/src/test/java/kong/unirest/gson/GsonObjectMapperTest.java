@@ -49,6 +49,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 package kong.unirest.gson;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import kong.unirest.GenericType;
 import kong.unirest.gson.GsonObjectMapper;
 import org.junit.Test;
@@ -81,9 +83,9 @@ public class GsonObjectMapperTest {
                 TestMe.class);
 
         assertEquals("foo", test.text);
-        assertEquals(42, test.nmbr);
+        assertEquals(42, test.nmbr.intValue());
         assertEquals("bar", test.another.text);
-        assertEquals(666, test.another.nmbr);
+        assertEquals(666, test.another.nmbr.intValue());
         assertEquals(null, test.another.another);
     }
 
@@ -95,16 +97,28 @@ public class GsonObjectMapperTest {
         TestMe test = testList.get(0);
 
         assertEquals("foo", test.text);
-        assertEquals(42, test.nmbr);
+        assertEquals(42, test.nmbr.intValue());
         assertEquals("bar", test.another.text);
-        assertEquals(666, test.another.nmbr);
+        assertEquals(666, test.another.nmbr.intValue());
         assertEquals(null, test.another.another);
     }
 
+    @Test
+    public void serializeNulls() {
+        Gson gson = new GsonBuilder()
+                .serializeNulls()
+                .create();
+
+        om = new GsonObjectMapper(gson);
+
+        TestMe testMe = new TestMe(null, null, null);
+
+        assertEquals("{\"text\":null,\"nmbr\":null,\"another\":null}", om.writeValue(testMe));
+    }
 
     public static class TestMe {
         public String text;
-        public int nmbr;
+        public Integer nmbr;
         public TestMe another;
 
         public TestMe(){}
