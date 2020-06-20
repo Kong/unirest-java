@@ -1,4 +1,7 @@
-## 3.7.03 (pending)
+## 3.7.04
+* issue #357 Nulls are not serialized on JSONElement::toString
+
+## 3.7.03
 *  fix defaultBaseUrl to return the config builder
 
 ## 3.7.02
