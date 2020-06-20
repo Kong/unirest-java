@@ -55,6 +55,12 @@ public class JSONArrayTest {
     }
 
     @Test
+    public void serializeNulls() {
+        JSONArray obj = new JSONArray("[1,null]");
+        assertEquals("[1,null]", obj.toString());
+    }
+
+    @Test
     public void exeptionWhileZippingForNull() {
         JSONArray values = new JSONArray(Arrays.asList(1, "foo", false));
         JSONArray names = new JSONArray();

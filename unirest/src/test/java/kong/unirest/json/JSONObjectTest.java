@@ -99,6 +99,23 @@ public class JSONObjectTest {
     }
 
     @Test
+    public void nullsAreSerialized() {
+        JSONObject obj = new JSONObject("{\"key1\": \"value\", \"key2\": null}");
+
+        assertEquals("{\"key1\":\"value\",\"key2\":null}", obj.toString());
+    }
+
+    @Test
+    public void nullsAreSerializedOnPretty() {
+        JSONObject obj = new JSONObject("{\"key1\": \"value\", \"key2\": null}");
+
+        assertEquals("{\n" +
+                "  \"key1\": \"value\",\n" +
+                "  \"key2\": null\n" +
+                "}", obj.toString(3));
+    }
+
+    @Test
     public void floats() {
         JSONObject obj = new JSONObject();
         obj.put("key", 33.5f);
