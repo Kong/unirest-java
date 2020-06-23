@@ -26,16 +26,14 @@
 package BehaviorTests;
 
 import kong.unirest.*;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class BddTest {
     private static JacksonObjectMapper objectMapper = new JacksonObjectMapper();
@@ -43,8 +41,9 @@ public class BddTest {
     private boolean status;
     private String fail;
 
-    @Before @BeforeEach
+    @BeforeEach
     public void setUp() {
+        Unirest.shutDown(true);
         //TestUtil.debugApache();
         MockServer.reset();
         Unirest.config().setObjectMapper(objectMapper);
@@ -52,7 +51,7 @@ public class BddTest {
         status = false;
     }
 
-    @After @AfterEach
+    @AfterEach
     public void tearDown() {
         Unirest.shutDown(true);
     }
@@ -60,7 +59,7 @@ public class BddTest {
     public void assertAsync()  {
         try {
             lock.await(5, TimeUnit.SECONDS);
-            assertTrue("Expected a async call but it never responded", status);
+            assertTrue(status, "Expected a async call but it never responded");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -68,7 +67,7 @@ public class BddTest {
 
     public void assertFailed(String message) throws InterruptedException {
         lock.await(5, TimeUnit.SECONDS);
-        assertFalse("Should have failed", status);
+        assertFalse(status, "Should have failed");
         assertEquals(message, fail);
     }
 

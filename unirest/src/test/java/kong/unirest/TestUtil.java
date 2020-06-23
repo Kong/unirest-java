@@ -33,7 +33,6 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import com.google.common.io.Resources;
 
-import javax.net.ssl.SSLPeerUnverifiedException;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.util.Base64;
@@ -42,9 +41,9 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestUtil {
     private static final ObjectMapper om = new ObjectMapper();
@@ -74,7 +73,7 @@ public class TestUtil {
             if (!e.getClass().isAssignableFrom(exClass)) {
                 fail("Expected wrong exception type \n Expected: " + exClass + "\n but got " + e.getClass() + "\n\n" + Throwables.getStackTraceAsString(e));
             }
-            assertEquals("Wrong Error Message", message, e.getMessage());
+            assertEquals(message, e.getMessage(), "Wrong Error Message");
         }
     }
 
@@ -138,7 +137,7 @@ public class TestUtil {
     }
 
     public static void assertBasicAuth(String raw, String username, String password) {
-        assertNotNull("Authorization Header Missing", raw);
+        assertNotNull(raw, "Authorization Header Missing");
         String credentials = raw.replace("Basic ","");
         assertEquals(username + ":" + password, new String(Base64.getDecoder().decode(credentials)));
     }

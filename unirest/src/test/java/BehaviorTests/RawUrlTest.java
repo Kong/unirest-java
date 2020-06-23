@@ -26,7 +26,7 @@
 package BehaviorTests;
 
 import kong.unirest.Unirest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class RawUrlTest extends BddTest {
     @Test

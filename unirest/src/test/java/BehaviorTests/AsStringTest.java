@@ -25,14 +25,14 @@
 
 package BehaviorTests;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import kong.unirest.HttpResponse;
 import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
 
 import java.util.concurrent.CompletableFuture;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AsStringTest extends BddTest {
 

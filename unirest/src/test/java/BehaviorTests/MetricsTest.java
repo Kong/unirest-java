@@ -29,16 +29,16 @@ import kong.unirest.HttpRequestSummary;
 import kong.unirest.Unirest;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.function.Function;
 
 import static BehaviorTests.MockServer.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -143,7 +143,7 @@ public class MetricsTest extends BddTest {
         assertEquals("boo", metric.routes.get(GET).get(0).e.getMessage());
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void errorHandling_async() throws Exception {
         MyMetric metric = configureMetric();
 

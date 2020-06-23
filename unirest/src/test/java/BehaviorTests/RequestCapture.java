@@ -28,14 +28,16 @@ package BehaviorTests;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Sets;
 import kong.unirest.*;
 import org.apache.http.client.utils.URLEncodedUtils;
 import spark.Request;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.Part;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -43,10 +45,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static kong.unirest.JsonPatchRequest.CONTENT_TYPE;
 import static java.lang.System.getProperty;
+import static kong.unirest.JsonPatchRequest.CONTENT_TYPE;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RequestCapture {
     public ListMultimap<String, String> headers = LinkedListMultimap.create();
@@ -158,7 +161,7 @@ public class RequestCapture {
     }
 
     public RequestCapture assertNoHeader(String s) {
-        assertFalse("Should Have No Header " + s, headers.containsKey(s));
+        assertFalse(headers.containsKey(s), "Should Have No Header " + s);
         return this;
     }
 
@@ -168,7 +171,7 @@ public class RequestCapture {
     }
 
     public RequestCapture assertHeader(String key, String value) {
-        assertTrue(String.format("Expect header of '%s' but none was present", key), headers.containsKey(key));
+        assertTrue(headers.containsKey(key), String.format("Expect header of '%s' but none was present", key));
         assertThat("Expected Header Value Failed", headers.get(key), hasItem(value));
         return this;
     }
@@ -240,7 +243,7 @@ public class RequestCapture {
     }
 
     public RequestCapture assertJsonPatch(JsonPatchOperation op, String path, Object value) {
-        assertNotNull("Asserting JSONPatch but no patch object present", jsonPatches);
+        assertNotNull(jsonPatches, "Asserting JSONPatch but no patch object present");
         assertThat(jsonPatches.getOperations(), hasItem(new JsonPatchItem(op, path, value)));
         return this;
     }
@@ -282,7 +285,7 @@ public class RequestCapture {
 
     public RequestCapture assertMultiPartContentType() {
         List<String> h = headers.get("Content-Type");
-        assertEquals("Expected exactly 1 Content-Type header", 1, h.size());
+        assertEquals(1, h.size(), "Expected exactly 1 Content-Type header");
         List<String> parts = Splitter.on(";").trimResults().splitToList(h.get(0));
         assertEquals("multipart/form-data", parts.get(0));
         assertThat(parts.get(1), startsWith("boundary="));
@@ -296,13 +299,13 @@ public class RequestCapture {
 
     public RequestCapture assertCookie(String name, String value) {
         String c = cookies.get(name);
-        assertNotNull("expected a cookie to be passed to the server but got none. Name: " + name, c);
+        assertNotNull(c, "expected a cookie to be passed to the server but got none. Name: " + name);
         assertEquals(value, c);
         return this;
     }
 
     public void assertNoCookie(String name) {
-        assertNull("Cookie should not have been passed but it was! ", cookies.get(name));
+        assertNull(cookies.get(name), "Cookie should not have been passed but it was! ");
     }
 
     public static class FormPart {

@@ -32,12 +32,13 @@ import kong.unirest.apache.AsyncIdleConnectionMonitorThread;
 import kong.unirest.apache.SyncIdleConnectionMonitorThread;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -47,11 +48,12 @@ import java.util.Set;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThan;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class LifeCycleTest extends BddTest {
 
     @Mock
@@ -67,7 +69,7 @@ public class LifeCycleTest extends BddTest {
     @Mock
     private PoolingNHttpClientConnectionManager manager;
 
-    @Override
+    @Override @BeforeEach
     public void setUp() {
         super.setUp();
         clearUnirestHooks();
@@ -184,7 +186,7 @@ public class LifeCycleTest extends BddTest {
 
     private Set<Thread> getShutdownHookMap() {
         try {
-            // oh this is so dirty and horrible. Set to @Ignore if it starts to be a problem.
+            // oh this is so dirty and horrible. Set to @Disabled if it starts to be a problem.
             Class clazz = Class.forName("java.lang.ApplicationShutdownHooks");
             Field field = clazz.getDeclaredField("hooks");
             field.setAccessible(true);

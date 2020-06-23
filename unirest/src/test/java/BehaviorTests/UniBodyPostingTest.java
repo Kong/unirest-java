@@ -31,7 +31,7 @@ import kong.unirest.Unirest;
 import kong.unirest.UnirestConfigException;
 import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 

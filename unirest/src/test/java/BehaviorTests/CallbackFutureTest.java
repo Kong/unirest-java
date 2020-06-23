@@ -27,14 +27,17 @@ package BehaviorTests;
 
 import kong.unirest.Unirest;
 import kong.unirest.NoopCallback;
-import org.junit.Ignore;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import static kong.unirest.MockCallback.json;
 
 public class CallbackFutureTest extends BddTest {
 
-    @Test(timeout = 5000)
+
+    @Test @Timeout(5)
     public void onSuccess() throws Exception {
         Unirest.get(MockServer.GET)
                 .queryString("Snazzy", "Shoes")
@@ -47,7 +50,7 @@ public class CallbackFutureTest extends BddTest {
         assertAsync();
     }
 
-    @Test(timeout = 5000)
+    @Test @Timeout(5)
     public void onSuccessSupplyCallback() throws Exception {
         Unirest.get(MockServer.GET)
                 .queryString("Snazzy", "Shoes")
@@ -60,7 +63,7 @@ public class CallbackFutureTest extends BddTest {
         assertAsync();
     }
 
-    @Test(timeout = 5000) @Ignore
+    @Test @Timeout(5) @Disabled
     public void onFailure() throws Exception {
         Unirest.get("http://localhost:0000")
                 .asJsonAsync(json(this))

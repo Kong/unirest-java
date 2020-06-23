@@ -25,21 +25,22 @@
 
 package BehaviorTests;
 
-import org.junit.After;
-import org.junit.Test;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 
 import java.util.function.Consumer;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PostRequestHandlersTest extends BddTest {
 
     private HttpResponse<RequestCapture> captured;
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
         super.tearDown();
         captured = null;

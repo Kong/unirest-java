@@ -42,9 +42,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
 import org.apache.http.util.EntityUtils;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
@@ -53,9 +52,10 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import java.io.InputStream;
 import java.security.KeyStore;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-@Ignore // dont normally run these because they depend on badssl.com
+@Disabled // dont normally run these because they depend on badssl.com
 public class CertificateTests extends BddTest {
 
     @Test
@@ -64,7 +64,7 @@ public class CertificateTests extends BddTest {
 
         Unirest.get("https://client.badssl.com/")
                 .asString()
-                .ifFailure(r -> Assert.fail(r.getStatus() + " request failed " + r.getBody()))
+                .ifFailure(r -> fail(r.getStatus() + " request failed " + r.getBody()))
                 .ifSuccess(r -> System.out.println(" woot "));;
     }
 
@@ -75,7 +75,7 @@ public class CertificateTests extends BddTest {
 
         Unirest.get("https://client.badssl.com/")
                 .asString()
-                .ifFailure(r -> Assert.fail(r.getStatus() + " request failed " + r.getBody()))
+                .ifFailure(r -> fail(r.getStatus() + " request failed " + r.getBody()))
                 .ifSuccess(r -> System.out.println(" woot "));;
     }
 
@@ -145,7 +145,7 @@ public class CertificateTests extends BddTest {
 
         Unirest.get("https://client.badssl.com/")
                 .asString()
-                .ifFailure(r -> Assert.fail(r.getStatus() + " request failed " + r.getBody()))
+                .ifFailure(r -> fail(r.getStatus() + " request failed " + r.getBody()))
                 .ifSuccess(r -> System.out.println(" woot "));
 
     }
@@ -235,7 +235,7 @@ public class CertificateTests extends BddTest {
         try {
             assertEquals(200, Unirest.get(url).asEmptyAsync().get().getStatus());
         } catch (Exception e) {
-            Assert.fail(e.getMessage());
+            fail(e.getMessage());
         }
     }
 

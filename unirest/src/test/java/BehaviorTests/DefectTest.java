@@ -28,18 +28,16 @@ package BehaviorTests;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.nio.client.HttpAsyncClient;
 import kong.unirest.json.JSONObject;
-import org.junit.Ignore;
 import kong.unirest.Unirest;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-import static junit.framework.TestCase.assertNotSame;
-import static junit.framework.TestCase.assertSame;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DefectTest extends BddTest {
 
@@ -88,7 +86,7 @@ public class DefectTest extends BddTest {
         });
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void trySomeoneElsesGZip() throws Exception {
         JSONObject body = Unirest.get("http://httpbin.org/gzip")
                 .asJsonAsync().get().getBody().getObject();

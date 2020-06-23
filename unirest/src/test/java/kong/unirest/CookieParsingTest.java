@@ -26,13 +26,13 @@
 package kong.unirest;
 
 import org.eclipse.jetty.server.CookieCutter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.TimeZone;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CookieParsingTest {
 

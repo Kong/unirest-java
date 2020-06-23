@@ -25,12 +25,12 @@
 
 package BehaviorTests;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import kong.unirest.Header;
 import kong.unirest.Headers;
 import kong.unirest.Unirest;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ResponseHeaderTest extends BddTest {
 

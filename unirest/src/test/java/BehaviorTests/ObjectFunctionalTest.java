@@ -27,14 +27,14 @@ package BehaviorTests;
 
 import com.google.gson.Gson;
 import kong.unirest.HttpResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import kong.unirest.Unirest;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.google.common.collect.ImmutableMap.of;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ObjectFunctionalTest extends BddTest {
     private Gson gson = new Gson();

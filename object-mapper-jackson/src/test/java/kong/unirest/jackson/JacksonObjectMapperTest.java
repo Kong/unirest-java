@@ -54,12 +54,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kong.unirest.GenericType;
 import kong.unirest.jackson.JacksonObjectMapper;
 import org.json.JSONException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JacksonObjectMapperTest {
     private JacksonObjectMapper om = new JacksonObjectMapper();

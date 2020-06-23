@@ -26,18 +26,19 @@
 package BehaviorTests;
 
 import kong.unirest.Proxy;
-import org.junit.After;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Ignore // The Janky Proxy is pretty janky and isn't entirely stable in CI
+@Disabled // The Janky Proxy is pretty janky and isn't entirely stable in CI
 public class ProxyTest extends BddTest {
 
-    @After @Override
+    @AfterEach
+    @Override
     public void tearDown() {
         super.tearDown();
         Unirest.shutDown(true);
@@ -100,7 +101,7 @@ public class ProxyTest extends BddTest {
     }
 
     @Test
-    @Ignore // there is some weird conflict between jetty and unirest here
+    @Disabled // there is some weird conflict between jetty and unirest here
     public void canFlagTheClientsToUseSystemProperties(){
         JankyProxy.runServer("localhost", 4567, 7777);
 
@@ -117,7 +118,7 @@ public class ProxyTest extends BddTest {
         assertTrue(JankyProxy.wasUsed());
     }
 
-    @Test @Ignore // https://free-proxy-list.net/
+    @Test @Disabled // https://free-proxy-list.net/
     public void callSomethingRealThroughARealProxy() {
         Unirest.config().proxy("18.222.230.116",8080);
         //Unirest.config().proxy("34.73.62.46",3128, "myuser","pass1!");

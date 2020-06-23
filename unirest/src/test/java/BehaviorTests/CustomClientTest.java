@@ -33,11 +33,11 @@ import kong.unirest.apache.ApacheClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CustomClientTest extends BddTest {
 
@@ -46,7 +46,7 @@ public class CustomClientTest extends BddTest {
 
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
         super.tearDown();
         requestConfigUsed = false;

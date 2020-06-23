@@ -28,7 +28,7 @@ package BehaviorTests;
 import com.google.common.collect.ImmutableMap;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import kong.unirest.TestUtil;
 
 public class PathParamTest extends BddTest {

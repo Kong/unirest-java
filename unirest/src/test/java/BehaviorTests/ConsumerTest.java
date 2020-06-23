@@ -26,8 +26,8 @@
 package BehaviorTests;
 
 import com.google.common.base.Throwables;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import kong.unirest.Unirest;
 
 import javax.imageio.ImageIO;
@@ -37,8 +37,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ConsumerTest extends BddTest {
 
@@ -48,7 +48,7 @@ public class ConsumerTest extends BddTest {
     private boolean asyncDone = false;
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
         super.tearDown();
         asyncDone = false;

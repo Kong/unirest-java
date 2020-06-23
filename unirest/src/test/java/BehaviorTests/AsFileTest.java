@@ -25,7 +25,8 @@
 
 package BehaviorTests;
 
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import kong.unirest.JacksonObjectMapper;
 import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
@@ -35,15 +36,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AsFileTest extends BddTest {
 
     private Path test = Paths.get("results.json");
     private JacksonObjectMapper om = new JacksonObjectMapper();
 
-    @Override
+    @Override @AfterEach
     public void tearDown() {
         try {
             Files.delete(test);

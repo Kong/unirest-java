@@ -25,11 +25,12 @@
 
 package BehaviorTests;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class AsEmptyTest extends BddTest {
 

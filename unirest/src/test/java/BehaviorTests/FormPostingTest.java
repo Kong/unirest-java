@@ -26,7 +26,7 @@
 package BehaviorTests;
 
 import kong.unirest.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -34,7 +34,7 @@ import java.nio.charset.StandardCharsets;
 
 import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.rezFile;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FormPostingTest extends BddTest {
 

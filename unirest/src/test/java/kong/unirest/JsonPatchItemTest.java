@@ -26,12 +26,12 @@
 package kong.unirest;
 
 import com.google.common.collect.Sets;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
 import static kong.unirest.JsonPatchOperation.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JsonPatchItemTest {
 

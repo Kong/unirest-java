@@ -27,7 +27,7 @@ package kong.unirest.json;
 
 import BehaviorTests.Foo;
 import kong.unirest.TestUtil;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.IOException;
@@ -42,7 +42,7 @@ import static com.google.common.collect.ImmutableMap.of;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.assertException;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JSONObjectTest {
 

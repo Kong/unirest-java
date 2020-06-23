@@ -30,13 +30,13 @@ import org.apache.http.HttpException;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -46,7 +46,7 @@ public class InterceptorTest extends BddTest {
     private UniInterceptor interceptor;
     private String  ioErrorMessage = "Something horrible happened";;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setUp();
         interceptor = new UniInterceptor();

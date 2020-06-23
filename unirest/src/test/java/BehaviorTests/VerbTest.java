@@ -28,9 +28,9 @@ package BehaviorTests;
 import kong.unirest.HttpMethod;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class VerbTest extends BddTest {
     @Test

@@ -28,7 +28,7 @@ package BehaviorTests;
 import kong.unirest.JacksonObjectMapper;
 import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ExecutionException;
 

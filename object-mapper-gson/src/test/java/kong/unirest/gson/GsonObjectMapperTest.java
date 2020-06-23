@@ -53,13 +53,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import kong.unirest.GenericType;
 import kong.unirest.gson.GsonObjectMapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GsonObjectMapperTest {
     private GsonObjectMapper om = new GsonObjectMapper();

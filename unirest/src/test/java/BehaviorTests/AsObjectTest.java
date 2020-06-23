@@ -28,17 +28,14 @@ package BehaviorTests;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.gson.Gson;
 import kong.unirest.*;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNull;
-import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AsObjectTest extends BddTest {
 
@@ -64,8 +61,8 @@ public class AsObjectTest extends BddTest {
     public void whenNoBodyIsReturned() {
         HttpResponse<RequestCapture> i = Unirest.get(MockServer.NOBODY).asObject(RequestCapture.class);
 
-        Assert.assertEquals(200, i.getStatus());
-        Assert.assertEquals(null, i.getBody());
+        assertEquals(200, i.getStatus());
+        assertEquals(null, i.getBody());
     }
 
     @Test

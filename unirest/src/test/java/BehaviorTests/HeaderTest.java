@@ -29,10 +29,10 @@ import kong.unirest.GetRequest;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static kong.unirest.TestUtil.assertBasicAuth;
 import static kong.unirest.TestUtil.mapOf;
 
@@ -248,7 +248,7 @@ public class HeaderTest extends BddTest {
                 .assertBasicAuth("user2", "pass2");
     }
 
-    @Test @Ignore
+    @Test @Disabled
     public void doesNotCacheAuthAcrossDomains(){
         Unirest.get(MockServer.GET)
                 .basicAuth("user1","pass1")

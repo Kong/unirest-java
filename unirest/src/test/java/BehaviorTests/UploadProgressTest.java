@@ -26,19 +26,20 @@
 package BehaviorTests;
 
 import kong.unirest.Unirest;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
 
 import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.rezFile;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UploadProgressTest extends BddTest {
 
     private TestMonitor monitor;
 
-    @Override
+    @Override @BeforeEach
     public void setUp() {
         super.setUp();
         this.monitor = new TestMonitor();

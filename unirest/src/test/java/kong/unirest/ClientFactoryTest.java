@@ -27,20 +27,23 @@ package kong.unirest;
 
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.lang.management.ManagementFactory;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThan;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.mock;
 
 public class ClientFactoryTest {
 
-    @Before @After
+    @BeforeEach
+    @AfterEach
     public void before(){
         Unirest.shutDown(true);
     }

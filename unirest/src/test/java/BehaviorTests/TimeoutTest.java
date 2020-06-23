@@ -32,8 +32,8 @@ import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -42,10 +42,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-@Ignore
+@Disabled
 public class TimeoutTest extends BddTest {
 
     @Test
@@ -73,7 +73,7 @@ public class TimeoutTest extends BddTest {
     }
 
     @Test
-    @Ignore // this is flakey
+    @Disabled // this is flakey
     public void parallelTest() throws InterruptedException {
         Unirest.config().connectTimeout(10).socketTimeout(5);
 

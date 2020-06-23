@@ -27,11 +27,11 @@ package BehaviorTests;
 
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ExecutionException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RedirectHandlingTest extends BddTest {
 

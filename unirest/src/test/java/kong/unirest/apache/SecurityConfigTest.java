@@ -27,9 +27,9 @@ package kong.unirest.apache;
 
 import kong.unirest.Config;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SecurityConfigTest {
 

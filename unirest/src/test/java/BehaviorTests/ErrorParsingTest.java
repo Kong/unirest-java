@@ -31,9 +31,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
 import kong.unirest.Unirest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static junit.framework.TestCase.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class ErrorParsingTest extends BddTest {
     private boolean errorCalled;

@@ -27,8 +27,8 @@ package kong.unirest.json;
 
 import BehaviorTests.Foo;
 import kong.unirest.TestUtil;
-import org.junit.Ignore;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -41,17 +41,18 @@ import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.assertException;
 import static kong.unirest.json.JSONObjectTest.assertEqualJson;
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JSONArrayTest {
 
     @Test
     public void nullForSoManyReasonsWhenZipping() {
         JSONArray array = new JSONArray();
-        assertNull(null, array.toJSONObject(new JSONArray(Arrays.asList("foo"))));
+        assertNull(array.toJSONObject(new JSONArray(Arrays.asList("foo"))));
         array.put(42L);
-        assertNull(null, array.toJSONObject(null));
-        assertNull(null, array.toJSONObject(new JSONArray()));
+        assertNull(array.toJSONObject(null));
+        assertNull(array.toJSONObject(new JSONArray()));
     }
 
     @Test
@@ -522,15 +523,6 @@ public class JSONArrayTest {
         array.put(new Fudge());
 
         assertEquals("[\"Hello World\"]", array.toString());
-    }
-
-
-    @Test @Ignore // will do with JSONObject Test
-    public void maps() {
-        JSONArray array = new JSONArray();
-        array.put(of("foo", "bar"));
-
-        assertEquals("bar", array.getJSONObject(0).get("foo"));
     }
 
     @Test

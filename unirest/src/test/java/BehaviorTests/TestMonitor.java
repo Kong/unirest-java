@@ -38,8 +38,8 @@ import java.util.stream.Stream;
 import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.defaultIfNull;
 import static kong.unirest.TestUtil.rezFile;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TestMonitor implements ProgressMonitor {
     public File spidey = rezFile("/spidey.jpg");
@@ -75,13 +75,13 @@ class TestMonitor implements ProgressMonitor {
 
     public void assertSpideyFileUpload(String name) {
         Stats stat = get(name);
-        assertEquals("Wrong Expected Length", spidey.length(), stat.total);
+        assertEquals(spidey.length(), stat.total, "Wrong Expected Length");
         assertTrue(stat.timesCalled > 1);
     }
 
     public void assertSpideyFileDownload(String name) {
         Stats stat = get(name);
-        assertEquals("Wrong Expected Length", spidey.length(), stat.total);
+        assertEquals(spidey.length(), stat.total, "Wrong Expected Length");
         assertTrue(stat.timesCalled > 1);
     }
 

@@ -26,36 +26,25 @@
 package BehaviorTests;
 
 import kong.unirest.Unirest;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-
-import static kong.unirest.TestUtil.rezFile;
-import static org.junit.Assert.assertTrue;
+import java.nio.file.Path;
 
 public class DownloadProgressTest extends BddTest {
-    @Rule
-    public TemporaryFolder disk = new TemporaryFolder();
-    private File targeFolder;
+    @TempDir
+    File targeFolder;
 
     private TestMonitor monitor;
 
-    @Before
+
     @BeforeEach
     public void setUp() {
         super.setUp();
         this.monitor = new TestMonitor();
-        try {
-            targeFolder = disk.newFolder("test");
-        } catch (IOException e) {
-            throw new RuntimeException("waaaaaarg", e);
-        }
     }
 
     @Test
