@@ -1,4 +1,4 @@
-## 3.8.00 (pending)
+## 3.8.00 
 * Minor updates to org.apache.httpcomponents to 4.5.12
 * Upgrade Jackson to 2.11.0 
 * Switch all unit tests to JUnit 5 and update Mockito
