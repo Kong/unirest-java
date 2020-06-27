@@ -3,6 +3,7 @@
 * Upgrade Jackson to 2.11.0 
 * Switch all unit tests to JUnit 5 and update Mockito
 * issue #358 add ability to set a collection of cookies
+* issue #325 add response caching framework
 
 ## 3.7.04
 * issue #357 Nulls are not serialized on JSONElement::toString
