@@ -67,12 +67,13 @@ public interface Cache {
         private int depth = 100;
         private long ttl = 0;
         private Cache backing;
+        private KeyGenerator keyGen;
 
         CacheManager build() {
             if(backing != null){
-                return new CacheManager(backing);
+                return new CacheManager(backing, keyGen);
             }
-            return new CacheManager(depth, ttl);
+            return new CacheManager(depth, ttl, keyGen);
         }
 
         /**
@@ -112,6 +113,22 @@ public interface Cache {
             this.backing = cache;
             return this;
         }
+
+        /**
+         * Provide a custom key generator.
+         * The default key is a hash of the request, the request execution type and the response type.
+         * @param keyGenerator
+         * @return this builder
+         */
+        public Builder withKeyGen(KeyGenerator keyGenerator) {
+            this.keyGen = keyGenerator;
+            return this;
+        }
+    }
+
+    @FunctionalInterface
+    interface KeyGenerator {
+        Key apply(HttpRequest request, Boolean isAsync, Class<?> responseType);
     }
 
     /**

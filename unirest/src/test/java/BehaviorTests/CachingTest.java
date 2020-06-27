@@ -25,6 +25,7 @@
 
 package BehaviorTests;
 
+import kong.unirest.Cache;
 import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
 import org.junit.jupiter.api.Test;

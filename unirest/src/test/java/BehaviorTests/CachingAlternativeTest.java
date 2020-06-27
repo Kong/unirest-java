@@ -31,6 +31,7 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
@@ -66,6 +67,18 @@ public class CachingAlternativeTest extends BddTest {
         assertEquals(3, MockServer.timesCalled);
     }
 
+    @Test
+    void supplyCustomCacheKeyFunction() {
+        Unirest.config().cacheResponses(Cache.builder().withKeyGen((r,a,z) -> new CustomKey()));
+
+        assertSame(
+                Unirest.get(MockServer.GET).asString(),
+                Unirest.get(MockServer.POST).asString()
+        );
+
+        assertEquals(1, MockServer.timesCalled);
+    }
+
     public static class GuavaCache implements Cache{
         com.google.common.cache.Cache<Key, HttpResponse> regular = CacheBuilder.newBuilder().build();
         com.google.common.cache.Cache<Key, CompletableFuture> async = CacheBuilder.newBuilder().build();
@@ -90,6 +103,23 @@ public class CachingAlternativeTest extends BddTest {
         public void invalidate() {
             regular.invalidateAll();
             async.invalidateAll();
+        }
+    }
+
+    class CustomKey implements Cache.Key {
+        @Override
+        public int hashCode() {
+            return 1;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return true;
+        }
+
+        @Override
+        public Instant getTime() {
+            return  Instant.now();
         }
     }
 }

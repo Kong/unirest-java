@@ -41,20 +41,26 @@ class CacheManager {
     private final CacheWrapper wrapper = new CacheWrapper();
     private final AsyncWrapper asyncWrapper = new AsyncWrapper();
     private final Cache backingCache;
+    private final Cache.KeyGenerator keyGen;
 
     private Client originalClient;
     private AsyncClient originalAsync;
 
     public CacheManager() {
-        this(100, 0);
+        this(100, 0, HashKey::new);
     }
 
-    public CacheManager(int depth, long ttl) {
-        backingCache = new CacheMap(depth, ttl);
+    public CacheManager(int depth, long ttl, Cache.KeyGenerator keyGenerator) {
+        this(new CacheMap(depth, ttl), keyGenerator);
     }
 
-    public CacheManager(Cache backing) {
+    public CacheManager(Cache backing, Cache.KeyGenerator keyGenerator) {
         backingCache = backing;
+        if(keyGenerator != null){
+            this.keyGen = keyGenerator;
+        }else{
+            this.keyGen = HashKey::new;
+        }
     }
 
     Client wrap(Client client) {
@@ -68,10 +74,10 @@ class CacheManager {
     }
 
     private <T> Cache.Key getHash(HttpRequest request, Boolean isAsync, Class<?> responseType) {
-        return new HashKey(request, isAsync, responseType);
+        return keyGen.apply(request, isAsync, responseType);
     }
 
-    public static class HashKey implements Cache.Key {
+    private static class HashKey implements Cache.Key {
         private final int hash;
         private final Instant time;
 
@@ -80,7 +86,7 @@ class CacheManager {
                  request.getCreationTime());
         }
 
-        public HashKey(int hash, Instant time) {
+        HashKey(int hash, Instant time) {
             this.hash = hash;
             this.time = time;
         }
@@ -108,7 +114,7 @@ class CacheManager {
         }
     }
 
-    class CacheWrapper implements Client {
+    private class CacheWrapper implements Client {
 
         @Override
         public Object getClient() {
@@ -180,7 +186,7 @@ class CacheManager {
         }
     }
 
-    private class CacheMap extends LinkedHashMap<Cache.Key, Object> implements Cache {
+    private static class CacheMap extends LinkedHashMap<Cache.Key, Object> implements Cache {
         private final int maxSize;
         private long ttl;
 
