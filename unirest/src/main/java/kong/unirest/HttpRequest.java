@@ -124,6 +124,13 @@ public interface HttpRequest<R extends HttpRequest>  {
     R cookie(Cookie cookie);
 
     /**
+     * Add a collection of cookie headers
+     * @param cookies a cookie
+     * @return this request builder
+     */
+    R cookie(Collection<Cookie> cookies);
+
+    /**
      * add a query param to the url. The value will be URL-Encoded
      * @param name the name of the param
      * @param value the value of the param

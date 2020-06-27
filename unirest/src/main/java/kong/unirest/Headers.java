@@ -173,6 +173,10 @@ public class Headers {
         headers.add(new Entry("cookie", cookie.toString()));
     }
 
+    public void cookie(Collection<Cookie> cookies) {
+        cookies.forEach(this::cookie);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) { return true;}

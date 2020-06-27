@@ -33,6 +33,8 @@ import org.apache.http.client.config.CookieSpecs;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CookieTest extends BddTest {
@@ -58,6 +60,20 @@ public class CookieTest extends BddTest {
                 .assertCookie("flavor", "snickerdoodle")
                 .assertCookie("size", "large");
     }
+
+    @Test
+    public void canSetAsCookieCollection(){
+        Unirest.get(MockServer.GET)
+                .cookie(Arrays.asList(
+                        new Cookie("flavor", "snickerdoodle"),
+                        new Cookie("size", "large"))
+                )
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertCookie("flavor", "snickerdoodle")
+                .assertCookie("size", "large");
+    }
+
 
     @Test
     public void willManageCookiesByDefault() {
