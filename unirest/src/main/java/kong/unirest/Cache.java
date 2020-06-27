@@ -26,151 +26,26 @@
 package kong.unirest;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.stream.Stream;
+import java.util.function.Supplier;
 
-
-
-public class Cache {
-
-    private final CacheWrapper wrapper = new CacheWrapper();
-    private final AsyncWrapper asyncWrapper = new AsyncWrapper();
-    private final CacheMap map;
-
-    private Client originalClient;
-    private AsyncClient originalAsync;
-
-    public Cache() {
-        this(100, 0);
-    }
-
-    public Cache(int depth, long ttl) {
-        map = new CacheMap(depth, ttl);
-    }
-
-    Client wrap(Client client) {
-        this.originalClient = client;
-        return wrapper;
-    }
-
-    AsyncClient wrapAsync(AsyncClient client) {
-        this.originalAsync = client;
-        return asyncWrapper;
-    }
-
-    private <T> Key  getHash(HttpRequest request, Boolean isAsync, Class<?> responseType) {
-        return new Key(request, isAsync, responseType);
-    }
-
-    class CacheWrapper implements Client {
-
-        @Override
-        public Object getClient() {
-            return originalClient.getClient();
-        }
-
-        @Override
-        public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
-            return request(request, transformer, Object.class);
-        }
-
-        @Override
-        public <T> HttpResponse<T> request(HttpRequest request,
-                                           Function<RawResponse, HttpResponse<T>> transformer,
-                                           Class<?> responseType) {
-
-            return (HttpResponse<T>) map.computeIfAbsent(getHash(request, false, responseType),
-                    r -> originalClient.request(request, transformer, responseType));
-        }
-
-        @Override
-        public Stream<Exception> close() {
-            return originalClient.close();
-        }
-        @Override
-        public void registerShutdownHook() {
-            originalClient.registerShutdownHook();
-        }
-    }
-
-    private class AsyncWrapper implements AsyncClient {
-        @Override
-        public <T> T getClient() {
-            return originalAsync.getClient();
-        }
-
-        @Override
-        public <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request,
-                                                              Function<RawResponse, HttpResponse<T>> transformer,
-                                                              CompletableFuture<HttpResponse<T>> callback) {
-            return request(request, transformer, callback, Object.class);
-        }
-
-        @Override
-        public <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request,
-                                                              Function<RawResponse, HttpResponse<T>> transformer,
-                                                              CompletableFuture<HttpResponse<T>> callback,
-                                                              Class<?> responseType) {
-            return (CompletableFuture<HttpResponse<T>>)map.computeIfAbsent(getHash(request, true, responseType),
-                    k -> originalAsync.request(request, transformer, callback, responseType));
-        }
-
-        @Override
-        public void registerShutdownHook() {
-            originalAsync.registerShutdownHook();
-        }
-
-        @Override
-        public Stream<Exception> close() {
-            return originalAsync.close();
-        }
-
-        @Override
-        public boolean isRunning() {
-            return originalAsync.isRunning();
-        }
-    }
-
-    private class CacheMap extends LinkedHashMap<Key, Object> {
-        private final int maxSize;
-        private long ttl;
-
-        CacheMap(int maxSize, long ttl) {
-            this.maxSize = maxSize;
-            this.ttl = ttl;
-        }
-
-        @Override
-        public Object computeIfAbsent(Key key, Function<? super Key, ?> mappingFunction) {
-            if(ttl > 0) {
-                Instant now = Util.now();
-                keySet().removeIf(k -> ChronoUnit.MILLIS.between(k.getTime(), now) > ttl);
-            }
-            return super.computeIfAbsent(key, mappingFunction);
-        }
-
-        @Override
-        protected boolean removeEldestEntry(Map.Entry<Key, Object> eldest) {
-            return size() > maxSize;
-        }
-    }
-
-    public static Builder builder(){
+public interface Cache {
+    
+    static Builder builder(){
         return new Builder();
     }
 
-    public static class Builder {
+    <T> HttpResponse computeCache(Key key, Supplier<HttpResponse<T>> fetcher);
+    <T> CompletableFuture<HttpResponse<T>> computeAsyncCache(Key key, Supplier<CompletableFuture<HttpResponse<T>>> fetcher);
+
+    class Builder {
         private int depth = 100;
         private long ttl = 0;
 
-        public Cache build() {
-            return new Cache(depth, ttl);
+        public CacheManager build() {
+            return new CacheManager(depth, ttl);
         }
 
         public Builder depth(int value) {
@@ -184,19 +59,28 @@ public class Cache {
         }
     }
 
-    private static class Key {
+    class Key {
         private final int hash;
         private final Instant time;
 
-        public Key(HttpRequest request, Boolean isAsync, Class<?> responseType) {
-            hash = Objects.hash(request.hashCode(), isAsync, responseType);
-            time = request.getCreationTime();
+        Key(HttpRequest request, Boolean isAsync, Class<?> responseType) {
+            this(Objects.hash(request.hashCode(), isAsync, responseType),
+                 request.getCreationTime());
+        }
+
+        public Key(int hash, Instant time) {
+            this.hash = hash;
+            this.time = time;
         }
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) {return true;}
-            if (o == null || getClass() != o.getClass()) {return false;}
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             Key key = (Key) o;
             return hash == key.hash;
         }

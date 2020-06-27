@@ -35,14 +35,14 @@ import java.util.stream.Stream;
 import static kong.unirest.HttpMethod.GET;
 import static org.junit.jupiter.api.Assertions.*;
 
-class CacheTest {
+class CacheManagerTest {
     Config config = new Config();
-    Cache cache;
+    CacheManager cache;
     MockClient client;
 
     @BeforeEach
     void setUp() {
-        cache = new Cache();
+        cache = new CacheManager();
         client = new MockClient();
     }
 
@@ -78,13 +78,13 @@ class CacheTest {
     }
 
     @Test
-    void responsesWillCacheRegardlessOfResponseType() {
-        assertSame(
+    void responsesAreDifferentForDifferentTypes() {
+        assertNotSame(
                 cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/"), r -> new StringResponse(new MockRawResponse(), ""), String.class),
                 cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/"), r -> new BasicResponse(new MockRawResponse(), ""), Empty.class)
         );
 
-        assertEquals(1, client.invokes);
+        assertEquals(2, client.invokes);
     }
 
     private class MockClient implements Client, AsyncClient {

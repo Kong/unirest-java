@@ -87,7 +87,7 @@ public class Config {
     private Interceptor interceptor = new DefaultInterceptor();
     private HostnameVerifier hostnameVerifier;
     private String defaultBaseUrl;
-    private Cache cache;
+    private CacheManager cache;
 
     public Config() {
         setDefaults();
@@ -544,7 +544,7 @@ public class Config {
      */
     public void cacheResponses(boolean value) {
         if(value){
-            this.cache = new Cache();
+            this.cache = new CacheManager();
         } else {
             this.cache = null;
         }
