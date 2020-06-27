@@ -84,7 +84,7 @@ class CacheManager {
                                            Class<?> responseType) {
 
             Cache.Key hash = getHash(request, false, responseType);
-            return map.computeCache(hash,
+            return map.get(hash,
                     () -> originalClient.request(request, transformer, responseType));
         }
 
@@ -118,7 +118,7 @@ class CacheManager {
                                                               CompletableFuture<HttpResponse<T>> callback,
                                                               Class<?> responseType) {
             Cache.Key key = getHash(request, true, responseType);
-            return map.computeAsyncCache(key,
+            return map.getAsync(key,
                     () -> originalAsync.request(request, transformer, callback, responseType));
         }
 
@@ -148,13 +148,13 @@ class CacheManager {
         }
 
         @Override
-        public <T> HttpResponse<T> computeCache(Key key, Supplier<HttpResponse<T>> fetcher) {
+        public <T> HttpResponse<T> get(Key key, Supplier<HttpResponse<T>> fetcher) {
             clearOld();
             return (HttpResponse<T>)super.computeIfAbsent(key, (k) -> fetcher.get());
         }
 
         @Override
-        public <T> CompletableFuture<HttpResponse<T>> computeAsyncCache(Key key, Supplier<CompletableFuture<HttpResponse<T>>> fetcher) {
+        public <T> CompletableFuture<HttpResponse<T>> getAsync(Key key, Supplier<CompletableFuture<HttpResponse<T>>> fetcher) {
             clearOld();
             return (CompletableFuture<HttpResponse<T>>)super.computeIfAbsent(key, (k) -> fetcher.get());
         }

@@ -37,8 +37,8 @@ public interface Cache {
         return new Builder();
     }
 
-    <T> HttpResponse computeCache(Key key, Supplier<HttpResponse<T>> fetcher);
-    <T> CompletableFuture<HttpResponse<T>> computeAsyncCache(Key key, Supplier<CompletableFuture<HttpResponse<T>>> fetcher);
+    <T> HttpResponse get(Key key, Supplier<HttpResponse<T>> fetcher);
+    <T> CompletableFuture<HttpResponse<T>> getAsync(Key key, Supplier<CompletableFuture<HttpResponse<T>>> fetcher);
 
     class Builder {
         private int depth = 100;
