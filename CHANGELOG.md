@@ -1,7 +1,8 @@
-## 3.7.05
+## 3.8.00 (pending)
 * Minor updates to org.apache.httpcomponents to 4.5.12
 * Upgrade Jackson to 2.11.0 
 * Switch all unit tests to JUnit 5 and update Mockito
+* issue #358 add ability to set a collection of cookies
 
 ## 3.7.04
 * issue #357 Nulls are not serialized on JSONElement::toString
