@@ -29,6 +29,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -67,7 +68,44 @@ class CacheManager {
     }
 
     private <T> Cache.Key getHash(HttpRequest request, Boolean isAsync, Class<?> responseType) {
-        return new Cache.Key(request, isAsync, responseType);
+        return new HashKey(request, isAsync, responseType);
+    }
+
+    public static class HashKey implements Cache.Key {
+        private final int hash;
+        private final Instant time;
+
+        HashKey(HttpRequest request, Boolean isAsync, Class<?> responseType) {
+            this(Objects.hash(request.hashCode(), isAsync, responseType),
+                 request.getCreationTime());
+        }
+
+        public HashKey(int hash, Instant time) {
+            this.hash = hash;
+            this.time = time;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            HashKey key = (HashKey) o;
+            return hash == key.hash;
+        }
+
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+
+        @Override
+        public Instant getTime() {
+            return time;
+        }
     }
 
     class CacheWrapper implements Client {

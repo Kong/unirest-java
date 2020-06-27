@@ -26,7 +26,6 @@
 package kong.unirest;
 
 import java.time.Instant;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -63,6 +62,7 @@ public interface Cache {
     static Builder builder(){
         return new Builder();
     }
+
     class Builder {
         private int depth = 100;
         private long ttl = 0;
@@ -114,40 +114,40 @@ public interface Cache {
         }
     }
 
-    
-    class Key {
-        private final int hash;
-        private final Instant time;
-
-        Key(HttpRequest request, Boolean isAsync, Class<?> responseType) {
-            this(Objects.hash(request.hashCode(), isAsync, responseType),
-                 request.getCreationTime());
-        }
-
-        public Key(int hash, Instant time) {
-            this.hash = hash;
-            this.time = time;
-        }
-
+    /**
+     * Interface for the cache key which can be implemented by consumers
+     * The key should implement equals and hashCode
+     * It must must return the time the key was created.
+     */
+    interface Key {
+        /**
+         * @param   obj   the reference object with which to compare.
+         * @return  {@code true} if this object is the same as the obj
+         *          argument; {@code false} otherwise.
+         * @see     #hashCode()
+         * @see     java.util.HashMap
+         */
         @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            Key key = (Key) o;
-            return hash == key.hash;
-        }
+        boolean equals(Object obj);
 
+        /**
+         * As much as is reasonably practical, the hashCode method defined
+         * by class {@code Object} does return distinct integers for
+         * distinct objects. (The hashCode may or may not be implemented
+         * as some function of an object's memory address at some point
+         * in time.)
+         *
+         * @return  a hash code value for this object.
+         * @see     java.lang.Object#equals(java.lang.Object)
+         * @see     java.lang.System#identityHashCode
+         */
         @Override
-        public int hashCode() {
-            return hash;
-        }
+        int hashCode();
 
-        public Instant getTime() {
-            return time;
-        }
+        /**
+         * The time the key was created to be used by purging functions
+         * @return the time as an instant
+         */
+        Instant getTime();
     }
 }
