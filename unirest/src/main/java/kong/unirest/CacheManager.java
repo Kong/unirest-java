@@ -154,9 +154,9 @@ class CacheManager {
         }
 
         @Override
-        public <T> CompletableFuture<HttpResponse<T>> getAsync(Key key, Supplier<CompletableFuture<HttpResponse<T>>> fetcher) {
+        public <T> CompletableFuture getAsync(Key key, Supplier<CompletableFuture<HttpResponse<T>>> fetcher) {
             clearOld();
-            return (CompletableFuture<HttpResponse<T>>)super.computeIfAbsent(key, (k) -> fetcher.get());
+            return (CompletableFuture)super.computeIfAbsent(key, (k) -> fetcher.get());
         }
 
         private void clearOld() {
