@@ -31,34 +31,90 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+/**
+ * Cache interface for response caching
+ */
 public interface Cache {
-    
+
+    /**
+     * Returns the cached HttpResponse for a key or uses the Supplier to fetch the response
+     * @param key the cache key
+     * @param fetcher a function to execute the request and return the response. This response should be
+     *                cached by the implementation
+     * @param <T> the type of response
+     * @return the Http Response
+     */
+    <T> HttpResponse get(Key key, Supplier<HttpResponse<T>> fetcher);
+
+    /**
+     * Returns the cached HttpResponse for a key or uses the Supplier to fetch the response
+     * @param key the cache key
+     * @param fetcher a function to execute the request and return the response. This response should be
+     *                cached by the implementation
+     * @param <T> the type of response
+     * @return the CompletableFuture for the response
+     */
+    <T> CompletableFuture getAsync(Key key, Supplier<CompletableFuture<HttpResponse<T>>> fetcher);
+
+    /**
+     * a builder for cache options
+     * @return a new Builder.
+     */
     static Builder builder(){
         return new Builder();
     }
-
-    <T> HttpResponse get(Key key, Supplier<HttpResponse<T>> fetcher);
-    <T> CompletableFuture getAsync(Key key, Supplier<CompletableFuture<HttpResponse<T>>> fetcher);
-
     class Builder {
         private int depth = 100;
         private long ttl = 0;
+        private Cache backing;
 
-        public CacheManager build() {
+        CacheManager build() {
+            if(backing != null){
+                return new CacheManager(backing);
+            }
             return new CacheManager(depth, ttl);
         }
 
+        /**
+         * defines the max depth of the cache in number of values.
+         * defaults to 100.
+         * Elements exceeding the depth are purged on read.
+         * Custom Cache implementations may not honor this setting
+         * @param value the max depth
+         * @return the current builder.
+         */
         public Builder depth(int value) {
             this.depth = value;
             return this;
         }
 
+        /**
+         * Sets a Time-To-Live for response objects.
+         * There is no TTL by default and objects will be kept indefinitely
+         * Elements exceeding the TTL are purged on read.
+         * Custom Cache implementations may not honor this setting
+         * @param number a number
+         * @param units the TimeUnits of the number
+         * @return this builder.
+         */
         public Builder maxAge(long number, TimeUnit units) {
             this.ttl = units.toMillis(number);
             return this;
         }
+
+        /**
+         * Sets a custom backing cache. This cache must implement it's own purging rules
+         * There is no TTL by default and objects will be kept indefinitely
+         * @param cache the backing cache implementation
+         * @return this builder.
+         */
+        public Builder backingCache(Cache cache) {
+            this.backing = cache;
+            return this;
+        }
     }
 
+    
     class Key {
         private final int hash;
         private final Instant time;

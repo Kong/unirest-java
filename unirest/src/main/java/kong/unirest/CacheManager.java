@@ -39,7 +39,7 @@ class CacheManager {
 
     private final CacheWrapper wrapper = new CacheWrapper();
     private final AsyncWrapper asyncWrapper = new AsyncWrapper();
-    private final Cache map;
+    private final Cache backingCache;
 
     private Client originalClient;
     private AsyncClient originalAsync;
@@ -49,7 +49,11 @@ class CacheManager {
     }
 
     public CacheManager(int depth, long ttl) {
-        map = new CacheMap(depth, ttl);
+        backingCache = new CacheMap(depth, ttl);
+    }
+
+    public CacheManager(Cache backing) {
+        backingCache = backing;
     }
 
     Client wrap(Client client) {
@@ -84,7 +88,7 @@ class CacheManager {
                                            Class<?> responseType) {
 
             Cache.Key hash = getHash(request, false, responseType);
-            return map.get(hash,
+            return backingCache.get(hash,
                     () -> originalClient.request(request, transformer, responseType));
         }
 
@@ -118,7 +122,7 @@ class CacheManager {
                                                               CompletableFuture<HttpResponse<T>> callback,
                                                               Class<?> responseType) {
             Cache.Key key = getHash(request, true, responseType);
-            return map.getAsync(key,
+            return backingCache.getAsync(key,
                     () -> originalAsync.request(request, transformer, callback, responseType));
         }
 
