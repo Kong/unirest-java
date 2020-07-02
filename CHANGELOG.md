@@ -1,3 +1,6 @@
+## 3.8.01
+* issue #359 make the default object mapper lazy so gson can be excluded
+
 ## 3.8.00 
 * Minor updates to org.apache.httpcomponents to 4.5.12
 * Upgrade Jackson to 2.11.0 

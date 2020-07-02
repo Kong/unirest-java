@@ -29,20 +29,27 @@ import com.google.gson.Gson;
 
 public class JsonObjectMapper implements ObjectMapper {
 
-    private final Gson gson = new Gson();
+    private Gson gson;
 
     @Override
     public <T> T readValue(String value, Class<T> valueType) {
-        return gson.fromJson(value, valueType);
+        return getGson().fromJson(value, valueType);
     }
 
     @Override
     public <T> T readValue(String value, GenericType<T> genericType) {
-        return gson.fromJson(value, genericType.getType());
+        return getGson().fromJson(value, genericType.getType());
     }
 
     @Override
     public String writeValue(Object value) {
-        return gson.toJson(value);
+        return getGson().toJson(value);
+    }
+
+    private Gson getGson(){
+        if(gson == null){
+            gson = new Gson();
+        }
+        return gson;
     }
 }
