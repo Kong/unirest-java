@@ -1,5 +1,9 @@
-## 3.8.01
+## 3.8.06
 * issue #359 make the default object mapper lazy so gson can be excluded
+
+### 3.8.01-.05 (RIP)
+   * sacrificed to an angry Nexus god.
+   * Nexus deploy plugin upgraded
 
 ## 3.8.00 
 * Minor updates to org.apache.httpcomponents to 4.5.12
