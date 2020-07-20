@@ -1,7 +1,7 @@
 # Upgrade Guide
 
 ## Upgrading to Unirest 3.0
-The primary difference in Unirest 3 is that the org.json dependency has been replaced by a clean-room implementation of the it's interface using Google Gson as the engine. 
+The primary difference in Unirest 3 is that the org.json dependency has been replaced by a clean-room implementation of org.json's interface using Google Gson as the engine. 
 
 ### What? Why?
 This was done due to conflicts with the org.json license which requires that "The Software shall be used for Good, not Evil.". While many people would rightly view this as silly and unenforceable by law, many organizations such as Eclipse, Debian, and Apache will not allow using it.
