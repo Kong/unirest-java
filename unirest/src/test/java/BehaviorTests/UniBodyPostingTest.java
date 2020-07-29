@@ -176,4 +176,17 @@ public class UniBodyPostingTest extends BddTest {
         Object value = request.getBody().get().uniPart().getValue();
         assertEquals("{\"body\": \"sample\"}", value);
     }
+
+    @Test
+    void stringPassedToObjectGetsPassedToString() {
+        Object body = "{\"body\": \"sample\"}";
+        RequestBodyEntity request = Unirest.post(MockServer.POST)
+                .basicAuth("foo", "bar")
+                .header("Content-Type", "application/json")
+                .queryString("foo", "bar")
+                .body(body);
+
+        Object value = request.getBody().get().uniPart().getValue();
+        assertEquals("{\"body\": \"sample\"}", value);
+    }
 }

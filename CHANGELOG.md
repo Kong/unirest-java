@@ -1,3 +1,7 @@
+## 3.9.00 (pending)
+* Issue #362 when passing a string to the body method for a post, route as a string rather than passing to the object mapper.
+
+
 ## 3.8.06
 * issue #359 make the default object mapper lazy so gson can be excluded
 
