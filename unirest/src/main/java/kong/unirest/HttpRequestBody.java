@@ -26,6 +26,7 @@
 package kong.unirest;
 
 import kong.unirest.json.JSONArray;
+import kong.unirest.json.JSONElement;
 import kong.unirest.json.JSONObject;
 
 import java.io.File;
@@ -109,6 +110,10 @@ class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRe
 	public RequestBodyEntity body(Object body) {
 		if(body instanceof String){
 			return body((String)body);
+		} else if (body instanceof JsonNode){
+			return body((JsonNode) body);
+		} else if (body instanceof JSONElement){
+			return body(body.toString());
 		}
 		return body(getObjectMapper().writeValue(body));
 	}

@@ -189,4 +189,44 @@ public class UniBodyPostingTest extends BddTest {
         Object value = request.getBody().get().uniPart().getValue();
         assertEquals("{\"body\": \"sample\"}", value);
     }
+
+    @Test
+    void jsonNodePassedToObjectGetsPassedToString() {
+        Object body = new JsonNode("{\"body\": \"sample\"}");
+        RequestBodyEntity request = Unirest.post(MockServer.POST)
+                .basicAuth("foo", "bar")
+                .header("Content-Type", "application/json")
+                .queryString("foo", "bar")
+                .body(body);
+
+        Object value = request.getBody().get().uniPart().getValue();
+        assertEquals("{\"body\":\"sample\"}", value);
+    }
+
+    @Test
+    void jsonObjectPassedToObjectGetsPassedToString() {
+        Object body = new JSONObject("{\"body\": \"sample\"}");
+        RequestBodyEntity request = Unirest.post(MockServer.POST)
+                .basicAuth("foo", "bar")
+                .header("Content-Type", "application/json")
+                .queryString("foo", "bar")
+                .body(body);
+
+        Object value = request.getBody().get().uniPart().getValue();
+        assertEquals("{\"body\":\"sample\"}", value);
+    }
+
+    @Test
+    void jsonArrayPassedToObjectGetsPassedToString() {
+        Object body = new JSONArray("[\"body\", \"sample\"]");
+        RequestBodyEntity request = Unirest.post(MockServer.POST)
+                .basicAuth("foo", "bar")
+                .header("Content-Type", "application/json")
+                .queryString("foo", "bar")
+                .body(body);
+
+        Object value = request.getBody().get().uniPart().getValue();
+        assertEquals("[\"body\",\"sample\"]", value);
+    }
+
 }
