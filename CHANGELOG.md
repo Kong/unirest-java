@@ -1,5 +1,6 @@
-## 3.9.00 (pending)
+## 3.9.00 
 * Issue #362 when passing a string to the body method for a post, route as a string rather than passing to the object mapper.
+* Issue #362 when passing a native Unirest JSON Type to the body method for a post, route as a Json Type rather than passing to the object mapper.
 * issue #363 support multiple interceptors
 
 ## 3.8.06
