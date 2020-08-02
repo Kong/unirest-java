@@ -48,8 +48,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static kong.unirest.Util.tryCast;
-
 public class Config {
     public static final int DEFAULT_CONNECTION_TIMEOUT = 10000;
     public static final int DEFAULT_MAX_CONNECTIONS = 200;
@@ -84,7 +82,7 @@ public class Config {
     private UniMetric metrics = new NoopMetric();
     private long ttl = -1;
     private SSLContext sslContext;
-    private Interceptor interceptor = new DefaultInterceptor();
+    private CompoundInterceptor interceptor = new CompoundInterceptor();
     private HostnameVerifier hostnameVerifier;
     private String defaultBaseUrl;
     private CacheManager cache;
@@ -110,7 +108,7 @@ public class Config {
         keystore = null;
         keystorePassword = null;
         sslContext = null;
-        interceptor = new DefaultInterceptor();
+        interceptor = new CompoundInterceptor();
         this.objectMapper = Optional.of(new JsonObjectMapper());
         try {
             asyncBuilder = ApacheAsyncClient::new;
@@ -431,7 +429,7 @@ public class Config {
      */
     public Config interceptor(Interceptor value) {
         Objects.requireNonNull(value, "Interceptor may not be null");
-        this.interceptor = value;
+        this.interceptor.register(value);
         return this;
     }
 
@@ -891,7 +889,10 @@ public class Config {
     }
 
     private Optional<DefaultInterceptor> getDefaultInterceptor() {
-        return tryCast(getUniInterceptor(), DefaultInterceptor.class);
+        return interceptor.getInterceptors().stream()
+                .filter(i -> i instanceof DefaultInterceptor)
+                .map(i -> (DefaultInterceptor)i)
+                .findFirst();
     }
 
     public HostnameVerifier getHostnameVerifier() {

@@ -34,6 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,7 +50,7 @@ public class InterceptorTest extends BddTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-        interceptor = new UniInterceptor();
+        interceptor = new UniInterceptor("x-custom", "foo");
     }
 
     @Test
@@ -59,6 +60,16 @@ public class InterceptorTest extends BddTest {
 
         interceptor.cap.assertHeader("x-custom", "foo");
         assertEquals(MockServer.GET, interceptor.reqSum.getUrl());
+    }
+
+    @Test
+    public void canAddTwoInterceptor() {
+        Unirest.config().interceptor(interceptor);
+        Unirest.config().interceptor(new UniInterceptor("fruit", "grapes"));
+        Unirest.get(MockServer.GET).asObject(RequestCapture.class);
+
+        interceptor.cap.assertHeader("x-custom", "foo");
+        interceptor.cap.assertHeader("fruit", "grapes");
     }
 
     @Test
@@ -154,10 +165,17 @@ public class InterceptorTest extends BddTest {
         RequestCapture cap;
         HttpRequestSummary reqSum;
         boolean failResponse;
+        private String name;
+        private String value;
+
+        public UniInterceptor(String name, String value){
+            this.name = name;
+            this.value = value;
+        }
 
         @Override
         public void onRequest(HttpRequest<?> request, Config config) {
-            request.header("x-custom", "foo");
+            request.header(name, value);
         }
 
         @Override
