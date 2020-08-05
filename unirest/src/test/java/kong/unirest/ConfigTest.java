@@ -28,7 +28,6 @@ package kong.unirest;
 import kong.unirest.apache.ApacheAsyncClient;
 import kong.unirest.apache.ApacheClient;
 import kong.unirest.apache.AsyncIdleConnectionMonitorThread;
-import kong.unirest.apache.SyncIdleConnectionMonitorThread;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -58,8 +57,6 @@ public class ConfigTest {
     private CloseableHttpClient httpc;
     @Mock
     private PoolingHttpClientConnectionManager clientManager;
-    @Mock
-    private SyncIdleConnectionMonitorThread connMonitor;
     @Mock
     private CloseableHttpAsyncClient asyncClient;
     @Mock
@@ -133,14 +130,13 @@ public class ConfigTest {
         when(asyncClient.isRunning()).thenReturn(true);
 
         Unirest.config()
-                .httpClient(new ApacheClient(httpc, null, clientManager, connMonitor))
+                .httpClient(new ApacheClient(httpc, null, clientManager))
                 .asyncClient(new ApacheAsyncClient(asyncClient, null, manager, asyncMonitor));
 
         Unirest.shutDown();
 
         verify(httpc).close();
         verify(clientManager).close();
-        verify(connMonitor).interrupt();
         verify(asyncClient).close();
         verify(asyncMonitor).interrupt();
     }
@@ -161,12 +157,11 @@ public class ConfigTest {
         when(asyncClient.isRunning()).thenReturn(true);
         doThrow(new IOException("1")).when(httpc).close();
         doThrow(new RuntimeException("2")).when(clientManager).close();
-        doThrow(new RuntimeException("3")).when(connMonitor).interrupt();
         doThrow(new IOException("4")).when(asyncClient).close();
         doThrow(new RuntimeException("5")).when(asyncMonitor).interrupt();
 
         Unirest.config()
-                .httpClient(new ApacheClient(httpc, null, clientManager, connMonitor))
+                .httpClient(new ApacheClient(httpc, null, clientManager))
                 .asyncClient(new ApacheAsyncClient(asyncClient,null, manager, asyncMonitor));
 
 
@@ -174,13 +169,11 @@ public class ConfigTest {
                 UnirestException.class,
                 "java.io.IOException 1\n" +
                         "java.lang.RuntimeException 2\n" +
-                        "java.lang.RuntimeException 3\n" +
                         "java.io.IOException 4\n" +
                         "java.lang.RuntimeException 5");
 
         verify(httpc).close();
         verify(clientManager).close();
-        verify(connMonitor).interrupt();
         verify(asyncClient).close();
         verify(asyncMonitor).interrupt();
     }
@@ -190,7 +183,7 @@ public class ConfigTest {
         when(asyncClient.isRunning()).thenReturn(true);
 
         Unirest.config()
-                .httpClient(new ApacheClient(httpc, null, null, null))
+                .httpClient(new ApacheClient(httpc, null, null))
                 .asyncClient(new ApacheAsyncClient(asyncClient, null, null, null));
 
         Unirest.shutDown();

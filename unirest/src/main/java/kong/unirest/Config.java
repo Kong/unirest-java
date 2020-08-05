@@ -127,7 +127,7 @@ public class Config {
      */
     @Deprecated // use httpClient(Function<Config, Client> httpClient) with the ApacheConfig.builder()
     public Config httpClient(HttpClient httpClient) {
-        client = Optional.of(new ApacheClient(httpClient, this, null, null));
+        client = Optional.of(new ApacheClient(httpClient, this, null));
         return this;
     }
 

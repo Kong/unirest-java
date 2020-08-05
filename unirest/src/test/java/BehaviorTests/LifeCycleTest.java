@@ -29,7 +29,6 @@ import com.github.paweladamski.httpclientmock.HttpClientMock;
 import com.google.common.collect.Sets;
 import kong.unirest.*;
 import kong.unirest.apache.AsyncIdleConnectionMonitorThread;
-import kong.unirest.apache.SyncIdleConnectionMonitorThread;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,8 +59,6 @@ public class LifeCycleTest extends BddTest {
     private CloseableHttpClient httpc;
     @Mock
     private PoolingHttpClientConnectionManager clientManager;
-    @Mock
-    private SyncIdleConnectionMonitorThread connMonitor;
     @Mock
     private CloseableHttpAsyncClient asyncClient;
     @Mock

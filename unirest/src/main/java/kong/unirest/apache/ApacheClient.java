@@ -36,6 +36,7 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import java.io.Closeable;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -44,20 +45,18 @@ public class ApacheClient extends BaseApacheClient implements Client {
     private final Config config;
     private final SecurityConfig security;
     private final PoolingHttpClientConnectionManager manager;
-    private final SyncIdleConnectionMonitorThread syncMonitor;
     private boolean hookset;
 
     public ApacheClient(Config config) {
         this.config = config;
         security = new SecurityConfig(config);
         manager = security.createManager();
-        syncMonitor = new SyncIdleConnectionMonitorThread(manager);
-        syncMonitor.start();
 
         HttpClientBuilder cb = HttpClients.custom()
                 .setDefaultRequestConfig(RequestOptions.toRequestConfig(config))
                 .setDefaultCredentialsProvider(toApacheCreds(config.getProxy()))
                 .setConnectionManager(manager)
+                .evictIdleConnections(30, TimeUnit.SECONDS)
                 .useSystemProperties();
 
         setOptions(cb);
@@ -65,12 +64,11 @@ public class ApacheClient extends BaseApacheClient implements Client {
     }
 
     @Deprecated // Use the builder instead, also, the PoolingHttpClientConnectionManager and SyncIdleConnectionMonitorThread don't get used here anyway
-    public ApacheClient(HttpClient httpClient, Config config, PoolingHttpClientConnectionManager clientManager, SyncIdleConnectionMonitorThread connMonitor) {
+    public ApacheClient(HttpClient httpClient, Config config, PoolingHttpClientConnectionManager clientManager) {
         this.client = httpClient;
         this.security = new SecurityConfig(config);
         this.config = config;
         this.manager = clientManager;
-        this.syncMonitor = connMonitor;
     }
 
     public ApacheClient(HttpClient httpClient, Config config){
@@ -78,7 +76,6 @@ public class ApacheClient extends BaseApacheClient implements Client {
         this.config = config;
         this.security = new SecurityConfig(config);
         this.manager = null;
-        this.syncMonitor = null;
     }
 
     private void setOptions(HttpClientBuilder cb) {
@@ -146,18 +143,13 @@ public class ApacheClient extends BaseApacheClient implements Client {
         return manager;
     }
 
-    public SyncIdleConnectionMonitorThread getSyncMonitor() {
-        return syncMonitor;
-    }
-
     @Override
     public Stream<Exception> close() {
         return Util.collectExceptions(Util.tryCast(client, CloseableHttpClient.class)
                         .map(c -> Util.tryDo(c, Closeable::close))
                         .filter(Optional::isPresent)
                         .map(Optional::get),
-                Util.tryDo(manager, m -> m.close()),
-                Util.tryDo(syncMonitor, i -> i.interrupt())
+                Util.tryDo(manager, m -> m.close())
         );
     }
 
