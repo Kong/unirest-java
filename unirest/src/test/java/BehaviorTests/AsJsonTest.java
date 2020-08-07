@@ -41,7 +41,7 @@ public class AsJsonTest extends BddTest {
     public void whenNoBodyIsReturned() {
         HttpResponse<JsonNode> i = Unirest.get(MockServer.NOBODY).asJson();
 
-        assertEquals(200, i.getStatus());
+        assertEquals(HttpStatus.OK, i.getStatus());
         assertEquals("{}", i.getBody().toString());
     }
 
@@ -102,7 +102,7 @@ public class AsJsonTest extends BddTest {
     public void failureToReturnValidJsonWillResultInAnEmptyNode() {
         HttpResponse<JsonNode> response = Unirest.get(MockServer.INVALID_REQUEST).asJson();
 
-        assertEquals(400, response.getStatus());
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
         assertNull(response.getBody());
         UnirestParsingException ex = response.getParsingError().get();
         assertEquals("You did something bad", ex.getOriginalBody());
@@ -115,7 +115,7 @@ public class AsJsonTest extends BddTest {
     public void failureToReturnValidJsonWillResultInAnEmptyNodeAsync() {
         Unirest.get(MockServer.INVALID_REQUEST)
                 .asJsonAsync(new MockCallback<>(this, response -> {
-                    assertEquals(400, response.getStatus());
+                    assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
                     assertNull(response.getBody());
                     assertEquals(null, response.getBody());
                     assertEquals("kong.unirest.json.JSONException: Invalid JSON",
