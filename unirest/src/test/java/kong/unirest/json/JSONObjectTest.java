@@ -106,6 +106,12 @@ public class JSONObjectTest {
     }
 
     @Test
+    void issue_366() {
+        JSONObject jsonObject = new JSONObject("{\"status\":\"OK\",\"message\":\"hive_1597818501335\"}");
+        assertEquals("{\"status\":\"OK\",\"message\":\"hive_1597818501335\"}", jsonObject.toString());
+    }
+
+    @Test
     public void nullsAreSerializedOnPretty() {
         JSONObject obj = new JSONObject("{\"key1\": \"value\", \"key2\": null}");
 
