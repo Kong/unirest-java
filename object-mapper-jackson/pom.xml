@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.konghq</groupId>
         <artifactId>unirest-java-parent</artifactId>
-        <version>3.9.01-SNAPSHOT</version>
+        <version>3.10.00-SNAPSHOT</version>
     </parent>
 
     <artifactId>unirest-objectmapper-jackson</artifactId>
