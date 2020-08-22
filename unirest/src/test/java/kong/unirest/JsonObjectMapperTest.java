@@ -196,6 +196,13 @@ class JsonObjectMapperTest {
     }
 
     @Test
+    void deserializeZonedDateTime_iso_with_offset() {
+        TestDates back = getTestDate("zonedDateTime", "1985-07-03T18:30:00.042+02:00");
+
+        assertEquals(ZonedDateTime.parse("1985-07-03T18:30:00.042+02:00"), back.getZonedDateTime());
+    }
+
+    @Test
     void canSerializeLocalDateTimes() {
         LocalDateTime zonedDt = LocalDateTime.parse("1985-07-03T18:00:00.042");
         TestDates test = new TestDates();
