@@ -104,6 +104,13 @@ class JsonObjectMapperTest {
     }
 
     @Test
+    void deserializeDate_iso_datetime_Errors() {
+        TestUtil.assertException(() -> getTestDate("date", "Leeeeeeeroy Jenkins!"),
+                UnirestException.class,
+                "Could Not Parse as java.util.Date: Leeeeeeeroy Jenkins!");
+    }
+
+    @Test
     void deserializeDate_iso_datetime_noSeconds() {
         TestDates back = getTestDate("date", "1985-07-03T18:30Z");
 
@@ -164,7 +171,12 @@ class JsonObjectMapperTest {
         assertEquals(489196800000L, back.getCalendar().getTimeInMillis());
     }
 
-
+    @Test
+    void deserializeCalendar_iso_datetime_Errors() {
+        TestUtil.assertException(() -> getTestDate("calendar", "Leeeeeeeroy Jenkins!"),
+                UnirestException.class,
+                "Could Not Parse as java.util.Calendar: Leeeeeeeroy Jenkins!");
+    }
 
     @Test
     void canSerializeZonedDateTimes() {
