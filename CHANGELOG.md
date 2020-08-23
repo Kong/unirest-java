@@ -1,6 +1,6 @@
-## 3.10.00 (Pending)
+## 3.10.00
 * Introduce new HttpStatus constants class for reference to Http response codes.
-* Switch the ApacheClient to use Apaches build in eviction monitor rather than a custom one.
+* Switch the ApacheClient to use Apache's build in eviction monitor rather than a custom one.
 * Add native default support for various Java DateTime types for the built in object mapper. All types will serialize to ISO-8601. Parsing from json will attempt various ISO variants.
    * Types Supported:
       * ZonedDateTime
