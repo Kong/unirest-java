@@ -26,11 +26,18 @@
 package kong.unirest.apache;
 
 import kong.unirest.*;
+import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URIUtils;
+import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.function.Function;
 
 abstract class BaseApacheClient {
@@ -68,5 +75,27 @@ abstract class BaseApacheClient {
 
     public void setConfigFactory(RequestConfigFactory configFactory) {
         this.configFactory = configFactory;
+    }
+
+
+    protected static HttpHost determineTarget(final HttpUriRequest request, Headers headers)  {
+        HttpHost target = null;
+
+        final URI requestURI = request.getURI();
+        if (requestURI.isAbsolute()) {
+            target = URIUtils.extractHost(requestURI);
+            if (target == null) {
+                throw new UnirestException("URI does not specify a valid host name: " + requestURI);
+            }
+            if(headers.containsKey("Host") && InetAddressUtils.isIPv4Address(target.getHostName())){
+                try {
+                    InetAddress address = InetAddress.getByName(target.getHostName());
+                    target = new HttpHost(address, headers.getFirst("Host"), target.getPort(), target.getSchemeName());
+                }catch (UnknownHostException e){
+                    throw new UnirestException(e);
+                }
+            }
+        }
+        return target;
     }
 }

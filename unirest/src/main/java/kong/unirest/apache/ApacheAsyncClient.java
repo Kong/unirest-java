@@ -26,6 +26,7 @@
 package kong.unirest.apache;
 
 import kong.unirest.*;
+import org.apache.http.HttpHost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.config.Registry;
@@ -173,7 +174,8 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
         HttpUriRequest requestObj = new RequestPrep(request, config, true).prepare(configFactory);
         HttpRequestSummary reqSum = request.toSummary();
         MetricContext metric = config.getMetric().begin(reqSum);
-        client.execute(requestObj, new FutureCallback<org.apache.http.HttpResponse>() {
+        HttpHost host = determineTarget(requestObj, request.getHeaders());
+        client.execute(host, requestObj, new FutureCallback<org.apache.http.HttpResponse>() {
             @Override
             public void completed(org.apache.http.HttpResponse httpResponse) {
                 ApacheResponse t = new ApacheResponse(httpResponse, config);

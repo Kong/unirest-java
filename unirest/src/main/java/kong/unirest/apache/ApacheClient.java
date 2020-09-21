@@ -26,6 +26,7 @@
 package kong.unirest.apache;
 
 import kong.unirest.*;
+import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -119,7 +120,8 @@ public class ApacheClient extends BaseApacheClient implements Client {
         HttpRequestBase requestObj = new RequestPrep(request, config, false).prepare(configFactory);
         MetricContext metric = config.getMetric().begin(reqSum);
         try {
-            org.apache.http.HttpResponse execute = client.execute(requestObj);
+            HttpHost host = determineTarget(requestObj, request.getHeaders());
+            org.apache.http.HttpResponse execute = client.execute(host, requestObj);
             ApacheResponse t = new ApacheResponse(execute, config);
             metric.complete(t.toSummary(), null);
             HttpResponse<T> httpResponse = transformBody(transformer, t);

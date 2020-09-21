@@ -27,6 +27,7 @@ package BehaviorTests;
 
 import kong.unirest.*;
 import org.apache.http.HttpException;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -129,6 +130,7 @@ public class InterceptorTest extends BddTest {
 
     private HttpClient getFailureClient() throws IOException {
         HttpClient client = mock(HttpClient.class);
+        when(client.execute(any(HttpHost.class), any(HttpUriRequest.class))).thenThrow(new IOException(ioErrorMessage));
         when(client.execute(any(HttpUriRequest.class))).thenThrow(new IOException(ioErrorMessage));
         return client;
     }
