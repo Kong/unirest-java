@@ -25,9 +25,7 @@
 
 package BehaviorTests;
 
-import kong.unirest.Cache;
-import kong.unirest.TestUtil;
-import kong.unirest.Unirest;
+import kong.unirest.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -35,6 +33,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
+import static com.google.common.collect.ImmutableMap.of;
 import static kong.unirest.Cache.builder;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -143,5 +142,30 @@ public class CachingTest extends BddTest {
         Unirest.get(MockServer.GET).asEmpty();
 
         assertEquals(2, MockServer.timesCalled);
+    }
+
+    @Test
+    void doesNotCacheByDefault_json() {
+        HttpResponse<JsonNode> response1 = Unirest.get(MockServer.GET).queryString(of("a",1)).asJson();
+        HttpResponse<JsonNode> response2 = Unirest.get(MockServer.GET).queryString(of("a",1)).asJson();
+
+        assertNotEquals(
+                response1.getBody().getObject().getString("requestId"),
+                response2.getBody().getObject().getString("requestId")
+        );
+        assertEquals(2,  MockServer.timesCalled);
+    }
+
+    @Test
+    void willCacheIfEnabled_json() {
+        Unirest.config().cacheResponses(true);
+        HttpResponse<JsonNode> response1 = Unirest.get(MockServer.GET).queryString(of("a",1)).asJson();
+        HttpResponse<JsonNode> response2 = Unirest.get(MockServer.GET).queryString(of("a",1)).asJson();
+
+        assertEquals(
+                response1.getBody().getObject().getString("requestId"),
+                response2.getBody().getObject().getString("requestId")
+        );
+        assertEquals(1,  MockServer.timesCalled);
     }
 }
