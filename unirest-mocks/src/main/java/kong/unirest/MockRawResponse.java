@@ -32,20 +32,24 @@ import java.io.InputStreamReader;
 public class MockRawResponse implements RawResponse {
     private final String response;
     private final Headers responseHeaders;
+    private final int status;
+    private final String statusMessage;
 
-    public MockRawResponse(String responseBody, Headers responseHeaders) {
+    public MockRawResponse(String responseBody, Headers responseHeaders, int status, String statusMessage) {
         this.response = responseBody;
         this.responseHeaders = responseHeaders;
+        this.status = status;
+        this.statusMessage = statusMessage;
     }
 
     @Override
     public int getStatus() {
-        return 200;
+        return status;
     }
 
     @Override
     public String getStatusText() {
-        return "";
+        return statusMessage;
     }
 
     @Override

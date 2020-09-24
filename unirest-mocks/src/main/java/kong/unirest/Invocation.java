@@ -44,6 +44,8 @@ class Invocation implements Expectation, ExpectedResponse {
     private Headers responseHeaders = new Headers();
     private Boolean expected = false;
     private String expectedBody;
+    private int responseStatus = 200;
+    private String responseText = "Ok";
 
     public Invocation(Routes routes){
         this.routes = routes;
@@ -74,7 +76,7 @@ class Invocation implements Expectation, ExpectedResponse {
     }
 
     RawResponse getResponse() {
-        return new MockRawResponse(response, responseHeaders);
+        return new MockRawResponse(response, responseHeaders, responseStatus, responseText);
     }
 
     private Headers allHeaders() {
@@ -156,6 +158,13 @@ class Invocation implements Expectation, ExpectedResponse {
     @Override
     public ExpectedResponse withHeader(String key, String value) {
         this.responseHeaders.add(key, value);
+        return this;
+    }
+
+    @Override
+    public ExpectedResponse withStatus(int httpStatus, String statusMessage) {
+        this.responseStatus = httpStatus;
+        this.responseText = statusMessage;
         return this;
     }
 
