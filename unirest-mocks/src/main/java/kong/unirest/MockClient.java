@@ -80,6 +80,12 @@ public class MockClient implements Client, AsyncClient {
 
     }
 
+    /**
+     * Start an expectation chain.
+     * @param method the Http method
+     * @param path the base path
+     * @return an Expectation which can have additional criteria added to it.
+     */
     public Expectation expect(HttpMethod method, String path) {
         Path p = new Path(path);
         Routes exp = findByPath(method, p).orElseGet(() -> new Routes(method, p));
@@ -89,9 +95,15 @@ public class MockClient implements Client, AsyncClient {
         return exp.newExpectation();
     }
 
-    public Assert assertThat(HttpMethod get, String path) {
-        return findByPath(get, new Path(path))
-                .orElseThrow(() -> new UnirestAssertion(String.format("No Matching Invocation:: %s %s", get, path)));
+    /**
+     * Assert a specific method and path were invoked
+     * @param method the Http method
+     * @param path the base path
+     * @return an Assert object which can have additional criteria chained to it.
+     */
+    public Assert assertThat(HttpMethod method, String path) {
+        return findByPath(method, new Path(path))
+                .orElseThrow(() -> new UnirestAssertion(String.format("No Matching Invocation:: %s %s", method, path)));
     }
 
     private Optional<Routes> findByPath(HttpMethod get, Path path) {
@@ -100,7 +112,10 @@ public class MockClient implements Client, AsyncClient {
                     .findFirst();
     }
 
+    /**
+     * Verify that all Expectations were invoked
+     */
     public void verifyAll() {
-        routes.forEach(e -> e.verifyAll());
+        routes.forEach(Routes::verifyAll);
     }
 }
