@@ -26,6 +26,7 @@
 package kong.unirest;
 
 import java.io.File;
+import java.nio.file.CopyOption;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -318,22 +319,22 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
-    public HttpResponse<File> asFile(String path) {
-        return config.getClient().request(this, r -> new FileResponse(r, path, downloadMonitor), File.class);
+    public HttpResponse<File> asFile(String path, CopyOption... copyOptions) {
+        return config.getClient().request(this, r -> new FileResponse(r, path, downloadMonitor, copyOptions), File.class);
     }
 
     @Override
-    public CompletableFuture<HttpResponse<File>> asFileAsync(String path) {
+    public CompletableFuture<HttpResponse<File>> asFileAsync(String path, CopyOption... copyOptions) {
         return config.getAsyncClient().request(this,
-                r -> new FileResponse(r, path, downloadMonitor),
+                r -> new FileResponse(r, path, downloadMonitor, copyOptions),
                 new CompletableFuture<>(),
                 File.class);
     }
 
     @Override
-    public CompletableFuture<HttpResponse<File>> asFileAsync(String path, Callback<File> callback) {
+    public CompletableFuture<HttpResponse<File>> asFileAsync(String path, Callback<File> callback, CopyOption... copyOptions) {
         return config.getAsyncClient().request(this,
-                r -> new FileResponse(r, path, downloadMonitor),
+                r -> new FileResponse(r, path, downloadMonitor, copyOptions),
                 wrap(callback),
                 File.class);
     }

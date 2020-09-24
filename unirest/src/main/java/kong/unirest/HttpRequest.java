@@ -26,6 +26,7 @@
 package kong.unirest;
 
 import java.io.File;
+import java.nio.file.CopyOption;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
@@ -324,24 +325,27 @@ public interface HttpRequest<R extends HttpRequest>  {
     /**
      * Executes the request and writes the contents into a file
      * @param path The path to the file.
-     * @return a file containing the results
+     * @param copyOptions options specifying how the copy should be done
+     * @return a HttpResponse with the file containing the results
      */
-    HttpResponse<File> asFile(String path);
+    HttpResponse<File> asFile(String path, CopyOption... copyOptions);
 
     /**
      * asynchronously executes the request and writes the contents into a file
      * @param path The path to the file.
+     * @param copyOptions options specifying how the copy should be done
      * @return a file containing the results
      */
-    CompletableFuture<HttpResponse<File>> asFileAsync(String path);
+    CompletableFuture<HttpResponse<File>> asFileAsync(String path, CopyOption... copyOptions);
 
     /**
      * asynchronously executes the request and writes the contents into a file
      * @param path The path to the file.
      * @param callback a callback for handling the body post mapping
+     * @param copyOptions options specifying how the copy should be done
      * @return a file containing the results
      */
-    CompletableFuture<HttpResponse<File>> asFileAsync(String path, Callback<File> callback);
+    CompletableFuture<HttpResponse<File>> asFileAsync(String path, Callback<File> callback, CopyOption... copyOptions);
     /**
      * Allows for following paging links common in many APIs.
      * Each request will result in the same request (headers, etc) but will use the "next" link provided by the extract function.

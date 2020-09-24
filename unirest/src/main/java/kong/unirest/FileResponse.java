@@ -28,6 +28,7 @@ package kong.unirest;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,12 +36,12 @@ import java.nio.file.Paths;
 public class FileResponse extends BaseResponse<File> {
     private File body;
 
-    public FileResponse(RawResponse r, String path, ProgressMonitor downloadMonitor) {
+    public FileResponse(RawResponse r, String path, ProgressMonitor downloadMonitor, CopyOption... copyOptions) {
         super(r);
         try {
             Path target = Paths.get(path);
             InputStream content = getContent(r, downloadMonitor, target);
-            Files.copy(content, target);
+            Files.copy(content, target, copyOptions);
             body = target.toFile();
         } catch (IOException e) {
             throw new UnirestException(e);

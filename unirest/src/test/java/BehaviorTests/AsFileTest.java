@@ -25,6 +25,7 @@
 
 package BehaviorTests;
 
+import kong.unirest.HttpResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import kong.unirest.JacksonObjectMapper;
@@ -32,9 +33,8 @@ import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -110,5 +110,45 @@ public class AsFileTest extends BddTest {
                 .getBody();
 
         assertTrue(com.google.common.io.Files.equal(f1, f2));
+    }
+
+    @Test
+    void byDefaultFailWhenAttemptingToOverride() {
+        Unirest.get(MockServer.BINARYFILE)
+                .asFile(test.toString());
+
+        HttpResponse<File> f2 = Unirest.get(MockServer.BINARYFILE)
+                .asFile(test.toString());
+
+        assertTrue(f2.getParsingError().isPresent());
+        assertTrue(f2.getParsingError().get().getCause().getCause() instanceof FileAlreadyExistsException);
+    }
+
+    @Test
+    void canOverrideExistingFiles() {
+        File f1 = Unirest.get(MockServer.BINARYFILE)
+                .asFile(test.toString())
+                .getBody();
+
+        File f2 = Unirest.get(MockServer.BINARYFILE)
+                .asFile(test.toString(), StandardCopyOption.REPLACE_EXISTING)
+                .getBody();
+
+        assertEquals(f1, f2);
+    }
+
+    @Test
+    void canOverrideExistingFiles_Async() throws Exception {
+        File f1 = Unirest.get(MockServer.BINARYFILE)
+                .asFileAsync(test.toString())
+                .get()
+                .getBody();
+
+        File f2 = Unirest.get(MockServer.BINARYFILE)
+                .asFileAsync(test.toString(), StandardCopyOption.REPLACE_EXISTING)
+                .get()
+                .getBody();
+
+        assertEquals(f1, f2);
     }
 }
