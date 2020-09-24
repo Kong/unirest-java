@@ -1,3 +1,7 @@
+## 3.11.00
+* issue #368 honor hosts header when set by consumer. This mimics behavior in Postman
+* issue #370 expose copyOptions for file downloads
+
 ## 3.10.00
 * Introduce new HttpStatus constants class for reference to Http response codes.
 * Switch the ApacheClient to use Apache's build in eviction monitor rather than a custom one.
