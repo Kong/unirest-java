@@ -27,5 +27,6 @@ package kong.unirest;
 
 public interface ExpectedResponse {
     ExpectedResponse withHeader(String key, String value);
+    ExpectedResponse withStatus(int httpStatus);
     ExpectedResponse withStatus(int httpStatus, String statusMessage);
 }

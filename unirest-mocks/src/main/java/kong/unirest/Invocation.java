@@ -162,6 +162,11 @@ class Invocation implements Expectation, ExpectedResponse {
     }
 
     @Override
+    public ExpectedResponse withStatus(int httpStatus) {
+        return withStatus(httpStatus,"");
+    }
+
+    @Override
     public ExpectedResponse withStatus(int httpStatus, String statusMessage) {
         this.responseStatus = httpStatus;
         this.responseText = statusMessage;
