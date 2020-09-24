@@ -1,6 +1,7 @@
-## 3.11.00
+## 3.11.00 (Pending)
 * issue #368 honor hosts header when set by consumer. This mimics behavior in Postman
 * issue #370 expose copyOptions for file downloads
+* issue #265 New Mocking framework! See the unirest-mocks module.
 
 ## 3.10.00
 * Introduce new HttpStatus constants class for reference to Http response codes.
