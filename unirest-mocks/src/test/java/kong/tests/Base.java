@@ -44,7 +44,7 @@ public class Base {
     public void setUp() {
         client = new MockClient();
         uni = Unirest.spawnInstance();
-        uni.config().httpClient(client);
+        uni.config().httpClient(client).asyncClient(client);
     }
 
 
