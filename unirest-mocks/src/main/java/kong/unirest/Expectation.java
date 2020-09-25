@@ -62,18 +62,21 @@ public interface Expectation {
 
     /**
      * expect a string response
+     * @param body the expected response body
      * @return The ExpectedResponse
      */
     ExpectedResponse thenReturn(String body);
 
     /**
      * expect a json response
+     * @param jsonObject the expected response body
      * @return The ExpectedResponse
      */
     ExpectedResponse thenReturn(JSONElement jsonObject);
 
     /**
      * expect a json response as defined by a pojo
+     * @param pojo the expected response body
      * @return The ExpectedResponse
      */
     ExpectedResponse thenReturn(Object pojo);

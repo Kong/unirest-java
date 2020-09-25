@@ -34,20 +34,20 @@ public interface Assert {
      * Assert that any request to this method/path contained this header
      * @param key the expected header key
      * @param value the expected header value
-     * @throws UnirestAssertion
+     * @throws UnirestAssertion when header does not exist
      */
     void assertHeader(String key, String value);
 
     /**
      * assert that this instance of method/path was invoked x times
      * @param i the number of times invoked.
-     * @throws UnirestAssertion
+     * @throws UnirestAssertion when the invocation count is not x
      */
     void assertInvokedTimes(int i);
 
     /**
      * verify that all Expectations were fulfilled at least once.
-     * @throws UnirestAssertion
+     * @throws UnirestAssertion when all expectations have not been fulfilled
      */
     void verifyAll();
 }

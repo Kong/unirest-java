@@ -25,6 +25,9 @@
 
 package kong.unirest;
 
+/**
+ * Thrown to indicate that an assertion has failed.
+ */
 public class UnirestAssertion extends AssertionError {
     public UnirestAssertion(String base, Object... args){
         super(String.format(base, args));

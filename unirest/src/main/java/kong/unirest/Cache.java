@@ -117,7 +117,7 @@ public interface Cache {
         /**
          * Provide a custom key generator.
          * The default key is a hash of the request, the request execution type and the response type.
-         * @param keyGenerator
+         * @param keyGenerator a custom cache key generator
          * @return this builder
          */
         public Builder withKeyGen(KeyGenerator keyGenerator) {
@@ -126,8 +126,18 @@ public interface Cache {
         }
     }
 
+    /**
+     * A functional interface to generate a cache key
+     */
     @FunctionalInterface
     interface KeyGenerator {
+        /**
+         * A function to generate a cache key
+         * @param request the current http request
+         * @param isAsync indicates if this request is being executed async
+         * @param responseType the response type (String, JsonNode, etc)
+         * @return a key which can be used as a hash for the cache
+         */
         Key apply(HttpRequest request, Boolean isAsync, Class<?> responseType);
     }
 

@@ -620,7 +620,7 @@ public class Config {
      * for example. Setting a default path of 'http://somwhere'
      * and then calling Unirest with Unirest.get('/place')
      * will result in a path of 'https://somwehre/place'
-     * @param value
+     * @param value the base URL to use
      * @return  this config object
      */
     public Config defaultBaseUrl(String value) {
