@@ -1,4 +1,4 @@
-## 3.11.00 (Pending)
+## 3.11.00
 * issue #368 honor hosts header when set by consumer. This mimics behavior in Postman
 * issue #370 expose copyOptions for file downloads
 * issue #265 New Mocking framework! See the unirest-mocks module.
