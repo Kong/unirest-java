@@ -25,9 +25,7 @@
 
 package kong.unirest;
 
-import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONElement;
-import kong.unirest.json.JSONObject;
 
 import java.io.File;
 import java.io.InputStream;
@@ -126,32 +124,17 @@ class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRe
 	/**
 	 * Sugar method for body operation
 	 *
-	 * @param body raw org.JSONObject
+	 * @param body raw JSONElement
 	 * @return RequestBodyEntity instance
 	 */
 	@Override
-	public RequestBodyEntity body(JSONObject body) {
-		return body(body.toString());
-	}
-
-	/**
-	 * Sugar method for body operation
-	 *
-	 * @param body raw org.JSONArray
-	 * @return RequestBodyEntity instance
-	 */
-	@Override
-	public RequestBodyEntity body(JSONArray body) {
+	public RequestBodyEntity body(JSONElement body) {
 		return body(body.toString());
 	}
 
 	@Override
 	public Charset getCharset() {
 		return charSet;
-	}
-
-	void setCharset(Charset charset) {
-		this.charSet = charset;
 	}
 
 	@Override

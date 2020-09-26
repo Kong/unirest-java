@@ -25,8 +25,7 @@
 
 package kong.unirest;
 
-import kong.unirest.json.JSONArray;
-import kong.unirest.json.JSONObject;
+import kong.unirest.json.JSONElement;
 
 import java.io.File;
 import java.io.InputStream;
@@ -157,9 +156,16 @@ public interface HttpRequestWithBody extends HttpRequest<HttpRequestWithBody> {
      */
     RequestBodyEntity body(JsonNode body);
 
-    RequestBodyEntity body(JSONObject body);
+    /**
+     * Set JSON on the body
+     * @param body the JSONElement
+     * @return this request builder
+     */
+    RequestBodyEntity body(JSONElement body);
 
-    RequestBodyEntity body(JSONArray body);
-
+    /**
+     * get the current default charset
+     * @return the Charset
+     */
     Charset getCharset();
 }
