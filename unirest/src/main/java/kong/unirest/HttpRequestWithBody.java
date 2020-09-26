@@ -49,10 +49,9 @@ public interface HttpRequestWithBody extends HttpRequest<HttpRequestWithBody> {
      * (e.g. application/x-www-form-urlencoded)
      * @return this request builder
      */
-    default HttpRequestWithBody noCharset(){
+    default HttpRequestWithBody noCharset() {
         return charset(null);
     }
-
 
     /**
      * Forces the request to send as multipart even if all params are simple
@@ -60,29 +59,103 @@ public interface HttpRequestWithBody extends HttpRequest<HttpRequestWithBody> {
      */
     MultipartBody multiPartContent();
 
-    MultipartBody field(String name, Collection<?> value);
-
-    MultipartBody field(String name, File file);
-
-    MultipartBody field(String name, File file, String contentType);
-
+    /**
+     * Sets a field param on the body.
+     * @param name the name of the field
+     * @param value a values
+     * @return this request builder
+     */
     MultipartBody field(String name, Object value);
 
+    /**
+     * Sets multiple field params on the body each with the same name.
+     * @param name the name of the field
+     * @param value a Collection of values
+     * @return this request builder
+     */
+    MultipartBody field(String name, Collection<?> value);
+
+    /**
+     * Sets a field param on the body with a specified content-type.
+     * @param name the name of the field
+     * @param contentType contentType (i.e. application/xml)
+     * @return this request builder
+     */
     MultipartBody field(String name, Object value, String contentType);
 
+    /**
+     * Sets multiple field params on the body from a map of key/value pairs.
+     * @param parameters the map of field params
+     * @return this request builder
+     */
     MultipartBody fields(Map<String, Object> parameters);
 
-    MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName);
+    /**
+     * Sets a File on the body.
+     * @param name the name of the file field
+     * @param file the file
+     * @return this request builder
+     */
+    MultipartBody field(String name, File file);
 
+    /**
+     * Sets a File on the body with a specified content-type.
+     * @param name the name of the file field
+     * @param file the file
+     * @param contentType contentType (i.e. image/png)
+     * @return this request builder
+     */
+    MultipartBody field(String name, File file, String contentType);
+
+    /**
+     * Sets a File on the body from a raw InputStream requires a file name.
+     * @param name the name of the file field
+     * @param stream the inputStream
+     * @param fileName the name for the file
+     * @return this request builder
+     */
     MultipartBody field(String name, InputStream stream, String fileName);
 
-    RequestBodyEntity body(JsonNode body);
+    /**
+     * Sets a File on the body from a raw InputStream requires a specified content-type and file name.
+     * @param name the name of the file field
+     * @param stream the inputStream
+     * @param contentType contentType (i.e. image/png)
+     * @param fileName the name for the file
+     * @return this request builder
+     */
+    MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName);
 
+    /**
+     * Set a String as the body of the request
+     * @param body the String
+     * @return this request builder
+     */
     RequestBodyEntity body(String body);
 
+    /**
+     * Set a Object as the body of the request. This will be serialized with one of the following methods:
+     *      - Strings are native
+     *      - JSONElements use their native toString
+     *      - Everything else will pass through the supplied ObjectMapper
+     * @param body the Object
+     * @return this request builder
+     */
     RequestBodyEntity body(Object body);
 
+    /**
+     * Set a byte array as the body of the request
+     * @param body the byte[]
+     * @return this request builder
+     */
     RequestBodyEntity body(byte[] body);
+
+    /**
+     * Set JSON on the body
+     * @param body the JsonNode
+     * @return this request builder
+     */
+    RequestBodyEntity body(JsonNode body);
 
     RequestBodyEntity body(JSONObject body);
 
