@@ -5,6 +5,7 @@
 * issue #305 adding a noCharset() method as a more obvious way  to do noCharset(null)
 * Added Documentation
 * Merged the request ```body(JSONObject)``` amd ```body(JSONArray)``` into common ```body(JSONElement)``` method
+* Filled in some missing methods on RequestBodyEntity from HttpRequestWithBody to fully allow chaining in different orders.
 
 ## 3.10.00
 * Introduce new HttpStatus constants class for reference to Http response codes.
