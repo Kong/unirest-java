@@ -2,6 +2,9 @@
 * issue #368 honor hosts header when set by consumer. This mimics behavior in Postman
 * issue #370 expose copyOptions for file downloads
 * issue #265 New Mocking framework! See the unirest-mocks module.
+* issue #305 adding a noCharset() method as a more obvious way  to do noCharset(null)
+* Added Documentation
+* Merged the request ```body(JSONObject)``` amd ```body(JSONArray)``` into common ```body(JSONElement)``` method
 
 ## 3.10.00
 * Introduce new HttpStatus constants class for reference to Http response codes.
