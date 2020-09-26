@@ -30,6 +30,7 @@ import com.google.gson.Gson;
 import kong.unirest.*;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -118,6 +119,36 @@ public class AsObjectTest extends BddTest {
 
         assertTrue(mapper.readWasCalled);
         assertTrue(mapper.writeWasCalled);
+    }
+
+    @Test
+    void canOverrideBody() {
+        Unirest.post(MockServer.POST)
+                .body(new Foo("Apple"))
+                .body(new Foo("Orange"))
+                .asObject(RequestCapture.class)
+                .getBody()
+                .asserBody("{\"bar\":\"Orange\"}");
+    }
+
+    @Test
+    void setCharSetAfterBody() {
+        Unirest.post(MockServer.POST)
+                .body(new Foo("Orange"))
+                .charset(StandardCharsets.US_ASCII)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertContentType("text/plain; charset=US-ASCII");
+    }
+
+    @Test
+    void setNoCharSetAfterBody() {
+        Unirest.post(MockServer.POST)
+                .body(new Foo("Orange"))
+                .noCharset()
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertContentType("text/plain");
     }
 
     @Test

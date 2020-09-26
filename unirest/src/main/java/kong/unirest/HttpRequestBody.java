@@ -106,14 +106,7 @@ class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRe
 
 	@Override
 	public RequestBodyEntity body(Object body) {
-		if(body instanceof String){
-			return body((String)body);
-		} else if (body instanceof JsonNode){
-			return body((JsonNode) body);
-		} else if (body instanceof JSONElement){
-			return body(body.toString());
-		}
-		return body(getObjectMapper().writeValue(body));
+		return new HttpRequestUniBody(this).body(body);
 	}
 
 	@Override

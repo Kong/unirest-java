@@ -25,14 +25,64 @@
 
 package kong.unirest;
 
+import kong.unirest.json.JSONElement;
+
 import java.nio.charset.Charset;
 
 public interface RequestBodyEntity extends HttpRequest<RequestBodyEntity>, Body {
+    /**
+     * Set a byte array as the body of the request
+     * @param bodyBytes the byte[]
+     * @return this request builder
+     */
     RequestBodyEntity body(byte[] bodyBytes);
 
+    /**
+     * Set a String as the body of the request
+     * @param bodyAsString the String
+     * @return this request builder
+     */
     RequestBodyEntity body(String bodyAsString);
 
+    /**
+     * Set JSON on the body
+     * @param jsonBody the JsonNode
+     * @return this request builder
+     */
     RequestBodyEntity body(JsonNode jsonBody);
 
+    /**
+     * Set JSON on the body
+     * @param body the JSONElement
+     * @return this request builder
+     */
+    RequestBodyEntity body(JSONElement body);
+
+    /**
+     * Set a Object as the body of the request. This will be serialized with one of the following methods:
+     *      - Strings are native
+     *      - JSONElements use their native toString
+     *      - Everything else will pass through the supplied ObjectMapper
+     * @param body the Object
+     * @return this request builder
+     */
+    RequestBodyEntity body(Object body);
+
+    /**
+     * Set the Charset encoding for the Content-Type. This is appended to the Content-Type Header
+     * (e.g. application/x-www-form-urlencoded; charset=US-ASCII)
+     * Default is UTF-8
+     * @param charset the charset
+     * @return this request builder
+     */
     RequestBodyEntity charset(Charset charset);
+
+    /**
+     * Removes any Charset for the Content-Type for when servers cannot process it.
+     * (e.g. application/x-www-form-urlencoded)
+     * @return this request builder
+     */
+    default RequestBodyEntity noCharset() {
+        return charset(null);
+    }
 }
