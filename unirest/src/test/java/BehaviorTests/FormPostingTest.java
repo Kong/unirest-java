@@ -153,6 +153,16 @@ public class FormPostingTest extends BddTest {
     }
 
     @Test
+    public void canNotIncludeCharset(){
+        Unirest.post(MockServer.POST)
+                .noCharset()
+                .field("foo", "bar")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertContentType("application/x-www-form-urlencoded");
+    }
+
+    @Test
     public void testChangingEncodingAfterMovingToForm(){
         Unirest.post(MockServer.POST)
                 .field("foo", "bar")

@@ -35,7 +35,24 @@ import java.util.Collection;
 import java.util.Map;
 
 public interface HttpRequestWithBody extends HttpRequest<HttpRequestWithBody> {
+    /**
+     * Set the Charset encoding for the Content-Type. This is appended to the Content-Type Header
+     * (e.g. application/x-www-form-urlencoded; charset=US-ASCII)
+     * Default is UTF-8
+     * @param charset the charset
+     * @return this request builder
+     */
     HttpRequestWithBody charset(Charset charset);
+
+    /**
+     * Removes any Charset for the Content-Type for when servers cannot process it.
+     * (e.g. application/x-www-form-urlencoded)
+     * @return this request builder
+     */
+    default HttpRequestWithBody noCharset(){
+        return charset(null);
+    }
+
 
     /**
      * Forces the request to send as multipart even if all params are simple
