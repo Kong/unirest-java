@@ -27,6 +27,7 @@ package kong.tests;
 
 import kong.unirest.HttpMethod;
 import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
 import kong.unirest.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +40,7 @@ public class ExpectedResponseTest extends Base {
     void canExpectErrors() {
         client.expect(HttpMethod.GET, path).thenReturn().withStatus(BAD_REQUEST, "oh noes");
 
-        HttpResponse<String> response = uni.get(path).asString();
+        HttpResponse<String> response = Unirest.get(path).asString();
 
         assertEquals(BAD_REQUEST, response.getStatus());
         assertEquals("oh noes", response.getStatusText());
@@ -49,7 +50,7 @@ public class ExpectedResponseTest extends Base {
     void canExpectErrorsJustStatus() {
         client.expect(HttpMethod.GET, path).thenReturn().withStatus(BAD_REQUEST);
 
-        HttpResponse<String> response = uni.get(path).asString();
+        HttpResponse<String> response = Unirest.get(path).asString();
 
         assertEquals(BAD_REQUEST, response.getStatus());
         assertEquals("", response.getStatusText());
@@ -60,7 +61,7 @@ public class ExpectedResponseTest extends Base {
         client.expect(HttpMethod.GET, path)
                 .thenReturn("Hello World");
 
-        assertEquals("Hello World", uni.get(path).asString().getBody());
+        assertEquals("Hello World", Unirest.get(path).asString().getBody());
     }
 
     @Test
@@ -68,7 +69,7 @@ public class ExpectedResponseTest extends Base {
         client.expect(HttpMethod.GET, path)
                 .thenReturn("Hello World");
 
-        byte[] body = uni.get(path).asBytes().getBody();
+        byte[] body = Unirest.get(path).asBytes().getBody();
         assertEquals("Hello World", new String(body));
     }
 
@@ -78,7 +79,7 @@ public class ExpectedResponseTest extends Base {
                 .thenReturn("{\"fruit\": \"apple\"}");
 
         assertEquals("apple",
-                uni.get(path).asJson().getBody().getObject().getString("fruit"));
+                Unirest.get(path).asJson().getBody().getObject().getString("fruit"));
     }
 
     @Test
@@ -87,7 +88,7 @@ public class ExpectedResponseTest extends Base {
                 .thenReturn(new JSONObject("{\"fruit\": \"apple\"}"));
 
         assertEquals("apple",
-                uni.get(path).asJson().getBody().getObject().getString("fruit"));
+                Unirest.get(path).asJson().getBody().getObject().getString("fruit"));
     }
 
     @Test
@@ -102,7 +103,7 @@ public class ExpectedResponseTest extends Base {
                 .thenReturn("foo")
                 .withHeader("monster", "grover");
 
-        HttpResponse<String> rez = uni.get(path).asString();
+        HttpResponse<String> rez = Unirest.get(path).asString();
         assertEquals("foo", rez.getBody());
         assertEquals("grover", rez.getHeaders().getFirst("monster"));
     }
@@ -113,7 +114,7 @@ public class ExpectedResponseTest extends Base {
                 .thenReturn()
                 .withHeader("monster", "grover");
 
-        HttpResponse<String> rez = uni.get(path).asString();
+        HttpResponse<String> rez = Unirest.get(path).asString();
         assertEquals(null, rez.getBody());
         assertEquals("grover", rez.getHeaders().getFirst("monster"));
     }

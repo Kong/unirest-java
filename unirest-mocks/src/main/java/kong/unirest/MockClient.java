@@ -40,6 +40,45 @@ import java.util.stream.Stream;
 public class MockClient implements Client, AsyncClient {
     private List<Routes> routes = new ArrayList<>();
 
+    /**
+     * Creates a new MockClient and registers it on the primary static UnirestInstance
+     * @return the Mock Client
+     */
+    public static MockClient register() {
+        return register(Unirest.primaryInstance());
+    }
+
+    /**
+     * Creates a new MockClient and registers it on the Unirest instance
+     * @param unirest an instance of Unirest
+     * @return the Mock Client
+     */
+    public static MockClient register(UnirestInstance unirest) {
+        MockClient client = new MockClient();
+        unirest.config().httpClient(client).asyncClient(client);
+        return client;
+    }
+
+    /**
+     * Clears any MockClient from the primary instance
+     */
+    public static void clear() {
+        clear(Unirest.primaryInstance());
+    }
+
+    /**
+     * Clears any MockClient from the instance
+     * @param unirest
+     */
+    public static void clear(UnirestInstance unirest) {
+        if(unirest.config().getClient() instanceof MockClient){
+            unirest.config().httpClient((Client) null);
+        }
+        if(unirest.config().getAsyncClient() instanceof MockClient){
+            unirest.config().asyncClient((AsyncClient) null);
+        }
+    }
+
     @Override
     public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
         Routes exp = findExpecation(request);

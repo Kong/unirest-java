@@ -27,47 +27,36 @@ package kong.tests;
 
 import kong.unirest.MockClient;
 import kong.unirest.Unirest;
-import kong.unirest.UnirestAssertion;
 import kong.unirest.UnirestInstance;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
-public class Base {
-    protected MockClient client;
-    protected String path = "http://basic";;
-    protected String otherPath = "http://other";;
+public class RegistrationTest {
 
-    @BeforeEach
-    public void setUp() {
-        client = MockClient.register();
-    }
+    @Test
+    void canRegisterThePrimaryInstance() {
+        MockClient client = MockClient.register();
+        assertSame(client, Unirest.primaryInstance().config().getClient());
+        assertSame(client, Unirest.primaryInstance().config().getAsyncClient());
 
-    @AfterEach
-    void tearDown() {
         MockClient.clear();
+
+        assertFalse(Unirest.primaryInstance().config().getClient() instanceof MockClient);
+        assertFalse(Unirest.primaryInstance().config().getAsyncClient() instanceof MockClient);
     }
 
-    public static void assertException(ExRunnable runnable, String message) {
-        try{
-            runnable.run();
-            fail("Expected exception but got none.");
-        } catch (UnirestAssertion e){
-            assertEquals(message, e.getMessage(), "Wrong Error Message");
-        }
-    }
+    @Test
+    void canRegisterInstances() {
+        UnirestInstance i = Unirest.spawnInstance();
+        MockClient client = MockClient.register(i);
+        assertSame(client, i.config().getClient());
+        assertSame(client, i.config().getAsyncClient());
 
-    public static void assertException(ExRunnable runnable) {
-        try{
-            runnable.run();
-            fail("Expected exception but got none.");
-        } catch (UnirestAssertion e){ }
-    }
+        MockClient.clear(i);
 
-    @FunctionalInterface
-    public interface ExRunnable {
-        void run() throws Error;
+        assertFalse(i.config().getClient() instanceof MockClient);
+        assertFalse(i.config().getAsyncClient() instanceof MockClient);
     }
 }

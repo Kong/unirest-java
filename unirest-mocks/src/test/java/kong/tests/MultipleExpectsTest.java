@@ -25,6 +25,7 @@
 
 package kong.tests;
 
+import kong.unirest.Unirest;
 import org.junit.jupiter.api.Test;
 
 import static kong.unirest.HttpMethod.GET;
@@ -36,7 +37,7 @@ public class MultipleExpectsTest extends Base {
         client.expect(GET, path).header("monster", "oscar").header("fruit", "apple");
         client.expect(GET, path).header("monster", "oscar");
 
-        uni.get(path).header("monster", "oscar").asEmpty();
+        Unirest.get(path).header("monster", "oscar").asEmpty();
 
         assertException(() -> client.verifyAll(),
                 "A expectation was never invoked! GET http://basic\n" +
@@ -54,7 +55,7 @@ public class MultipleExpectsTest extends Base {
         client.expect(GET, path)
                 .header("monster", "grover");
 
-        uni.get(path)
+        Unirest.get(path)
                 .header("monster", "grover")
                 .header("fruit", "apples")
                 .asEmpty();
@@ -77,7 +78,7 @@ public class MultipleExpectsTest extends Base {
         client.expect(GET, path)
                 .queryString("monster", "grover");
 
-        uni.get(path)
+        Unirest.get(path)
                 .queryString("monster", "grover")
                 .queryString("fruit", "apples")
                 .asEmpty();
@@ -98,7 +99,7 @@ public class MultipleExpectsTest extends Base {
                 .queryString("monster", "grover")
                 .thenReturn("two");
 
-        String result = uni.get(path)
+        String result = Unirest.get(path)
                 .queryString("monster", "grover")
                 .asString()
                 .getBody();

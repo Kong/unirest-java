@@ -8,8 +8,7 @@ A series of mocks for use with Unirest for unit testing. The mock clients will n
 class MyTest {
     @Test
     void expectGet(){
-        MockClient mock = new MockClient();
-        Unirest.config().httpClient(mock);
+        MockClient mock = MockClient.register();
 
         mock.expect(HttpMethod.GET, "http://zombo.com")
                         .thenReturn("You can do anything!");

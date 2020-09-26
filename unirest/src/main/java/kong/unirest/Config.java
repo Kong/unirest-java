@@ -138,7 +138,7 @@ public class Config {
      * @return this config object
      */
     public Config httpClient(Client httpClient) {
-        client = Optional.of(httpClient);
+        client = Optional.ofNullable(httpClient);
         return this;
     }
 
@@ -158,7 +158,9 @@ public class Config {
      *
      * @param value Custom CloseableHttpAsyncClient implementation
      * @return this config object
+     * @deprecated use asyncClient(AsyncClient value)
      */
+    @Deprecated
     public Config asyncClient(HttpAsyncClient value) {
         this.asyncClient = Optional.of(new ApacheAsyncClient(value, this, null, null));
         return this;
@@ -171,7 +173,7 @@ public class Config {
      * @return this config object
      */
     public Config asyncClient(AsyncClient value) {
-        asyncClient = Optional.of(value);
+        asyncClient = Optional.ofNullable(value);
         return this;
     }
 

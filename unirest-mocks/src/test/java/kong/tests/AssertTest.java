@@ -27,6 +27,7 @@ package kong.tests;
 
 import kong.unirest.Assert;
 import kong.unirest.HttpMethod;
+import kong.unirest.Unirest;
 import org.junit.jupiter.api.Test;
 
 import static kong.unirest.HttpMethod.GET;
@@ -38,8 +39,8 @@ public class AssertTest extends Base {
 
     @Test
     public void canAssertANumberOfTimes() {
-        uni.get(path).asEmpty();
-        uni.get(path).asEmpty();
+        Unirest.get(path).asEmpty();
+        Unirest.get(path).asEmpty();
 
         Assert exp = client.assertThat(HttpMethod.GET, path);
         exp.assertInvokedTimes(2);
@@ -55,7 +56,7 @@ public class AssertTest extends Base {
 
     @Test
     public void noExpectationsAtAll() {
-        uni.get(path).asEmpty();
+        Unirest.get(path).asEmpty();
         client.verifyAll();
 
     }
@@ -75,7 +76,7 @@ public class AssertTest extends Base {
 
     @Test
     public void assertHeader() {
-        uni.get(path).header("monster", "grover").asEmpty();
+        Unirest.get(path).header("monster", "grover").asEmpty();
 
         Assert expect = client.assertThat(GET, path);
         expect.assertHeader("monster", "grover");
@@ -93,7 +94,7 @@ public class AssertTest extends Base {
                         "Headers:\n" +
                         "monster: grover\n");
 
-        uni.get(path).header("monster", "grover").asEmpty();
+        Unirest.get(path).header("monster", "grover").asEmpty();
 
         client.verifyAll();
     }
@@ -104,11 +105,11 @@ public class AssertTest extends Base {
     public void canExpectQueryParams() {
         client.expect(GET, path).queryString("monster", "grover");
 
-        uni.get(path).asEmpty();
+        Unirest.get(path).asEmpty();
 
         assertException(() -> client.verifyAll());
 
-        uni.get(path).queryString("monster", "grover").asEmpty();
+        Unirest.get(path).queryString("monster", "grover").asEmpty();
 
         client.verifyAll();
     }
@@ -119,8 +120,8 @@ public class AssertTest extends Base {
                 .body("foo")
                 .thenReturn("bar");
 
-        assertNull(uni.post(path).asString().getBody());
-        assertEquals("bar", uni.post(path).body("foo").asString().getBody());
+        assertNull(Unirest.post(path).asString().getBody());
+        assertEquals("bar", Unirest.post(path).body("foo").asString().getBody());
     }
 
     @Test
@@ -129,7 +130,7 @@ public class AssertTest extends Base {
                 .body("foo")
                 .thenReturn("bar");
 
-        uni.post(path).body("baz").asString();
+        Unirest.post(path).body("baz").asString();
 
         assertException(() -> client.verifyAll(),
                 "A expectation was never invoked! POST http://basic\n" +

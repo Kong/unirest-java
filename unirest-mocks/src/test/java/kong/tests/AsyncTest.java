@@ -26,6 +26,7 @@
 package kong.tests;
 
 import kong.unirest.HttpMethod;
+import kong.unirest.Unirest;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,7 +36,7 @@ public class AsyncTest extends Base {
     void canExpectAsync() throws Exception {
         client.expect(HttpMethod.GET, path).thenReturn("Hey Ma");
 
-        String body = uni.get(path).asStringAsync().get().getBody();
+        String body = Unirest.get(path).asStringAsync().get().getBody();
 
         assertEquals("Hey Ma", body);
 

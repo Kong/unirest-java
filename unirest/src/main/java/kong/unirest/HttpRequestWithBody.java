@@ -77,6 +77,7 @@ public interface HttpRequestWithBody extends HttpRequest<HttpRequestWithBody> {
     /**
      * Sets a field param on the body with a specified content-type.
      * @param name the name of the field
+     * @param value the object
      * @param contentType contentType (i.e. application/xml)
      * @return this request builder
      */
