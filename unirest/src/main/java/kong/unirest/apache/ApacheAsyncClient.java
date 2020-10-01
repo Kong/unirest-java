@@ -41,6 +41,8 @@ import org.apache.http.nio.client.HttpAsyncClient;
 import org.apache.http.nio.conn.NoopIOSessionStrategy;
 import org.apache.http.nio.conn.SchemeIOSessionStrategy;
 import org.apache.http.nio.conn.ssl.SSLIOSessionStrategy;
+import org.apache.http.nio.protocol.BasicAsyncRequestProducer;
+import org.apache.http.nio.protocol.BasicAsyncResponseConsumer;
 import org.apache.http.ssl.SSLContextBuilder;
 
 import java.util.Objects;
@@ -175,7 +177,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
         HttpRequestSummary reqSum = request.toSummary();
         MetricContext metric = config.getMetric().begin(reqSum);
         HttpHost host = determineTarget(requestObj, request.getHeaders());
-        client.execute(host, requestObj, new FutureCallback<org.apache.http.HttpResponse>() {
+        client.execute(new BasicAsyncRequestProducer(host, requestObj), new BasicAsyncResponseConsumer(), new FutureCallback<org.apache.http.HttpResponse>() {
             @Override
             public void completed(org.apache.http.HttpResponse httpResponse) {
                 ApacheResponse t = new ApacheResponse(httpResponse, config);
