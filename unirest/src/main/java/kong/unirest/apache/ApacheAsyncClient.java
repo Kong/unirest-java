@@ -29,68 +29,26 @@ import kong.unirest.*;
 import org.apache.http.HttpHost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
-import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
 import org.apache.http.nio.client.HttpAsyncClient;
-import org.apache.http.nio.conn.NoopIOSessionStrategy;
-import org.apache.http.nio.conn.SchemeIOSessionStrategy;
-import org.apache.http.nio.conn.ssl.SSLIOSessionStrategy;
 import org.apache.http.nio.protocol.BasicAsyncRequestProducer;
 import org.apache.http.nio.protocol.BasicAsyncResponseConsumer;
-import org.apache.http.ssl.SSLContextBuilder;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 
 public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
-
-    private final HttpAsyncClient client;
-    private AsyncIdleConnectionMonitorThread syncMonitor;
-    private PoolingNHttpClientConnectionManager manager;
-    private Config config;
-    private boolean hookset;
+    private ApacheAsyncConfig apache;
 
     public ApacheAsyncClient(Config config) {
-        this.config = config;
-        try {
-            manager = createConnectionManager();
-            manager.setMaxTotal(config.getMaxConnections());
-            manager.setDefaultMaxPerRoute(config.getMaxPerRoutes());
-
-            HttpAsyncClientBuilder ab = HttpAsyncClientBuilder.create()
-                    .setDefaultRequestConfig(RequestOptions.toRequestConfig(config))
-                    .setConnectionManager(manager)
-                    .setDefaultCredentialsProvider(toApacheCreds(config.getProxy()))
-                    .useSystemProperties();
-
-            setOptions(ab);
-
-            CloseableHttpAsyncClient build = ab.build();
-            build.start();
-            syncMonitor = new AsyncIdleConnectionMonitorThread(manager);
-            syncMonitor.tryStart();
-            client = build;
-            if (config.shouldAddShutdownHook()) {
-                registerShutdownHook();
-            }
-        } catch (Exception e) {
-            throw new UnirestConfigException(e);
-        }
+        this.apache = new ApacheAsyncConfig(config);
     }
 
     public ApacheAsyncClient(HttpAsyncClient client, Config config) {
-        this.config = config;
-        this.client = client;
+        this.apache = new ApacheAsyncConfig(client, config);
     }
 
     @Deprecated
@@ -98,71 +56,12 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
                              Config config,
                              PoolingNHttpClientConnectionManager manager,
                              AsyncIdleConnectionMonitorThread monitor) {
-        Objects.requireNonNull(client, "Client may not be null");
-
-        this.config = config;
-        this.client = client;
-        this.syncMonitor = monitor;
-        this.manager = manager;
+        this.apache = new ApacheAsyncConfig(client, config, manager, monitor);
     }
 
     @Override
     public void registerShutdownHook() {
-        if (!hookset) {
-            hookset = true;
-            Runtime.getRuntime().addShutdownHook(new Thread(this::close, "Unirest Apache Async Client Shutdown Hook"));
-        }
-    }
-
-    private void setOptions(HttpAsyncClientBuilder ab) {
-        if (!config.isVerifySsl()) {
-            disableSsl(ab);
-        }
-        if (config.useSystemProperties()) {
-            ab.useSystemProperties();
-        }
-        if (!config.getFollowRedirects()) {
-            ab.setRedirectStrategy(new ApacheNoRedirectStrategy());
-        }
-        if (!config.getEnabledCookieManagement()) {
-            ab.disableCookieManagement();
-        }
-        config.getInterceptor().forEach(ab::addInterceptorFirst);
-    }
-
-    private PoolingNHttpClientConnectionManager createConnectionManager() throws Exception {
-            return new PoolingNHttpClientConnectionManager(new DefaultConnectingIOReactor(),
-                    null,
-                    getRegistry(),
-                    null,
-                    null,
-                    config.getTTL(), TimeUnit.MILLISECONDS);
-    }
-
-    private Registry<SchemeIOSessionStrategy> getRegistry() throws Exception {
-        if (config.isVerifySsl()) {
-            return RegistryBuilder.<SchemeIOSessionStrategy>create()
-                    .register("http", NoopIOSessionStrategy.INSTANCE)
-                    .register("https", SSLIOSessionStrategy.getDefaultStrategy())
-                    .build();
-        } else {
-            return RegistryBuilder.<SchemeIOSessionStrategy>create()
-                    .register("http", NoopIOSessionStrategy.INSTANCE)
-                    .register("https", new SSLIOSessionStrategy(new SSLContextBuilder()
-                            .loadTrustMaterial(null, (x509Certificates, s) -> true)
-                            .build(), NoopHostnameVerifier.INSTANCE))
-                    .build();
-        }
-    }
-
-
-    private void disableSsl(HttpAsyncClientBuilder ab) {
-        try {
-            ab.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
-            ab.setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, (TrustStrategy) (arg0, arg1) -> true).build());
-        } catch (Exception e) {
-            throw new UnirestConfigException(e);
-        }
+        this.apache.registerShutdownHook();
     }
 
     @Override
@@ -172,18 +71,18 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
             CompletableFuture<HttpResponse<T>> callback) {
 
         Objects.requireNonNull(callback);
-        config.getUniInterceptor().onRequest(request, config);
-        HttpUriRequest requestObj = new RequestPrep(request, config, true).prepare(configFactory);
+        apache.config.getUniInterceptor().onRequest(request, apache.config);
+        HttpUriRequest requestObj = new RequestPrep(request, apache.config, true).prepare(configFactory);
         HttpRequestSummary reqSum = request.toSummary();
-        MetricContext metric = config.getMetric().begin(reqSum);
+        MetricContext metric = apache.config.getMetric().begin(reqSum);
         HttpHost host = determineTarget(requestObj, request.getHeaders());
-        client.execute(new BasicAsyncRequestProducer(host, requestObj), new BasicAsyncResponseConsumer(), new FutureCallback<org.apache.http.HttpResponse>() {
+        apache.client.execute(new BasicAsyncRequestProducer(host, requestObj), new BasicAsyncResponseConsumer(), new FutureCallback<org.apache.http.HttpResponse>() {
             @Override
             public void completed(org.apache.http.HttpResponse httpResponse) {
-                ApacheResponse t = new ApacheResponse(httpResponse, config);
+                ApacheResponse t = new ApacheResponse(httpResponse, apache.config);
                 metric.complete(t.toSummary(), null);
                 HttpResponse<T> response = transformBody(transformer, t);
-                config.getUniInterceptor().onResponse(response, reqSum, config);
+                apache.config.getUniInterceptor().onResponse(response, reqSum, apache.config);
                 callback.complete(response);
             }
 
@@ -191,7 +90,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
             public void failed(Exception e) {
                 metric.complete(null, e);
                 try {
-                    HttpResponse r = config.getUniInterceptor().onFail(e, reqSum, config);
+                    HttpResponse r = apache.config.getUniInterceptor().onFail(e, reqSum, apache.config);
                     callback.complete(r);
                 } catch (Exception ee){
                     callback.completeExceptionally(e);
@@ -203,7 +102,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
                 UnirestException canceled = new UnirestException("canceled");
                 metric.complete(null, canceled);
                 callback.completeExceptionally(canceled);
-                config.getUniInterceptor().onFail(canceled, reqSum, config);
+                apache.config.getUniInterceptor().onFail(canceled, reqSum, apache.config);
             }
         });
         return callback;
@@ -211,25 +110,17 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
 
     @Override
     public boolean isRunning() {
-        return Util.tryCast(client, CloseableHttpAsyncClient.class)
-                .map(CloseableHttpAsyncClient::isRunning)
-                .orElse(true);
+        return apache.isRunning();
     }
 
     @Override
     public HttpAsyncClient getClient() {
-        return client;
+        return apache.getClient();
     }
 
     @Override
     public Stream<Exception> close() {
-        return Util.collectExceptions(Util.tryCast(client, CloseableHttpAsyncClient.class)
-                        .filter(c -> c.isRunning())
-                        .map(c -> Util.tryDo(c, d -> d.close()))
-                        .filter(c -> c.isPresent())
-                        .map(c -> c.get()),
-                Util.tryDo(manager, m -> m.shutdown()),
-                Util.tryDo(syncMonitor, m -> m.interrupt()));
+        return apache.close();
     }
 
     public static Builder builder(HttpAsyncClient client) {

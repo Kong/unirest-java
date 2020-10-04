@@ -45,7 +45,7 @@ abstract class BaseApacheClient {
     protected RequestConfigFactory configFactory = new DefaultFactory();
 
 
-    protected CredentialsProvider toApacheCreds(Proxy proxy) {
+    static CredentialsProvider toApacheCreds(Proxy proxy) {
         if(proxy != null && proxy.isAuthenticated()) {
             CredentialsProvider proxyCreds = new BasicCredentialsProvider();
             proxyCreds.setCredentials(new AuthScope(proxy.getHost(), proxy.getPort()),

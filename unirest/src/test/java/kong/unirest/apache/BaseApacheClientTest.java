@@ -51,12 +51,7 @@ class BaseApacheClientTest {
     void setUp() {
         request = new HttpGet();
         headers = new Headers();
-        client = new BaseApacheClient() {
-            @Override
-            protected CredentialsProvider toApacheCreds(Proxy proxy) {
-                return super.toApacheCreds(proxy);
-            }
-        };
+        client = new BaseApacheClient(){};
     }
 
     @Test
