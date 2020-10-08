@@ -30,7 +30,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <jackson.version>2.11.0</jackson.version>
         <main.dir>${project.basedir}</main.dir>
-        <junit.version>5.6.1</junit.version>
+        <junit.version>5.7.0</junit.version>
     </properties>
 
     <scm>

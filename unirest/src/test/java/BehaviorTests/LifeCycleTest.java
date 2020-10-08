@@ -49,6 +49,7 @@ import java.util.stream.IntStream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -153,7 +154,7 @@ public class LifeCycleTest extends BddTest {
             Unirest.config().reset().getClient();
             Unirest.config().getAsyncClient();
         });
-        assertThat(ManagementFactory.getThreadMXBean().getThreadCount(), is(lessThan(startingCount + 10)));
+        assertThat(ManagementFactory.getThreadMXBean().getThreadCount(), is(lessThanOrEqualTo(startingCount + 10)));
     }
 
     @Test
