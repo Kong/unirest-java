@@ -296,7 +296,7 @@
                     <dependency>
                         <groupId>org.sonatype.ossindex.maven</groupId>
                         <artifactId>ossindex-maven-enforcer-rules</artifactId>
-                        <version>3.0.2</version>
+                        <version>3.1.0</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -310,9 +310,7 @@
                             <rules>
                                 <banVulnerable implementation="org.sonatype.ossindex.maven.enforcer.BanVulnerableDependencies">
                                     <excludeVulnerabilityIds>
-<!--                                        <exclude>f4f0c103-c9d9-4308-bd8f-489f2a632680</exclude>-->
-<!--                                        <exclude>07632245-fcef-4eb3-82b6-aadbbfd2b33e</exclude>-->
-<!--                                        <exclude>ea932c13-011a-4c74-a092-48cd1c49adb4</exclude>-->
+
                                     </excludeVulnerabilityIds>
                                 </banVulnerable>
                             </rules>
