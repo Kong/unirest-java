@@ -121,16 +121,22 @@ public class AsStringTest extends BddTest {
 
     @Test
     public void canSetExpectedCharsetOfResponse() {
-        assertEquals("šžýáíé", Unirest.get(MockServer.WINDOWS_LATIN_1_FILE)
+        HttpResponse<String> response = Unirest.get(MockServer.WINDOWS_LATIN_1_FILE)
                 .responseEncoding("windows-1250")
-                .asString().getBody());
+                .asString();
+
+        assertEquals(200, response.getStatus());
+        assertEquals("šžýáíé", response.getBody());
     }
 
     @Test
     public void canSetDefaultCharsetOfResponse() {
         Unirest.config().setDefaultResponseEncoding("windows-1250");
 
-        assertEquals("šžýáíé", Unirest.get(MockServer.WINDOWS_LATIN_1_FILE)
-                .asString().getBody());
+        HttpResponse<String> response = Unirest.get(MockServer.WINDOWS_LATIN_1_FILE)
+                .asString();
+
+        assertEquals(200, response.getStatus());
+        assertEquals("šžýáíé", response.getBody());
     }
 }
