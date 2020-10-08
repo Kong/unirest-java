@@ -1,5 +1,7 @@
 ## 3.11.01
 * Upgrade Apache Http Client to 4.5.13
+* Upgrade Jackson to 2.11.3 for jackson module
+* Upgrade various test and ci dependencies
 
 ## 3.11.00
 * issue #368 honor hosts header when set by consumer. This mimics behavior in Postman
