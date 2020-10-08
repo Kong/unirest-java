@@ -31,6 +31,7 @@
         <jackson.version>2.11.3</jackson.version>
         <main.dir>${project.basedir}</main.dir>
         <junit.version>5.7.0</junit.version>
+        <mockito.version>3.5.13</mockito.version>
     </properties>
 
     <scm>
@@ -394,13 +395,13 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>3.3.3</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>3.3.3</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
