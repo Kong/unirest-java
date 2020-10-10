@@ -1,6 +1,6 @@
 ## 3.11.01
-* Upgrade Apache Http Client to 4.5.13
-* Upgrade Jackson to 2.11.3 for jackson module
+* Upgrade Apache Http Client to 4.5.13 (fixes incorrect handling of malformed authority component in request URIs.)
+* Upgrade Jackson to 2.11.3 for the Jackson object mapper module
 * Upgrade various test and ci dependencies
 
 ## 3.11.00
