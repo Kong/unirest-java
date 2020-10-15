@@ -28,18 +28,24 @@ package kong.unirest;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 public class MockRawResponse implements RawResponse {
     private final String response;
     private final Headers responseHeaders;
     private final int status;
     private final String statusMessage;
+    private final Config config;
 
-    public MockRawResponse(String responseBody, Headers responseHeaders, int status, String statusMessage) {
+    public MockRawResponse(String responseBody, Headers responseHeaders, int status,
+                           String statusMessage, Config config) {
         this.response = responseBody;
         this.responseHeaders = responseHeaders;
         this.status = status;
         this.statusMessage = statusMessage;
+        this.config = config;
     }
 
     @Override
@@ -74,7 +80,17 @@ public class MockRawResponse implements RawResponse {
 
     @Override
     public String getContentAsString(String charset) {
-        return response;
+        if(Objects.isNull(response)){
+            return null;
+        }
+        return new String(response.getBytes(), tryGetCharset(charset));
+    }
+
+    private Charset tryGetCharset(String charset) {
+        if(Objects.isNull(charset)){
+            return StandardCharsets.UTF_8;
+        }
+        return Charset.forName(charset);
     }
 
     @Override
@@ -89,21 +105,21 @@ public class MockRawResponse implements RawResponse {
 
     @Override
     public String getContentType() {
-        return null;
+        return responseHeaders.getFirst("Content-Type");
     }
 
     @Override
     public String getEncoding() {
-        return null;
+        return responseHeaders.getFirst("Content-Encoding");
     }
 
     @Override
     public Config getConfig() {
-        return null;
+        return config;
     }
 
     @Override
     public HttpResponseSummary toSummary() {
-        return null;
+        return new ResponseSummary(this);
     }
 }

@@ -75,8 +75,8 @@ class Invocation implements Expectation, ExpectedResponse {
         return this;
     }
 
-    RawResponse getResponse() {
-        return new MockRawResponse(response, responseHeaders, responseStatus, responseText);
+    RawResponse getResponse(Config config) {
+        return new MockRawResponse(response, responseHeaders, responseStatus, responseText, config);
     }
 
     private Headers allHeaders() {

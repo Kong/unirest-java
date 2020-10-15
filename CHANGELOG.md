@@ -1,3 +1,6 @@
+## 3.11.02 (pending)
+* Issue #373 MockClient should pass the config to the response.
+
 ## 3.11.01
 * Upgrade Apache Http Client to 4.5.13 (fixes incorrect handling of malformed authority component in request URIs.)
 * Upgrade Jackson to 2.11.3 for the Jackson object mapper module

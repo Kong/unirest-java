@@ -57,14 +57,14 @@ class Routes implements Assert {
                 && this.path.equalsIgnoreCase(p.baseUrl());
     }
 
-    RawResponse exchange(HttpRequest request) {
+    RawResponse exchange(HttpRequest request, Config config) {
         return getBestMatch(request)
-                .map(Invocation::getResponse)
+                .map(invocation -> invocation.getResponse(config))
                 .orElseGet(() -> {
                     Invocation i = new Invocation(this);
                     i.log(request);
                     invokes.add(i);
-                    return i.getResponse();
+                    return i.getResponse(config);
                 });
     }
 

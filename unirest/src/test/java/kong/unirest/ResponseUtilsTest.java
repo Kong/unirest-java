@@ -39,7 +39,7 @@ public class ResponseUtilsTest {
     @Mock
     private Config config;
     @InjectMocks
-    MockRawResponse test;
+    TestRawResponse test;
 
     @Test
     public void getCharsetDefaults() {

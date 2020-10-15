@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
@@ -38,8 +39,12 @@ import java.util.stream.Stream;
  * This implements both sync and async clients
  */
 public class MockClient implements Client, AsyncClient {
+    private final Supplier<Config> config;
     private List<Routes> routes = new ArrayList<>();
 
+    public MockClient(Supplier<Config> config){
+        this.config = config;
+    }
     /**
      * Creates a new MockClient and registers it on the primary static UnirestInstance
      * @return the Mock Client
@@ -54,7 +59,7 @@ public class MockClient implements Client, AsyncClient {
      * @return the Mock Client
      */
     public static MockClient register(UnirestInstance unirest) {
-        MockClient client = new MockClient();
+        MockClient client = new MockClient(unirest::config);
         unirest.config().httpClient(client).asyncClient(client);
         return client;
     }
@@ -82,7 +87,7 @@ public class MockClient implements Client, AsyncClient {
     @Override
     public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
         Routes exp = findExpecation(request);
-        RawResponse response = exp.exchange(request);
+        RawResponse response = exp.exchange(request, config.get());
         return transformer.apply(response);
     }
 

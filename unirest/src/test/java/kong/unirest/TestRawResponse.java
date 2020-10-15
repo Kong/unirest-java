@@ -28,15 +28,11 @@ package kong.unirest;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-class MockRawResponse extends RawResponseBase {
+class TestRawResponse extends RawResponseBase {
 
     public String type;
 
-    MockRawResponse() {
-        super(null);
-    }
-
-    MockRawResponse(Config config) {
+    TestRawResponse(Config config) {
         super(config);
     }
 

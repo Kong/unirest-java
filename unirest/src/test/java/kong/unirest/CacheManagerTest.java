@@ -80,8 +80,8 @@ class CacheManagerTest {
     @Test
     void responsesAreDifferentForDifferentTypes() {
         assertNotSame(
-                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/"), r -> new StringResponse(new MockRawResponse(), ""), String.class),
-                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/"), r -> new BasicResponse(new MockRawResponse(), ""), Empty.class)
+                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/"), r -> new StringResponse(new TestRawResponse(config), ""), String.class),
+                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/"), r -> new BasicResponse(new TestRawResponse(config), ""), Empty.class)
         );
 
         assertEquals(2, client.invokes);
