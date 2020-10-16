@@ -175,4 +175,28 @@ public class CookieTest extends BddTest {
 
         assertEquals("bar", cookie.getValue());
     }
+
+    @Test
+    void canSetDefaultCookie() {
+        Unirest.config().addDefaultCookie("flavor","snickerdoodle");
+
+        Unirest.get(MockServer.GET)
+                .cookie("size", "large")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertCookie("flavor", "snickerdoodle")
+                .assertCookie("size", "large");
+    }
+
+    @Test
+    void canSetDefaultCookieAsFullCookieObj() {
+        Unirest.config().addDefaultCookie(new Cookie("flavor","snickerdoodle"));
+
+        Unirest.get(MockServer.GET)
+                .cookie("size", "large")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertCookie("flavor", "snickerdoodle")
+                .assertCookie("size", "large");
+    }
 }

@@ -37,10 +37,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -109,6 +106,7 @@ public class Config {
         keystorePassword = null;
         sslContext = null;
         interceptor = new CompoundInterceptor();
+
         this.objectMapper = Optional.of(new JsonObjectMapper());
         try {
             asyncBuilder = ApacheAsyncClient::new;
@@ -391,6 +389,26 @@ public class Config {
      */
     public Config addDefaultHeader(String name, String value) {
         headers.add(name, value);
+        return this;
+    }
+
+    /**
+     * Adds a default cookie to be added to all requests with this config
+     * @param name the name of the cookie
+     * @param value the value of the cookie
+     * @return this config object
+     */
+    public Config addDefaultCookie(String name, String value) {
+        return addDefaultCookie(new Cookie(name, value));
+    }
+
+    /**
+     * Adds a default cookie to be added to all requests with this config
+     * @param cookie the cookie
+     * @return this config object
+     */
+    public Config addDefaultCookie(Cookie cookie) {
+        this.headers.cookie(cookie);
         return this;
     }
 
