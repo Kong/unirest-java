@@ -1,6 +1,7 @@
 ## 3.11.02 (pending)
 * Issue #373 MockClient should pass the config to the response.
 * Issue #374 Add methods to add default cookies to the config
+* Issue #375 Do not Escape HTML in JSON 
 
 ## 3.11.01
 * Upgrade Apache Http Client to 4.5.13 (fixes incorrect handling of malformed authority component in request URIs.)

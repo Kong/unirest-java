@@ -58,6 +58,7 @@ public class JsonObjectMapper implements ObjectMapper {
         if (gson == null) {
             gson = new GsonBuilder()
                     .setDateFormat(ISO_8601)
+                    .disableHtmlEscaping()
                     .registerTypeHierarchyAdapter(Calendar.class, new CalendarSerializer())
                     .registerTypeHierarchyAdapter(ZonedDateTime.class, new ZonedDateAdapter())
                     .registerTypeAdapter(Date.class, new DateAdapter())

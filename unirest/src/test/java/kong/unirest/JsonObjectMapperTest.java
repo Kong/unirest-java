@@ -250,6 +250,19 @@ class JsonObjectMapperTest {
         assertEquals(LocalDate.parse("1985-07-03"), back.getLocalDate());
     }
 
+    @Test
+    void doNotEscapeHTML() {
+        TestString s = new TestString();
+        s.test = "it's a && b || c + 1!?";
+
+        String res = om.writeValue(s);
+
+        assertEquals("{\"test\":\"it's a && b || c + 1!?\"}", res);
+    }
+
+    private class TestString {
+        private String test;
+    }
     private TestDates getTestDate(String key, Object date) {
         return om.readValue(getJson(key, date), TestDates.class);
     }

@@ -47,7 +47,7 @@ public class AsJsonTest extends BddTest {
 
     @Test
     public void toStringAObject() {
-        MockServer.setStringResponse(new JSONObject().put("f",1).put("a", Arrays.asList(2,3,4)).toString());
+        MockServer.setStringResponse(new JSONObject().put("f", 1).put("a", Arrays.asList(2, 3, 4)).toString());
         HttpResponse<JsonNode> i = Unirest.get(MockServer.GET).asJson();
 
         assertEquals("{\"f\":1,\"a\":[2,3,4]}", i.getBody().toString());
@@ -55,7 +55,7 @@ public class AsJsonTest extends BddTest {
 
     @Test
     public void toPrettyStringAObject() {
-        MockServer.setStringResponse(new JSONObject().put("f",1).put("a", Arrays.asList(2,3,4)).toString());
+        MockServer.setStringResponse(new JSONObject().put("f", 1).put("a", Arrays.asList(2, 3, 4)).toString());
         HttpResponse<JsonNode> i = Unirest.get(MockServer.GET).asJson();
 
         assertEquals("{\n" +
@@ -126,7 +126,19 @@ public class AsJsonTest extends BddTest {
         assertAsync();
     }
 
+    @Test
+    void doNotEscapeHTML() {
+        MockServer.setStringResponse("{\"test\":\"it's a && b || c + 1!?\"}");
+
+        JSONObject test = Unirest.get(MockServer.GET)
+                .asJson()
+                .getBody()
+                .getObject();
+
+        assertEquals("{\"test\":\"it's a && b || c + 1!?\"}", test.toString());
+    }
+
     private void assertJson(HttpResponse<JsonNode> i) {
-        assertEquals("bar",i.getBody().getObject().getJSONObject("params").getJSONArray("foo").get(0));
+        assertEquals("bar", i.getBody().getObject().getJSONObject("params").getJSONArray("foo").get(0));
     }
 }

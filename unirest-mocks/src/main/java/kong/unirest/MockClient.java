@@ -73,7 +73,7 @@ public class MockClient implements Client, AsyncClient {
 
     /**
      * Clears any MockClient from the instance
-     * @param unirest
+     * @param unirest the instance to clear the mocks from
      */
     public static void clear(UnirestInstance unirest) {
         if(unirest.config().getClient() instanceof MockClient){

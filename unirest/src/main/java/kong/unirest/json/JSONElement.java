@@ -35,7 +35,7 @@ import java.util.stream.StreamSupport;
 
 public abstract class JSONElement {
     protected static transient final ToObjectMapper MAPPER = new ToObjectMapper();
-    private static transient final Gson GSON = new GsonBuilder().serializeNulls().create();
+    private static transient final Gson GSON = new GsonBuilder().disableHtmlEscaping().serializeNulls().create();
     private static transient final Gson PRETTY_GSON = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 
     private final JsonElement element;
