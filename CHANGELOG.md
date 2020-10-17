@@ -1,4 +1,4 @@
-## 3.11.02 (pending)
+## 3.11.02
 * Issue #373 MockClient should pass the config to the response.
 * Issue #374 Add methods to add default cookies to the config
 * Issue #375 Do not Escape HTML in JSON 
