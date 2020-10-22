@@ -25,15 +25,18 @@
 
 package kong.unirest;
 
-import java.nio.charset.Charset;
-
-class UnibodyString extends BodyPart {
-    UnibodyString(String bodyAsString, Charset charset) {
+class UnibodyString extends BodyPart<String> {
+    UnibodyString(String bodyAsString) {
         super(bodyAsString, null, null);
     }
 
     @Override
     public boolean isFile() {
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return getValue();
     }
 }

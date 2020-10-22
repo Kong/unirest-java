@@ -25,22 +25,26 @@
 
 package kong.unirest;
 
-public class ParamPart extends BodyPart<String> {
-    ParamPart(String name, String value) {
-        this(name, value, null);
+import org.junit.jupiter.api.Test;
+
+import java.io.ByteArrayInputStream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class InputStreamPartTest {
+    private InputStreamPart part = new InputStreamPart("uploadFile",
+            new ByteArrayInputStream(new byte[]{}),
+            "application/xml",
+            "foo.xml");
+
+    @Test
+    void inputStreamsAreFiles() {
+        assertTrue(part.isFile());
     }
 
-    ParamPart(String name, String value, String contentType) {
-        super(value, name, contentType);
-    }
-
-    @Override
-    public boolean isFile() {
-        return false;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%s=%s", getName(), getValue());
+    @Test
+    void inputStreamPartToString() {
+        assertEquals("uploadFile=foo.xml", part.toString());
     }
 }

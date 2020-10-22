@@ -25,7 +25,7 @@
 
 package kong.unirest;
 
-class UniByteArrayBody extends BodyPart {
+class UniByteArrayBody extends BodyPart<byte[]> {
     UniByteArrayBody(byte[] bodyBytes) {
         super(bodyBytes, null, null);
     }
@@ -33,5 +33,10 @@ class UniByteArrayBody extends BodyPart {
     @Override
     public boolean isFile() {
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[binary data length=%s]", getValue().length);
     }
 }

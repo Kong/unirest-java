@@ -35,9 +35,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import static com.google.common.collect.Sets.newHashSet;
+import static kong.unirest.TestUtil.rezFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -154,6 +157,26 @@ public class InterceptorTest extends BddTest {
                 .get()
                 .getBody()
                 .assertHeader("x-custom", "foo");
+    }
+
+    @Test
+    void loggingBodyPartsExample() {
+        final Set<String> values = new HashSet<>();
+        Unirest.config().interceptor(new Interceptor() {
+            @Override
+            public void onRequest(HttpRequest<?> request, Config config) {
+                request.getBody().ifPresent(b ->
+                        b.multiParts().forEach(part ->
+                                values.add(part.toString())));
+            }
+        });
+
+        Unirest.post(MockServer.POST)
+                .field("fruit", "apples")
+                .field("file", rezFile("/spidey.jpg"))
+                .asEmpty();
+
+        assertEquals(newHashSet("file=spidey.jpg","fruit=apples"), values);
     }
 
     private class TestInterceptor implements HttpRequestInterceptor {

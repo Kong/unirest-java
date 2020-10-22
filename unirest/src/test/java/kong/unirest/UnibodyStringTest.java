@@ -25,22 +25,32 @@
 
 package kong.unirest;
 
-public class ParamPart extends BodyPart<String> {
-    ParamPart(String name, String value) {
-        this(name, value, null);
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+class UnibodyStringTest {
+
+    UnibodyString body = new UnibodyString("Hi Mom");
+
+    @Test
+    void uniBodyIsNotAFile() {
+        assertFalse(body.isFile());
     }
 
-    ParamPart(String name, String value, String contentType) {
-        super(value, name, contentType);
+    @Test
+    void uniBodyToString() {
+        assertEquals("Hi Mom", body.toString());
     }
 
-    @Override
-    public boolean isFile() {
-        return false;
+    @Test
+    void valueIsClear() {
+        assertEquals("Hi Mom", body.getValue());
     }
 
-    @Override
-    public String toString() {
-        return String.format("%s=%s", getName(), getValue());
+    @Test
+    void isAString() {
+        assertEquals(String.class, body.getPartType());
     }
 }

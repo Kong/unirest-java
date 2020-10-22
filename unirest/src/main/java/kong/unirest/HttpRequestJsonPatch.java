@@ -25,7 +25,6 @@
 
 package kong.unirest;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 class HttpRequestJsonPatch extends BaseRequest<JsonPatchRequest> implements JsonPatchRequest {
@@ -81,7 +80,7 @@ class HttpRequestJsonPatch extends BaseRequest<JsonPatchRequest> implements Json
     @Override
     public BodyPart uniPart() {
         String bodyAsString = items.toString();
-        return new UnibodyString(bodyAsString, StandardCharsets.UTF_8);
+        return new UnibodyString(bodyAsString);
     }
 
     @Override

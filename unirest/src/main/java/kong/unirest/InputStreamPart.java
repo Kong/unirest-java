@@ -30,10 +30,6 @@ import java.io.InputStream;
 public class InputStreamPart extends BodyPart {
     private String fileName;
 
-    InputStreamPart(String name, InputStream value) {
-        super(value, name, null);
-    }
-
     InputStreamPart(String name, InputStream value, String contentType) {
         super(value, name, contentType);
     }
@@ -51,5 +47,10 @@ public class InputStreamPart extends BodyPart {
     @Override
     public boolean isFile() {
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s=%s", getName(), fileName);
     }
 }

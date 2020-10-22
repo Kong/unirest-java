@@ -48,4 +48,9 @@ class FilePart extends BodyPart {
     public String getFileName(){
         return null;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s=%s", getName(), fileName);
+    }
 }

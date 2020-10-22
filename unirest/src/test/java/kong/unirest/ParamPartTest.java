@@ -25,22 +25,35 @@
 
 package kong.unirest;
 
-public class ParamPart extends BodyPart<String> {
-    ParamPart(String name, String value) {
-        this(name, value, null);
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class ParamPartTest {
+    ParamPart part = new ParamPart("band", "Talking Heads");
+
+    @Test
+    void paramsAreNotFiles() {
+        assertFalse(part.isFile());
     }
 
-    ParamPart(String name, String value, String contentType) {
-        super(value, name, contentType);
+    @Test
+    void paramPartToString() {
+        assertEquals("band=Talking Heads", part.toString());
     }
 
-    @Override
-    public boolean isFile() {
-        return false;
+    @Test
+    void valueIsTheValue() {
+        assertEquals("Talking Heads", part.getValue());
     }
 
-    @Override
-    public String toString() {
-        return String.format("%s=%s", getName(), getValue());
+    @Test
+    void contentTypeIsUrlParam() {
+        assertEquals("application/x-www-form-urlencoded; charset=UTF-8", part.getContentType());
+    }
+
+    @Test
+    void isAString() {
+        assertEquals(String.class, part.getPartType());
     }
 }

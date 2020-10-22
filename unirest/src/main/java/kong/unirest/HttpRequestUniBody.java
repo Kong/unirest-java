@@ -64,7 +64,7 @@ class HttpRequestUniBody extends BaseRequest<RequestBodyEntity> implements Reque
 
 	@Override
 	public RequestBodyEntity body(String bodyAsString) {
-		this.body = new UnibodyString(bodyAsString, charSet);
+		this.body = new UnibodyString(bodyAsString);
 		return this;
 	}
 

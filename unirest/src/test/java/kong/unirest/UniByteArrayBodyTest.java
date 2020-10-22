@@ -25,22 +25,20 @@
 
 package kong.unirest;
 
-public class ParamPart extends BodyPart<String> {
-    ParamPart(String name, String value) {
-        this(name, value, null);
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class UniByteArrayBodyTest {
+    UniByteArrayBody bytes = new UniByteArrayBody(new byte[]{});
+
+    @Test
+    void isNotAFile() {
+        assertFalse(bytes.isFile());
     }
 
-    ParamPart(String name, String value, String contentType) {
-        super(value, name, contentType);
-    }
-
-    @Override
-    public boolean isFile() {
-        return false;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%s=%s", getName(), getValue());
+    @Test
+    void toStringJustSaysItsBinary() {
+        assertEquals("[binary data length=0]", bytes.toString());
     }
 }
