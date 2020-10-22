@@ -27,7 +27,7 @@ package kong.unirest;
 
 import java.io.InputStream;
 
-public class InputStreamPart extends BodyPart {
+public class InputStreamPart extends BodyPart<InputStream> {
     private String fileName;
 
     InputStreamPart(String name, InputStream value, String contentType) {

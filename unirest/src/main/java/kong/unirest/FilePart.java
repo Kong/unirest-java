@@ -27,7 +27,7 @@ package kong.unirest;
 
 import java.io.File;
 
-class FilePart extends BodyPart {
+class FilePart extends BodyPart<File> {
     private String fileName;
 
     public FilePart(File file, String name) {

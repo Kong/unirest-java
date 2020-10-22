@@ -26,7 +26,7 @@
 package kong.unirest;
 
 
-public class ByteArrayPart extends BodyPart {
+public class ByteArrayPart extends BodyPart<byte[]> {
     private final String fileName;
 
     ByteArrayPart(String name, byte[] bytes, ContentType contentType, String fileName) {
