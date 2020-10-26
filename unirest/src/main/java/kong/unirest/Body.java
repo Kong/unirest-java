@@ -56,4 +56,11 @@ public interface Body {
         return null;
     }
 
+    default BodyPart getField(String name){
+        return multiParts()
+                .stream()
+                .filter(part -> part.getName().equals(name))
+                .findFirst()
+                .orElse(null);
+    }
 }

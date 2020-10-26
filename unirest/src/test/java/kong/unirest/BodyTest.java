@@ -23,32 +23,32 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package BehaviorTests;
+package kong.unirest;
 
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class HostsHeaderTest extends BddTest {
-
+class BodyTest {
     @Test
-    void willHonorHostsHeaders() {
-        Unirest.get(MockServer.ALTGET)
-                .header("Host", "localhost")
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertUrl("http://localhost/get");
+    void canGetPartsByName() {
+        Body b = new TestBody(
+                new ParamPart("band", "Talking Heads"),
+                new ParamPart("computer", "ENIAC"),
+                new ParamPart("Movie", "Tron")
+        );
+
+        BodyPart part = b.getField("Movie");
+        assertEquals("Tron", part.getValue());
     }
 
-    @Test @Disabled
-    void canBuildCustomHost() {
-        HttpResponse<String> s = Unirest.get("https://104.154.89.105/")
-                .header("Host", "sha512.badssl.com")
-                .asString();
+    @Test
+    void noMatchReturnsNull() {
+        Body b = new TestBody(
+                new ParamPart("band", "Talking Heads"),
+                new ParamPart("computer", "ENIAC")
+        );
 
-        assertEquals(200, s.getStatus());
+        assertNull(b.getField("Movie"));
     }
 }

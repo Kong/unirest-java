@@ -23,32 +23,32 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package BehaviorTests;
+package kong.unirest;
 
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+public class TestBody implements Body {
 
-public class HostsHeaderTest extends BddTest {
+    private final List<BodyPart> parts;
 
-    @Test
-    void willHonorHostsHeaders() {
-        Unirest.get(MockServer.ALTGET)
-                .header("Host", "localhost")
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertUrl("http://localhost/get");
+    public TestBody(BodyPart<String>... parts){
+        this.parts = Arrays.asList(parts);
     }
 
-    @Test @Disabled
-    void canBuildCustomHost() {
-        HttpResponse<String> s = Unirest.get("https://104.154.89.105/")
-                .header("Host", "sha512.badssl.com")
-                .asString();
+    @Override
+    public Collection<BodyPart> multiParts() {
+        return parts;
+    }
 
-        assertEquals(200, s.getStatus());
+    @Override
+    public boolean isMultiPart() {
+        return true;
+    }
+
+    @Override
+    public boolean isEntityBody() {
+        return false;
     }
 }
