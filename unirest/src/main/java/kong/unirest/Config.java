@@ -973,7 +973,7 @@ public class Config {
     /**
      * @return the default base URL
      */
-    String getDefaultBaseUrl() {
+    public String getDefaultBaseUrl() {
         return this.defaultBaseUrl;
     }
 }
