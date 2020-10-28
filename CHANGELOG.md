@@ -1,3 +1,8 @@
+## 3.11.03 (pending)
+* issue #378 make getDefaultBaseUrl public
+* issue #376 make sane toString representations for body parts.
+* issue #376 add a method for getting a particular body field
+
 ## 3.11.02
 * Issue #373 MockClient should pass the config to the response.
 * Issue #374 Add methods to add default cookies to the config
