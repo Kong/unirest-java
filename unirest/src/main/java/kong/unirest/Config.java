@@ -849,54 +849,99 @@ public class Config {
         }
     }
 
+    /**
+     * @return currently configured Apache HttpRequestInterceptors
+     * @deprecated use Unirest Interceptors instead
+     */
+    @Deprecated
     public List<HttpRequestInterceptor> getInterceptor() {
         return apacheinterceptors;
     }
 
+    /**
+     * @return the configured proxy configuration
+     */
     public Proxy getProxy() {
         return proxy;
     }
 
+    /**
+     * @return if the system will pick up system properties (default is false)
+     */
     public boolean useSystemProperties() {
         return this.useSystemProperties;
     }
 
+    /**
+     * @return the default encoding (UTF-8 is the default default)
+     */
     public String getDefaultResponseEncoding() {
         return defaultResponseEncoding;
     }
 
+    /**
+     * @return if request compression is on (default is true)
+     */
     public boolean isRequestCompressionOn() {
         return requestCompressionOn;
     }
 
+    /**
+     * @return if automatic retries are on (default is false)
+     */
     public boolean isAutomaticRetries() {
         return automaticRetries;
     }
 
+    /**
+     * Will unirest verify the SSL?
+     * You should only do this in non-prod environments.
+     * Default is true
+     * @return if unirest will verify the SSL
+     */
     public boolean isVerifySsl() {
         return verifySsl;
     }
 
+    /**
+     * @return if shutdown hooks configure automatically (default is false)
+     */
     public boolean shouldAddShutdownHook() {
         return addShutdownHook;
     }
 
+    /**
+     * @return the configured Cookie Spec
+     */
     public String getCookieSpec() {
         return cookieSpec;
     }
 
+    /**
+     * @return the currently configured UniMetric object
+     */
     public UniMetric getMetric() {
         return metrics;
     }
 
+    /**
+     * @return the maximum life span of persistent connections regardless of their expiration setting.
+     */
     public long getTTL() {
         return ttl;
     }
 
+    /**
+     * @return the currently configured Interceptor
+     */
     public Interceptor getUniInterceptor() {
         return interceptor;
     }
 
+    /**
+     * @return  The currently configred error handler
+     * @deprecated use interceptors instead
+     */
     @Deprecated
     public Consumer<HttpResponse<?>> getErrorHandler() {
         return getDefaultInterceptor()
@@ -904,6 +949,9 @@ public class Config {
                 .orElseGet(() -> r -> {});
     }
 
+    /**
+     * @return the SSL connection configuration
+     */
     public SSLContext getSslContext() {
         return sslContext;
     }
@@ -915,10 +963,16 @@ public class Config {
                 .findFirst();
     }
 
+    /**
+     * @return the current HostnameVerifier
+     */
     public HostnameVerifier getHostnameVerifier() {
         return hostnameVerifier;
     }
 
+    /**
+     * @return the default base URL
+     */
     String getDefaultBaseUrl() {
         return this.defaultBaseUrl;
     }
