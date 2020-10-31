@@ -1,4 +1,4 @@
-## 3.11.03 (pending)
+## 3.11.03
 * issue #378 make getDefaultBaseUrl public
 * issue #376 make sane toString representations for body parts.
 * issue #376 add a method for getting a particular body field

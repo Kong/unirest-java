@@ -9,7 +9,7 @@ Maven
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-mocks</artifactId>
-    <version>3.11.02</version>
+    <version>3.11.03</version>
     <scope>test</scope>
 </dependency>
 ```
