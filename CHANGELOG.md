@@ -2,6 +2,8 @@
 * issue #378 make getDefaultBaseUrl public
 * issue #376 make sane toString representations for body parts.
 * issue #376 add a method for getting a particular body field
+* issue #376 added a ```asString()``` to the request summary to get string of the request so far suitable for logging
+* issue #379 Interceptors are not called when using MockClient 
 
 ## 3.11.02
 * Issue #373 MockClient should pass the config to the response.
