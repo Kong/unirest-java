@@ -43,4 +43,9 @@ public interface HttpRequestSummary {
      * @return The raw un-parameterized path without query strings (http://somewhere/{param})
      */
     String getRawPath();
+
+    /**
+     * @return a string summary of the request suitable for logging
+     */
+    String asString();
 }

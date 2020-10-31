@@ -26,7 +26,9 @@
 package kong.unirest;
 
 class RequestSummary implements HttpRequestSummary {
+    private static final SummaryFormatter FORMATTER = new SummaryFormatter();
     private final String rawPath;
+    private final BaseRequest request;
     private final String url;
     private final HttpMethod method;
 
@@ -34,6 +36,7 @@ class RequestSummary implements HttpRequestSummary {
         this.url = request.getUrl();
         this.method = request.getHttpMethod();
         this.rawPath = request.getPath().rawPath();
+        this.request = request;
     }
 
     @Override
@@ -49,5 +52,10 @@ class RequestSummary implements HttpRequestSummary {
     @Override
     public String getRawPath() {
         return rawPath;
+    }
+
+    @Override
+    public String asString() {
+        return FORMATTER.apply(request);
     }
 }

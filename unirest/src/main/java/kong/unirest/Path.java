@@ -123,6 +123,10 @@ class Path {
         return url;
     }
 
+    public String getQueryString(){
+        return url.substring(url.indexOf("?")+1);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) { return true; }

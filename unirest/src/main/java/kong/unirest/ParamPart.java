@@ -25,6 +25,9 @@
 
 package kong.unirest;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 public class ParamPart extends BodyPart<String> {
     ParamPart(String name, String value) {
         this(name, value, null);
@@ -41,6 +44,10 @@ public class ParamPart extends BodyPart<String> {
 
     @Override
     public String toString() {
-        return String.format("%s=%s", getName(), getValue());
+        try {
+            return String.format("%s=%s", getName(), URLEncoder.encode(getValue(), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new UnirestException(e);
+        }
     }
 }

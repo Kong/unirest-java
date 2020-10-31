@@ -39,7 +39,7 @@ class ParamPartTest {
 
     @Test
     void paramPartToString() {
-        assertEquals("band=Talking Heads", part.toString());
+        assertEquals("band=Talking+Heads", part.toString());
     }
 
     @Test

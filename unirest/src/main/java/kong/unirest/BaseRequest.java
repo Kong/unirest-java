@@ -437,4 +437,5 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     public int hashCode() {
         return Objects.hash(headers, method, url);
     }
+
 }
