@@ -4,7 +4,7 @@
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java-parent</artifactId>
     <packaging>pom</packaging>
-    <version>3.11.03-SNAPSHOT</version>
+    <version>3.11.03</version>
     <name>unirest</name>
     <description>Parent pom for unirest packages</description>
     <url>http://github.com/Kong/unirest-java/</url>
@@ -39,7 +39,7 @@
         <url>https://github.com/Kong/unirest-java</url>
         <connection>scm:git:git@github.com:Kong/unirest-java.git</connection>
         <developerConnection>scm:git:git@github.com:Kong/unirest-java.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v3.11.03</tag>
     </scm>
 
     <developers>
