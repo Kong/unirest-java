@@ -87,8 +87,12 @@ public class MockClient implements Client, AsyncClient {
     @Override
     public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
         Routes exp = findExpecation(request);
-        RawResponse response = exp.exchange(request, config.get());
-        return transformer.apply(response);
+        Config c = this.config.get();
+        c.getUniInterceptor().onRequest(request, c);
+        RawResponse response = exp.exchange(request, c);
+        HttpResponse<T> rez = transformer.apply(response);
+        c.getUniInterceptor().onResponse(rez, request.toSummary(), c);
+        return rez;
     }
 
     private Routes findExpecation(HttpRequest request) {
