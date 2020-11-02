@@ -79,6 +79,8 @@ public class Config {
     private UniMetric metrics = new NoopMetric();
     private long ttl = -1;
     private SSLContext sslContext;
+    private String[] ciphers;
+    private String[] protocols;
     private CompoundInterceptor interceptor = new CompoundInterceptor();
     private HostnameVerifier hostnameVerifier;
     private String defaultBaseUrl;
@@ -105,6 +107,8 @@ public class Config {
         keystore = null;
         keystorePassword = null;
         sslContext = null;
+        ciphers = null;
+        protocols = null;
         interceptor = new CompoundInterceptor();
 
         this.objectMapper = Optional.of(new JsonObjectMapper());
@@ -253,6 +257,26 @@ public class Config {
      */
     public Config hostnameVerifier(HostnameVerifier value) {
         this.hostnameVerifier = value;
+        return this;
+    }
+
+    /**
+     * Set a custom array of ciphers
+     * @param values the array of ciphers
+     * @return this config object
+     */
+    public Config ciphers(String... values) {
+        this.ciphers = values;
+        return this;
+    }
+
+    /**
+     * Set a custom array of protocols
+     * @param values the array of protocols
+     * @return this config object
+     */
+    public Config protocols(String... values) {
+        this.protocols = values;
         return this;
     }
 
@@ -968,6 +992,20 @@ public class Config {
      */
     public HostnameVerifier getHostnameVerifier() {
         return hostnameVerifier;
+    }
+
+    /**
+     * @return the ciphers for the SSL connection configuration
+     */
+    public String[] getCiphers() {
+        return ciphers;
+    }
+
+    /**
+     * @return the protocols for the SSL connection configuration
+     */
+    public String[] getProtocols() {
+        return protocols;
     }
 
     /**
