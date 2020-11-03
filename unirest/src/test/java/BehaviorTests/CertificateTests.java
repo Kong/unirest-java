@@ -25,8 +25,10 @@
 
 package BehaviorTests;
 
+import kong.unirest.GetRequest;
 import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -52,8 +54,7 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import java.io.InputStream;
 import java.security.KeyStore;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Disabled // dont normally run these because they depend on badssl.com
 class CertificateTests extends BddTest {
@@ -128,6 +129,21 @@ class CertificateTests extends BddTest {
 
         int response = Unirest.get("https://client.badssl.com/").asEmpty().getStatus();
         assertEquals(200, response);
+    }
+
+    @Test
+    void sslHandshakeFailsWhenServerIsReceivingAnUnsupportedCipher() throws Exception {
+        SSLContext sslContext = SSLContexts.custom()
+                .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
+                .build();
+
+        Unirest.config()
+                .sslContext(sslContext)
+                .protocols("TLSv1.2")
+                .ciphers("TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256");
+
+        GetRequest request = Unirest.get("https://client.badssl.com/");
+        assertThrows(UnirestException.class, request::asEmpty);
     }
 
     @Test
