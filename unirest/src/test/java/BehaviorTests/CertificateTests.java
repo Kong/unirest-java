@@ -54,7 +54,9 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import java.io.InputStream;
 import java.security.KeyStore;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @Disabled // dont normally run these because they depend on badssl.com
 class CertificateTests extends BddTest {
@@ -141,6 +143,20 @@ class CertificateTests extends BddTest {
                 .sslContext(sslContext)
                 .protocols("TLSv1.2")
                 .ciphers("TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256");
+
+        GetRequest request = Unirest.get("https://client.badssl.com/");
+        assertThrows(UnirestException.class, request::asEmpty);
+    }
+
+    @Test
+    void clientPreventsToUseUnsafeProtocol() throws Exception {
+        SSLContext sslContext = SSLContexts.custom()
+                .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
+                .build();
+
+        Unirest.config()
+                .sslContext(sslContext)
+                .protocols("SSLv3");
 
         GetRequest request = Unirest.get("https://client.badssl.com/");
         assertThrows(UnirestException.class, request::asEmpty);
