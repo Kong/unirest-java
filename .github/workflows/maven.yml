@@ -5,6 +5,7 @@ on:
     # Sequence of patterns matched against refs/heads
     branches-ignore:    
       - apache5
+  pull_request:
 
 jobs:
   build:
