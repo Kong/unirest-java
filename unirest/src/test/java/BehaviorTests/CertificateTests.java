@@ -25,8 +25,10 @@
 
 package BehaviorTests;
 
+import kong.unirest.GetRequest;
 import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -53,13 +55,14 @@ import java.io.InputStream;
 import java.security.KeyStore;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @Disabled // dont normally run these because they depend on badssl.com
-public class CertificateTests extends BddTest {
+class CertificateTests extends BddTest {
 
     @Test
-    public void canDoClientCertificates() throws Exception {
+    void canDoClientCertificates() throws Exception {
         Unirest.config().clientCertificateStore(readStore(), "badssl.com");
 
         Unirest.get("https://client.badssl.com/")
@@ -70,7 +73,7 @@ public class CertificateTests extends BddTest {
 
 
     @Test
-    public void canLoadKeyStoreByPath() {
+    void canLoadKeyStoreByPath() {
         Unirest.config().clientCertificateStore("src/test/resources/certs/badssl.com-client.p12", "badssl.com");
 
         Unirest.get("https://client.badssl.com/")
@@ -80,7 +83,7 @@ public class CertificateTests extends BddTest {
     }
 
     @Test
-    public void loadWithSSLContext() throws Exception {
+    void loadWithSSLContext() throws Exception {
         SSLContext sslContext = SSLContexts.custom()
                 .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
                 .build();
@@ -92,7 +95,75 @@ public class CertificateTests extends BddTest {
     }
 
     @Test
-    public void canSetHoestNameVerifyer() throws Exception {
+    void loadWithSSLContextAndProtocol() throws Exception {
+        SSLContext sslContext = SSLContexts.custom()
+                .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
+                .build();
+
+        Unirest.config().sslContext(sslContext).protocols("TLSv1.2");
+
+        int response = Unirest.get("https://client.badssl.com/").asEmpty().getStatus();
+        assertEquals(200, response);
+    }
+
+    @Test
+    void loadWithSSLContextAndCipher() throws Exception {
+        SSLContext sslContext = SSLContexts.custom()
+                .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
+                .build();
+
+        Unirest.config().sslContext(sslContext).ciphers("TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384");
+
+        int response = Unirest.get("https://client.badssl.com/").asEmpty().getStatus();
+        assertEquals(200, response);
+    }
+
+    @Test
+    void loadWithSSLContextAndCipherAndProtocol() throws Exception {
+        SSLContext sslContext = SSLContexts.custom()
+                .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
+                .build();
+
+        Unirest.config()
+                .sslContext(sslContext)
+                .protocols("TLSv1.2")
+                .ciphers("TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384");
+
+        int response = Unirest.get("https://client.badssl.com/").asEmpty().getStatus();
+        assertEquals(200, response);
+    }
+
+    @Test
+    void sslHandshakeFailsWhenServerIsReceivingAnUnsupportedCipher() throws Exception {
+        SSLContext sslContext = SSLContexts.custom()
+                .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
+                .build();
+
+        Unirest.config()
+                .sslContext(sslContext)
+                .protocols("TLSv1.2")
+                .ciphers("TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256");
+
+        GetRequest request = Unirest.get("https://client.badssl.com/");
+        assertThrows(UnirestException.class, request::asEmpty);
+    }
+
+    @Test
+    void clientPreventsToUseUnsafeProtocol() throws Exception {
+        SSLContext sslContext = SSLContexts.custom()
+                .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
+                .build();
+
+        Unirest.config()
+                .sslContext(sslContext)
+                .protocols("SSLv3");
+
+        GetRequest request = Unirest.get("https://client.badssl.com/");
+        assertThrows(UnirestException.class, request::asEmpty);
+    }
+
+    @Test
+    void canSetHoestNameVerifyer() throws Exception {
         Unirest.config().hostnameVerifier(new NoopHostnameVerifier());
 
         int response = Unirest.get("https://badssl.com/").asEmpty().getStatus();
@@ -100,7 +171,7 @@ public class CertificateTests extends BddTest {
     }
 
     @Test
-    public void rawApacheClientCert() throws Exception {
+    void rawApacheClientCert() throws Exception {
         SSLContext sslContext = SSLContexts.custom()
                 .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
                 .build();
@@ -117,7 +188,7 @@ public class CertificateTests extends BddTest {
     }
 
     @Test
-    public void rawApacheWithConnectionManager() throws Exception {
+    void rawApacheWithConnectionManager() throws Exception {
         SSLContext sc = SSLContexts.custom()
                 .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
                 .build();
@@ -151,7 +222,7 @@ public class CertificateTests extends BddTest {
     }
 
     @Test
-    public void badName() {
+    void badName() {
         fails("https://wrong.host.badssl.com/",
                 SSLPeerUnverifiedException.class,
                 "javax.net.ssl.SSLPeerUnverifiedException: " +
@@ -162,7 +233,7 @@ public class CertificateTests extends BddTest {
     }
 
     @Test
-    public void expired() {
+    void expired() {
         fails("https://expired.badssl.com/",
                 SSLHandshakeException.class,
                 "javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: " +
@@ -172,7 +243,7 @@ public class CertificateTests extends BddTest {
     }
 
     @Test
-    public void selfSigned() {
+    void selfSigned() {
         fails("https://self-signed.badssl.com/",
                 SSLHandshakeException.class,
                 "javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: " +
@@ -183,7 +254,7 @@ public class CertificateTests extends BddTest {
     }
 
     @Test
-    public void badNameAsync() {
+    void badNameAsync() {
         failsAsync("https://wrong.host.badssl.com/",
                 SSLPeerUnverifiedException.class,
                 "javax.net.ssl.SSLPeerUnverifiedException: " +
@@ -194,7 +265,7 @@ public class CertificateTests extends BddTest {
     }
 
     @Test
-    public void expiredAsync() {
+    void expiredAsync() {
         failsAsync("https://expired.badssl.com/",
                 SSLHandshakeException.class,
                 "javax.net.ssl.SSLHandshakeException: General SSLEngine problem");
@@ -203,7 +274,7 @@ public class CertificateTests extends BddTest {
     }
 
     @Test
-    public void selfSignedAsync() {
+    void selfSignedAsync() {
         failsAsync("https://self-signed.badssl.com/",
                 SSLHandshakeException.class,
                 "javax.net.ssl.SSLHandshakeException: General SSLEngine problem");

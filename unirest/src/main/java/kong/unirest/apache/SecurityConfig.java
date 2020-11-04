@@ -106,7 +106,7 @@ class SecurityConfig {
 
     private SSLConnectionSocketFactory getSocketFactory() {
         if(sslSocketFactory == null) {
-            sslSocketFactory = new SSLConnectionSocketFactory(createSslContext(), getHostnameVerifier());
+            sslSocketFactory = new SSLConnectionSocketFactory(createSslContext(), config.getProtocols(), config.getCiphers(), getHostnameVerifier());
         }
         return sslSocketFactory;
     }
