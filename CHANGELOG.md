@@ -1,6 +1,7 @@
 ## 3.11.04 (pending)
 * issue #383 missing some reloacations for uber-jars
 * PR #381 Support for custom ciphers and protocols for https requests
+* Mock server should call into Metrics just like the real thing
 * CI/CD improvements
 
 ## 3.11.03

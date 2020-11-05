@@ -89,7 +89,9 @@ public class MockClient implements Client, AsyncClient {
         Routes exp = findExpecation(request);
         Config c = this.config.get();
         c.getUniInterceptor().onRequest(request, c);
+        MetricContext metric = c.getMetric().begin(request.toSummary());
         RawResponse response = exp.exchange(request, c);
+        metric.complete(new ResponseSummary(response), null);
         HttpResponse<T> rez = transformer.apply(response);
         c.getUniInterceptor().onResponse(rez, request.toSummary(), c);
         return rez;
