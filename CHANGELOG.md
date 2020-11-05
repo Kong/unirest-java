@@ -1,3 +1,8 @@
+## 3.11.04 (pending)
+* issue #383 missing some reloacations for uber-jars
+* PR #381 Support for custom ciphers and protocols for https requests
+* CI/CD improvements
+
 ## 3.11.03
 * issue #378 make getDefaultBaseUrl public
 * issue #376 make sane toString representations for body parts.
