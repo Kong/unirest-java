@@ -86,7 +86,7 @@ public class TestUtil {
             if (!e.getCause().getClass().isAssignableFrom(exClass)) {
                 fail("Expected wrong exception type \n Expected: " + exClass + "\n but got " + e.getCause().getClass());
             }
-            assertEquals("Wrong Error Message", message, e.getMessage());
+            assertEquals(message, e.getMessage(), "Wrong Error Message");
         }
     }
 
