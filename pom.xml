@@ -362,18 +362,18 @@
                                 <relocations>
                                     <relocation>
                                         <!-- Apache HttpClients -->
-                                        <pattern>org.apache.http</pattern>
-                                        <shadedPattern>unirest.shaded.org.apache.http</shadedPattern>
+                                        <pattern>org.apache.</pattern>
+                                        <shadedPattern>unirest.shaded.org.apache</shadedPattern>
                                     </relocation>
                                     <relocation>
                                         <!-- Jackson -->
-                                        <pattern>com.fasterxml.jackson</pattern>
+                                        <pattern>com.fasterxml.jackson.</pattern>
                                         <shadedPattern>unirest.shaded.com.fasterxml.jackson</shadedPattern>
                                     </relocation>
                                     <relocation>
-                                        <!-- Google Guava -->
-                                        <pattern>com.google.common</pattern>
-                                        <shadedPattern>unirest.shaded.com.google.common</shadedPattern>
+                                        <!-- Google GSON -->
+                                        <pattern>com.google.</pattern>
+                                        <shadedPattern>unirest.shaded.com.google</shadedPattern>
                                     </relocation>
                                 </relocations>
 
