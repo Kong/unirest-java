@@ -1,4 +1,4 @@
-## 3.11.04 (pending)
+## 3.11.04
 * issue #383 missing some relocations for uber-jars
 * PR #381 support for custom ciphers and protocols for https requests
 * Mock server should call into metrics just like the real thing
