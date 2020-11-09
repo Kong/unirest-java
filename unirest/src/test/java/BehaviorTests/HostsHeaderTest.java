@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class HostsHeaderTest extends BddTest {
+class HostsHeaderTest extends BddTest {
 
     @Test
     void willHonorHostsHeaders() {

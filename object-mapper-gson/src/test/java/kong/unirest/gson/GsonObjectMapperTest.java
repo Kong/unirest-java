@@ -61,11 +61,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GsonObjectMapperTest {
+class GsonObjectMapperTest {
     private GsonObjectMapper om = new GsonObjectMapper();
 
     @Test
-    public void canWrite() throws Exception {
+    void canWrite() throws Exception {
         TestMe test = new TestMe("foo", 42, new TestMe("bar", 666, null));
 
         String json = om.writeValue(test);
@@ -78,7 +78,7 @@ public class GsonObjectMapperTest {
     }
 
     @Test
-    public void canRead(){
+    void canRead(){
         TestMe test = om.readValue("{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666}}",
                 TestMe.class);
 
@@ -90,7 +90,7 @@ public class GsonObjectMapperTest {
     }
 
     @Test
-    public void canReadGenerics(){
+    void canReadGenerics(){
         List<TestMe> testList = om.readValue("[{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666,\"another\":null}}]",
                 new GenericType<List<TestMe>>(){});
 
@@ -104,7 +104,7 @@ public class GsonObjectMapperTest {
     }
 
     @Test
-    public void serializeNulls() {
+    void serializeNulls() {
         Gson gson = new GsonBuilder()
                 .serializeNulls()
                 .create();

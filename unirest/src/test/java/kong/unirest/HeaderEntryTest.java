@@ -31,28 +31,28 @@ import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class HeaderEntryTest {
+class HeaderEntryTest {
 
     @Test
-    public void entryNotEqual() {
+    void entryNotEqual() {
         assertNotEquals(entry("foo", "qux"), entry("foo", "bar"));
         assertNotEquals(entry("qux", "bar"), entry("foo", "bar"));
     }
 
     @Test
-    public void entryEqual() {
+    void entryEqual() {
         assertEquals(entry("foo", "bar"), entry("foo", "bar"));
     }
 
     @Test
-    public void entryEqualLambda() {
+    void entryEqualLambda() {
         assertEquals(entry("foo", () -> "bar"), entry("foo", "bar"));
         assertEquals(entry("foo", () -> "bar"), entry("foo", () -> "bar"));
     }
 
     @Test
-    public void entryLambdasCannotBeNull_butMayReturnNull() {
-        assertEquals(null, entry("foo", (Supplier<String>) null).getValue());
+    void entryLambdasCannotBeNull_butMayReturnNull() {
+        assertNull(entry("foo", (Supplier<String>) null).getValue());
     }
 
     private Headers.Entry entry(String key, Supplier<String> value) {

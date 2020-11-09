@@ -26,14 +26,13 @@
 package kong.tests;
 
 import kong.unirest.*;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-public class MockClientInterceptorIssueTest {
+class MockClientInterceptorIssueTest {
 
     private final ExampleInterceptor interceptor = new ExampleInterceptor();
 
@@ -61,7 +60,7 @@ public class MockClientInterceptorIssueTest {
     }
 
     @Test
-    public void interceptor_is_called() {
+    void interceptor_is_called() {
         MockClient unirestMock = MockClient.register(this.unirestInstance);
 
         unirestMock

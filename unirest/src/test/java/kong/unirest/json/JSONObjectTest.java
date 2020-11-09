@@ -44,10 +44,10 @@ import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.assertException;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class JSONObjectTest {
+class JSONObjectTest {
 
     @Test
-    public void isEmpty() {
+    void isEmpty() {
         JSONObject o = new JSONObject();
         assertTrue(o.isEmpty());
         o.put("foo", "bar");
@@ -55,7 +55,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void isNull() {
+    void isNull() {
         JSONObject o = new JSONObject();
         assertTrue(o.isNull("foo"));
         o.put("foo", (Object)null);
@@ -65,14 +65,14 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void contructInvalid() {
+    void contructInvalid() {
         TestUtil.assertException(() -> new JSONObject("foo"),
                 JSONException.class,
                 "Invalid JSON");
     }
 
     @Test
-    public void simpleConvert() {
+    void simpleConvert() {
         String str = "{\"foo\": {\"baz\": 42}}";
 
         JSONObject obj = new JSONObject(str);
@@ -83,7 +83,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void doubles() {
+    void doubles() {
         JSONObject obj = new JSONObject();
         obj.put("key", 33.5d);
         obj.put("not", "nan");
@@ -99,7 +99,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void nullsAreSerialized() {
+    void nullsAreSerialized() {
         JSONObject obj = new JSONObject("{\"key1\": \"value\", \"key2\": null}");
 
         assertEquals("{\"key1\":\"value\",\"key2\":null}", obj.toString());
@@ -112,7 +112,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void nullsAreSerializedOnPretty() {
+    void nullsAreSerializedOnPretty() {
         JSONObject obj = new JSONObject("{\"key1\": \"value\", \"key2\": null}");
 
         assertEquals("{\n" +
@@ -122,7 +122,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void floats() {
+    void floats() {
         JSONObject obj = new JSONObject();
         obj.put("key", 33.5f);
         obj.put("not", "nan");
@@ -138,7 +138,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void longs() {
+    void longs() {
         JSONObject obj = new JSONObject();
         obj.put("key", Long.MAX_VALUE);
         obj.put("not", "nan");
@@ -154,23 +154,23 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void booleans() {
+    void booleans() {
         JSONObject obj = new JSONObject();
         obj.put("key", true);
         obj.put("not", "nan");
 
-        assertEquals(true, obj.getBoolean("key"));
+        assertTrue(obj.getBoolean("key"));
         assertNotFound(() -> obj.getBoolean("boo"));
         assertJSONEx(() -> obj.getBoolean("not"), "JSONObject[\"not\"] is not a boolean.");
         isTypeAndValue(true, Boolean.class, obj.get("key"));
 
-        assertEquals(true, obj.optBoolean("key"));
-        assertEquals(true, obj.optBoolean("boo", true));
-        assertEquals(false, obj.optBoolean("boo"));
+        assertTrue(obj.optBoolean("key"));
+        assertTrue(obj.optBoolean("boo", true));
+        assertFalse(obj.optBoolean("boo"));
     }
 
     @Test
-    public void ints() {
+    void ints() {
         JSONObject obj = new JSONObject();
         obj.put("key", 33);
         obj.put("not", "nan");
@@ -185,7 +185,7 @@ public class JSONObjectTest {
         assertEquals(0, obj.optInt("boo"));
     }
     @Test
-    public void numbers() {
+    void numbers() {
         Number tt =  33;
         JSONObject obj = new JSONObject();
         obj.put("key", tt);
@@ -202,7 +202,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void bigInts() {
+    void bigInts() {
         JSONObject obj = new JSONObject();
         obj.put("key", BigInteger.valueOf(33));
         obj.put("not", "nan");
@@ -216,7 +216,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void bigDecimal() {
+    void bigDecimal() {
         BigDecimal value = BigDecimal.valueOf(33.5);
         JSONObject obj = new JSONObject();
         obj.put("key", value);
@@ -231,7 +231,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void strings() {
+    void strings() {
         JSONObject obj = new JSONObject();
         obj.put("key", "cheese");
         obj.put("not", 45);
@@ -246,7 +246,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void jsonObjects() throws Exception {
+    void jsonObjects() throws Exception {
         JSONObject subObj = new JSONObject("{\"derp\": 42}");
         JSONObject obj = new JSONObject();
         obj.put("key", subObj);
@@ -256,12 +256,12 @@ public class JSONObjectTest {
         assertNotFound(() -> obj.getJSONObject("boo"));
         assertJSONEx(() -> obj.getJSONObject("not"), "JSONObject[\"not\"] is not a JSONObject.");
         assertEqualJson(subObj, obj.optJSONObject("key"));
-        assertEquals(null, obj.optJSONObject("boo"));
+        assertNull(obj.optJSONObject("boo"));
         assertTrue(subObj.similar(obj.get("key")));
     }
 
     @Test
-    public void jsonArrays() throws Exception {
+    void jsonArrays() throws Exception {
         JSONArray subObj = new JSONArray("[42]");
         JSONObject obj = new JSONObject();
         obj.put("key", subObj);
@@ -271,12 +271,12 @@ public class JSONObjectTest {
         assertNotFound(() -> obj.getJSONArray("boo"));
         assertJSONEx(() -> obj.getJSONArray("not"), "JSONObject[\"not\"] is not a JSONArray.");
         assertEqualJson(subObj, obj.optJSONArray("key"));
-        assertEquals(null, obj.optJSONArray("boo"));
+        assertNull(obj.optJSONArray("boo"));
         assertTrue(subObj.similar(obj.get("key")));
     }
 
     @Test
-    public void enums() {
+    void enums() {
         JSONObject obj = new JSONObject();
         obj.put("key", fruit.orange);
         obj.put("not", "nan");
@@ -285,12 +285,12 @@ public class JSONObjectTest {
         assertJSONEx(() -> obj.getEnum(fruit.class, "not"), "JSONObject[\"not\"] is not an enum of type \"fruit\".");
         assertEquals(fruit.orange, obj.optEnum(fruit.class, "key"));
         assertEquals(fruit.apple, obj.optEnum(fruit.class, "boo", fruit.apple));
-        assertEquals(null, obj.optEnum(fruit.class, "boo"));
+        assertNull(obj.optEnum(fruit.class, "boo"));
         isTypeAndValue(obj.get("key"), String.class, "orange");
     }
 
     @Test
-    public void toStringIt() {
+    void toStringIt() {
         String str = "{\"foo\": 42}";
 
         JSONObject obj = new JSONObject(str);
@@ -299,7 +299,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void toStringItIndent() {
+    void toStringItIndent() {
         String str = "{\"foo\": 42, \"bar\": true}";
 
         JSONObject obj = new JSONObject(str);
@@ -311,18 +311,18 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void objProperties() {
+    void objProperties() {
         String str = "{\"foos\": [6,7,8]}";
 
         JSONObject obj = new JSONObject(str);
 
         assertEquals(7, obj.getJSONArray("foos").get(1));
         assertEquals(7, obj.optJSONArray("foos").get(1));
-        assertEquals(null, obj.optJSONArray("bars"));
+        assertNull(obj.optJSONArray("bars"));
     }
 
     @Test
-    public void writer() {
+    void writer() {
         String str = "{\"foo\":42}";
 
         JSONObject obj = new JSONObject(str);
@@ -335,7 +335,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void writerIndent() {
+    void writerIndent() {
         String str = "{\"foo\": 42, \"bar\": true}";
 
         JSONObject obj = new JSONObject(str);
@@ -351,7 +351,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void remove() {
+    void remove() {
         JSONObject obj = new JSONObject("{\"foo\": 42, \"bar\": true}");
         assertEquals(42, obj.remove("foo"));
         assertNull(obj.remove("nothing"));
@@ -359,7 +359,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void removeAThingThatDoesntExist() {
+    void removeAThingThatDoesntExist() {
         JSONObject obj = new JSONObject();
         obj.remove("foo");
 
@@ -367,7 +367,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void putReplace() {
+    void putReplace() {
         JSONObject obj = new JSONObject("{\"bar\": 42}");
         assertEquals(42, obj.get("bar"));
         assertSame(obj, obj.put("bar", 33));
@@ -376,14 +376,14 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void accumulateDoesNotCreate() {
+    void accumulateDoesNotCreate() {
         JSONObject obj = new JSONObject();
         assertSame(obj, obj.accumulate("bar", 42));
         assertEquals(0, obj.length());
     }
 
     @Test
-    public void accumulate() {
+    void accumulate() {
         JSONObject obj = new JSONObject("{\"bar\": 42}");
         assertSame(obj, obj.accumulate("bar", 33));
         assertEquals(2, obj.getJSONArray("bar").length());
@@ -392,14 +392,14 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void accumulateNullKey() {
+    void accumulateNullKey() {
         assertException(() -> new JSONObject().accumulate(null, "hi"),
                 NullPointerException.class,
                 "Null key.");
     }
 
     @Test
-    public void append() {
+    void append() {
         JSONObject obj = new JSONObject();
         assertSame(obj, obj.append("bar", 42));
         obj.append("bar", 33);
@@ -409,14 +409,14 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void appendNullKey() {
+    void appendNullKey() {
         assertException(() -> new JSONObject().append(null, "hi"),
                 NullPointerException.class,
                 "Null key.");
     }
 
     @Test
-    public void appendToNotAnArrary() {
+    void appendToNotAnArrary() {
         JSONObject obj = new JSONObject();
         assertSame(obj, obj.put("bar", "not"));
         assertException(() -> obj.append("bar", 33),
@@ -425,7 +425,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void increment() {
+    void increment() {
         JSONObject obj = new JSONObject();
         assertSame(obj, obj.increment("cool-beans"));
         assertEquals(1, obj.get("cool-beans"));
@@ -436,7 +436,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void incrementDouble() {
+    void incrementDouble() {
         JSONObject obj = new JSONObject();
         assertSame(obj, obj.put("cool-beans", 1.5));
         obj.increment("cool-beans");
@@ -445,7 +445,7 @@ public class JSONObjectTest {
 
 
     @Test
-    public void putOnce() {
+    void putOnce() {
         JSONObject obj = new JSONObject();
         assertSame(obj, obj.putOnce("foo", "bar"));
         assertJSONEx(() -> obj.putOnce("foo", "baz"), "Duplicate key \"foo\"");
@@ -453,7 +453,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void optPut() {
+    void optPut() {
         JSONObject obj = new JSONObject();
         assertSame(obj, obj.putOpt("foo", "bar"));
         obj.putOpt(null, "bar");
@@ -464,7 +464,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void keySet() {
+    void keySet() {
         JSONObject obj = new JSONObject();
         obj.put("one", "a");
         obj.put("two", "b");
@@ -474,7 +474,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void similar() {
+    void similar() {
         JSONObject obj1 = new JSONObject("{\"foo\":42}");
         JSONObject obj2 = new JSONObject("{\"foo\":42}");
         assertTrue(obj1.similar(obj2));
@@ -483,23 +483,23 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void query() {
+    void query() {
         JSONObject obj = new JSONObject("{\"a\":{\"b\": 42}}");
         assertEquals(42, obj.query("/a/b"));
     }
 
     @Test
-    public void maps() {
+    void maps() {
         JSONObject obj = new JSONObject("{\"foo\": {\"bar\": 42}, \"baz\": 55}");
 
-        Map map = obj.toMap();
+        Map<String, Object> map = obj.toMap();
         assertEquals(55.0, map.get("baz"));
         JSONObject sub = (JSONObject) obj.get("foo");
         assertEquals(42, sub.get("bar"));
     }
 
     @Test
-    public void names() {
+    void names() {
         JSONObject obj = new JSONObject(of("foo", 1, "bar", 2, "baz", 3));
         JSONArray names = obj.names();
         assertEquals(
@@ -509,7 +509,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void toJSONArray() {
+    void toJSONArray() {
         JSONObject o = new JSONObject(of("foo","bar","baz",42));
 
         assertNull(o.toJSONArray(new JSONArray()));
@@ -522,21 +522,22 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void putCollection() {
+    void putCollection() {
         JSONObject o = new JSONObject();
         o.put("foo", asList(1,2,3));
         assertEquals("{\"foo\":[1,2,3]}", o.toString());
     }
 
     @Test
-    public void putObjectAsMap() {
+    void putObjectAsMap() {
         JSONObject o = new JSONObject();
         o.put("foo", of("baz", 42));
         assertEquals("{\"foo\":{\"baz\":42}}", o.toString());
     }
 
     @Test
-    public void stringToValue() {
+    @SuppressWarnings("ConstantConditions")
+    void stringToValue() {
         assertSame(JSONObject.NULL, JSONObject.stringToValue("null"));
         assertEquals(true, JSONObject.stringToValue("true"));
         assertEquals(false, JSONObject.stringToValue("false"));
@@ -549,19 +550,19 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void quote() {
+    void quote() {
         assertEquals("\"\\\"foo\\\"hoo\"", JSONObject.quote("\"foo\"hoo"));
     }
 
     @Test
-    public void quoteWriter() throws IOException {
+    void quoteWriter() throws IOException {
         StringWriter w = new StringWriter();
         Writer quote = JSONObject.quote("\"foo\"hoo", w);
         assertEquals("\"\\\"foo\\\"hoo\"", quote.toString());
     }
 
     @Test
-    public void wrapPrimitives() throws IOException {
+    void wrapPrimitives() {
         assertEquals(42, JSONObject.wrap(42));
         assertEquals(42.5, JSONObject.wrap(42.5));
         assertSame(JSONObject.NULL, JSONObject.wrap(null));
@@ -569,7 +570,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void wrapObjects() throws IOException {
+    void wrapObjects() {
         assertTrue(new JSONArray(asList(1,2,3)).similar(JSONObject.wrap(asList(1,2,3))));
         assertTrue(new JSONArray(asList(1,2,3)).similar(JSONObject.wrap(new int[]{1,2,3})));
         assertTrue(new JSONObject(of("f",1)).similar(JSONObject.wrap(of("f",1))));
@@ -577,19 +578,19 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void doubleToString() {
+    void doubleToString() {
         assertEquals("42", JSONObject.doubleToString(42));
         assertEquals("42.5643", JSONObject.doubleToString(42.5643));
     }
 
     @Test
-    public void numberToString() {
+    void numberToString() {
         assertEquals("42", JSONObject.numberToString(42));
         assertEquals("42.5643", JSONObject.numberToString(42.5643f));
     }
 
     @Test
-    public void valueToString() {
+    void valueToString() {
         assertEquals("null", JSONObject.valueToString(null));
         assertEquals("42", JSONObject.valueToString(42));
         assertEquals("42.5643", JSONObject.valueToString(42.5643f));
@@ -601,7 +602,7 @@ public class JSONObjectTest {
     }
 
     @Test
-    public void getNames() {
+    void getNames() {
         assertArrayEquals(null, JSONObject.getNames(new JSONObject()));
         assertArrayEquals(new String[]{"a","b"}, JSONObject.getNames(new JSONObject(of("a",1,"b",2))));
     }
@@ -623,7 +624,7 @@ public class JSONObjectTest {
         assertTrue(type.isInstance(o));
     }
 
-    public enum fruit {orange, apple, pear;}
+    public enum fruit {orange, apple}
 
     public static class ImmaJson implements JSONString {
 

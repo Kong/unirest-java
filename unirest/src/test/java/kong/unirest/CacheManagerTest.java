@@ -87,7 +87,7 @@ class CacheManagerTest {
         assertEquals(2, client.invokes);
     }
 
-    private class MockClient implements Client, AsyncClient {
+    private static class MockClient implements Client, AsyncClient {
         public int invokes = 0;
         @Override
         public <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, CompletableFuture<HttpResponse<T>> callback) {

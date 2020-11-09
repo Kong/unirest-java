@@ -35,7 +35,7 @@ public class MockCallback<T> implements Callback<T> {
         return new MockCallback<>(test);
     }
 
-    private BddTest test;
+    private final BddTest test;
     private Consumer<HttpResponse<T>> onSuccess = r -> {};
     private Consumer<UnirestException> onFail = f -> {};
     private Runnable onCancel = () -> {};

@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.defaultIfNull;
 import static kong.unirest.TestUtil.rezFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;

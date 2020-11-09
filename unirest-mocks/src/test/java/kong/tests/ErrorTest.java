@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 import static kong.unirest.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ErrorTest extends Base {
+class ErrorTest extends Base {
 
     @Test
     void mapError() {
@@ -45,7 +45,7 @@ public class ErrorTest extends Base {
         assertEquals("Boo!", err.say);
     }
 
-    private class ErrorObj {
+    private static class ErrorObj {
         public String say;
 
         public ErrorObj(String say) {

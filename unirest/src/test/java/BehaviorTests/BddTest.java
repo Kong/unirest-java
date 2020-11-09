@@ -34,9 +34,8 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 public class BddTest {
-    private static JacksonObjectMapper objectMapper = new JacksonObjectMapper();
+    private static final JacksonObjectMapper objectMapper = new JacksonObjectMapper();
     private CountDownLatch lock;
     private boolean status;
     private String fail;

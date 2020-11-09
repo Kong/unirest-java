@@ -39,7 +39,8 @@ import java.io.InputStreamReader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class RawResponseTest extends Base {
+class RawResponseTest extends Base {
+
     @Test
     void getContentAsInputStream() {
         client.expect(HttpMethod.GET, path).thenReturn("hi");
@@ -108,7 +109,7 @@ public class RawResponseTest extends Base {
     void getSummary() {
         client.expect(HttpMethod.GET, path)
                 .thenReturn("hi")
-        .withStatus(HttpStatus.IM_A_TEAPOT, "Tip me over and pour me out");
+                .withStatus(HttpStatus.IM_A_TEAPOT, "Tip me over and pour me out");
 
         Unirest.get(path).thenConsume(raw -> {
             HttpResponseSummary i = raw.toSummary();
@@ -133,7 +134,7 @@ public class RawResponseTest extends Base {
     void getEncoding() {
         client.expect(HttpMethod.GET, path)
                 .thenReturn("hi")
-        .withHeader("Content-Encoding", "Klingon-32");
+                .withHeader("Content-Encoding", "Klingon-32");
 
         Unirest.get(path).thenConsume(raw -> {
             String encoding = raw.getEncoding();

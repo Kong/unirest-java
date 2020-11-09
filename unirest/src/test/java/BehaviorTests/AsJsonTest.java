@@ -32,13 +32,12 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class AsJsonTest extends BddTest {
+class AsJsonTest extends BddTest {
 
     @Test
-    public void whenNoBodyIsReturned() {
+    void whenNoBodyIsReturned() {
         HttpResponse<JsonNode> i = Unirest.get(MockServer.NOBODY).asJson();
 
         assertEquals(HttpStatus.OK, i.getStatus());
@@ -46,7 +45,7 @@ public class AsJsonTest extends BddTest {
     }
 
     @Test
-    public void toStringAObject() {
+    void toStringAObject() {
         MockServer.setStringResponse(new JSONObject().put("f", 1).put("a", Arrays.asList(2, 3, 4)).toString());
         HttpResponse<JsonNode> i = Unirest.get(MockServer.GET).asJson();
 
@@ -54,7 +53,7 @@ public class AsJsonTest extends BddTest {
     }
 
     @Test
-    public void toPrettyStringAObject() {
+    void toPrettyStringAObject() {
         MockServer.setStringResponse(new JSONObject().put("f", 1).put("a", Arrays.asList(2, 3, 4)).toString());
         HttpResponse<JsonNode> i = Unirest.get(MockServer.GET).asJson();
 
@@ -69,7 +68,7 @@ public class AsJsonTest extends BddTest {
     }
 
     @Test
-    public void canGetBinaryResponse() {
+    void canGetBinaryResponse() {
         HttpResponse<JsonNode> i = Unirest.get(MockServer.GET)
                 .queryString("foo", "bar")
                 .asJson();
@@ -78,7 +77,7 @@ public class AsJsonTest extends BddTest {
     }
 
     @Test
-    public void canGetBinaryResponseAsync() throws Exception {
+    void canGetBinaryResponseAsync() throws Exception {
         CompletableFuture<HttpResponse<JsonNode>> r = Unirest.get(MockServer.GET)
                 .queryString("foo", "bar")
                 .asJsonAsync();
@@ -87,7 +86,7 @@ public class AsJsonTest extends BddTest {
     }
 
     @Test
-    public void canGetBinaryResponseAsyncWithCallback() {
+    void canGetBinaryResponseAsyncWithCallback() {
         Unirest.get(MockServer.GET)
                 .queryString("foo", "bar")
                 .asJsonAsync(r -> {
@@ -99,11 +98,12 @@ public class AsJsonTest extends BddTest {
     }
 
     @Test
-    public void failureToReturnValidJsonWillResultInAnEmptyNode() {
+    void failureToReturnValidJsonWillResultInAnEmptyNode() {
         HttpResponse<JsonNode> response = Unirest.get(MockServer.INVALID_REQUEST).asJson();
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
         assertNull(response.getBody());
+        assertTrue(response.getParsingError().isPresent());
         UnirestParsingException ex = response.getParsingError().get();
         assertEquals("You did something bad", ex.getOriginalBody());
         assertEquals("kong.unirest.json.JSONException: Invalid JSON",
@@ -112,12 +112,12 @@ public class AsJsonTest extends BddTest {
     }
 
     @Test
-    public void failureToReturnValidJsonWillResultInAnEmptyNodeAsync() {
+    void failureToReturnValidJsonWillResultInAnEmptyNodeAsync() {
         Unirest.get(MockServer.INVALID_REQUEST)
                 .asJsonAsync(new MockCallback<>(this, response -> {
                     assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
                     assertNull(response.getBody());
-                    assertEquals(null, response.getBody());
+                    assertTrue(response.getParsingError().isPresent());
                     assertEquals("kong.unirest.json.JSONException: Invalid JSON",
                             response.getParsingError().get().getMessage());
 

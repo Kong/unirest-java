@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InputStreamPartTest {
-    private InputStreamPart part = new InputStreamPart("uploadFile",
+    private final InputStreamPart part = new InputStreamPart("uploadFile",
             new ByteArrayInputStream(new byte[]{}),
             "application/xml",
             "foo.xml");

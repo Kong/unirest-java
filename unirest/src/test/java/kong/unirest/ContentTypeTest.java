@@ -30,22 +30,22 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ContentTypeTest {
+class ContentTypeTest {
 
     @Test
-    public void contentTypeWithEncoding() {
+    void contentTypeWithEncoding() {
         verifySame(org.apache.http.entity.ContentType.APPLICATION_ATOM_XML,
                 ContentType.APPLICATION_ATOM_XML);
     }
 
     @Test
-    public void imageTypes() {
+    void imageTypes() {
         verifySame(org.apache.http.entity.ContentType.IMAGE_GIF,
                 ContentType.IMAGE_GIF);
     }
 
     @Test
-    public void wildCard() {
+    void wildCard() {
         verifySame(org.apache.http.entity.ContentType.WILDCARD,
                 ContentType.WILDCARD);
     }

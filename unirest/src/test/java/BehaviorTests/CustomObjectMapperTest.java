@@ -35,7 +35,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 
-public class CustomObjectMapperTest extends BddTest {
+class CustomObjectMapperTest extends BddTest {
 
     private JsonObjectMapper customOm;
 

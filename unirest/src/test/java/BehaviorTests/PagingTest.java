@@ -31,10 +31,10 @@ import kong.unirest.Unirest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PagingTest extends BddTest {
+class PagingTest extends BddTest {
 
     @Test
-    public void canFollowPaging() {
+    void canFollowPaging() {
         MockServer.expectedPages(10);
 
         PagedList<RequestCapture> result =  Unirest.get(MockServer.PAGED)
@@ -47,7 +47,7 @@ public class PagingTest extends BddTest {
     }
 
     @Test
-    public void canCapturePagesAsStrings() {
+    void canCapturePagesAsStrings() {
         MockServer.expectedPages(10);
 
         PagedList<String> result =  Unirest.get(MockServer.PAGED)
@@ -60,7 +60,7 @@ public class PagingTest extends BddTest {
     }
 
     @Test
-    public void willReturnOnePageIfthereWasNoPaging() {
+    void willReturnOnePageIfthereWasNoPaging() {
 
         PagedList<RequestCapture> result =  Unirest.get(MockServer.PAGED)
                 .asPaged(

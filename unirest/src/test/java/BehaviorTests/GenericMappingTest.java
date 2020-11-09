@@ -31,9 +31,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class GenericMappingTest extends BddTest {
+class GenericMappingTest extends BddTest {
+
     @Test
-    public void canMapBody() {
+    void canMapBody() {
         MockServer.setStringResponse("123456");
 
         int body = Unirest.get(MockServer.GET).asString().mapBody(Integer::valueOf);
@@ -42,7 +43,7 @@ public class GenericMappingTest extends BddTest {
     }
 
     @Test
-    public void canMapTheEntireResponseIntoAnotherResponse() {
+    void canMapTheEntireResponseIntoAnotherResponse() {
         MockServer.setStringResponse("123456");
         MockServer.addResponseHeader("cheese","cheddar");
 

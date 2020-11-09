@@ -33,8 +33,9 @@ import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class HeadersTest {
-    private String ls  = System.lineSeparator();
+class HeadersTest {
+
+    private final String ls = System.lineSeparator();
 
     @Test
     void canGetHeaders() {

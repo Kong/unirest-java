@@ -37,7 +37,7 @@ import static com.google.common.collect.ImmutableMap.of;
 import static kong.unirest.Cache.builder;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CachingTest extends BddTest {
+class CachingTest extends BddTest {
 
     @Test
     void doesNotCacheByDefault() {

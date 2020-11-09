@@ -34,11 +34,10 @@ import org.junit.jupiter.api.Timeout;
 
 import static kong.unirest.MockCallback.json;
 
-public class CallbackFutureTest extends BddTest {
-
+class CallbackFutureTest extends BddTest {
 
     @Test @Timeout(5)
-    public void onSuccess() throws Exception {
+    void onSuccess() throws Exception {
         Unirest.get(MockServer.GET)
                 .queryString("Snazzy", "Shoes")
                 .asJsonAsync()
@@ -51,7 +50,7 @@ public class CallbackFutureTest extends BddTest {
     }
 
     @Test @Timeout(5)
-    public void onSuccessSupplyCallback() throws Exception {
+    void onSuccessSupplyCallback() throws Exception {
         Unirest.get(MockServer.GET)
                 .queryString("Snazzy", "Shoes")
                 .asJsonAsync(new NoopCallback<>())
@@ -64,7 +63,7 @@ public class CallbackFutureTest extends BddTest {
     }
 
     @Test @Timeout(5) @Disabled
-    public void onFailure() throws Exception {
+    void onFailure() throws Exception {
         Unirest.get("http://localhost:0000")
                 .asJsonAsync(json(this))
                 .isCompletedExceptionally();

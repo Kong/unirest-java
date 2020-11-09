@@ -39,10 +39,10 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DefectTest extends BddTest {
+class DefectTest extends BddTest {
 
     @Test
-    public void hashOnLinksDoNotMessUpUri() {
+    void hashOnLinksDoNotMessUpUri() {
         Unirest.get(MockServer.GET + "?a=1&b=2#some_location")
                 .asObject(RequestCapture.class)
                 .getBody()
@@ -51,7 +51,7 @@ public class DefectTest extends BddTest {
     }
 
     @Test
-    public void nullAndObjectValuesInMap() {
+    void nullAndObjectValuesInMap() {
         Map<String, Object> queryParams = new HashMap<>();
         queryParams.put("foo", null);
         queryParams.put("baz", "qux");
@@ -67,7 +67,7 @@ public class DefectTest extends BddTest {
 
 
     @Test
-    public void issue_41_IllegalThreadStateExceptionUnderHighLoad() throws IOException {
+    void issue_41_IllegalThreadStateExceptionUnderHighLoad() throws IOException {
         Unirest.get(MockServer.GET).asStringAsync();
 
         HttpAsyncClient first = Unirest.config().getAsyncClient().getClient();
@@ -87,7 +87,7 @@ public class DefectTest extends BddTest {
     }
 
     @Test @Disabled
-    public void trySomeoneElsesGZip() throws Exception {
+    void trySomeoneElsesGZip() throws Exception {
         JSONObject body = Unirest.get("http://httpbin.org/gzip")
                 .asJsonAsync().get().getBody().getObject();
 

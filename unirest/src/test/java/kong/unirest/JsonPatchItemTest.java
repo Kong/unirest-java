@@ -33,10 +33,10 @@ import java.util.Set;
 import static kong.unirest.JsonPatchOperation.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class JsonPatchItemTest {
+class JsonPatchItemTest {
 
     @Test
-    public void patchOperationsAreUniqueByTheirElements() {
+    void patchOperationsAreUniqueByTheirElements() {
         assertEquals(
                 new JsonPatchItem(add, "/foo", "bar"),
                 new JsonPatchItem(add, "/foo", "bar")
@@ -64,23 +64,23 @@ public class JsonPatchItemTest {
     }
 
     @Test
-    public void testHash() {
-        Set s = Sets.newHashSet(new JsonPatchItem(add, "/foo", "bar"),
+    void testHash() {
+        Set<JsonPatchItem> s = Sets.newHashSet(new JsonPatchItem(add, "/foo", "bar"),
                 new JsonPatchItem(add, "/foo", "bar"));
 
         assertEquals(1, s.size());
     }
 
     @Test
-    public void edgeEquals() {
+    void edgeEquals() {
         JsonPatchItem i = new JsonPatchItem(add, "/foo", "bar");
-        assertTrue(i.equals(i));
-        assertFalse(i.equals(null));
-        assertFalse(i.equals(new Object()));
+        assertEquals(i, i);
+        assertNotEquals(null, i);
+        assertNotEquals(new Object(), i);
     }
 
     @Test
-    public void basicTest() {
+    void basicTest() {
         JsonPatchItem i = new JsonPatchItem(add, "/foo", "bar");
         assertEquals(add, i.getOp());
         assertEquals("/foo", i.getPath());

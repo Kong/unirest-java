@@ -31,10 +31,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SecurityConfigTest {
+class SecurityConfigTest {
 
     @Test
-    public void willTakeConfigIntoAccountWhenCreatingManager() {
+    void willTakeConfigIntoAccountWhenCreatingManager() {
         Config config = new Config().concurrency(88, 42);
 
         SecurityConfig sec = new SecurityConfig(config);

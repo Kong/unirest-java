@@ -41,6 +41,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Part;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -99,7 +100,7 @@ public class RequestCapture {
     }
 
     private void parseBodyToFormParams() {
-        URLEncodedUtils.parse(this.body, Charset.forName("UTF-8"))
+        URLEncodedUtils.parse(this.body, StandardCharsets.UTF_8)
                 .forEach(p -> {
                     params.put(p.getName(), p.getValue());
                 });
@@ -154,11 +155,6 @@ public class RequestCapture {
 
     private void writeQuery(Request req) {
         req.queryParams().forEach(q -> params.putAll(q, Sets.newHashSet(req.queryMap(q).values())));
-    }
-
-    public RequestCapture asserBody(String s) {
-        assertEquals(s, body);
-        return this;
     }
 
     public RequestCapture assertNoHeader(String s) {
@@ -224,7 +220,7 @@ public class RequestCapture {
         return this;
     }
 
-    public RequestCapture asserMethod(HttpMethod get) {
+    public RequestCapture assertMethod(HttpMethod get) {
         assertEquals(get, method);
         return this;
     }
@@ -272,8 +268,9 @@ public class RequestCapture {
         return this;
     }
 
-    public void assertBody(String o) {
+    public RequestCapture assertBody(String o) {
         assertEquals(o, body);
+        return this;
     }
 
     public void setStatus(int i) {

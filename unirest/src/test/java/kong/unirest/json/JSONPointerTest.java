@@ -32,136 +32,137 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class JSONPointerTest {
+class JSONPointerTest {
     // https://tools.ietf.org/html/rfc6901
-    private static String RFC_TEST = TestUtil.getResource("JSON_POINTER_REF.json");
-    private JSONObject obj = new JSONObject(RFC_TEST);
+    private static final String RFC_TEST = TestUtil.getResource("JSON_POINTER_REF.json");
+    private final JSONObject obj = new JSONObject(RFC_TEST);
 
     @Test
-    public void nullQuery() {
+    void nullQuery() {
         TestUtil.assertException(() -> obj.query((String)null),
                 NullPointerException.class,
                 "pointer cannot be null");
     }
 
     @Test
-    public void invalidPathQuery() {
+    void invalidPathQuery() {
         TestUtil.assertException(() -> obj.query("foo"),
                 IllegalArgumentException.class,
                 "a JSON pointer should start with '/' or '#/'");
     }
 
     @Test
-    public void invalidPathQuery_downpath() {
+    void invalidPathQuery_downpath() {
         TestUtil.assertException(() -> obj.query("/shwoop/dedoop"),
                 JSONPointerException.class,
                 "Path Segment Missing: shwoop");
     }
 
     @Test
-    public void arrayPartThatDoesNotExist() {
+    void arrayPartThatDoesNotExist() {
         TestUtil.assertException(() -> obj.query("/foo/5"),
                 JSONPointerException.class,
                 "index 5 is out of bounds - the array has 2 elements");
     }
 
     @Test
-    public void referenceAnArrayAsAThing() {
+    void referenceAnArrayAsAThing() {
         TestUtil.assertException(() -> obj.query("/foo/bar"),
                 JSONPointerException.class,
                 "bar is not an array index");
     }
 
     @Test
-    public void constructorMayNotTakeNull() {
+    @SuppressWarnings("RedundantCast")
+    void constructorMayNotTakeNull() {
         TestUtil.assertException(() -> new JSONPointer((String) null),
                 NullPointerException.class,
                 "pointer cannot be null");
     }
 
     @Test
-    public void toStringReturnsOriginalString() {
+    void toStringReturnsOriginalString() {
         assertEquals("/foo/g~0h/baz", new JSONPointer("/foo/g~h/baz").toString());
         assertEquals("/foo/g~0h/baz", JSONPointer.compile("/foo/g~h/baz").toString());
     }
 
     @Test
-    public void canGetAsURIFragmanet() {
+    void canGetAsURIFragmanet() {
         assertEquals("#/foo/g%7Eh/baz", new JSONPointer("/foo/g~h/baz").toURIFragment());
     }
 
     @Test
-    public void elementInObjectDoesNotExist() {
+    void elementInObjectDoesNotExist() {
         assertNull(obj.query("/derpa"));
     }
 
     @Test
-    public void testRef_all() throws Exception {
+    void testRef_all() throws Exception {
         assertQueryJson(RFC_TEST, "");
     }
 
     @Test
-    public void testRef_Array() throws Exception {
+    void testRef_Array() throws Exception {
         assertQueryJson("[\"bar\", \"baz\"]", "/foo");
     }
 
     @Test
-    public void testRef_ArrayZero() {
+    void testRef_ArrayZero() {
         assertEquals("bar", obj.query("/foo/0").toString());
     }
 
     @Test
-    public void testRef_Slash() {
+    void testRef_Slash() {
         assertEquals(0, obj.query("/"));
     }
 
     @Test
-    public void testRef_ab() {
+    void testRef_ab() {
         assertEquals(1, obj.query("/a~1b"));
     }
 
     @Test
-    public void testRef_cd() {
+    void testRef_cd() {
         assertEquals(2, obj.query("/c%d"));
     }
 
     @Test
-    public void testRef_ef() {
+    void testRef_ef() {
         assertEquals(3, obj.query("/e^f"));
     }
 
     @Test
-    public void testRef_gh() {
+    void testRef_gh() {
         assertEquals(4, obj.query("/g|h"));
     }
 
     @Test
-    public void testRef_ij() {
+    void testRef_ij() {
         assertEquals(5, obj.query("/i\\j"));
     }
 
     @Test
-    public void testRef_kl() {
+    void testRef_kl() {
         assertEquals(6, obj.query("/k\"l"));
     }
 
     @Test
-    public void testRef_space() {
+    void testRef_space() {
         assertEquals(7, obj.query("/ "));
     }
 
     @Test
-    public void testRef_mn() {
+    void testRef_mn() {
         assertEquals(8, obj.query("/m~0n"));
     }
 
     @Test
-    public void letsGoDeep() {
+    void letsGoDeep() {
         assertEquals(true, obj.query("/cucu/0/banana/pants"));
     }
 
     @Test
-    public void builder(){
+    void builder(){
         JSONPointer pointer = JSONPointer
                 .builder()
                 .append("foo")

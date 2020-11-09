@@ -38,7 +38,7 @@ import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CachingAlternativeTest extends BddTest {
+class CachingAlternativeTest extends BddTest {
 
     @Test
     void canSupplyCustomCache() {

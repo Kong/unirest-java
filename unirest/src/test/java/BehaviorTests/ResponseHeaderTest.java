@@ -32,11 +32,11 @@ import kong.unirest.Unirest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ResponseHeaderTest extends BddTest {
+class ResponseHeaderTest extends BddTest {
 
 
     @Test
-    public void responseHeadersAreInTheSameOrderAsTheResponse() {
+    void responseHeadersAreInTheSameOrderAsTheResponse() {
         MockServer.addResponseHeader("zed", "oranges");
         MockServer.addResponseHeader("alpha", "apples");
         MockServer.addResponseHeader("Content", "application/xml");

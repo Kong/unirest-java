@@ -25,7 +25,6 @@
 
 package BehaviorTests;
 
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import kong.unirest.HttpResponse;
@@ -35,7 +34,7 @@ import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PostRequestHandlersTest extends BddTest {
+class PostRequestHandlersTest extends BddTest {
 
     private HttpResponse<RequestCapture> captured;
 
@@ -47,7 +46,7 @@ public class PostRequestHandlersTest extends BddTest {
     }
 
     @Test
-    public void onSuccessDoSomething() {
+    void onSuccessDoSomething() {
         Unirest.get(MockServer.GET)
                 .queryString("foo", "bar")
                 .asObject(RequestCapture.class)
@@ -59,7 +58,7 @@ public class PostRequestHandlersTest extends BddTest {
     }
 
     @Test
-    public void onFailDoSomething() {
+    void onFailDoSomething() {
         Unirest.get(MockServer.INVALID_REQUEST)
                 .queryString("foo", "bar")
                 .asObject(RequestCapture.class)
@@ -71,7 +70,7 @@ public class PostRequestHandlersTest extends BddTest {
     }
 
     @Test
-    public void itsAFailIfTheMapperFails() {
+    void itsAFailIfTheMapperFails() {
         MockServer.setStringResponse("not what you expect");
 
         Unirest.get(MockServer.GET)
@@ -87,7 +86,7 @@ public class PostRequestHandlersTest extends BddTest {
     }
 
     @Test
-    public void canConfigureAGlobalErrorHandler(){
+    void canConfigureAGlobalErrorHandler(){
         Error error = new Error();
         Unirest.config().errorHandler(error);
 
@@ -97,7 +96,7 @@ public class PostRequestHandlersTest extends BddTest {
     }
 
     @Test
-    public void canConfigureAGlobalErrorHandlerAsync()  throws Exception {
+    void canConfigureAGlobalErrorHandlerAsync()  throws Exception {
         Error error = new Error();
         Unirest.config().errorHandler(error);
 
@@ -106,7 +105,7 @@ public class PostRequestHandlersTest extends BddTest {
         assertEquals(400, error.httpResponse.getStatus());
     }
 
-    private class Error implements Consumer<HttpResponse<?>> {
+    private static class Error implements Consumer<HttpResponse<?>> {
 
         public HttpResponse<?> httpResponse;
 
@@ -120,7 +119,7 @@ public class PostRequestHandlersTest extends BddTest {
 
 
     @Test
-    public void onSuccessBeSuccessful() {
+    void onSuccessBeSuccessful() {
         HttpResponse<RequestCapture> response = Unirest.get(MockServer.GET)
             .queryString("foo", "bar")
             .asObject(RequestCapture.class);
@@ -129,7 +128,7 @@ public class PostRequestHandlersTest extends BddTest {
     }
 
     @Test
-    public void onFailBeUnsuccessful() {
+    void onFailBeUnsuccessful() {
         HttpResponse<RequestCapture> response = Unirest.get(MockServer.INVALID_REQUEST)
             .queryString("foo", "bar")
             .asObject(RequestCapture.class);
@@ -138,7 +137,7 @@ public class PostRequestHandlersTest extends BddTest {
     }
 
     @Test
-    public void beUnsuccessfulIfTheMapperFails() {
+    void beUnsuccessfulIfTheMapperFails() {
         MockServer.setStringResponse("not what you expect");
 
         HttpResponse<RequestCapture> response = Unirest.get(MockServer.GET)

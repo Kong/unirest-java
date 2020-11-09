@@ -32,7 +32,8 @@ import java.io.File;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilePartTest {
-    private FilePart part = new FilePart(new File("./foo.xml"), "uploadFile", "application/xml");
+
+    private final FilePart part = new FilePart(new File("./foo.xml"), "uploadFile", "application/xml");
 
     @Test
     void filePartsAreFiles() {

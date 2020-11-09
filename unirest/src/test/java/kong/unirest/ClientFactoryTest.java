@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.mock;
 
-public class ClientFactoryTest {
+class ClientFactoryTest {
 
     @BeforeEach
     @AfterEach
@@ -49,14 +49,14 @@ public class ClientFactoryTest {
     }
 
     @Test
-    public void shouldReuseThreadPool() {
+    void shouldReuseThreadPool() {
         int startingCount = ManagementFactory.getThreadMXBean().getThreadCount();
         //IntStream.range(0,100).forEach(i -> ClientFactory.refresh());
         assertThat(ManagementFactory.getThreadMXBean().getThreadCount(), is(lessThan(startingCount + 10)));
     }
 
     @Test
-    public void canSaveSomeOptions(){
+    void canSaveSomeOptions(){
         HttpRequestInterceptor i = mock(HttpRequestInterceptor.class);
         CloseableHttpAsyncClient c = mock(CloseableHttpAsyncClient.class);
 

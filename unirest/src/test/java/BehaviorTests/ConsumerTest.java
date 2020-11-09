@@ -40,7 +40,7 @@ import java.nio.file.Paths;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ConsumerTest extends BddTest {
+class ConsumerTest extends BddTest {
 
     Path test = Paths.get("1.jpeg");
     private int status;
@@ -60,7 +60,7 @@ public class ConsumerTest extends BddTest {
     }
 
     @Test
-    public void canSimplyConsumeAResponse() {
+    void canSimplyConsumeAResponse() {
         Unirest.get(MockServer.GET)
                 .thenConsume(r -> status = r.getStatus());
 
@@ -68,7 +68,7 @@ public class ConsumerTest extends BddTest {
     }
 
     @Test
-    public void downloadAFileAsync() throws Exception {
+    void downloadAFileAsync() {
         Unirest.get(MockServer.BINARYFILE)
                 .thenConsumeAsync(r -> {
                     try {
@@ -90,7 +90,7 @@ public class ConsumerTest extends BddTest {
     }
 
     @Test
-    public void downloadAFile() throws Exception {
+    void downloadAFile() {
         Unirest.get(MockServer.BINARYFILE)
                 .thenConsume(r -> {
                     try {
@@ -108,7 +108,7 @@ public class ConsumerTest extends BddTest {
     }
 
     @Test
-    public void canSimplyConsumeAResponseAsync() {
+    void canSimplyConsumeAResponseAsync() {
         Unirest.get(MockServer.GET)
                 .thenConsumeAsync(r -> status = r.getStatus());
 

@@ -35,14 +35,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ResponseUtilsTest {
+class ResponseUtilsTest {
     @Mock
     private Config config;
     @InjectMocks
     TestRawResponse test;
 
     @Test
-    public void getCharsetDefaults() {
+    void getCharsetDefaults() {
         defaultEncoding("UTF-8");
 
         assertEquals("UTF-8", getCharSet(null));
@@ -53,12 +53,12 @@ public class ResponseUtilsTest {
     }
 
     @Test
-    public void contentTypeWhenYouGotIt() {
+    void contentTypeWhenYouGotIt() {
         assertEquals("LATIN-1", getCharSet("Content-Type: text/html; charset=latin-1"));
     }
 
     @Test
-    public void changeTheDefault() {
+    void changeTheDefault() {
         defaultEncoding("KINGON-1");
         assertEquals("KINGON-1", getCharSet(null));
         defaultEncoding("SINDARIN-42");

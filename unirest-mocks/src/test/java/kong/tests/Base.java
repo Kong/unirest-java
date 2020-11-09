@@ -26,9 +26,7 @@
 package kong.tests;
 
 import kong.unirest.MockClient;
-import kong.unirest.Unirest;
 import kong.unirest.UnirestAssertion;
-import kong.unirest.UnirestInstance;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -63,7 +61,7 @@ public class Base {
         try{
             runnable.run();
             fail("Expected exception but got none.");
-        } catch (UnirestAssertion e){ }
+        } catch (UnirestAssertion ignored){ }
     }
 
     @FunctionalInterface

@@ -33,26 +33,29 @@ import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
 
 import java.io.File;
-import java.nio.file.*;
-import java.util.concurrent.ExecutionException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AsFileTest extends BddTest {
+class AsFileTest extends BddTest {
 
-    private Path test = Paths.get("results.json");
-    private JacksonObjectMapper om = new JacksonObjectMapper();
+    private final Path test = Paths.get("results.json");
+    private final JacksonObjectMapper om = new JacksonObjectMapper();
 
     @Override @AfterEach
     public void tearDown() {
         try {
             Files.delete(test);
-        } catch (Exception e) { }
+        } catch (Exception ignored) { }
     }
 
     @Test
-    public void canSaveContentsIntoFile() {
+    void canSaveContentsIntoFile() {
         File result = Unirest.get(MockServer.GET)
                 .queryString("talking","heads")
                 .queryString("param3", "こんにちは")
@@ -68,7 +71,7 @@ public class AsFileTest extends BddTest {
     }
 
     @Test
-    public void canSaveContentsIntoFileAsync() throws Exception {
+    void canSaveContentsIntoFileAsync() throws Exception {
         File result = Unirest.get(MockServer.GET)
                 .queryString("talking","heads")
                 .queryString("param3", "こんにちは")
@@ -85,7 +88,7 @@ public class AsFileTest extends BddTest {
     }
 
     @Test
-    public void canSaveContentsIntoFileAsyncWithCallback() throws Exception {
+    void canSaveContentsIntoFileAsyncWithCallback() throws Exception {
         Unirest.get(MockServer.GET)
                 .queryString("talking","heads")
                 .queryString("param3", "こんにちは")
@@ -102,7 +105,7 @@ public class AsFileTest extends BddTest {
     }
 
     @Test
-    public void canDownloadABinaryFile() throws Exception {
+    void canDownloadABinaryFile() throws Exception {
         File f1 = TestUtil.rezFile("/spidey.jpg");
 
         File f2 = Unirest.get(MockServer.BINARYFILE)

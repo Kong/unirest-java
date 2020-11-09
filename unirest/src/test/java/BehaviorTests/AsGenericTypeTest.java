@@ -36,7 +36,7 @@ import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AsGenericTypeTest extends BddTest {
+class AsGenericTypeTest extends BddTest {
 
     private final List<Foo> foos = Arrays.asList(
             new Foo("foo"),
@@ -45,7 +45,7 @@ public class AsGenericTypeTest extends BddTest {
     );
 
     @Test
-    public void canGetAListOfObjects() {
+    void canGetAListOfObjects() {
         MockServer.setJsonAsResponse(foos);
 
         List<Foo> foos = Unirest.get(MockServer.GET)
@@ -56,7 +56,7 @@ public class AsGenericTypeTest extends BddTest {
     }
 
     @Test
-    public void canGetAListOfObjectsAsync() throws ExecutionException, InterruptedException {
+    void canGetAListOfObjectsAsync() throws ExecutionException, InterruptedException {
         MockServer.setJsonAsResponse(foos);
 
         List<Foo> foos = Unirest.get(MockServer.GET)
@@ -68,7 +68,7 @@ public class AsGenericTypeTest extends BddTest {
     }
 
     @Test
-    public void canGetAListOfObjectsAsyncWithCallback()  {
+    void canGetAListOfObjectsAsyncWithCallback()  {
         MockServer.setJsonAsResponse(foos);
 
         Unirest.get(MockServer.GET)
@@ -83,7 +83,7 @@ public class AsGenericTypeTest extends BddTest {
     }
 
     @Test
-    public void soManyLayersOfGenerics() {
+    void soManyLayersOfGenerics() {
         MockServer.setJsonAsResponse(new WeirdType<>(foos, "hey"));
 
         WeirdType<List<Foo>> foos = Unirest.get(MockServer.GET)
@@ -95,7 +95,7 @@ public class AsGenericTypeTest extends BddTest {
     }
 
     @Test
-    public void itAlsoWorksWithGson() {
+    void itAlsoWorksWithGson() {
         Unirest.config().setObjectMapper(new JsonObjectMapper());
 
         MockServer.setJsonAsResponse(new WeirdType<>(foos, "hey"));
