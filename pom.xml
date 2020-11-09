@@ -363,17 +363,17 @@
                                     <relocation>
                                         <!-- Apache HttpClients -->
                                         <pattern>org.apache.</pattern>
-                                        <shadedPattern>unirest.shaded.org.apache</shadedPattern>
+                                        <shadedPattern>unirest.shaded.org.apache.</shadedPattern>
                                     </relocation>
                                     <relocation>
                                         <!-- Jackson -->
                                         <pattern>com.fasterxml.jackson.</pattern>
-                                        <shadedPattern>unirest.shaded.com.fasterxml.jackson</shadedPattern>
+                                        <shadedPattern>unirest.shaded.com.fasterxml.jackson.</shadedPattern>
                                     </relocation>
                                     <relocation>
                                         <!-- Google GSON -->
                                         <pattern>com.google.</pattern>
-                                        <shadedPattern>unirest.shaded.com.google</shadedPattern>
+                                        <shadedPattern>unirest.shaded.com.google.</shadedPattern>
                                     </relocation>
                                 </relocations>
 
