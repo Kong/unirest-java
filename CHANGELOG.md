@@ -1,3 +1,6 @@
+## 3.11.05
+*  issue #383 some problems with relocated packages.
+
 ## 3.11.04
 * issue #383 missing some relocations for uber-jars
 * PR #381 support for custom ciphers and protocols for https requests
