@@ -37,22 +37,22 @@ import static com.google.common.collect.ImmutableMap.of;
 import static kong.unirest.HttpMethod.GET;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class BaseRequestTest {
+class BaseRequestTest {
 
     private Config testConfig;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         testConfig = new Config();
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    void tearDown() throws Exception {
         Util.resetClock();
     }
 
     @Test
-    public void socketTimeoutCanOverrrideConfig() {
+    void socketTimeoutCanOverrrideConfig() {
         testConfig.socketTimeout(42);
 
         HttpRequest request = new TestRequest(testConfig);
@@ -63,7 +63,7 @@ public class BaseRequestTest {
     }
 
     @Test
-    public void connectTimeoutCanOverrrideConfig() {
+    void connectTimeoutCanOverrrideConfig() {
         testConfig.connectTimeout(42);
 
         HttpRequest request = new TestRequest(testConfig);
@@ -74,7 +74,7 @@ public class BaseRequestTest {
     }
 
     @Test
-    public void copiesSettingsFromOtherRequest() {
+    void copiesSettingsFromOtherRequest() {
         testConfig.connectTimeout(42);
         testConfig.socketTimeout(42);
 
@@ -87,7 +87,7 @@ public class BaseRequestTest {
     }
 
     @Test
-    public void canPassABasicProxyPerRequest() {
+    void canPassABasicProxyPerRequest() {
         Proxy cp = new Proxy("foo", 8080, "username", "password");
         testConfig.proxy(cp);
 
@@ -100,7 +100,7 @@ public class BaseRequestTest {
     }
 
     @Test
-    public void requestEquals_PathAndVerb() {
+    void requestEquals_PathAndVerb() {
         assertEquals(
                 new TestRequest(GET, "/path"),
                 new TestRequest(GET, "/path")
@@ -108,7 +108,7 @@ public class BaseRequestTest {
     }
 
     @Test
-    public void requestEquals_PathAndVerb_differentVerb() {
+    void requestEquals_PathAndVerb_differentVerb() {
         assertNotEquals(
                 new TestRequest(GET, "/path"),
                 new TestRequest(HttpMethod.HEAD, "/path")
@@ -116,7 +116,7 @@ public class BaseRequestTest {
     }
 
     @Test
-    public void requestEquals_PathAndVerb_differentPath() {
+    void requestEquals_PathAndVerb_differentPath() {
         assertNotEquals(
                 new TestRequest(GET, "/path"),
                 new TestRequest(GET, "/derp")
@@ -124,7 +124,7 @@ public class BaseRequestTest {
     }
 
     @Test
-    public void reqeustEquals_Headers() {
+    void reqeustEquals_Headers() {
         assertEquals(
                 new TestRequest(of("Accept", "json")),
                 new TestRequest(of("Accept", "json"))
@@ -132,7 +132,7 @@ public class BaseRequestTest {
     }
 
     @Test
-    public void reqeustEquals_Headers_differentValues() {
+    void reqeustEquals_Headers_differentValues() {
         assertNotEquals(
                 new TestRequest(of("Accept", "json")),
                 new TestRequest(of("Accept", "xml"))
@@ -140,7 +140,7 @@ public class BaseRequestTest {
     }
 
     @Test
-    public void reqeustEquals_Headers_additionalValues() {
+    void reqeustEquals_Headers_additionalValues() {
         assertNotEquals(
                 new TestRequest(of("Accept", "json")),
                 new TestRequest(of("Accept", "json", "x-header", "cheese"))
@@ -148,14 +148,14 @@ public class BaseRequestTest {
     }
 
     @Test
-    public void canGetTimeOfRequest() {
+    void canGetTimeOfRequest() {
         TestRequest request = new TestRequest();
 
         assertTrue(ChronoUnit.MILLIS.between(request.getCreationTime(), Instant.now()) < 10);
     }
 
     @Test
-    public void canFreezeTimeForTests() {
+    void canFreezeTimeForTests() {
         Instant i = Instant.now();
         Util.freezeClock(i);
         TestRequest r1 = new TestRequest();

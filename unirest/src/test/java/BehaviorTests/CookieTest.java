@@ -26,21 +26,19 @@
 package BehaviorTests;
 
 import kong.unirest.Cookie;
-import kong.unirest.Cookies;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.apache.http.client.config.CookieSpecs;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CookieTest extends BddTest {
+class CookieTest extends BddTest {
 
     @Test
-    public void canSetCookie(){
+    void canSetCookie(){
         Unirest.get(MockServer.GET)
                 .cookie("flavor","snickerdoodle")
                 .cookie("size", "large")
@@ -51,7 +49,7 @@ public class CookieTest extends BddTest {
     }
 
     @Test
-    public void canSetAsCookie(){
+    void canSetAsCookie(){
         Unirest.get(MockServer.GET)
                 .cookie(new Cookie("flavor", "snickerdoodle"))
                 .cookie(new Cookie("size", "large"))
@@ -62,7 +60,7 @@ public class CookieTest extends BddTest {
     }
 
     @Test
-    public void canSetAsCookieCollection(){
+    void canSetAsCookieCollection(){
         Unirest.get(MockServer.GET)
                 .cookie(Arrays.asList(
                         new Cookie("flavor", "snickerdoodle"),
@@ -76,7 +74,7 @@ public class CookieTest extends BddTest {
 
 
     @Test
-    public void willManageCookiesByDefault() {
+    void willManageCookiesByDefault() {
         MockServer.expectCookie("JSESSIONID", "ABC123");
         Unirest.get(MockServer.GET).asEmpty();
         Unirest.get(MockServer.GET)
@@ -86,7 +84,7 @@ public class CookieTest extends BddTest {
     }
 
     @Test
-    public void canGetCookiesFromTheResponse() {
+    void canGetCookiesFromTheResponse() {
         MockServer.expectCookie("JSESSIONID", "ABC123");
         MockServer.expectCookie("color", "ruby");
 
@@ -97,7 +95,7 @@ public class CookieTest extends BddTest {
     }
 
     @Test
-    public void canGetUnicode() {
+    void canGetUnicode() {
         MockServer.expectCookie("nepali", "फनकी");
 
         HttpResponse response = Unirest.get(MockServer.GET).asEmpty();
@@ -106,7 +104,7 @@ public class CookieTest extends BddTest {
     }
 
     @Test
-    public void canGetValuesWithBadCharacters() {
+    void canGetValuesWithBadCharacters() {
         MockServer.expectCookie("odd", "1=2;3=4");
 
         HttpResponse response = Unirest.get(MockServer.GET).asEmpty();
@@ -115,7 +113,7 @@ public class CookieTest extends BddTest {
     }
 
     @Test
-    public void complicatedCookies(){
+    void complicatedCookies(){
         javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie("color", "blue");
         cookie.setDomain("localhost");
         cookie.setPath("/get");
@@ -137,7 +135,7 @@ public class CookieTest extends BddTest {
     }
 
     @Test
-    public void canTurnOffCookieManagement() {
+    void canTurnOffCookieManagement() {
         Unirest.config().enableCookieManagement(false);
         MockServer.expectCookie("JSESSIONID", "ABC123");
         Unirest.get(MockServer.GET).asEmpty();
@@ -148,7 +146,7 @@ public class CookieTest extends BddTest {
     }
 
     @Test
-    public void canSetCookieSpec() {
+    void canSetCookieSpec() {
         Unirest.config().cookieSpec(CookieSpecs.IGNORE_COOKIES);
 
         MockServer.expectCookie("JSESSIONID", "ABC123");
@@ -160,7 +158,7 @@ public class CookieTest extends BddTest {
     }
 
     @Test
-    public void doubleQuotedValues() {
+    void doubleQuotedValues() {
         MockServer.expectCookie(new javax.servlet.http.Cookie("foo", "\"bar\""));
 
         HttpResponse<RequestCapture> res = Unirest.get(MockServer.GET)

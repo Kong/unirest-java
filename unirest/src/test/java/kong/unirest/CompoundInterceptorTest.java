@@ -98,7 +98,7 @@ class CompoundInterceptorTest {
     @Test
     void willThrowIfNothingElse() {
         CompoundInterceptor compound = new CompoundInterceptor(
-                Arrays.asList()
+                Collections.emptyList()
         );
 
         RuntimeException e = new RuntimeException();

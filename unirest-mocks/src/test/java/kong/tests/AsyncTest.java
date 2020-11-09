@@ -31,7 +31,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AsyncTest extends Base {
+class AsyncTest extends Base {
+
     @Test
     void canExpectAsync() throws Exception {
         client.expect(HttpMethod.GET, path).thenReturn("Hey Ma");

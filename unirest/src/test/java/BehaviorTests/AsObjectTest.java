@@ -38,16 +38,16 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AsObjectTest extends BddTest {
+class AsObjectTest extends BddTest {
 
     @Test
-    public void basicJsonObjectMapperIsTheDefault() {
+    void basicJsonObjectMapperIsTheDefault() {
         Unirest.config().shutDown(true);
         assertThat(Unirest.config().getObjectMapper(), instanceOf(JsonObjectMapper.class));
     }
 
     @Test
-    public void basicJsonObjectMapperIsGoodEnough() {
+    void basicJsonObjectMapperIsGoodEnough() {
         Unirest.config().shutDown(true);
         MockServer.setJsonAsResponse(new Foo("bar"));
 
@@ -59,7 +59,7 @@ public class AsObjectTest extends BddTest {
     }
 
     @Test
-    public void whenNoBodyIsReturned() {
+    void whenNoBodyIsReturned() {
         HttpResponse<RequestCapture> i = Unirest.get(MockServer.NOBODY).asObject(RequestCapture.class);
 
         assertEquals(200, i.getStatus());
@@ -67,7 +67,7 @@ public class AsObjectTest extends BddTest {
     }
 
     @Test
-    public void canGetObjectResponse() {
+    void canGetObjectResponse() {
          Unirest.get(MockServer.GET)
                 .queryString("foo", "bar")
                 .asObject(RequestCapture.class)
@@ -76,7 +76,7 @@ public class AsObjectTest extends BddTest {
     }
 
     @Test
-    public void canGetObjectResponseAsync() throws Exception {
+    void canGetObjectResponseAsync() throws Exception {
         Unirest.get(MockServer.GET)
                 .queryString("foo", "bar")
                 .asObjectAsync(RequestCapture.class)
@@ -86,7 +86,7 @@ public class AsObjectTest extends BddTest {
     }
 
     @Test
-    public void canGetObjectResponseAsyncWithCallback() {
+    void canGetObjectResponseAsyncWithCallback() {
         Unirest.get(MockServer.GET)
                 .queryString("foo", "bar")
                 .asObjectAsync(RequestCapture.class, r -> {
@@ -99,7 +99,7 @@ public class AsObjectTest extends BddTest {
     }
 
     @Test
-    public void canPassAnObjectMapperAsPartOfARequest(){
+    void canPassAnObjectMapperAsPartOfARequest(){
         Unirest.config().setObjectMapper(null);
 
         TestingMapper mapper = new TestingMapper();
@@ -128,7 +128,7 @@ public class AsObjectTest extends BddTest {
                 .body(new Foo("Orange"))
                 .asObject(RequestCapture.class)
                 .getBody()
-                .asserBody("{\"bar\":\"Orange\"}");
+                .assertBody("{\"bar\":\"Orange\"}");
     }
 
     @Test
@@ -152,7 +152,7 @@ public class AsObjectTest extends BddTest {
     }
 
     @Test
-    public void ifTheObjectMapperFailsReturnEmptyAndAddToParsingError() {
+    void ifTheObjectMapperFailsReturnEmptyAndAddToParsingError() {
         HttpResponse<RequestCapture> request = Unirest.get(MockServer.INVALID_REQUEST)
                 .asObject(RequestCapture.class);
 
@@ -165,7 +165,7 @@ public class AsObjectTest extends BddTest {
     }
 
     @Test
-    public void ifTheObjectMapperFailsReturnEmptyAndAddToParsingErrorObGenericTypes() {
+    void ifTheObjectMapperFailsReturnEmptyAndAddToParsingErrorObGenericTypes() {
         HttpResponse<RequestCapture> request = Unirest.get(MockServer.INVALID_REQUEST)
                 .asObject(new GenericType<RequestCapture>() {});
 
@@ -177,7 +177,7 @@ public class AsObjectTest extends BddTest {
     }
 
     @Test
-    public void unirestExceptionsAreAlsoParseExceptions() {
+    void unirestExceptionsAreAlsoParseExceptions() {
         HttpResponse<RequestCapture> request = Unirest.get(MockServer.INVALID_REQUEST)
                 .asObject(new GenericType<RequestCapture>() {});
 
@@ -189,7 +189,7 @@ public class AsObjectTest extends BddTest {
     }
 
     @Test
-    public void canSetObjectMapperToFailOnUnknown() {
+    void canSetObjectMapperToFailOnUnknown() {
         com.fasterxml.jackson.databind.ObjectMapper jack = new com.fasterxml.jackson.databind.ObjectMapper();
         jack.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
 

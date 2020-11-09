@@ -35,10 +35,10 @@ import static kong.unirest.HttpMethod.POST;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class AssertTest extends Base {
+class AssertTest extends Base {
 
     @Test
-    public void canAssertANumberOfTimes() {
+    void canAssertANumberOfTimes() {
         Unirest.get(path).asEmpty();
         Unirest.get(path).asEmpty();
 
@@ -55,27 +55,27 @@ public class AssertTest extends Base {
     }
 
     @Test
-    public void noExpectationsAtAll() {
+    void noExpectationsAtAll() {
         Unirest.get(path).asEmpty();
         client.verifyAll();
 
     }
 
     @Test
-    public void noExpectation() {
+    void noExpectation() {
         client.expect(GET, otherPath);
         assertException(() -> client.verifyAll(),
                 "A expectation was never invoked! GET http://other\n");
     }
 
     @Test
-    public void noInvocationHappened() {
+    void noInvocationHappened() {
         assertException(() -> client.assertThat(GET, path),
                 "No Matching Invocation:: GET http://basic");
     }
 
     @Test
-    public void assertHeader() {
+    void assertHeader() {
         Unirest.get(path).header("monster", "grover").asEmpty();
 
         Assert expect = client.assertThat(GET, path);
@@ -86,7 +86,7 @@ public class AssertTest extends Base {
     }
 
     @Test
-    public void canSetHeaderExpectationOnExpects() {
+    void canSetHeaderExpectationOnExpects() {
         client.expect(GET, path).header("monster", "grover");
 
         assertException(() -> client.verifyAll(),
@@ -102,7 +102,7 @@ public class AssertTest extends Base {
 
 
     @Test
-    public void canExpectQueryParams() {
+    void canExpectQueryParams() {
         client.expect(GET, path).queryString("monster", "grover");
 
         Unirest.get(path).asEmpty();
@@ -115,7 +115,7 @@ public class AssertTest extends Base {
     }
 
     @Test
-    public void expectBody() {
+    void expectBody() {
         client.expect(POST, path)
                 .body("foo")
                 .thenReturn("bar");

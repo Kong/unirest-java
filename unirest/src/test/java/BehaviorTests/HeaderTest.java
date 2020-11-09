@@ -36,11 +36,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static kong.unirest.TestUtil.assertBasicAuth;
 import static kong.unirest.TestUtil.mapOf;
 
-public class HeaderTest extends BddTest {
+class HeaderTest extends BddTest {
+
     private String value = "one";
 
     @Test
-    public void contentLengthIsSetWithBodies() {
+    void contentLengthIsSetWithBodies() {
         Unirest.post(MockServer.POST)
                 .body("do do do do")
                 .asObject(RequestCapture.class)
@@ -49,7 +50,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void testHeadersOnGetRequests() {
+    void testHeadersOnGetRequests() {
         Unirest.get(MockServer.GET)
                 .header("user-agent", "hello-world")
                 .accept("application/cheese-wiz")
@@ -60,7 +61,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void testBasicAuth() {
+    void testBasicAuth() {
         Unirest.get(MockServer.GET)
                 .basicAuth("user", "password1!")
                 .asObject(RequestCapture.class)
@@ -70,7 +71,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void unicodeBasicAuth() {
+    void unicodeBasicAuth() {
         Unirest.get(MockServer.GET)
                 .basicAuth("こんにちは", "こんにちは")
                 .asObject(RequestCapture.class)
@@ -80,7 +81,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void testDefaultHeaders() {
+    void testDefaultHeaders() {
         Unirest.config().setDefaultHeader("X-Custom-Header", "hello");
         Unirest.config().setDefaultHeader("user-agent", "foobar");
 
@@ -103,7 +104,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void testCaseInsensitiveHeaders() {
+    void testCaseInsensitiveHeaders() {
         GetRequest request = Unirest.get(MockServer.GET)
                 .header("Name", "Marco");
 
@@ -126,7 +127,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void headersOnMultipart() {
+    void headersOnMultipart() {
         Unirest.post(MockServer.POST)
                 .field("one","a")
                 .accept("application/json")
@@ -143,7 +144,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void canPassHeadersAsMap() {
+    void canPassHeadersAsMap() {
         Unirest.post(MockServer.POST)
                 .headers(mapOf("one", "foo", "two", "bar", "three", null))
                 .asObject(RequestCapture.class)
@@ -154,7 +155,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void basicAuthOnPosts() {
+    void basicAuthOnPosts() {
         Unirest.post(MockServer.POST)
                 .basicAuth("user", "test")
                 .asObject(RequestCapture.class)
@@ -164,7 +165,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void canSetDefaultBasicAuth() {
+    void canSetDefaultBasicAuth() {
         Unirest.config().setDefaultBasicAuth("bob", "pass");
         Unirest.config().setDefaultBasicAuth("user", "test");
 
@@ -176,7 +177,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void canOverrideDefaultBasicAuth() {
+    void canOverrideDefaultBasicAuth() {
         Unirest.config().setDefaultBasicAuth("bob", "pass");
 
         Unirest.post(MockServer.POST)
@@ -194,7 +195,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void willNotCacheBasicAuth() {
+    void willNotCacheBasicAuth() {
         Unirest.get(MockServer.GET)
                 .basicAuth("george","guitar")
                 .asObject(RequestCapture.class)
@@ -214,7 +215,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void willNotCacheHeadersAccrossRequests() {
+    void willNotCacheHeadersAccrossRequests() {
         Unirest.get(MockServer.GET)
                 .header("foo", "bar")
                 .asObject(RequestCapture.class)
@@ -234,7 +235,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void doesNotCacheAcrossTypes(){
+    void doesNotCacheAcrossTypes(){
         Unirest.get(MockServer.GET)
                 .basicAuth("user1","pass1")
                 .asObject(RequestCapture.class)
@@ -249,7 +250,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test @Disabled
-    public void doesNotCacheAuthAcrossDomains(){
+    void doesNotCacheAuthAcrossDomains(){
         Unirest.get(MockServer.GET)
                 .basicAuth("user1","pass1")
                 .asObject(RequestCapture.class)
@@ -266,7 +267,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test //https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
-    public void canHaveTheSameHeaderAddedTwice() {
+    void canHaveTheSameHeaderAddedTwice() {
         Unirest.config().setDefaultHeader("x-fruit", "orange");
 
         Unirest.get(MockServer.GET)
@@ -279,7 +280,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void canReplaceAHeader() {
+    void canReplaceAHeader() {
         Unirest.config().setDefaultHeader("foo", "bar");
         Unirest.get(MockServer.GET)
                 .headerReplace("foo", "qux")
@@ -293,7 +294,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void setVsAddDefaultHeaders() {
+    void setVsAddDefaultHeaders() {
         Unirest.config().setDefaultHeader("foo", "bar")
                         .setDefaultHeader("foo", "qux")
                         .addDefaultHeader("fruit", "mango")
@@ -316,7 +317,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void canSetAHeaderAsASupplier() {
+    void canSetAHeaderAsASupplier() {
         Unirest.config().setDefaultHeader("trace", () -> value);
 
         Unirest.get(MockServer.GET)
@@ -333,7 +334,7 @@ public class HeaderTest extends BddTest {
     }
 
     @Test
-    public void nullTests() {
+    void nullTests() {
         Unirest.get(MockServer.GET)
                 .header("foo","bar")
                 .headers(null)

@@ -30,12 +30,12 @@ import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-public class JacksonObjectMapperTest {
+class JacksonObjectMapperTest {
 
-    private JacksonObjectMapper om = new JacksonObjectMapper();
+    private final JacksonObjectMapper om = new JacksonObjectMapper();
 
     @Test
-    public void jsonPatch() throws JSONException {
+    void jsonPatch() throws JSONException {
         JsonPatch patch = new JsonPatch();
         patch.add("/foo", "bar");
         patch.add("/baz", "qux");
@@ -49,7 +49,7 @@ public class JacksonObjectMapperTest {
     }
 
     @Test
-    public void jsonPatchInRequestCapture() throws JSONException {
+    void jsonPatchInRequestCapture() throws JSONException {
         JsonPatch patch = new JsonPatch();
         patch.add("/foo", "bar");
         patch.add("/baz", "qux");

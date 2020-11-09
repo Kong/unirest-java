@@ -30,7 +30,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class MetricsTest extends Base {
+class MetricsTest extends Base {
+
     boolean wasCalled = false;
 
     @Test

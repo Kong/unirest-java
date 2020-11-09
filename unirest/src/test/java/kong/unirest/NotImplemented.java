@@ -25,5 +25,5 @@
 
 package kong.unirest;
 
-public class NotImplimented extends RuntimeException {
+public class NotImplemented extends RuntimeException {
 }

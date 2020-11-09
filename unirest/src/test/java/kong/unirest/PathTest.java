@@ -29,16 +29,16 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PathTest {
+class PathTest {
     @Test
-    public void pathIsTheSameIfUrlIs() {
+    void pathIsTheSameIfUrlIs() {
         Path p = new Path("https://localhost/apples", null);
         Path o = new Path("https://localhost/apples", null);
         assertEquals(p, o);
     }
 
     @Test
-    public void pathsWithDifferentParams() {
+    void pathsWithDifferentParams() {
         String raw = "http://somewhere/fruits/{id}";
         Path q = new Path(raw, null);
         q.param("id", "apple");
@@ -52,7 +52,7 @@ public class PathTest {
     }
 
     @Test
-    public void queryParamsMatter() {
+    void queryParamsMatter() {
         String raw = "http://somewhere/fruits/}";
         Path q = new Path(raw, null);
         q.queryString("id", "apple");
@@ -66,12 +66,12 @@ public class PathTest {
     }
 
     @Test
-    public void canBuildUsingDefaultBase() {
+    void canBuildUsingDefaultBase() {
         assertEquals("http://somwhere/fruit", new Path("/fruit","http://somwhere").toString());
     }
 
     @Test
-    public void willNotAddBaseIfPrimaryPathIsFull() {
+    void willNotAddBaseIfPrimaryPathIsFull() {
         assertEquals("http://somwhere/fruit", new Path("http://somwhere/fruit","http://elsewhere/rocks").toString());
     }
 }

@@ -46,7 +46,7 @@ public class UploadProgressTest extends BddTest {
     }
 
     @Test
-    public void canAddUploadProgress() {
+    void canAddUploadProgress() {
         Unirest.post(MockServer.POST)
                 .field("spidey", monitor.spidey)
                 .uploadMonitor(monitor)
@@ -56,7 +56,7 @@ public class UploadProgressTest extends BddTest {
     }
 
     @Test
-    public void canAddUploadProgressAsync() throws Exception {
+    void canAddUploadProgressAsync() throws Exception {
         Unirest.post(MockServer.POST)
                 .field("spidey", monitor.spidey)
                 .uploadMonitor(monitor)
@@ -66,7 +66,7 @@ public class UploadProgressTest extends BddTest {
     }
 
     @Test
-    public void canKeepTrackOfMultipleFiles() {
+    void canKeepTrackOfMultipleFiles() {
         Unirest.post(MockServer.POST)
                 .field("spidey", monitor.spidey)
                 .field("other", rezFile("/test.txt"))
@@ -78,7 +78,7 @@ public class UploadProgressTest extends BddTest {
     }
 
     @Test
-    public void canMonitorIfPassedAsInputStream() throws Exception {
+    void canMonitorIfPassedAsInputStream() throws Exception {
         Unirest.post(MockServer.POST)
                 .field("spidey", new FileInputStream(monitor.spidey))
                 .uploadMonitor(monitor)

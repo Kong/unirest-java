@@ -30,28 +30,32 @@ import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.nio.client.HttpAsyncClient;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UtilTest {
+class UtilTest {
 
     @Test
-    public void canCast() {
+    void canCast() {
         Object foo = new Foo(){};
 
-        assertEquals(foo, Util.tryCast(foo, Foo.class).get());
-        assertEquals(false, Util.tryCast("foo", Foo.class).isPresent());
-        assertEquals(false, Util.tryCast(null, Foo.class).isPresent());
-        assertEquals(true, Util.tryCast(new Bar(), Foo.class).isPresent());
+        Optional<Foo> fooCast = Util.tryCast(foo, Foo.class);
+        assertTrue(fooCast.isPresent());
+        assertEquals(foo, fooCast.get());
+        assertFalse(Util.tryCast("foo", Foo.class).isPresent());
+        assertFalse(Util.tryCast(null, Foo.class).isPresent());
+        assertTrue(Util.tryCast(new Bar(), Foo.class).isPresent());
     }
 
     @Test
-    public void canCastAAsyncClient() {
+    void canCastAAsyncClient() {
         HttpAsyncClient build = HttpAsyncClientBuilder.create().build();
 
-        assertEquals(true, Util.tryCast(build, CloseableHttpAsyncClient.class).isPresent());
+        assertTrue(Util.tryCast(build, CloseableHttpAsyncClient.class).isPresent());
     }
 
-    public abstract class Foo {}
+    public abstract static class Foo {}
 
     public class Bar extends Foo {}
 }

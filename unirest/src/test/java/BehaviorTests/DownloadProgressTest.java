@@ -34,7 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class DownloadProgressTest extends BddTest {
+class DownloadProgressTest extends BddTest {
     @TempDir
     File targeFolder;
 
@@ -48,7 +48,7 @@ public class DownloadProgressTest extends BddTest {
     }
 
     @Test
-    public void canAddUploadProgress() {
+    void canAddUploadProgress() {
         Unirest.get(MockServer.BINARYFILE)
                 .downloadMonitor(monitor)
                 .asFile(targeFolder.getPath() + "/spidey.jpg");
@@ -57,7 +57,7 @@ public class DownloadProgressTest extends BddTest {
     }
 
     @Test
-    public void canAddUploadProgressAsync() throws Exception {
+    void canAddUploadProgressAsync() throws Exception {
         Unirest.get(MockServer.BINARYFILE)
                 .downloadMonitor(monitor)
                 .asFileAsync(targeFolder.getPath() + "/spidey.jpg")

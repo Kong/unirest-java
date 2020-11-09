@@ -34,10 +34,10 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AsStringTest extends BddTest {
+class AsStringTest extends BddTest {
 
     @Test
-    public void whenNoBodyIsReturned() {
+    void whenNoBodyIsReturned() {
         HttpResponse<String> i = Unirest.get(MockServer.NOBODY).asString();
 
         assertEquals(200, i.getStatus());
@@ -45,7 +45,7 @@ public class AsStringTest extends BddTest {
     }
 
     @Test
-    public void canParseGzippedStringResponse() {
+    void canParseGzippedStringResponse() {
         HttpResponse<String> i = Unirest.get(MockServer.GZIP)
                 .queryString("foo", "bar")
                 .asString();
@@ -56,7 +56,7 @@ public class AsStringTest extends BddTest {
     }
 
     @Test
-    public void canParseGzippedResponseAsync() throws Exception {
+    void canParseGzippedResponseAsync() throws Exception {
         HttpResponse<String> i = Unirest.get(MockServer.GZIP)
                 .queryString("foo", "bar")
                 .asStringAsync().get();
@@ -67,7 +67,7 @@ public class AsStringTest extends BddTest {
     }
 
     @Test
-    public void canGetBinaryResponse() {
+    void canGetBinaryResponse() {
         HttpResponse<String> i = Unirest.get(MockServer.GET)
                 .queryString("foo", "bar")
                 .asString();
@@ -77,7 +77,7 @@ public class AsStringTest extends BddTest {
     }
 
     @Test
-    public void canGetBinaryResponseAsync() throws Exception {
+    void canGetBinaryResponseAsync() throws Exception {
         CompletableFuture<HttpResponse<String>> r = Unirest.get(MockServer.GET)
                 .queryString("foo", "bar")
                 .asStringAsync();
@@ -87,7 +87,7 @@ public class AsStringTest extends BddTest {
     }
 
     @Test
-    public void canGetBinaryResponseAsyncWithCallback() {
+    void canGetBinaryResponseAsyncWithCallback() {
         Unirest.get(MockServer.GET)
                 .queryString("foo", "bar")
                 .asStringAsync(r -> {
@@ -100,14 +100,14 @@ public class AsStringTest extends BddTest {
     }
 
     @Test
-    public void unicodeResponse() {
+    void unicodeResponse() {
         MockServer.setStringResponse("ěščřžýáíé");
 
         assertEquals("ěščřžýáíé", Unirest.get(MockServer.GET).asString().getBody());
     }
 
     @Test
-    public void unicodeResponseAsync() throws Exception {
+    void unicodeResponseAsync() throws Exception {
         MockServer.setStringResponse("ěščřžýáíé");
 
         Unirest.get(MockServer.GET)
@@ -120,7 +120,7 @@ public class AsStringTest extends BddTest {
     }
 
     @Test
-    public void canSetExpectedCharsetOfResponse() {
+    void canSetExpectedCharsetOfResponse() {
         HttpResponse<String> response = Unirest.get(MockServer.WINDOWS_LATIN_1_FILE)
                 .responseEncoding("windows-1250")
                 .asString();
@@ -130,7 +130,7 @@ public class AsStringTest extends BddTest {
     }
 
     @Test
-    public void canSetDefaultCharsetOfResponse() {
+    void canSetDefaultCharsetOfResponse() {
         Unirest.config().setDefaultResponseEncoding("windows-1250");
 
         HttpResponse<String> response = Unirest.get(MockServer.WINDOWS_LATIN_1_FILE)

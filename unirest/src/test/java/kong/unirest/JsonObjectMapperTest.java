@@ -41,7 +41,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class JsonObjectMapperTest {
 
-
     JsonObjectMapper om = new JsonObjectMapper();
 
     @BeforeEach
@@ -133,6 +132,7 @@ class JsonObjectMapperTest {
     }
 
     @Test
+    @SuppressWarnings("MagicConstant")
     void canSerializeCalendar_no_time() {
         Calendar cal = GregorianCalendar.getInstance();
         cal.set(1985, 6, 3, 0, 0, 0);
@@ -260,7 +260,7 @@ class JsonObjectMapperTest {
         assertEquals("{\"test\":\"it's a && b || c + 1!?\"}", res);
     }
 
-    private class TestString {
+    private static class TestString {
         private String test;
     }
     private TestDates getTestDate(String key, Object date) {
@@ -273,6 +273,7 @@ class JsonObjectMapperTest {
         return object.toString();
     }
 
+    @SuppressWarnings("SameParameterValue")
     private TestDates getDate(String date) {
         Date from = Date.from(ZonedDateTime.parse(date).withFixedOffsetZone().toInstant());
         return getDate(from);
@@ -284,6 +285,7 @@ class JsonObjectMapperTest {
         return test;
     }
 
+    @SuppressWarnings("SameParameterValue")
     private TestDates getCalendar(String date) {
         Calendar from = GregorianCalendar.from(ZonedDateTime.parse(date));
         return getCalendar(from);

@@ -29,10 +29,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class HttpMethodTest {
+class HttpMethodTest {
 
     @Test
-    public void equalsTest() {
+    void equalsTest() {
         assertEquals(HttpMethod.valueOf("GET"), HttpMethod.valueOf("GET"));
         assertEquals(HttpMethod.GET, HttpMethod.GET);
         assertNotEquals(HttpMethod.valueOf("GET"), HttpMethod.valueOf("PUT"));
@@ -41,7 +41,7 @@ public class HttpMethodTest {
 
 
     @Test
-    public void notCaseSensative() {
+    void notCaseSensitive() {
         assertEquals(HttpMethod.valueOf("GET"), HttpMethod.valueOf("get"));
     }
 }

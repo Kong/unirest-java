@@ -35,9 +35,10 @@ import java.nio.charset.StandardCharsets;
 import static kong.unirest.TestUtil.assertException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class UniBodyPostingTest extends BddTest {
+class UniBodyPostingTest extends BddTest {
+
     @Test
-    public void testDefaults_String(){
+    void testDefaults_String(){
         Unirest.post(MockServer.POST)
                 .body("foo")
                 .asObject(RequestCapture.class)
@@ -46,31 +47,31 @@ public class UniBodyPostingTest extends BddTest {
     }
 
     @Test
-    public void canSetCharsetOfBody(){
+    void canSetCharsetOfBody(){
         Unirest.post(MockServer.POST)
                 .charset(StandardCharsets.US_ASCII)
                 .body("foo")
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertContentType("text/plain; charset=US-ASCII")
-                .asserBody("foo")
+                .assertBody("foo")
                 .assertCharset(StandardCharsets.US_ASCII);
     }
 
     @Test
-    public void canSetCharsetOfBodyAfterMovingToBody(){
+    void canSetCharsetOfBodyAfterMovingToBody(){
         Unirest.post(MockServer.POST)
                 .body("foo")
                 .charset(StandardCharsets.US_ASCII)
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertContentType("text/plain; charset=US-ASCII")
-                .asserBody("foo")
+                .assertBody("foo")
                 .assertCharset(StandardCharsets.US_ASCII);
     }
 
     @Test
-    public void testPostRawBody() {
+    void testPostRawBody() {
         String sourceString = "'\"@こんにちは-test-123-" + Math.random();
         byte[] sentBytes = sourceString.getBytes();
 
@@ -78,17 +79,17 @@ public class UniBodyPostingTest extends BddTest {
                 .body(sentBytes)
                 .asObject(RequestCapture.class)
                 .getBody()
-                .asserBody(sourceString);
+                .assertBody(sourceString);
     }
 
     @Test
-    public void testAsyncCustomContentType() {
+    void testAsyncCustomContentType() {
         Unirest.post(MockServer.POST)
                 .header("accept", "application/json")
                 .header("Content-Type", "application/json")
                 .body("{\"hello\":\"world\"}")
                 .asJsonAsync(new MockCallback<>(this, r -> parse(r)
-                        .asserBody("{\"hello\":\"world\"}")
+                        .assertBody("{\"hello\":\"world\"}")
                         .assertHeader("Content-Type", "application/json"))
                 );
 
@@ -97,7 +98,7 @@ public class UniBodyPostingTest extends BddTest {
 
 
     @Test
-    public void postAPojoObjectUsingTheMapper() {
+    void postAPojoObjectUsingTheMapper() {
         GetResponse postResponseMock = new GetResponse();
         postResponseMock.setUrl(MockServer.POST);
 
@@ -107,21 +108,21 @@ public class UniBodyPostingTest extends BddTest {
                 .body(postResponseMock)
                 .asObject(RequestCapture.class)
                 .getBody()
-                .asserBody("{\"url\":\"http://localhost:4567/post\"}");
+                .assertBody("{\"url\":\"http://localhost:4567/post\"}");
     }
 
     @Test
-    public void testDeleteBody() {
+    void testDeleteBody() {
         String body = "{\"jsonString\":{\"members\":\"members1\"}}";
         Unirest.delete(MockServer.DELETE)
                 .body(body)
                 .asObject(RequestCapture.class)
                 .getBody()
-                .asserBody(body);
+                .assertBody(body);
     }
 
     @Test
-    public void postBodyAsJson() {
+    void postBodyAsJson() {
         JSONObject body = new JSONObject();
         body.put("krusty","krab");
 
@@ -129,11 +130,11 @@ public class UniBodyPostingTest extends BddTest {
                 .body(body)
                 .asObject(RequestCapture.class)
                 .getBody()
-                .asserBody("{\"krusty\":\"krab\"}");
+                .assertBody("{\"krusty\":\"krab\"}");
     }
 
     @Test
-    public void postBodyAsJsonArray() {
+    void postBodyAsJsonArray() {
         JSONArray body = new JSONArray();
         body.put(0, "krusty");
         body.put(1, "krab");
@@ -142,22 +143,22 @@ public class UniBodyPostingTest extends BddTest {
                 .body(body)
                 .asObject(RequestCapture.class)
                 .getBody()
-                .asserBody("[\"krusty\",\"krab\"]");
+                .assertBody("[\"krusty\",\"krab\"]");
     }
 
     @Test
-    public void postBodyAsJsonNode() {
+    void postBodyAsJsonNode() {
         JsonNode body = new JsonNode("{\"krusty\":\"krab\"}");
 
         Unirest.post(MockServer.POST)
                 .body(body)
                 .asObject(RequestCapture.class)
                 .getBody()
-                .asserBody("{\"krusty\":\"krab\"}");
+                .assertBody("{\"krusty\":\"krab\"}");
     }
 
     @Test
-    public void cantPostObjectWithoutObjectMapper(){
+    void cantPostObjectWithoutObjectMapper(){
         Unirest.config().setObjectMapper(null);
 
         assertException(() -> Unirest.post(MockServer.POST).body(new Foo("die")),

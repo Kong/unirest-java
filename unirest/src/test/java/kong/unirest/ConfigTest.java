@@ -51,7 +51,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.doThrow;
 
 @ExtendWith(MockitoExtension.class)
-public class ConfigTest {
+class ConfigTest {
 
     @Mock
     private CloseableHttpClient httpc;
@@ -68,27 +68,27 @@ public class ConfigTest {
     private Config config;
 
     @Test
-    public void shouldKeepConnectionTimeOutDefault(){
+    void shouldKeepConnectionTimeOutDefault(){
         assertEquals(Config.DEFAULT_CONNECT_TIMEOUT, config.getConnectionTimeout());
     }
 
     @Test
-    public void shouldKeepSocketTimeoutDefault(){
+    void shouldKeepSocketTimeoutDefault(){
         assertEquals(Config.DEFAULT_SOCKET_TIMEOUT, config.getSocketTimeout());
     }
 
     @Test
-    public void shouldKeepMaxTotalDefault(){
+    void shouldKeepMaxTotalDefault(){
         assertEquals(Config.DEFAULT_MAX_CONNECTIONS, config.getMaxConnections());
     }
 
     @Test
-    public void shouldKeepMaxPerRouteDefault(){
+    void shouldKeepMaxPerRouteDefault(){
         assertEquals(Config.DEFAULT_MAX_PER_ROUTE, config.getMaxPerRoutes());
     }
 
     @Test
-    public void onceTheConfigIsRunningYouCannotChangeConfig(){
+    void onceTheConfigIsRunningYouCannotChangeConfig(){
         config.httpClient(mock(HttpClient.class));
         config.asyncClient(mock(HttpAsyncClient.class));
 
@@ -102,7 +102,7 @@ public class ConfigTest {
     }
 
     @Test
-    public void willNotRebuildIfNotClosableAsyncClient() {
+    void willNotRebuildIfNotClosableAsyncClient() {
         HttpAsyncClient c = mock(HttpAsyncClient.class);
         config.asyncClient(c);
 
@@ -111,12 +111,12 @@ public class ConfigTest {
     }
 
     @Test
-    public void willRebuildIfEmpty() {
+    void willRebuildIfEmpty() {
         assertSame(config.getAsyncClient(), config.getAsyncClient());
     }
 
     @Test
-    public void willRebuildIfClosableAndStopped() {
+    void willRebuildIfClosableAndStopped() {
         CloseableHttpAsyncClient c = mock(CloseableHttpAsyncClient.class);
         when(c.isRunning()).thenReturn(false);
 
@@ -126,7 +126,7 @@ public class ConfigTest {
     }
 
     @Test
-    public void testShutdown() throws IOException {
+    void testShutdown() throws IOException {
         when(asyncClient.isRunning()).thenReturn(true);
 
         Unirest.config()
@@ -142,7 +142,7 @@ public class ConfigTest {
     }
 
     @Test
-    public void settingTTl() {
+    void settingTTl() {
         assertEquals(-1, config.getTTL());
 
         assertEquals(42, config.connectionTTL(42, TimeUnit.MILLISECONDS).getTTL());
@@ -153,7 +153,7 @@ public class ConfigTest {
     }
 
     @Test
-    public void willPowerThroughErrors() throws IOException {
+    void willPowerThroughErrors() throws IOException {
         when(asyncClient.isRunning()).thenReturn(true);
         doThrow(new IOException("1")).when(httpc).close();
         doThrow(new RuntimeException("2")).when(clientManager).close();
@@ -179,7 +179,7 @@ public class ConfigTest {
     }
 
     @Test
-    public void doesNotBombOnNullOptions() throws IOException {
+    void doesNotBombOnNullOptions() throws IOException {
         when(asyncClient.isRunning()).thenReturn(true);
 
         Unirest.config()
@@ -193,7 +193,7 @@ public class ConfigTest {
     }
 
     @Test
-    public void ifTheNextAsyncClientThatIsReturnedIsAlsoOffThrowAnException(){
+    void ifTheNextAsyncClientThatIsReturnedIsAlsoOffThrowAnException(){
         AsyncClient c = mock(AsyncClient.class);
         when(c.isRunning()).thenReturn(false);
         config.asyncClient(g -> c);
@@ -205,7 +205,7 @@ public class ConfigTest {
     }
 
     @Test
-    public void willNotRebuildIfRunning() {
+    void willNotRebuildIfRunning() {
         CloseableHttpAsyncClient c = mock(CloseableHttpAsyncClient.class);
         when(c.isRunning()).thenReturn(true);
 
@@ -215,7 +215,7 @@ public class ConfigTest {
     }
 
     @Test
-    public void provideYourOwnClientBuilder() {
+    void provideYourOwnClientBuilder() {
         Client cli = mock(Client.class);
 
         config.httpClient(c -> cli);
@@ -224,14 +224,14 @@ public class ConfigTest {
     }
 
     @Test
-    public void canSignalForShutdownHook() {
+    void canSignalForShutdownHook() {
         assertFalse(config.shouldAddShutdownHook());
         config.addShutdownHook(true);
         assertTrue(config.shouldAddShutdownHook());
     }
 
     @Test
-    public void canDisableGZipencoding() {
+    void canDisableGZipencoding() {
         assertTrue(config.isRequestCompressionOn());
         config.requestCompression(false);
         assertFalse(config.isRequestCompressionOn());
@@ -239,14 +239,14 @@ public class ConfigTest {
     }
 
     @Test
-    public void canDisableAuthRetry() {
+    void canDisableAuthRetry() {
         assertTrue(config.isAutomaticRetries());
         config.automaticRetries(false);
         assertFalse(config.isAutomaticRetries());
     }
 
     @Test
-    public void provideYourOwnAsyncClientBuilder() {
+    void provideYourOwnAsyncClientBuilder() {
         AsyncClient cli = mock(AsyncClient.class);
         when(cli.isRunning()).thenReturn(true);
 
@@ -256,7 +256,7 @@ public class ConfigTest {
     }
 
     @Test
-    public void canSetProxyViaSetter() {
+    void canSetProxyViaSetter() {
         config.proxy(new Proxy("localhost", 8080, "ryan", "password"));
         assertProxy("localhost", 8080, "ryan", "password");
 
@@ -268,7 +268,7 @@ public class ConfigTest {
     }
 
     @Test
-    public void cannotConfigASslContextIfAKeystoreIsPresent() {
+    void cannotConfigASslContextIfAKeystoreIsPresent() {
         KeyStore store = mock(KeyStore.class);
         SSLContext context = mock(SSLContext.class);
 
@@ -280,7 +280,7 @@ public class ConfigTest {
     }
 
     @Test
-    public void cannotConfigAKeyStoreIfASSLContextIsPresent() {
+    void cannotConfigAKeyStoreIfASSLContextIsPresent() {
         KeyStore store = mock(KeyStore.class);
         SSLContext context = mock(SSLContext.class);
 
@@ -296,14 +296,14 @@ public class ConfigTest {
     }
 
     @Test
-    public void isRunningIfStandardClientIsRunning() {
+    void isRunningIfStandardClientIsRunning() {
         assertFalse(config.isRunning());
         config.getClient();
         assertTrue(config.isRunning());
     }
 
     @Test
-    public void isRunningIfAsyncClientIsRunning() {
+    void isRunningIfAsyncClientIsRunning() {
         assertFalse(config.isRunning());
         config.getAsyncClient();
         assertTrue(config.isRunning());

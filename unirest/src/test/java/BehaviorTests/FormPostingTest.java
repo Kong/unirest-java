@@ -36,10 +36,10 @@ import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.rezFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class FormPostingTest extends BddTest {
+class FormPostingTest extends BddTest {
 
     @Test
-    public void testFormFields() {
+    void testFormFields() {
         Unirest.post(MockServer.POST)
                 .header("accept", "application/json")
                 .field("param1", "value1")
@@ -52,7 +52,7 @@ public class FormPostingTest extends BddTest {
     }
 
     @Test
-    public void formPostAsync() {
+    void formPostAsync() {
         Unirest.post(MockServer.POST)
                 .header("accept", "application/json")
                 .field("param1", "value1")
@@ -68,7 +68,7 @@ public class FormPostingTest extends BddTest {
     }
 
     @Test
-    public void testAsyncCustomContentTypeAndFormParams() {
+    void testAsyncCustomContentTypeAndFormParams() {
         Unirest.post(MockServer.POST)
                 .header("accept", "application/json")
                 .header("Content-Type", "application/x-www-form-urlencoded")
@@ -84,7 +84,7 @@ public class FormPostingTest extends BddTest {
     }
 
     @Test
-    public void testPostArray() {
+    void testPostArray() {
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
                 .field("name", "Tom")
@@ -96,7 +96,7 @@ public class FormPostingTest extends BddTest {
     }
 
     @Test
-    public void testPostUTF8() {
+    void testPostUTF8() {
         Unirest.post(MockServer.POST)
                 .header("accept", "application/json")
                 .field("param3", "こんにちは")
@@ -107,7 +107,7 @@ public class FormPostingTest extends BddTest {
     }
 
     @Test
-    public void testPostCollection() {
+    void testPostCollection() {
         Unirest.post(MockServer.POST)
                 .field("name", asList("Mark", "Tom"))
                 .asObject(RequestCapture.class)
@@ -118,7 +118,7 @@ public class FormPostingTest extends BddTest {
     }
 
     @Test
-    public void nullMapDoesntBomb() {
+    void nullMapDoesntBomb() {
         Unirest.post(MockServer.POST)
                 .queryString("foo","bar")
                 .fields(null)
@@ -129,7 +129,7 @@ public class FormPostingTest extends BddTest {
     }
 
     @Test
-    public void testDelete() {
+    void testDelete() {
         Unirest.delete(MockServer.DELETE)
                 .field("name", "mark")
                 .field("foo", "bar")
@@ -141,7 +141,7 @@ public class FormPostingTest extends BddTest {
     }
 
     @Test
-    public void testChangingEncodingToForms(){
+    void testChangingEncodingToForms(){
         Unirest.post(MockServer.POST)
                 .charset(StandardCharsets.US_ASCII)
                 .field("foo", "bar")
@@ -153,7 +153,7 @@ public class FormPostingTest extends BddTest {
     }
 
     @Test
-    public void canNotIncludeCharset(){
+    void canNotIncludeCharset(){
         Unirest.post(MockServer.POST)
                 .noCharset()
                 .field("foo", "bar")
@@ -163,7 +163,7 @@ public class FormPostingTest extends BddTest {
     }
 
     @Test
-    public void testChangingEncodingAfterMovingToForm(){
+    void testChangingEncodingAfterMovingToForm(){
         Unirest.post(MockServer.POST)
                 .field("foo", "bar")
                 .charset(StandardCharsets.US_ASCII)

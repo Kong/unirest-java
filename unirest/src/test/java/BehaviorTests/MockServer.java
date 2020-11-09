@@ -41,8 +41,6 @@ import java.io.FileInputStream;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static spark.Spark.*;
 
@@ -134,11 +132,10 @@ public class MockServer {
 		sparks.put("pathInfo()", request.pathInfo());
 		sparks.put("port()", String.valueOf(request.port()));
 		sparks.put("protocol()", request.protocol());
-		sparks.put("requestMethod()", request.requestMethod());
 		sparks.put("scheme()", request.scheme());
 		sparks.put("servletPath()", request.servletPath());
 		sparks.put("requestMethod()", request.requestMethod());
-		sparks.put("splat()", Stream.of(request.splat()).collect(Collectors.joining(" | ")));
+		sparks.put("splat()", String.join(" | ", request.splat()));
 		sparks.put("uri()", request.uri());
 		sparks.put("url()", request.url());
 		sparks.put("userAgent()", request.userAgent());
@@ -258,10 +255,6 @@ public class MockServer {
 
 	public static void expectedPages(int expected) {
 		pages = expected;
-	}
-
-	public static void main(String[] args){
-
 	}
 
 	public static void expectCookie(String name, String value) {

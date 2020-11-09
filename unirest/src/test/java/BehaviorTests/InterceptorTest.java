@@ -46,10 +46,10 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class InterceptorTest extends BddTest {
+class InterceptorTest extends BddTest {
 
     private UniInterceptor interceptor;
-    private String  ioErrorMessage = "Something horrible happened";;
+    private final String ioErrorMessage = "Something horrible happened";;
 
     @BeforeEach
     public void setUp() {
@@ -58,7 +58,7 @@ public class InterceptorTest extends BddTest {
     }
 
     @Test
-    public void canAddInterceptor() {
+    void canAddInterceptor() {
         Unirest.config().interceptor(interceptor);
         Unirest.get(MockServer.GET).asObject(RequestCapture.class);
 
@@ -67,7 +67,7 @@ public class InterceptorTest extends BddTest {
     }
 
     @Test
-    public void canAddTwoInterceptor() {
+    void canAddTwoInterceptor() {
         Unirest.config().interceptor(interceptor);
         Unirest.config().interceptor(new UniInterceptor("fruit", "grapes"));
         Unirest.get(MockServer.GET).asObject(RequestCapture.class);
@@ -77,7 +77,7 @@ public class InterceptorTest extends BddTest {
     }
 
     @Test
-    public void canAddInterceptorToAsync() throws ExecutionException, InterruptedException {
+    void canAddInterceptorToAsync() throws ExecutionException, InterruptedException {
         Unirest.config().interceptor(interceptor);
 
         Unirest.get(MockServer.GET)
@@ -88,7 +88,7 @@ public class InterceptorTest extends BddTest {
     }
 
     @Test
-    public void totalFailure() throws Exception {
+    void totalFailure() throws Exception {
         Unirest.config().httpClient(getFailureClient()).interceptor(interceptor);
 
         TestUtil.assertException(() -> Unirest.get(MockServer.GET).asEmpty(),
@@ -97,7 +97,7 @@ public class InterceptorTest extends BddTest {
     }
 
     @Test
-    public void canReturnEmptyResultRatherThanThrow() throws Exception {
+    void canReturnEmptyResultRatherThanThrow() throws Exception {
         Unirest.config().httpClient(getFailureClient()).interceptor(interceptor);
         interceptor.failResponse = true;
 
@@ -108,7 +108,7 @@ public class InterceptorTest extends BddTest {
     }
 
     @Test
-    public void totalAsyncFailure() throws Exception {
+    void totalAsyncFailure() throws Exception {
         Unirest.config().addInterceptor((r, c) -> {
             throw new IOException(ioErrorMessage);
         }).interceptor(interceptor);
@@ -119,7 +119,7 @@ public class InterceptorTest extends BddTest {
     }
 
     @Test
-    public void totalAsyncFailure_Recovery() throws Exception {
+    void totalAsyncFailure_Recovery() throws Exception {
         interceptor.failResponse = true;
         Unirest.config().addInterceptor((r, c) -> {
             throw new IOException(ioErrorMessage);
@@ -139,7 +139,7 @@ public class InterceptorTest extends BddTest {
     }
 
     @Test @Deprecated
-    public void canAddApacheInterceptor() {
+    void canAddApacheInterceptor() {
         Unirest.config().addInterceptor(new TestInterceptor());
 
         Unirest.get(MockServer.GET)
@@ -149,7 +149,7 @@ public class InterceptorTest extends BddTest {
     }
 
     @Test @Deprecated
-    public void canAddApacheInterceptorToAsync() throws ExecutionException, InterruptedException {
+    void canAddApacheInterceptorToAsync() throws ExecutionException, InterruptedException {
         Unirest.config().addInterceptor(new TestInterceptor());
 
         Unirest.get(MockServer.GET)

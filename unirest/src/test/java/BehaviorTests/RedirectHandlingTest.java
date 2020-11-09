@@ -33,10 +33,10 @@ import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class RedirectHandlingTest extends BddTest {
+class RedirectHandlingTest extends BddTest {
 
     @Test
-    public void willFollowRedirectsByDefault() {
+    void willFollowRedirectsByDefault() {
         Unirest.get(MockServer.REDIRECT)
                 .asObject(RequestCapture.class)
                 .getBody()
@@ -44,7 +44,7 @@ public class RedirectHandlingTest extends BddTest {
     }
 
     @Test
-    public void canDisableRedirects(){
+    void canDisableRedirects(){
         Unirest.config().followRedirects(false);
         HttpResponse response = Unirest.get(MockServer.REDIRECT).asEmpty();
 
@@ -52,7 +52,7 @@ public class RedirectHandlingTest extends BddTest {
     }
 
     @Test
-    public void willFollowRedirectsByDefaultAsync() throws ExecutionException, InterruptedException {
+    void willFollowRedirectsByDefaultAsync() throws ExecutionException, InterruptedException {
         Unirest.get(MockServer.REDIRECT)
                 .asObjectAsync(RequestCapture.class)
                 .get()
@@ -61,7 +61,7 @@ public class RedirectHandlingTest extends BddTest {
     }
 
     @Test
-    public void canDisableRedirectsAsync() throws Exception {
+    void canDisableRedirectsAsync() throws Exception {
         Unirest.config().followRedirects(false);
         HttpResponse response = Unirest.get(MockServer.REDIRECT).asEmptyAsync().get();
 

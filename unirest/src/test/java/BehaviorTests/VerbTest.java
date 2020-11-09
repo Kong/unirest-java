@@ -32,41 +32,42 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class VerbTest extends BddTest {
+class VerbTest extends BddTest {
+
     @Test
-    public void get() {
+    void get() {
         Unirest.get(MockServer.GET)
                 .asObject(RequestCapture.class)
                 .getBody()
-                .asserMethod(HttpMethod.GET);
+                .assertMethod(HttpMethod.GET);
     }
 
     @Test
-    public void post() {
+    void post() {
         Unirest.post(MockServer.POST)
                 .asObject(RequestCapture.class)
                 .getBody()
-                .asserMethod(HttpMethod.POST);
+                .assertMethod(HttpMethod.POST);
     }
 
     @Test
-    public void put() {
+    void put() {
         Unirest.put(MockServer.POST)
                 .asObject(RequestCapture.class)
                 .getBody()
-                .asserMethod(HttpMethod.PUT);
+                .assertMethod(HttpMethod.PUT);
     }
 
     @Test
-    public void patch() {
+    void patch() {
         Unirest.patch(MockServer.PATCH)
                 .asObject(RequestCapture.class)
                 .getBody()
-                .asserMethod(HttpMethod.PATCH);
+                .assertMethod(HttpMethod.PATCH);
     }
 
     @Test
-    public void head() {
+    void head() {
         HttpResponse response = Unirest.head(MockServer.GET).asEmpty();
 
         assertEquals(200, response.getStatus());
@@ -74,19 +75,19 @@ public class VerbTest extends BddTest {
     }
 
     @Test
-    public void option() {
+    void option() {
         Unirest.options(MockServer.GET)
                 .asObject(RequestCapture.class)
                 .getBody()
-                .asserMethod(HttpMethod.OPTIONS);
+                .assertMethod(HttpMethod.OPTIONS);
     }
 
     @Test
-    public void weirdVerbs() {
+    void weirdVerbs() {
         Unirest.request("CHEESE", MockServer.CHEESE)
                 .asObject(RequestCapture.class)
                 .getBody()
-                .asserMethod(HttpMethod.valueOf("CHEESE"))
+                .assertMethod(HttpMethod.valueOf("CHEESE"))
                 .assertBody("");
     }
 }

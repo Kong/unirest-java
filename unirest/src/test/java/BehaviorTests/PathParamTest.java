@@ -31,10 +31,10 @@ import kong.unirest.UnirestException;
 import org.junit.jupiter.api.Test;
 import kong.unirest.TestUtil;
 
-public class PathParamTest extends BddTest {
+class PathParamTest extends BddTest {
 
     @Test
-    public void canAddRouteParamsAsMap() {
+    void canAddRouteParamsAsMap() {
         String param = "Hamberders";
 
         Unirest.get(MockServer.PASSED_PATH_PARAM_MULTI)
@@ -47,7 +47,7 @@ public class PathParamTest extends BddTest {
     }
 
     @Test
-    public void properlyDealsWithPlusInPAth() {
+    void properlyDealsWithPlusInPAth() {
         String param = "jack+4@email.com";
 
         Unirest.get(MockServer.PASSED_PATH_PARAM)
@@ -59,7 +59,7 @@ public class PathParamTest extends BddTest {
     }
 
     @Test
-    public void testPathParameters() {
+    void testPathParameters() {
         Unirest.get(MockServer.HOST + "/{method}")
                 .routeParam("method", "get")
                 .queryString("name", "Mark")
@@ -69,7 +69,7 @@ public class PathParamTest extends BddTest {
     }
 
     @Test
-    public void testQueryAndBodyParameters() {
+    void testQueryAndBodyParameters() {
         Unirest.post(MockServer.HOST + "/{method}")
                 .routeParam("method", "post")
                 .queryString("name", "Mark")
@@ -81,7 +81,7 @@ public class PathParamTest extends BddTest {
     }
 
     @Test
-    public void testPathParameters2() {
+    void testPathParameters2() {
         Unirest.patch(MockServer.HOST + "/{method}")
                 .routeParam("method", "patch")
                 .field("name", "Mark")
@@ -91,7 +91,7 @@ public class PathParamTest extends BddTest {
     }
 
     @Test
-    public void testMissingPathParameter() {
+    void testMissingPathParameter() {
         TestUtil.assertException(() ->
                         Unirest.get(MockServer.HOST + "/{method}")
                         .routeParam("method222", "get")
@@ -102,7 +102,7 @@ public class PathParamTest extends BddTest {
     }
 
     @Test
-    public void testMissingPathParameterValue() {
+    void testMissingPathParameterValue() {
         TestUtil.assertException(() ->
                         Unirest.get(MockServer.HOST + "/{method}")
                                 .queryString("name", "Mark")
@@ -112,7 +112,7 @@ public class PathParamTest extends BddTest {
     }
 
     @Test
-    public void illigalPathParams() {
+    void illigalPathParams() {
         String value = "/?ЊЯЯ";
 
         Unirest.get(MockServer.PASSED_PATH_PARAM)
@@ -124,7 +124,7 @@ public class PathParamTest extends BddTest {
     }
 
     @Test
-    public void spacesAndPluses() {
+    void spacesAndPluses() {
         String value = "Hunky Dory+Cheese Wiz";
 
         Unirest.get(MockServer.PASSED_PATH_PARAM)
@@ -136,7 +136,7 @@ public class PathParamTest extends BddTest {
     }
 
     @Test
-    public void nulls() {
+    void nulls() {
         Unirest.get(MockServer.PASSED_PATH_PARAM)
                 .routeParam("params", null)
                 .asObject(RequestCapture.class)

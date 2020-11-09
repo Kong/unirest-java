@@ -33,14 +33,12 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import kong.unirest.TestUtil;
 
-import java.io.IOException;
-
 import static kong.unirest.JsonPatchOperation.*;
 
-public class JsonPatchTest extends BddTest {
+class JsonPatchTest extends BddTest {
 
     @Test
-    public void canAddThings() {
+    void canAddThings() {
         Unirest.jsonPatch(MockServer.PATCH)
                 .add("/some/path", "a value")
                 .add("/another/path", 42)
@@ -54,7 +52,7 @@ public class JsonPatchTest extends BddTest {
     }
 
     @Test
-    public void canRemoveThings() {
+    void canRemoveThings() {
         Unirest.jsonPatch(MockServer.PATCH)
                 .remove("/some/path")
                 .remove("/another/path")
@@ -68,7 +66,7 @@ public class JsonPatchTest extends BddTest {
     }
 
     @Test
-    public void canReplaceThings() {
+    void canReplaceThings() {
         Unirest.jsonPatch(MockServer.PATCH)
                 .replace("/some/path", "a value")
                 .replace("/another/path", 42)
@@ -82,7 +80,7 @@ public class JsonPatchTest extends BddTest {
     }
 
     @Test
-    public void canTestThings() {
+    void canTestThings() {
         Unirest.jsonPatch(MockServer.PATCH)
                 .test("/some/path", "a value")
                 .test("/another/path", 42)
@@ -96,7 +94,7 @@ public class JsonPatchTest extends BddTest {
     }
 
     @Test
-    public void canUseJsonForValues() {
+    void canUseJsonForValues() {
         Unirest.jsonPatch(MockServer.PATCH)
                 .add("/some/path", new JSONObject().put("id", "foo"))
                 .asObject(RequestCapture.class)
@@ -105,7 +103,7 @@ public class JsonPatchTest extends BddTest {
     }
 
     @Test
-    public void lotsOfDifferentWaysToMakeObjects() {
+    void lotsOfDifferentWaysToMakeObjects() {
         JSONObject basicJson = new JSONObject().put("foo", "bar");
 
         Unirest.jsonPatch(MockServer.PATCH)
@@ -123,7 +121,7 @@ public class JsonPatchTest extends BddTest {
     }
 
     @Test
-    public void canMoveObjects() {
+    void canMoveObjects() {
         Unirest.jsonPatch(MockServer.PATCH)
                 .move("/old/location", "/new/location")
                 .asObject(RequestCapture.class)
@@ -132,7 +130,7 @@ public class JsonPatchTest extends BddTest {
     }
 
     @Test
-    public void canCopyObjects() {
+    void canCopyObjects() {
         Unirest.jsonPatch(MockServer.PATCH)
                 .copy("/old/location", "/new/location")
                 .asObject(RequestCapture.class)
@@ -141,7 +139,7 @@ public class JsonPatchTest extends BddTest {
     }
 
     @Test
-    public void thatsSomeValidJson() throws Exception {
+    void thatsSomeValidJson() throws Exception {
         String patch = Unirest.jsonPatch(MockServer.PATCH)
                 .add("/fruits/-", "Apple")
                 .remove("/bugs")

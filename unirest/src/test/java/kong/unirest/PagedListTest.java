@@ -34,13 +34,14 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PagedListTest {
+class PagedListTest {
 
     @Test
-    public void canGetAllTheBodies() {
+    void canGetAllTheBodies() {
         PagedList<String> list = new PagedList<>();
         list.addAll(asList(
                 mkRequest("foo"),
@@ -53,7 +54,7 @@ public class PagedListTest {
     }
 
     @Test
-    public void bodiesMustBeSucessful() {
+    void bodiesMustBeSuccessful() {
         PagedList<String> list = new PagedList<>();
         list.addAll(asList(
                 mkRequest("foo"),
@@ -66,7 +67,7 @@ public class PagedListTest {
     }
 
     @Test
-    public void canProcessSuccessfullResuls() {
+    void canProcessSuccessfulResults() {
         PagedList<String> list = new PagedList<>();
         list.addAll(asList(
                 mkRequest("foo"),
@@ -80,7 +81,7 @@ public class PagedListTest {
     }
 
     @Test
-    public void canProcessFailed() {
+    void canProcessFailed() {
         PagedList<String> list = new PagedList<>();
         list.addAll(asList(
                 mkRequest("foo"),
@@ -90,9 +91,10 @@ public class PagedListTest {
 
         final List<String> processed = new ArrayList<>();
         list.ifFailure(e -> processed.add(e.getBody()));
-        assertEquals(null, processed.get(0));
+        assertNull(processed.get(0));
     }
 
+    @SuppressWarnings("unchecked")
     private HttpResponse<String> mkRequest(String foo) {
         HttpResponse<String> r = mock(HttpResponse.class);
         when(r.getBody()).thenReturn(foo);

@@ -32,9 +32,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public class GZipTest extends BddTest {
+class GZipTest extends BddTest {
+
     @Test
-    public void emptyGzip() {
+    void emptyGzip() {
         HttpResponse<String> result = Unirest.post(MockServer.EMPTY_GZIP)
                 .asString();
         assertFalse(result.getParsingError().isPresent());
@@ -42,7 +43,7 @@ public class GZipTest extends BddTest {
     }
 
     @Test
-    public void testGzip() {
+    void testGzip() {
         HttpResponse<RequestCapture> resp = Unirest.get(MockServer.GZIP)
                 .queryString("zipme", "up")
                 .asObject(RequestCapture.class);
@@ -55,7 +56,7 @@ public class GZipTest extends BddTest {
     }
 
     @Test
-    public void testGzipAsync() throws Exception {
+    void testGzipAsync() throws Exception {
         HttpResponse<RequestCapture> resp = Unirest.get(MockServer.GZIP)
                 .queryString("zipme", "up")
                 .asObjectAsync(RequestCapture.class)
@@ -69,7 +70,7 @@ public class GZipTest extends BddTest {
     }
 
     @Test
-    public void canDisableGZip() throws Exception {
+    void canDisableGZip() throws Exception {
         Unirest.config().requestCompression(false);
 
         Unirest.get(MockServer.GET)

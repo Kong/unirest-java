@@ -163,7 +163,7 @@ class CertificateTests extends BddTest {
     }
 
     @Test
-    void canSetHoestNameVerifyer() throws Exception {
+    void canSetHoestNameVerifyer() {
         Unirest.config().hostnameVerifier(new NoopHostnameVerifier());
 
         int response = Unirest.get("https://badssl.com/").asEmpty().getStatus();

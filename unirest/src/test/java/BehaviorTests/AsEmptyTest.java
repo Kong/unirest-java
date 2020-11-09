@@ -30,38 +30,39 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-
-public class AsEmptyTest extends BddTest {
+@SuppressWarnings("rawtypes")
+class AsEmptyTest extends BddTest {
 
     @Test
-    public void canDoAEmptyRequestThatDoesNotParseBodyAtAll() {
+    void canDoAEmptyRequestThatDoesNotParseBodyAtAll() {
         MockServer.addResponseHeader("Content-Type", "json");
         HttpResponse res = Unirest.get(MockServer.GET).asEmpty();
 
+        assertNull(res.getBody());
         assertEquals(200, res.getStatus());
-        assertEquals(null, res.getBody());
         assertEquals("json", res.getHeaders().getFirst("Content-Type"));
     }
 
     @Test
-    public void canDoEmptyAsync() throws Exception {
+    void canDoEmptyAsync() throws Exception {
         MockServer.addResponseHeader("Content-Type", "json");
         HttpResponse res = Unirest.get(MockServer.GET).asEmptyAsync().get();
 
+        assertNull(res.getBody());
         assertEquals(200, res.getStatus());
-        assertEquals(null, res.getBody());
         assertEquals("json", res.getHeaders().getFirst("Content-Type"));
     }
 
     @Test
-    public void canDoEmptyAsyncWithCallback() {
+    void canDoEmptyAsyncWithCallback() {
         MockServer.addResponseHeader("Content-Type", "json");
 
         Unirest.get(MockServer.GET)
                 .asEmptyAsync(res -> {
+                    assertNull(res.getBody());
                     assertEquals(200, res.getStatus());
-                    assertEquals(null, res.getBody());
                     assertEquals("json", res.getHeaders().getFirst("Content-Type"));
                     asyncSuccess();
                 });

@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CustomClientTest extends BddTest {
+class CustomClientTest extends BddTest {
 
     private final String url = "http://localhost/getme";
     boolean requestConfigUsed = false;
@@ -55,7 +55,7 @@ public class CustomClientTest extends BddTest {
     }
 
     @Test
-    public void settingACustomClient() {
+    void settingACustomClient() {
         HttpClientMock client = getMockClient();
 
         Unirest.config().httpClient(client);
@@ -64,7 +64,7 @@ public class CustomClientTest extends BddTest {
     }
 
     @Test
-    public void settingACustomClientWithBuilder() {
+    void settingACustomClientWithBuilder() {
         HttpClientMock client = getMockClient();
 
         Unirest.config().httpClient(ApacheClient.builder(client)
@@ -81,7 +81,7 @@ public class CustomClientTest extends BddTest {
     }
 
     @Test
-    public void canSetACustomAsyncClientWithBuilder() throws Exception {
+    void canSetACustomAsyncClientWithBuilder() throws Exception {
         try(CloseableHttpAsyncClient client = HttpAsyncClientBuilder.create().build()) {
             client.start();
 

@@ -61,11 +61,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class JacksonObjectMapperTest {
+class JacksonObjectMapperTest {
     private JacksonObjectMapper om = new JacksonObjectMapper();
 
     @Test
-    public void canWrite() throws JSONException {
+    void canWrite() throws JSONException {
         TestMe test = new TestMe("foo", 42, new TestMe("bar", 666, null));
 
         String json = om.writeValue(test);
@@ -78,7 +78,7 @@ public class JacksonObjectMapperTest {
     }
 
     @Test
-    public void canRead(){
+    void canRead(){
         TestMe test = om.readValue("{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666,\"another\":null}}",
                 TestMe.class);
 
@@ -90,7 +90,7 @@ public class JacksonObjectMapperTest {
     }
 
     @Test
-    public void canReadGenerics(){
+    void canReadGenerics(){
         List<TestMe> testList = om.readValue("[{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666,\"another\":null}}]",
                 new GenericType<List<TestMe>>(){});
 
@@ -104,7 +104,7 @@ public class JacksonObjectMapperTest {
     }
 
     @Test
-    public void configSoItFails() {
+    void configSoItFails() {
         ObjectMapper jom = new ObjectMapper();
         jom.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
         JacksonObjectMapper j = new JacksonObjectMapper(jom);

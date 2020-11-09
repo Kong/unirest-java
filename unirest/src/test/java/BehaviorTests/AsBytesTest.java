@@ -26,17 +26,14 @@
 package BehaviorTests;
 
 import kong.unirest.JacksonObjectMapper;
-import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.ExecutionException;
-
-public class AsBytesTest extends BddTest {
+class AsBytesTest extends BddTest {
     JacksonObjectMapper om = new JacksonObjectMapper();
 
     @Test
-    public void getGetResultAsBytes() {
+    void getGetResultAsBytes() {
         byte[] content = Unirest.get(MockServer.GET)
                                 .asBytes()
                                 .getBody();
@@ -47,7 +44,7 @@ public class AsBytesTest extends BddTest {
     }
 
     @Test
-    public void getGetResultAsBytesAsync() throws Exception {
+    void getGetResultAsBytesAsync() throws Exception {
         byte[] content = Unirest.get(MockServer.GET)
                 .asBytesAsync()
                 .get()
@@ -59,7 +56,7 @@ public class AsBytesTest extends BddTest {
     }
 
     @Test
-    public void getGetResultAsBytesAsyncCallback() throws Exception {
+    void getGetResultAsBytesAsyncCallback() throws Exception {
         Unirest.get(MockServer.GET)
                 .queryString("fruit","apple")
                 .asBytesAsync(r -> {

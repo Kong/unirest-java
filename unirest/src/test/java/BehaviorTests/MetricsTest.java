@@ -40,13 +40,14 @@ import static BehaviorTests.MockServer.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class MetricsTest extends BddTest {
+class MetricsTest extends BddTest {
     @Test
-    public void canSetAMetricObjectToInstramentUnirest() {
+    void canSetAMetricObjectToInstramentUnirest() {
         MyMetric metric = configureMetric();
 
         Unirest.get(GET).asEmpty();
@@ -61,7 +62,7 @@ public class MetricsTest extends BddTest {
     }
 
     @Test
-    public void canGetParamedUrlInSummary() {
+    void canGetParamedUrlInSummary() {
         MyMetric metric = configureMetric(HttpRequestSummary::getRawPath);
 
         Unirest.get(PASSED_PATH_PARAM)
@@ -73,7 +74,7 @@ public class MetricsTest extends BddTest {
     }
 
     @Test
-    public void canGetToMethod() {
+    void canGetToMethod() {
         MyMetric metric = configureMetric(s -> s.getHttpMethod().name());
 
         Unirest.get(GET).asEmpty();
@@ -86,7 +87,7 @@ public class MetricsTest extends BddTest {
     }
 
     @Test
-    public void amountOfTimeBetweenRequestAndResponseDoesNotIncludeDeserialization() {
+    void amountOfTimeBetweenRequestAndResponseDoesNotIncludeDeserialization() {
         MyMetric metric = configureMetric();
 
         Unirest.get(GET).asObject(r -> {
@@ -96,7 +97,7 @@ public class MetricsTest extends BddTest {
     }
 
     @Test
-    public void canGetInformationOnStatus() {
+    void canGetInformationOnStatus() {
         MyMetric metric = configureMetric(HttpRequestSummary::getUrl);
 
         Unirest.get(GET).asEmpty();
@@ -110,7 +111,7 @@ public class MetricsTest extends BddTest {
     }
 
     @Test
-    public void metricsOnAsyncRequests() throws Exception {
+    void metricsOnAsyncRequests() throws Exception {
         MyMetric metric = configureMetric();
 
         Unirest.get(GET).asEmptyAsync().get();
@@ -119,7 +120,7 @@ public class MetricsTest extends BddTest {
     }
 
     @Test
-    public void metricsOnAsyncMethodsWithCallbacks() {
+    void metricsOnAsyncMethodsWithCallbacks() {
         MyMetric metric = configureMetric();
 
         Unirest.get(GET).asEmptyAsync(r -> asyncSuccess());
@@ -129,7 +130,7 @@ public class MetricsTest extends BddTest {
     }
 
     @Test
-    public void errorHandling() throws Exception {
+    void errorHandling() throws Exception {
         HttpClient mock = mock(HttpClient.class);
         when(mock.execute(any(HttpRequestBase.class))).thenThrow(new RuntimeException("boo"));
         when(mock.execute(any(HttpHost.class), any(HttpRequestBase.class))).thenThrow(new RuntimeException("boo"));
@@ -146,7 +147,7 @@ public class MetricsTest extends BddTest {
     }
 
     @Test @Disabled
-    public void errorHandling_async() throws Exception {
+    void errorHandling_async() throws Exception {
         MyMetric metric = configureMetric();
 
         try {
@@ -162,7 +163,7 @@ public class MetricsTest extends BddTest {
     long exTime;
 
     @Test
-    public void metricAsALambda() {
+    void metricAsALambda() {
         exTime = 0;
         Unirest.config().instrumentWith((s) -> {
             long startNanos = System.nanoTime();
@@ -175,7 +176,7 @@ public class MetricsTest extends BddTest {
     }
 
     @Test
-    public void showWhatSparkDoes() {
+    void showWhatSparkDoes() {
         HashMap map = Unirest.get(SPARKLE)
                 .routeParam("spark", "joy")
                 .queryString("food", "hamberders")
@@ -186,7 +187,7 @@ public class MetricsTest extends BddTest {
         assertEquals("localhost:4567", map.get("host()"));
         assertEquals("/sparkle/joy/yippy", map.get("uri()")); // this is different from what the Spark doc says.
         assertEquals("http://localhost:4567/sparkle/joy/yippy", map.get("url()"));
-        assertEquals(null, map.get("contextPath()"));
+        assertNull(map.get("contextPath()"));
         assertEquals("/sparkle/joy/yippy", map.get("pathInfo()"));
         assertEquals("food=hamberders&colour=red", map.get("queryString()"));
     }

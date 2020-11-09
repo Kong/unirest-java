@@ -113,7 +113,7 @@ class ThreadProxy extends Thread {
                         outToServer.flush();
                         wasUsedForClientToServer = true;
                     }
-                } catch (IOException e) {
+                } catch (IOException ignored) {
                 }
                 try {
                     outToServer.close();

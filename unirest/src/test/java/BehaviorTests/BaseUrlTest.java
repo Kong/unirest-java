@@ -28,7 +28,7 @@ package BehaviorTests;
 import kong.unirest.Unirest;
 import org.junit.jupiter.api.Test;
 
-public class BaseUrlTest extends BddTest {
+class BaseUrlTest extends BddTest {
 
     @Test
     void canConfigureADefaultBaseUrl() {

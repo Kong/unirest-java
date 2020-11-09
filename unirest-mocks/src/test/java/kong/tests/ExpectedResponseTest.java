@@ -35,7 +35,8 @@ import static kong.unirest.HttpMethod.GET;
 import static kong.unirest.HttpStatus.BAD_REQUEST;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ExpectedResponseTest extends Base {
+class ExpectedResponseTest extends Base {
+
     @Test
     void canExpectErrors() {
         client.expect(HttpMethod.GET, path).thenReturn().withStatus(BAD_REQUEST, "oh noes");
@@ -57,7 +58,7 @@ public class ExpectedResponseTest extends Base {
     }
 
     @Test
-    public void simpleGetString() {
+    void simpleGetString() {
         client.expect(HttpMethod.GET, path)
                 .thenReturn("Hello World");
 
@@ -65,7 +66,7 @@ public class ExpectedResponseTest extends Base {
     }
 
     @Test
-    public void simpleGetBytes() {
+    void simpleGetBytes() {
         client.expect(HttpMethod.GET, path)
                 .thenReturn("Hello World");
 
@@ -74,7 +75,7 @@ public class ExpectedResponseTest extends Base {
     }
 
     @Test
-    public void simpleJson() {
+    void simpleJson() {
         client.expect(HttpMethod.GET, path)
                 .thenReturn("{\"fruit\": \"apple\"}");
 
@@ -83,7 +84,7 @@ public class ExpectedResponseTest extends Base {
     }
 
     @Test
-    public void setReturnAsJson() {
+    void setReturnAsJson() {
         client.expect(HttpMethod.GET, path)
                 .thenReturn(new JSONObject("{\"fruit\": \"apple\"}"));
 
@@ -92,13 +93,13 @@ public class ExpectedResponseTest extends Base {
     }
 
     @Test
-    public void canPassInAndReturnObjectsAsJson() {
+    void canPassInAndReturnObjectsAsJson() {
         client.expect(HttpMethod.GET, path)
                 .thenReturn(new Pojo("apple"));
     }
 
     @Test
-    public void canSetResponseHeaders() {
+    void canSetResponseHeaders() {
         client.expect(GET, path)
                 .thenReturn("foo")
                 .withHeader("monster", "grover");
@@ -109,7 +110,7 @@ public class ExpectedResponseTest extends Base {
     }
 
     @Test
-    public void canReturnEmptyWithHeaders() {
+    void canReturnEmptyWithHeaders() {
         client.expect(GET, path)
                 .thenReturn()
                 .withHeader("monster", "grover");

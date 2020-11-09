@@ -28,9 +28,10 @@ package BehaviorTests;
 import kong.unirest.Unirest;
 import org.junit.jupiter.api.Test;
 
-public class RawUrlTest extends BddTest {
+class RawUrlTest extends BddTest {
+
     @Test
-    public void canCallRawPathWithSpace() {
+    void canCallRawPathWithSpace() {
         Unirest.get(MockServer.GET + "/foo/passed/Moody Blues")
                 .asObject(RequestCapture.class)
                 .getBody()
@@ -38,7 +39,7 @@ public class RawUrlTest extends BddTest {
     }
 
     @Test
-    public void canCallRawPathWithTab() {
+    void canCallRawPathWithTab() {
         Unirest.get(MockServer.GET + "/foo/passed/Moody\tBlues")
                 .asObject(RequestCapture.class)
                 .getBody()
@@ -46,7 +47,7 @@ public class RawUrlTest extends BddTest {
     }
 
     @Test
-    public void doesNotImpactPathParams() {
+    void doesNotImpactPathParams() {
         Unirest.get(MockServer.GET + "/{first param}/passed/{file name}")
                 .routeParam("first param", "foo")
                 .routeParam("file name", "Moody Blues")

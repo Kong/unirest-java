@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-public class RegistrationTest {
+class RegistrationTest {
 
     @Test
     void canRegisterThePrimaryInstance() {

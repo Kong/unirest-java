@@ -32,9 +32,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-public class QueryStringTest extends BddTest {
+class QueryStringTest extends BddTest {
+
     @Test
-    public void testGetQueryStrings() {
+    void testGetQueryStrings() {
        Unirest.get(MockServer.GET)
                 .queryString("name", "mark")
                 .queryString("nick", "thefosk")
@@ -45,7 +46,7 @@ public class QueryStringTest extends BddTest {
     }
 
     @Test
-    public void canPassQueryParamsDirectlyOnUriOrWithMethod() {
+    void canPassQueryParamsDirectlyOnUriOrWithMethod() {
         Unirest.get(MockServer.GET + "?name=mark")
                 .asObject(RequestCapture.class)
                 .getBody()
@@ -59,7 +60,7 @@ public class QueryStringTest extends BddTest {
     }
 
     @Test
-    public void canPassInACharSequence() {
+    void canPassInACharSequence() {
         Unirest.get(MockServer.GET)
                 .queryString("foo", new StringBuilder("bar"))
                 .asObject(RequestCapture.class)
@@ -68,7 +69,7 @@ public class QueryStringTest extends BddTest {
     }
 
     @Test
-    public void multipleParams() {
+    void multipleParams() {
         Unirest.get(MockServer.GET + "?name=ringo")
                 .queryString("name", "paul")
                 .queryString("name", "john")
@@ -80,7 +81,7 @@ public class QueryStringTest extends BddTest {
     }
 
     @Test
-    public void testGetUTF8() {
+    void testGetUTF8() {
         Unirest.get(MockServer.GET)
                 .queryString("param3", "こんにちは")
                 .asObject(RequestCapture.class)
@@ -89,7 +90,7 @@ public class QueryStringTest extends BddTest {
     }
 
     @Test
-    public void testGetMultiple() {
+    void testGetMultiple() {
         for (int i = 1; i <= 20; i++) {
             HttpResponse<JsonNode> response = Unirest.get(MockServer.GET + "?try=" + i).asJson();
             parse(response).assertParam("try", String.valueOf(i));
@@ -97,7 +98,7 @@ public class QueryStringTest extends BddTest {
     }
 
     @Test
-    public void testQueryStringEncoding() {
+    void testQueryStringEncoding() {
         String testKey = "email2=someKey&email";
         String testValue = "hello@hello.com";
 
@@ -109,7 +110,7 @@ public class QueryStringTest extends BddTest {
     }
 
     @Test
-    public void testGetQuerystringArray() {
+    void testGetQuerystringArray() {
         Unirest.get(MockServer.GET)
                 .queryString("name", "Mark")
                 .queryString("name", "Tom")
@@ -120,7 +121,7 @@ public class QueryStringTest extends BddTest {
     }
 
     @Test
-    public void testGetArray() {
+    void testGetArray() {
         Unirest.get(MockServer.GET)
                 .queryString("name", Arrays.asList("Mark", "Tom"))
                 .asObject(RequestCapture.class)

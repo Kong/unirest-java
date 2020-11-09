@@ -35,7 +35,7 @@ import kong.unirest.Unirest;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Disabled // The Janky Proxy is pretty janky and isn't entirely stable in CI
-public class ProxyTest extends BddTest {
+class ProxyTest extends BddTest {
 
     @AfterEach
     @Override
@@ -46,7 +46,7 @@ public class ProxyTest extends BddTest {
     }
 
     @Test
-    public void canUseNonAuthProxy() {
+    void canUseNonAuthProxy() {
         JankyProxy.runServer("localhost", 4567, 7777);
 
         Unirest.config().proxy(new Proxy("localhost", 7777));
@@ -60,7 +60,7 @@ public class ProxyTest extends BddTest {
     }
 
     @Test
-    public void canUseNonAuthProxyWithEasyMethod() {
+    void canUseNonAuthProxyWithEasyMethod() {
         JankyProxy.runServer("localhost", 4567, 7777);
 
         Unirest.config().proxy("localhost", 7777);
@@ -74,7 +74,7 @@ public class ProxyTest extends BddTest {
     }
 
     @Test
-    public void canPassProxyOnRequest() {
+    void canPassProxyOnRequest() {
         JankyProxy.runServer("localhost", 4567, 7777);
 
         Unirest.get(MockServer.GET)
@@ -87,7 +87,7 @@ public class ProxyTest extends BddTest {
     }
 
     @Test
-    public void canSetAuthenticatedProxy(){
+    void canSetAuthenticatedProxy(){
         JankyProxy.runServer("localhost", 4567, 7777);
 
         Unirest.config().proxy("localhost", 7777, "username", "password1!");
@@ -102,7 +102,7 @@ public class ProxyTest extends BddTest {
 
     @Test
     @Disabled // there is some weird conflict between jetty and unirest here
-    public void canFlagTheClientsToUseSystemProperties(){
+    void canFlagTheClientsToUseSystemProperties(){
         JankyProxy.runServer("localhost", 4567, 7777);
 
         System.setProperty("http.proxyHost", "localhost");
@@ -119,7 +119,7 @@ public class ProxyTest extends BddTest {
     }
 
     @Test @Disabled // https://free-proxy-list.net/
-    public void callSomethingRealThroughARealProxy() {
+    void callSomethingRealThroughARealProxy() {
         Unirest.config().proxy("18.222.230.116",8080);
         //Unirest.config().proxy("34.73.62.46",3128, "myuser","pass1!");
         HttpResponse<String> r = Unirest.get("https://twitter.com/ryber").asString();

@@ -35,12 +35,14 @@ import java.util.Map;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ObjectFunctionalTest extends BddTest {
-    private Gson gson = new Gson();
+class ObjectFunctionalTest extends BddTest {
+
+    private final Gson gson = new Gson();
 
     @Test
-    public void canUseAFunctionToTransform() {
+    void canUseAFunctionToTransform() {
         MockServer.setJsonAsResponse(of("foo", "bar"));
 
         Map r = Unirest.get(MockServer.GET)
@@ -51,7 +53,7 @@ public class ObjectFunctionalTest extends BddTest {
     }
 
     @Test
-    public void canUseAFunctionToTransformAsync() throws Exception {
+    void canUseAFunctionToTransformAsync() throws Exception {
         MockServer.setJsonAsResponse(of("foo", "bar"));
 
         Map r = Unirest.get(MockServer.GET)
@@ -63,7 +65,7 @@ public class ObjectFunctionalTest extends BddTest {
     }
 
     @Test
-    public void willNotStopForParsingExceptions() {
+    void willNotStopForParsingExceptions() {
         MockServer.setStringResponse("call me ishmael");
 
         RuntimeException ohNoes = new RuntimeException("oh noes");
@@ -74,12 +76,13 @@ public class ObjectFunctionalTest extends BddTest {
                 });
 
         assertEquals(200, r.getStatus());
+        assertTrue(r.getParsingError().isPresent());
         assertEquals(ohNoes, r.getParsingError().get().getCause());
         assertEquals("call me ishmael", r.getParsingError().get().getOriginalBody());
     }
 
     @Test
-    public void willNotStopForParsingExceptions_async() throws Exception {
+    void willNotStopForParsingExceptions_async() throws Exception {
         MockServer.setStringResponse("call me ishmael");
 
         RuntimeException ohNoes = new RuntimeException("oh noes");
@@ -90,6 +93,7 @@ public class ObjectFunctionalTest extends BddTest {
                 }).get();
 
         assertEquals(200, r.getStatus());
+        assertTrue(r.getParsingError().isPresent());
         assertEquals(ohNoes, r.getParsingError().get().getCause());
         assertEquals("call me ishmael", r.getParsingError().get().getOriginalBody());
     }

@@ -46,10 +46,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @Disabled
-public class TimeoutTest extends BddTest {
+class TimeoutTest extends BddTest {
 
     @Test
-    public void testSetTimeouts() {
+    void testSetTimeouts() {
         String address = MockServer.GET;
         long start = System.currentTimeMillis();
         try {
@@ -74,7 +74,7 @@ public class TimeoutTest extends BddTest {
 
     @Test
     @Disabled // this is flakey
-    public void parallelTest() throws InterruptedException {
+    void parallelTest() throws InterruptedException {
         Unirest.config().connectTimeout(10).socketTimeout(5);
 
         long start = System.currentTimeMillis();
