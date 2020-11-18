@@ -85,4 +85,10 @@ public interface RequestBodyEntity extends HttpRequest<RequestBodyEntity>, Body 
     default RequestBodyEntity noCharset() {
         return charset(null);
     }
+
+    /**
+     * @param type The content mime type
+     * @return this request builder
+     */
+    RequestBodyEntity contentType(String type);
 }

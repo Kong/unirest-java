@@ -38,6 +38,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class UniBodyPostingTest extends BddTest {
 
     @Test
+    void hasShortCutForContentHeader() {
+        Unirest.post(MockServer.POST)
+                .contentType("plain/text")
+                .body("Hi")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertContentType("plain/text");
+    }
+
+    @Test
+    void contentTypeAfterTheBody() {
+        Unirest.post(MockServer.POST)
+                .body("Hi")
+                .contentType("plain/text")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertContentType("plain/text");
+    }
+
+    @Test
     void testDefaults_String(){
         Unirest.post(MockServer.POST)
                 .body("foo")

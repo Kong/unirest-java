@@ -175,4 +175,10 @@ public interface HttpRequestWithBody extends HttpRequest<HttpRequestWithBody> {
      * @return the Charset
      */
     Charset getCharset();
+
+    /**
+     * @param type The content mime type
+     * @return this request builder
+     */
+    HttpRequestWithBody contentType(String type);
 }

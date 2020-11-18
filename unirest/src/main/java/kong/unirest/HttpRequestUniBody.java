@@ -81,6 +81,12 @@ class HttpRequestUniBody extends BaseRequest<RequestBodyEntity> implements Reque
 	}
 
 	@Override
+	public RequestBodyEntity contentType(String type) {
+		headers.add("Content-Type", type);
+		return this;
+	}
+
+	@Override
 	public Optional<Body> getBody() {
 		return Optional.of(this);
 	}
