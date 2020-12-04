@@ -1,6 +1,7 @@
 ## 3.11.06 (pending)
 * add a convenience method for setting the content type
 * add a common reference to popular mime types
+* cache methods on Config were not returning the config for the builder pattern.
 
 ## 3.11.05
 *  issue #383 some problems with relocated packages.

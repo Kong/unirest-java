@@ -583,21 +583,25 @@ public class Config {
     /**
      * Enable Response Caching with default options
      * @param value enable or disable response caching
+     * @return this config object
      */
-    public void cacheResponses(boolean value) {
+    public Config cacheResponses(boolean value) {
         if(value){
             this.cache = new CacheManager();
         } else {
             this.cache = null;
         }
+        return this;
     }
 
     /**
      * Enable Response Caching with custom options
      * @param value enable or disable response caching
+     * @return this config object
      */
-    public void cacheResponses(Cache.Builder value) {
+    public Config cacheResponses(Cache.Builder value) {
         this.cache = value.build();
+        return this;
     }
 
     /**
