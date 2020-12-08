@@ -2,6 +2,7 @@
 * add a convenience method for setting the content type
 * add a common reference to popular mime types
 * cache methods on Config were not returning the config for the builder pattern.
+* add a CookieSpecs const class for reference
 
 ## 3.11.05
 *  issue #383 some problems with relocated packages.

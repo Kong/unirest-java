@@ -82,7 +82,7 @@ class AssertTest extends Base {
         expect.assertHeader("monster", "grover");
 
         assertException(() -> expect.assertHeader("monster", "oscar"),
-                "No invocation found with header [monster: oscar]\nFound:\nmonster: grover\n");
+                "No invocation found with header [monster: oscar]\nFound:\nmonster: grover");
     }
 
     @Test
@@ -92,7 +92,7 @@ class AssertTest extends Base {
         assertException(() -> client.verifyAll(),
                 "A expectation was never invoked! GET http://basic\n" +
                         "Headers:\n" +
-                        "monster: grover\n");
+                        "monster: grover");
 
         Unirest.get(path).header("monster", "grover").asEmpty();
 

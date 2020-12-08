@@ -31,8 +31,14 @@ import kong.unirest.Unirest;
 import org.apache.http.client.config.CookieSpecs;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
+import static java.time.LocalDateTime.of;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CookieTest extends BddTest {
@@ -114,13 +120,7 @@ class CookieTest extends BddTest {
 
     @Test
     void complicatedCookies(){
-        javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie("color", "blue");
-        cookie.setDomain("localhost");
-        cookie.setPath("/get");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setMaxAge(42);
-        MockServer.expectCookie(cookie);
+        expectCoookie(42);
 
         HttpResponse response = Unirest.get(MockServer.GET).asEmpty();
 
@@ -131,7 +131,34 @@ class CookieTest extends BddTest {
         assertTrue(back.isHttpOnly());
         assertFalse(back.isSecure());
         assertEquals(42, back.getMaxAge());
+    }
 
+    @Test
+    void cookieLifeCycle() {
+        expectCoookie(42);
+        HttpResponse r1 = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
+        assertNotNull(r1.getCookies().getNamed("color"));
+
+        MockServer.clearCookies();
+        expectCoookie(0);
+
+        HttpResponse<RequestCapture> r2 = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
+        assertNotNull(r1.getCookies().getNamed("color"));
+        r2.getBody().assertCookie("color", "blue");
+
+        MockServer.clearCookies();
+        HttpResponse<RequestCapture> r3 = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
+        r3.getBody().assertNoCookie("color");
+    }
+
+    private void expectCoookie(int expiry) {
+        javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie("color", "blue");
+        cookie.setDomain("localhost");
+        cookie.setPath("/get");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setMaxAge(expiry);
+        MockServer.expectCookie(cookie);
     }
 
     @Test
@@ -196,5 +223,41 @@ class CookieTest extends BddTest {
                 .getBody()
                 .assertCookie("flavor", "snickerdoodle")
                 .assertCookie("size", "large");
+    }
+
+    @Test
+    void stringCookieParsing() {
+        MockServer.addResponseHeader("Set-Cookie", getCookieValue(of(2140, Month.APRIL, 2, 4, 20, 0).atZone(ZoneId.of("UTC"))));
+
+        HttpResponse r1 = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
+        assertNotNull(r1.getCookies().getNamed("color"));
+
+        MockServer.clearHeaders();
+        MockServer.addResponseHeader("Set-Cookie", getCookieValue(of(1985, Month.APRIL, 2, 4, 20, 0).atZone(ZoneId.of("UTC"))));
+
+
+        HttpResponse<RequestCapture> r2 = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
+        assertNotNull(r1.getCookies().getNamed("color"));
+        r2.getBody().assertCookie("color", "blue");
+
+        MockServer.clearHeaders();
+        HttpResponse<RequestCapture> r3 = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
+        r3.getBody().assertNoCookie("color");
+    }
+
+    @Test
+    void newAgeCookies() {
+        Unirest.config().cookieSpec("standard");
+        MockServer.addResponseHeader("Set-Cookie", "cookie_name=blah;Max-Age=86400;Expires=Wed, 9 Dec 2220 20:26:05 GMT;Path=/;Domain=localhost;HTTPOnly");
+        HttpResponse response = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
+        assertNotNull(response.getCookies().getNamed("cookie_name"));
+        HttpResponse<RequestCapture> r2 = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
+        r2.getBody().assertCookie("cookie_name","blah");
+
+    }
+
+    private String getCookieValue(ZonedDateTime dt) {
+        String date = dt.format(DateTimeFormatter.ofPattern("EEE, dd-MMM-yyyy HH:mm:ss zzz"));
+        return String.format("color=blue; Path=/get; Domain=localhost; Expires=%s; HttpOnly", date);
     }
 }

@@ -257,11 +257,19 @@ public class MockServer {
 		pages = expected;
 	}
 
+	public static void clearCookies(){
+		cookies.clear();
+	}
+
 	public static void expectCookie(String name, String value) {
 		cookies.add(new Cookie(name, UrlEncoded.encodeString(value)));
 	}
 
 	public static void expectCookie(Cookie cookie) {
 		cookies.add(cookie);
+	}
+
+	public static void clearHeaders() {
+		responseHeaders.clear();
 	}
 }

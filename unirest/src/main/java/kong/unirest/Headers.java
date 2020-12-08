@@ -25,10 +25,7 @@
 
 package kong.unirest;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
@@ -164,8 +161,8 @@ public class Headers {
      */
     @Override
     public String toString() {
-       final StringBuilder sb = new StringBuilder();
-        headers.forEach(header -> sb.append(header.getName()).append(": ").append(header.getValue()).append(System.lineSeparator()));
+       final StringJoiner sb = new StringJoiner(System.lineSeparator());
+        headers.forEach(header -> sb.add(header.toString()));
         return sb.toString();
     }
 
@@ -227,6 +224,11 @@ public class Headers {
         @Override
         public int hashCode() {
             return Objects.hash(name, value.get());
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s: %s",getName(), getValue());
         }
     }
 }

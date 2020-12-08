@@ -44,7 +44,7 @@ class MultipleExpectsTest extends Base {
                 "A expectation was never invoked! GET http://basic\n" +
                         "Headers:\n" +
                         "monster: oscar\n" +
-                        "fruit: apple\n");
+                        "fruit: apple");
     }
 
     @Test
@@ -64,7 +64,7 @@ class MultipleExpectsTest extends Base {
         assertException(() -> client.verifyAll(),
                 "A expectation was never invoked! GET http://basic\n" +
                         "Headers:\n" +
-                        "monster: grover\n");
+                        "monster: grover");
     }
 
     @Test
@@ -87,7 +87,7 @@ class MultipleExpectsTest extends Base {
         assertException(() -> client.verifyAll(),
                 "A expectation was never invoked! GET http://basic\n" +
                         "Params:\n" +
-                        "monster: grover\n");
+                        "monster: grover");
     }
 
     @Test
@@ -110,6 +110,6 @@ class MultipleExpectsTest extends Base {
         assertException(() -> client.verifyAll(),
                 "A expectation was never invoked! GET http://basic\n" +
                         "Params:\n" +
-                        "monster: grover\n");
+                        "monster: grover");
     }
 }
