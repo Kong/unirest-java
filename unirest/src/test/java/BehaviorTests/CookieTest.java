@@ -245,6 +245,20 @@ class CookieTest extends BddTest {
         r3.getBody().assertNoCookie("color");
     }
 
+    @Test // documenting Apache specific behavior we may not want moving forward.
+    void cannotOverrideManagedCookies() {
+        MockServer.expectCookie("foo", "bar");
+        HttpResponse r1 = Unirest.get(MockServer.GET).asEmpty();
+        assertEquals("bar", r1.getCookies().getNamed("foo").getValue());
+
+        MockServer.clearCookies();
+        Unirest.get(MockServer.GET)
+                .cookie("foo","baz")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertCookie("foo","bar");
+    }
+
     @Test
     void newAgeCookies() {
         Unirest.config().cookieSpec("standard");
@@ -253,7 +267,6 @@ class CookieTest extends BddTest {
         assertNotNull(response.getCookies().getNamed("cookie_name"));
         HttpResponse<RequestCapture> r2 = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
         r2.getBody().assertCookie("cookie_name","blah");
-
     }
 
     private String getCookieValue(ZonedDateTime dt) {
