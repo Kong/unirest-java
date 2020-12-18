@@ -128,6 +128,10 @@ public abstract class JSONElement {
         return GSON.toJson(collection);
     }
 
+    static JsonElement toTree(Object obj){
+        return GSON.toJsonTree(obj);
+    }
+
     static void write(JsonElement obj, Writer sw) {
         GSON.toJson(obj, sw);
     }

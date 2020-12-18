@@ -27,6 +27,7 @@ package kong.unirest.json;
 
 import BehaviorTests.Foo;
 import kong.unirest.TestUtil;
+import kong.unirest.UnirestException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -45,6 +46,16 @@ import static kong.unirest.TestUtil.assertException;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JSONObjectTest {
+
+    @Test
+    void canSimpleSerializeAnObject() {
+        TestMe test = new TestMe(true, "Wakk Wakka", 42, new TestMe());
+        JSONObject o = new JSONObject(test);
+        assertEquals(true, o.optBoolean("aBoolean"));
+        assertEquals("Wakk Wakka", o.optString("aSillyString"));
+        assertEquals(42, o.optNumber("aNumber"));
+        assertNotNull(o.optJSONObject("aSub"));
+    }
 
     @Test
     void isEmpty() {
@@ -615,8 +626,12 @@ class JSONObjectTest {
         assertException(exRunnable, JSONException.class, message);
     }
 
-    public static void assertEqualJson(Object subObj, Object value) throws org.json.JSONException {
-        JSONAssert.assertEquals(subObj.toString(), value.toString(), true);
+    public static void assertEqualJson(Object subObj, Object value){
+        try {
+            JSONAssert.assertEquals(subObj.toString(), value.toString(), true);
+        } catch (org.json.JSONException e) {
+            throw new UnirestException(e);
+        }
     }
 
     public static void isTypeAndValue(Object o, Class<?> type, Object value) {
@@ -633,6 +648,54 @@ class JSONObjectTest {
         @Override
         public String toJSONString() {
             return HI_MOM;
+        }
+    }
+
+    public static class TestMe {
+        private boolean aBoolean;
+        private String aSillyString;
+        private Integer aNumber;
+        private TestMe aSub;
+
+        public TestMe(){ }
+
+        public TestMe(boolean bool, String aString, int aNumber, TestMe aSub){
+            this.aBoolean = bool;
+            this.aSillyString = aString;
+            this.aNumber = aNumber;
+            this.aSub = aSub;
+        }
+
+        public boolean isaBoolean() {
+            return aBoolean;
+        }
+
+        public void setaBoolean(boolean aBoolean) {
+            this.aBoolean = aBoolean;
+        }
+
+        public String getaSillyString() {
+            return aSillyString;
+        }
+
+        public void setaSillyString(String aSillyString) {
+            this.aSillyString = aSillyString;
+        }
+
+        public Integer getaNumber() {
+            return aNumber;
+        }
+
+        public void setaNumber(Integer aNumber) {
+            this.aNumber = aNumber;
+        }
+
+        public TestMe getaSub() {
+            return aSub;
+        }
+
+        public void setaSub(TestMe aSub) {
+            this.aSub = aSub;
         }
     }
 }

@@ -64,6 +64,15 @@ public class JSONObject extends JSONElement {
     }
 
     /**
+     * construct using an object. The Properties of the JSONObject
+     * will be taken from getters and properties of the object
+     * @param object the object to turn into a JSONObject
+     */
+    public JSONObject(Object object) {
+        this(toTree(object));
+    }
+
+    /**
      * an empty JSON object
      */
     public JSONObject() {
