@@ -31,6 +31,8 @@ import kong.unirest.UnirestException;
 import org.junit.jupiter.api.Test;
 import kong.unirest.TestUtil;
 
+import java.net.URLEncoder;
+
 class PathParamTest extends BddTest {
 
     @Test
@@ -44,6 +46,20 @@ class PathParamTest extends BddTest {
                 .assertUrl("http://localhost:4567/get/Hamberders/passed/42")
                 .assertPathParam("params", param)
                 .assertPathParam("another", "42");
+    }
+
+    @Test
+    void specialCharactersInTheDirectoryPath() {
+        Unirest.get(MockServer.GET + "/" + URLEncoder.encode("[brackets]") + "/passed")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertUrl("http://localhost:4567/get/%5Bbrackets%5D/passed");
+
+        Unirest.get(MockServer.PASSED_PATH_PARAM)
+                .routeParam("params", "[brackets]")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertUrl("http://localhost:4567/get/%5Bbrackets%5D/passed");
     }
 
     @Test
