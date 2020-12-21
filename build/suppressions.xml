@@ -11,4 +11,5 @@
     <suppress checks="MethodCount" files="JSONObject.java"/>
     <suppress checks="FileLength" files="JSONObject.java"/>
     <suppress checks="MethodLength" files="ApacheAsyncClient.java"/>
+    <suppress checks="MethodLength" files="CoreFactory.java"/>
 </suppressions>

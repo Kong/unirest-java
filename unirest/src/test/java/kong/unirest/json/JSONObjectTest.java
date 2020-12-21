@@ -501,10 +501,11 @@ class JSONObjectTest {
 
     @Test
     void maps() {
-        JSONObject obj = new JSONObject("{\"foo\": {\"bar\": 42}, \"baz\": 55}");
+        JSONObject obj = new JSONObject("{\"foo\": {\"bar\": 42}, \"qux\": 21474836475, \"baz\": 55}");
 
         Map<String, Object> map = obj.toMap();
-        assertEquals(55.0, map.get("baz"));
+        assertEquals(55, map.get("baz"));
+        assertEquals(21474836475L, map.get("qux"));
         JSONObject sub = (JSONObject) obj.get("foo");
         assertEquals(42, sub.get("bar"));
     }

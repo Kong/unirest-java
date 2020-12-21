@@ -1,6 +1,7 @@
 ## 3.11.07 (pending)
-* add a new object contructor on JSONOBject for basic object serialization
-
+* add a new object constructor on JSONObject for basic object serialization
+* issue #392 overwrite non-specified number serialization
+  
 ## 3.11.06
 * add a convenience method for setting the content type
 * add a common reference to popular mime types
