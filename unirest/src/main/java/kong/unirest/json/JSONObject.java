@@ -60,7 +60,7 @@ public class JSONObject extends JSONElement {
      * @param map a map representing the elements of a JSON Object
      */
     public JSONObject(Map<String, Object> map) {
-        this(fromJson(toJson(map), JsonObject.class));
+        this(toTree(map));
     }
 
     /**

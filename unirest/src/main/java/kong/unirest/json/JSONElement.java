@@ -111,9 +111,8 @@ public abstract class JSONElement {
         return element;
     }
 
-
     static JsonObject toJsonObject(Map map){
-        return fromJson(JSONElement.toJson(map), JsonObject.class);
+        return JSONElement.toTree(map).getAsJsonObject();
     }
 
     static <T> T fromJson(String json, Class<T> classOfT) {
