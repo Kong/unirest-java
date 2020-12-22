@@ -1,4 +1,7 @@
-## 3.11.07 (pending)
+## 3.11.08
+* Adds new body matchers to the Mock client for asserting multipart forms.
+
+## 3.11.07
 * add a new object constructor on JSONObject for basic object serialization
 * issue #392 overwrite non-specified number serialization
   

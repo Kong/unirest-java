@@ -55,6 +55,13 @@ public interface Expectation {
     Expectation body(String body);
 
     /**
+     * A matcher for the body for a request
+     * @param matcher the matcher
+     * @return this Expectation
+     */
+    Expectation body(BodyMatcher matcher);
+
+    /**
      * expect a null response
      * @return The ExpectedResponse
      */

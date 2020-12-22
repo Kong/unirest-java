@@ -30,8 +30,10 @@ import org.apache.http.client.utils.URIBuilder;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.lang.System.lineSeparator;
 
@@ -43,7 +45,8 @@ class Invocation implements Expectation, ExpectedResponse {
     private List<HttpRequest> requests = new ArrayList<>();
     private Headers responseHeaders = new Headers();
     private Boolean expected = false;
-    private String expectedBody;
+    private BodyMatcher expectedBody;
+    private MatchStatus expectedBodyStatus;
     private int responseStatus = 200;
     private String responseText = "Ok";
 
@@ -107,7 +110,13 @@ class Invocation implements Expectation, ExpectedResponse {
 
     @Override
     public Expectation body(String body) {
-        expectedBody = body;
+        expectedBody = new EqualsBodyMatcher(body);
+        return this;
+    }
+
+    @Override
+    public Expectation body(BodyMatcher matcher) {
+        expectedBody = matcher;
         return this;
     }
 
@@ -136,7 +145,7 @@ class Invocation implements Expectation, ExpectedResponse {
         }
         if(expectedBody != null){
             sb.append("Body:\n");
-            sb.append("\t" + expectedBody);
+            sb.append("\t" + expectedBodyStatus.getDescription());
         }
         return sb.toString();
     }
@@ -187,9 +196,7 @@ class Invocation implements Expectation, ExpectedResponse {
 
     private int scoreBody(HttpRequest request) {
         if(expectedBody != null){
-            return tryCast(request, HttpRequestUniBody.class)
-                    .map(HttpRequestUniBody::getBody)
-                    .flatMap(b -> b)
+            return tryCast(request, Body.class)
                     .map(this::matchBody)
                     .orElse(-1000);
         }
@@ -201,11 +208,27 @@ class Invocation implements Expectation, ExpectedResponse {
             BodyPart bodyPart = b.uniPart();
             if(bodyPart == null && expectedBody == null){
                 return 1;
-            } else if(String.class.isAssignableFrom(bodyPart.getPartType())
-            && expectedBody.equalsIgnoreCase((String) bodyPart.getValue())){
-                return 1;
+            } else if(String.class.isAssignableFrom(bodyPart.getPartType())){
+                expectedBodyStatus = expectedBody.matches(Arrays.asList((String) bodyPart.getValue()));
+                if(expectedBodyStatus.isSuccess()){
+                    return 1;
+                } else {
+                    return -1000;
+                }
             } else if (expectedBody != null) {
                 return -1000;
+            }
+        } else {
+            List<String> parts = b.multiParts().stream().map(p -> p.toString()).collect(Collectors.toList());
+            if(parts.isEmpty() && expectedBody == null){
+                return 1;
+            } else {
+                expectedBodyStatus = expectedBody.matches(parts);
+                if(expectedBodyStatus.isSuccess()){
+                    return 1;
+                } else {
+                    return -1000;
+                }
             }
         }
         return 0;
