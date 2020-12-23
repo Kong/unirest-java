@@ -146,6 +146,15 @@ public class MockClient implements Client, AsyncClient {
     }
 
     /**
+     * Expect ANY call to a path with this method
+     * @param method the Http Method
+     * @return this expectation builder
+     */
+    public Expectation expect(HttpMethod method) {
+        return expect(method, null);
+    }
+
+    /**
      * Assert a specific method and path were invoked
      * @param method the Http method
      * @param path the base path

@@ -30,12 +30,15 @@ import kong.unirest.HttpMethod;
 import kong.unirest.Unirest;
 import org.junit.jupiter.api.Test;
 
+import static kong.unirest.FieldMatcher.of;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 class BodyMatchingTest extends Base {
 
     @Test
     void canTestForForms() {
         client.expect(HttpMethod.POST, path)
-                .body(FieldMatcher.of("beetle", "ringo", "number", "42"))
+                .body(of("beetle", "ringo", "number", "42"))
                 .thenReturn()
                 .withStatus(200);
 
@@ -50,7 +53,7 @@ class BodyMatchingTest extends Base {
     @Test
     void missingAField() {
         client.expect(HttpMethod.POST, path)
-                .body(FieldMatcher.of("beetle", "ringo", "number", "42"))
+                .body(of("beetle", "ringo", "number", "42"))
                 .thenReturn()
                 .withStatus(200);
 
@@ -61,7 +64,25 @@ class BodyMatchingTest extends Base {
         assertException(() -> client.verifyAll(),
                 "A expectation was never invoked! POST http://basic\n" +
                         "Body:\n" +
-                        "\tMissing Expected Fields. Expected: \n" +
-                        "number=42");
+                        "\tnumber=42");
+    }
+
+    @Test
+    void forFieldsShouldBeEncoded() {
+        client.expect(HttpMethod.POST, path)
+                .body(of("beetles", "ringo george",
+                         "url", "http://somewhere"))
+                .thenReturn("cool")
+                .withStatus(200);
+
+        String result = Unirest.post(path)
+                .field("beetles", "ringo george")
+                .field("url", "http://somewhere")
+                .asString()
+                .getBody();
+
+        client.verifyAll();
+
+        assertEquals("cool", result);
     }
 }

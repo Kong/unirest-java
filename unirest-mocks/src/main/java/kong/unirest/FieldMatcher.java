@@ -25,6 +25,7 @@
 
 package kong.unirest;
 
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -56,7 +57,7 @@ public class FieldMatcher implements BodyMatcher {
         List<String> missing = new ArrayList<>();
         boolean pass = true;
         for (Map.Entry<String, String> r : formParams.entrySet()) {
-            String expectedParam = r.getKey() + "=" + r.getValue();
+            String expectedParam = r.getKey() + "=" + URLEncoder.encode(r.getValue());
             if (body.stream().noneMatch(p -> Objects.equals(expectedParam, p))) {
                 missing.add(expectedParam);
                 pass = false;
@@ -70,7 +71,7 @@ public class FieldMatcher implements BodyMatcher {
         if(pass){
             return "";
         }
-        StringJoiner joiner = new StringJoiner(System.lineSeparator() + "", "Missing Expected Fields. Expected: " +System.lineSeparator(),"");
+        StringJoiner joiner = new StringJoiner(System.lineSeparator());
         missing.forEach(m -> joiner.add(m));
 
         return joiner.toString();

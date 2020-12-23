@@ -1,3 +1,7 @@
+## 3.11.09
+* Expected body param values for Mock expects need to be url encoded
+* Support ANY expectation on methods for MockClient. (e.g. ```expect(HttpMethod.GET)``)
+
 ## 3.11.08
 * Adds new body matchers to the Mock client for asserting multipart forms.
 

@@ -99,7 +99,15 @@ class AssertTest extends Base {
         client.verifyAll();
     }
 
+    @Test
+    public void expectAnyPath(){
+        client.expect(HttpMethod.GET)
+                .thenReturn("woh");
 
+        Unirest.get(path).asEmpty();
+
+        client.verifyAll();
+    }
 
     @Test
     void canExpectQueryParams() {

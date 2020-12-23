@@ -117,7 +117,7 @@ class Path {
     }
 
     public String baseUrl() {
-        if(url.contains("?")){
+        if(url != null && url.contains("?")){
             return url.substring(0, url.indexOf("?"));
         }
         return url;
