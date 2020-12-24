@@ -25,14 +25,17 @@
 
 package BehaviorTests;
 
-import kong.unirest.Unirest;
-import kong.unirest.NoopCallback;
+import kong.unirest.*;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
+import java.nio.file.Watchable;
+import java.util.concurrent.CompletableFuture;
+
 import static kong.unirest.MockCallback.json;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CallbackFutureTest extends BddTest {
 
@@ -69,5 +72,58 @@ class CallbackFutureTest extends BddTest {
                 .isCompletedExceptionally();
 
         assertFailed("java.net.ConnectException: Connection refused");
+    }
+
+    boolean wasCalled = false;
+
+    @Test @Disabled
+    void callFailureFunction() throws Exception {
+        wasCalled = false;
+        try {
+            Unirest.get("http://localhost:0000")
+                    .asJsonAsync(new Callback<JsonNode>() {
+                        @Override
+                        public void completed(HttpResponse<JsonNode> response) {
+                            throw new UnirestException("Failure!");
+                        }
+
+                        @Override
+                        public void failed(UnirestException e) {
+                            wasCalled = true;
+                        }
+
+                        @Override
+                        public void cancelled() {
+
+                        }
+                    }).get();
+        }catch (Exception e){}
+
+        assertTrue(wasCalled);
+    }
+
+    @Test @Disabled
+    void cancelFunction() throws Exception {
+        wasCalled = false;
+        CompletableFuture<HttpResponse<JsonNode>> future = Unirest.get("http://localhost:0000")
+                .asJsonAsync(new Callback<JsonNode>() {
+                    @Override
+                    public void completed(HttpResponse<JsonNode> response) {
+                        throw new UnirestException("Failure!");
+                    }
+
+                    @Override
+                    public void failed(UnirestException e) {
+
+                    }
+
+                    @Override
+                    public void cancelled() {
+                        wasCalled = true;
+                    }
+                });
+
+        future.cancel(true);
+        assertTrue(wasCalled);
     }
 }
