@@ -33,7 +33,7 @@ public class Matchers {
     /**
      * Creates a FieldMatcher expecting a map of keys and values
      * use like: FieldMatcher.of("fruit", "orange", "quantity" "42")
-     * @param keyValuePairs
+     * @param keyValuePairs an array of key->value pairs to expect
      * @return a new FieldMatcher
      */
     public BodyMatcher bodyFields(String keyValuePairs){
