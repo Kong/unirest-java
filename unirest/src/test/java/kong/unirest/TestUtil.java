@@ -35,6 +35,7 @@ import com.google.common.io.Resources;
 
 import java.io.*;
 import java.net.URISyntaxException;
+import java.security.KeyStore;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.HashMap;
@@ -188,6 +189,14 @@ public class TestUtil {
 
     public static void reset() {
         Util.resetClock();
+    }
+
+    public static KeyStore readStore() throws Exception {
+        try (InputStream keyStoreStream = TestUtil.class.getResourceAsStream("/certs/badssl.com-client.p12")) {
+            KeyStore keyStore = KeyStore.getInstance("PKCS12");
+            keyStore.load(keyStoreStream, "badssl.com".toCharArray());
+            return keyStore;
+        }
     }
 
     @FunctionalInterface
