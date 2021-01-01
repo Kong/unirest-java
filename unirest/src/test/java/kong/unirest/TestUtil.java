@@ -32,6 +32,10 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import com.google.common.io.Resources;
+import kong.unirest.apache.ApacheClient;
+import org.apache.http.HttpHost;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpUriRequest;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -46,6 +50,9 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TestUtil {
     private static final ObjectMapper om = new ObjectMapper();
@@ -197,6 +204,13 @@ public class TestUtil {
             keyStore.load(keyStoreStream, "badssl.com".toCharArray());
             return keyStore;
         }
+    }
+
+    public static Client getFailureClient() throws IOException {
+        HttpClient client = mock(HttpClient.class);
+        when(client.execute(any(HttpHost.class), any(HttpUriRequest.class))).thenThrow(new IOException("Something horrible happened"));
+        when(client.execute(any(HttpUriRequest.class))).thenThrow(new IOException("Something horrible happened"));
+        return new ApacheClient(client, Unirest.config());
     }
 
     @FunctionalInterface

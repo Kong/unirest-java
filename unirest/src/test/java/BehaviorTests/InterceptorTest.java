@@ -27,10 +27,7 @@ package BehaviorTests;
 
 import kong.unirest.*;
 import org.apache.http.HttpException;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,12 +41,11 @@ import static kong.unirest.TestUtil.rezFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class InterceptorTest extends BddTest {
 
     private UniInterceptor interceptor;
-    private final String ioErrorMessage = "Something horrible happened";;
+
 
     @BeforeEach
     public void setUp() {
@@ -89,53 +85,46 @@ class InterceptorTest extends BddTest {
 
     @Test
     void totalFailure() throws Exception {
-        Unirest.config().httpClient(getFailureClient()).interceptor(interceptor);
+        Unirest.config().httpClient(TestUtil.getFailureClient()).interceptor(interceptor);
 
         TestUtil.assertException(() -> Unirest.get(MockServer.GET).asEmpty(),
                 UnirestException.class,
-                "java.io.IOException: " + ioErrorMessage);
+                "java.io.IOException: " + "Something horrible happened");
     }
 
     @Test
     void canReturnEmptyResultRatherThanThrow() throws Exception {
-        Unirest.config().httpClient(getFailureClient()).interceptor(interceptor);
+        Unirest.config().httpClient(TestUtil.getFailureClient()).interceptor(interceptor);
         interceptor.failResponse = true;
 
         HttpResponse<String> response = Unirest.get(MockServer.GET).asString();
 
         assertEquals(542, response.getStatus());
-        assertEquals(ioErrorMessage, response.getStatusText());
+        assertEquals("Something horrible happened", response.getStatusText());
     }
 
     @Test
     void totalAsyncFailure() throws Exception {
         Unirest.config().addInterceptor((r, c) -> {
-            throw new IOException(ioErrorMessage);
+            throw new IOException("Something horrible happened");
         }).interceptor(interceptor);
 
         TestUtil.assertException(() -> Unirest.get(MockServer.GET).asStringAsync().get(),
                 ExecutionException.class,
-                "java.io.IOException: " + ioErrorMessage);
+                "java.io.IOException: " + "Something horrible happened");
     }
 
     @Test
     void totalAsyncFailure_Recovery() throws Exception {
         interceptor.failResponse = true;
         Unirest.config().addInterceptor((r, c) -> {
-            throw new IOException(ioErrorMessage);
+            throw new IOException("Something horrible happened");
         }).interceptor(interceptor);
 
         HttpResponse<String> response = Unirest.get(MockServer.GET).asStringAsync().get();
 
         assertEquals(542, response.getStatus());
-        assertEquals(ioErrorMessage, response.getStatusText());
-    }
-
-    private HttpClient getFailureClient() throws IOException {
-        HttpClient client = mock(HttpClient.class);
-        when(client.execute(any(HttpHost.class), any(HttpUriRequest.class))).thenThrow(new IOException(ioErrorMessage));
-        when(client.execute(any(HttpUriRequest.class))).thenThrow(new IOException(ioErrorMessage));
-        return client;
+        assertEquals("Something horrible happened", response.getStatusText());
     }
 
     @Test @Deprecated
