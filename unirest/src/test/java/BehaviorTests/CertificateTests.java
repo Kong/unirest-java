@@ -37,12 +37,10 @@ import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.ssl.SSLContexts;
 import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -68,7 +66,8 @@ class CertificateTests extends BddTest {
         Unirest.get("https://client.badssl.com/")
                 .asString()
                 .ifFailure(r -> fail(r.getStatus() + " request failed " + r.getBody()))
-                .ifSuccess(r -> System.out.println(" woot "));;
+                .ifSuccess(r -> System.out.println(" woot "));
+        ;
     }
 
 
@@ -79,12 +78,13 @@ class CertificateTests extends BddTest {
         Unirest.get("https://client.badssl.com/")
                 .asString()
                 .ifFailure(r -> fail(r.getStatus() + " request failed " + r.getBody()))
-                .ifSuccess(r -> System.out.println(" woot "));;
+                .ifSuccess(r -> System.out.println(" woot "));
+        ;
     }
 
     @Test
     void loadWithSSLContext() throws Exception {
-        SSLContext sslContext = SSLContexts.custom()
+        SSLContext sslContext = SSLContextBuilder.create()
                 .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
                 .build();
 
@@ -96,7 +96,7 @@ class CertificateTests extends BddTest {
 
     @Test
     void loadWithSSLContextAndProtocol() throws Exception {
-        SSLContext sslContext = SSLContexts.custom()
+        SSLContext sslContext = SSLContextBuilder.create()
                 .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
                 .build();
 
@@ -108,7 +108,7 @@ class CertificateTests extends BddTest {
 
     @Test
     void loadWithSSLContextAndCipher() throws Exception {
-        SSLContext sslContext = SSLContexts.custom()
+        SSLContext sslContext = SSLContextBuilder.create()
                 .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
                 .build();
 
@@ -120,7 +120,7 @@ class CertificateTests extends BddTest {
 
     @Test
     void loadWithSSLContextAndCipherAndProtocol() throws Exception {
-        SSLContext sslContext = SSLContexts.custom()
+        SSLContext sslContext = SSLContextBuilder.create()
                 .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
                 .build();
 
@@ -135,7 +135,7 @@ class CertificateTests extends BddTest {
 
     @Test
     void sslHandshakeFailsWhenServerIsReceivingAnUnsupportedCipher() throws Exception {
-        SSLContext sslContext = SSLContexts.custom()
+        SSLContext sslContext = SSLContextBuilder.create()
                 .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
                 .build();
 
@@ -150,7 +150,7 @@ class CertificateTests extends BddTest {
 
     @Test
     void clientPreventsToUseUnsafeProtocol() throws Exception {
-        SSLContext sslContext = SSLContexts.custom()
+        SSLContext sslContext = SSLContextBuilder.create()
                 .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
                 .build();
 
@@ -164,7 +164,7 @@ class CertificateTests extends BddTest {
 
     @Test
     void canSetHoestNameVerifyer() {
-        Unirest.config().hostnameVerifier(new NoopHostnameVerifier());
+        Unirest.config().hostnameVerifier((q, w) -> true);
 
         int response = Unirest.get("https://badssl.com/").asEmpty().getStatus();
         assertEquals(200, response);
@@ -172,7 +172,7 @@ class CertificateTests extends BddTest {
 
     @Test
     void rawApacheClientCert() throws Exception {
-        SSLContext sslContext = SSLContexts.custom()
+        SSLContext sslContext = SSLContextBuilder.create()
                 .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
                 .build();
 
@@ -189,12 +189,12 @@ class CertificateTests extends BddTest {
 
     @Test
     void rawApacheWithConnectionManager() throws Exception {
-        SSLContext sc = SSLContexts.custom()
+        SSLContext sc = SSLContextBuilder.create()
                 .loadKeyMaterial(readStore(), "badssl.com".toCharArray()) // use null as second param if you don't have a separate key password
                 .build();
 
         SSLConnectionSocketFactory sslSocketFactory =
-                new SSLConnectionSocketFactory(sc, new NoopHostnameVerifier());
+                new SSLConnectionSocketFactory(sc, (q, w) -> true);
 
 
         Registry<ConnectionSocketFactory> socketFactoryRegistry =
@@ -236,8 +236,8 @@ class CertificateTests extends BddTest {
     void expired() {
         fails("https://expired.badssl.com/",
                 SSLHandshakeException.class,
-                "javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: " +
-                        "PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed");
+                "javax.net.ssl.SSLHandshakeException: PKIX path validation failed: " +
+                        "java.security.cert.CertPathValidatorException: validity check failed");
         disableSsl();
         canCall("https://expired.badssl.com/");
     }
@@ -246,7 +246,7 @@ class CertificateTests extends BddTest {
     void selfSigned() {
         fails("https://self-signed.badssl.com/",
                 SSLHandshakeException.class,
-                "javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: " +
+                "javax.net.ssl.SSLHandshakeException: " +
                         "PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: " +
                         "unable to find valid certification path to requested target");
         disableSsl();
@@ -268,7 +268,7 @@ class CertificateTests extends BddTest {
     void expiredAsync() {
         failsAsync("https://expired.badssl.com/",
                 SSLHandshakeException.class,
-                "javax.net.ssl.SSLHandshakeException: General SSLEngine problem");
+                "javax.net.ssl.SSLHandshakeException: PKIX path validation failed: java.security.cert.CertPathValidatorException: validity check failed");
         disableSsl();
         canCallAsync("https://expired.badssl.com/");
     }
@@ -277,7 +277,8 @@ class CertificateTests extends BddTest {
     void selfSignedAsync() {
         failsAsync("https://self-signed.badssl.com/",
                 SSLHandshakeException.class,
-                "javax.net.ssl.SSLHandshakeException: General SSLEngine problem");
+                "javax.net.ssl.SSLHandshakeException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: " +
+                        "unable to find valid certification path to requested target");
         disableSsl();
         canCallAsync("https://self-signed.badssl.com/");
     }
