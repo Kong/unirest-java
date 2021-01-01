@@ -28,24 +28,24 @@ package kong.unirest.apache;
 import BehaviorTests.BddTest;
 import BehaviorTests.MockServer;
 import com.google.common.collect.Sets;
-import kong.unirest.*;
+import kong.unirest.Config;
+import kong.unirest.Unirest;
+import kong.unirest.UnirestInstance;
 import kong.unirest.apache.AsyncIdleConnectionMonitorThread;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -102,16 +102,6 @@ class LifeCycleTest extends BddTest {
         assertSame(Unirest.primaryInstance(), Unirest.primaryInstance());
         assertNotSame(Unirest.primaryInstance(), Unirest.spawnInstance());
         assertNotSame(Unirest.spawnInstance(), Unirest.spawnInstance());
-    }
-
-    @Test
-    void shouldReuseThreadPool() {
-        int startingCount = ManagementFactory.getThreadMXBean().getThreadCount();
-        IntStream.range(0,100).forEach(i -> {
-            Unirest.config().reset().getClient();
-            Unirest.config().getAsyncClient();
-        });
-        assertTrue(ManagementFactory.getThreadMXBean().getThreadCount() <= startingCount + 10);
     }
 
     @Test

@@ -35,7 +35,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-class Util {
+public class Util {
     private static Supplier<Instant> clock = Instant::now;
 
     static void freezeClock(Instant instant){
@@ -50,7 +50,7 @@ class Util {
         return clock.get();
     }
 
-    static <T, M extends T> Optional<M> tryCast(T original, Class<M> too) {
+    public static <T, M extends T> Optional<M> tryCast(T original, Class<M> too) {
         if (original != null && too.isAssignableFrom(original.getClass())) {
             return Optional.of((M) original);
         }

@@ -23,34 +23,27 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
+package kong.unirest.java;
 
-import java.io.File;
+/** Strategy for appending the boundary across parts. */
+enum BoundaryAppender {
+    FIRST("--", "\r\n"),
+    MIDDLE("\r\n--", "\r\n"),
+    LAST("\r\n--", "--\r\n");
 
-public class FilePart extends BodyPart<File> {
-    private String fileName;
+    private final String prefix;
+    private final String suffix;
 
-    public FilePart(File file, String name) {
-        this(file, name, null);
+    BoundaryAppender(String prefix, String suffix) {
+        this.prefix = prefix;
+        this.suffix = suffix;
     }
 
-    public FilePart(File file, String name, String contentType) {
-        super(file, name, contentType);
-        this.fileName = file.getName();
+    void append(StringBuilder target, String boundary) {
+        target.append(prefix).append(boundary).append(suffix);
     }
 
-    @Override
-    public boolean isFile() {
-        return true;
-    }
-
-    @Override
-    public String getFileName(){
-        return this.fileName;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%s=%s", getName(), fileName);
+    static BoundaryAppender get(int partIndex, int partsSize) {
+        return partIndex <= 0 ? FIRST : (partIndex >= partsSize ? LAST : MIDDLE);
     }
 }

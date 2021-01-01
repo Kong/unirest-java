@@ -67,7 +67,7 @@ class HeadersTest {
         String toString = h.toString();
         assertEquals("a: 1" + ls +
                 "c: 3" + ls +
-                "d: null", toString);
+                "d: ", toString);
     }
 
     @Test

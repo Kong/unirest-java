@@ -29,6 +29,7 @@ import kong.unirest.GetRequest;
 import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -158,9 +159,8 @@ class CertificateTests extends BddTest {
     void badName() {
         fails("https://wrong.host.badssl.com/",
                 SSLPeerUnverifiedException.class,
-                "javax.net.ssl.SSLPeerUnverifiedException: " +
-                        "Certificate for <wrong.host.badssl.com> doesn't match any of the subject alternative names: " +
-                        "[*.badssl.com, badssl.com]");
+                "java.io.IOException: " +
+                        "No subject alternative DNS name matching wrong.host.badssl.com found.");
         disableSsl();
         canCall("https://wrong.host.badssl.com/");
     }
@@ -169,8 +169,10 @@ class CertificateTests extends BddTest {
     void expired() {
         fails("https://expired.badssl.com/",
                 SSLHandshakeException.class,
-                "javax.net.ssl.SSLHandshakeException: PKIX path validation failed: " +
-                        "java.security.cert.CertPathValidatorException: validity check failed");
+                "java.io.IOException: " +
+                        "PKIX path validation failed: " +
+                        "java.security.cert.CertPathValidatorException: " +
+                        "validity check failed");
         disableSsl();
         canCall("https://expired.badssl.com/");
     }
@@ -179,8 +181,8 @@ class CertificateTests extends BddTest {
     void selfSigned() {
         fails("https://self-signed.badssl.com/",
                 SSLHandshakeException.class,
-                "javax.net.ssl.SSLHandshakeException: " +
-                        "PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: " +
+                "java.io.IOException: PKIX path building failed: " +
+                        "sun.security.provider.certpath.SunCertPathBuilderException: " +
                         "unable to find valid certification path to requested target");
         disableSsl();
         canCall("https://self-signed.badssl.com/");
@@ -189,10 +191,9 @@ class CertificateTests extends BddTest {
     @Test
     void badNameAsync() {
         failsAsync("https://wrong.host.badssl.com/",
-                SSLPeerUnverifiedException.class,
-                "javax.net.ssl.SSLPeerUnverifiedException: " +
-                        "Host name 'wrong.host.badssl.com' does not match the certificate subject provided by the peer " +
-                        "(CN=*.badssl.com, O=Lucas Garron Torres, L=Walnut Creek, ST=California, C=US)");
+                SSLHandshakeException.class,
+                "javax.net.ssl.SSLHandshakeException: " +
+                        "No subject alternative DNS name matching wrong.host.badssl.com found.");
         disableSsl();
         canCallAsync("https://wrong.host.badssl.com/");
     }

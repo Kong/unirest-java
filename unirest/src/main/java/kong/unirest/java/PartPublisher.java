@@ -23,34 +23,36 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
+package kong.unirest.java;
 
-import java.io.File;
+import static java.util.Objects.requireNonNull;
 
-public class FilePart extends BodyPart<File> {
-    private String fileName;
+import java.net.http.HttpRequest.BodyPublisher;
+import java.nio.ByteBuffer;
+import java.util.concurrent.Flow;
 
-    public FilePart(File file, String name) {
-        this(file, name, null);
+class PartPublisher implements BodyPublisher {
+
+    private final String mediaType;
+    private final BodyPublisher upstream;
+
+    public PartPublisher(BodyPublisher upstream, String mediaType) {
+        this.upstream = upstream;
+        this.mediaType = requireNonNull(mediaType);
     }
 
-    public FilePart(File file, String name, String contentType) {
-        super(file, name, contentType);
-        this.fileName = file.getName();
-    }
-
-    @Override
-    public boolean isFile() {
-        return true;
-    }
-
-    @Override
-    public String getFileName(){
-        return this.fileName;
+    public String mediaType() {
+        return mediaType;
     }
 
     @Override
-    public String toString() {
-        return String.format("%s=%s", getName(), fileName);
+    public long contentLength() {
+        return upstream.contentLength();
+    }
+
+    @Override
+    public void subscribe(Flow.Subscriber<? super ByteBuffer> subscriber) {
+        requireNonNull(subscriber);
+        upstream.subscribe(subscriber);
     }
 }

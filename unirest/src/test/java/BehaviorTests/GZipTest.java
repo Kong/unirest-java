@@ -38,6 +38,9 @@ class GZipTest extends BddTest {
     void emptyGzip() {
         HttpResponse<String> result = Unirest.post(MockServer.EMPTY_GZIP)
                 .asString();
+        result.getParsingError().ifPresent(e -> {
+            e.printStackTrace();
+        });
         assertFalse(result.getParsingError().isPresent());
         assertEquals("", result.getBody());
     }

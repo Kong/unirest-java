@@ -53,7 +53,7 @@ public class ShutDownHooksTest extends BddTest {
         Unirest.config().addShutdownHook(true);
         Unirest.config().addShutdownHook(true);
 
-        assertShutdownHooks(1);
+        assertShutdownHooks(2);
     }
 
     @Test
@@ -69,8 +69,7 @@ public class ShutDownHooksTest extends BddTest {
     private void assertShutdownHooks(int expected) {
         Set<Thread> threads = getShutdownHookMap();
 
-        assertEquals(expected, threads.stream().filter(t -> "Unirest Apache Client Shutdown Hook".equals(t.getName())).count());
-        assertEquals(expected, threads.stream().filter(t -> "Unirest Apache Async Client Shutdown Hook".equals(t.getName())).count());
+        assertEquals(expected, threads.stream().filter(t -> "Unirest Client Shutdown Hook".equals(t.getName())).count());
     }
 
 

@@ -203,7 +203,15 @@ class MultiPartFormPostingTest extends BddTest {
                 .assertFileName(filename);
     }
 
-
+    @Test
+    void simpleMultiPart() {
+        Unirest.post(MockServer.POST)
+                .field("foo", "bar")
+                .field("fruit", "apple")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertParam("foo","bar");
+    }
 
     @Test
     void canSetModeToStrictForLegacySupport() {
@@ -254,10 +262,10 @@ class MultiPartFormPostingTest extends BddTest {
                 .fields(TestUtil.mapOf("big", "bird", "charlie", 42, "testfile", file, "gonzo", null))
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertMultiPartContentType()
                 .assertParam("big", "bird")
                 .assertParam("charlie", "42")
                 .assertParam("gonzo", "")
+                .assertMultiPartContentType()
                 .getFile("image.jpg")
                 .assertFileType("application/octet-stream");
     }
@@ -382,7 +390,6 @@ class MultiPartFormPostingTest extends BddTest {
                 .field("testfile", (Object)null, ContentType.IMAGE_JPEG.getMimeType())
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertContentType("application/x-www-form-urlencoded; charset=UTF-8")
                 .assertParam("testfile", "");
     }
 

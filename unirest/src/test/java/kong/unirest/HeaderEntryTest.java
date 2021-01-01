@@ -52,7 +52,7 @@ class HeaderEntryTest {
 
     @Test
     void entryLambdasCannotBeNull_butMayReturnNull() {
-        assertNull(entry("foo", (Supplier<String>) null).getValue());
+        assertEquals("", entry("foo", (Supplier<String>) null).getValue());
     }
 
     private Headers.Entry entry(String key, Supplier<String> value) {

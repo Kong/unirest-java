@@ -209,7 +209,11 @@ public class Headers {
 
         @Override
         public String getValue() {
-            return value.get();
+            String s = value.get();
+            if(s == null){
+                return "";
+            }
+            return s;
         }
 
         @Override

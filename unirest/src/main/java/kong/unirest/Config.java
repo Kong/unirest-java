@@ -27,6 +27,7 @@ package kong.unirest;
 
 import kong.unirest.apache.ApacheAsyncClient;
 import kong.unirest.apache.ApacheClient;
+import kong.unirest.java.JavaClient;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.HttpClient;
 import org.apache.http.nio.client.HttpAsyncClient;
@@ -114,8 +115,8 @@ public class Config {
 
         this.objectMapper = Optional.of(new JsonObjectMapper());
         try {
-            asyncBuilder = ApacheAsyncClient::new;
-            clientBuilder = ApacheClient::new;
+            asyncBuilder = JavaClient::new;
+            clientBuilder = JavaClient::new;
         }catch (BootstrapMethodError e){
             throw new UnirestException("It looks like you are using an older version of Apache Http Client. \n" +
                     "For security and performance reasons Unirest requires the most recent version. Please upgrade.", e);

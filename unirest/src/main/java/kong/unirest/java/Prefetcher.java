@@ -23,34 +23,42 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
+package kong.unirest.java;
 
-import java.io.File;
 
-public class FilePart extends BodyPart<File> {
-    private String fileName;
+/** Simple class for encapsulating prefetch logic used across subscribers. */
+class Prefetcher {
 
-    public FilePart(File file, String name) {
-        this(file, name, null);
+    public static final int PREFETCH = 16;
+    public static final int PREFETCH_THRESHOLD = (int) (PREFETCH * (50 / 100f));
+    private final int prefetch;
+    private final int prefetchThreshold;
+    private volatile int upstreamWindow;
+
+    public Prefetcher() {
+        prefetch = PREFETCH;
+        prefetchThreshold = PREFETCH_THRESHOLD;
     }
 
-    public FilePart(File file, String name, String contentType) {
-        super(file, name, contentType);
-        this.fileName = file.getName();
+    public void initialize(Upstream upstream) {
+        upstreamWindow = prefetch;
+        upstream.request(prefetch);
     }
 
-    @Override
-    public boolean isFile() {
-        return true;
+    public void update(Upstream upstream) {
+        // Decrement current window and bring it back to
+        // prefetch if became <= prefetchThreshold
+        int update = upstreamWindow - 1;
+        if (update <= prefetchThreshold) {
+            upstreamWindow = prefetch;
+            upstream.request(prefetch - update);
+        } else {
+            upstreamWindow = update;
+        }
     }
 
-    @Override
-    public String getFileName(){
-        return this.fileName;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("%s=%s", getName(), fileName);
+    // for testing
+    int currentWindow() {
+        return upstreamWindow;
     }
 }

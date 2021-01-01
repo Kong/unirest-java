@@ -63,7 +63,7 @@ public abstract class BodyPart<T> implements Comparable { ;
     }
 
     public String getFileName(){
-        return null;
+        return name;
     }
 
     @Override

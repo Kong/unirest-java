@@ -74,19 +74,6 @@ class ProxyTest extends BddTest {
     }
 
     @Test
-    void canPassProxyOnRequest() {
-        JankyProxy.runServer("localhost", 4567, 7777);
-
-        Unirest.get(MockServer.GET)
-                .proxy("localhost", 7777)
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertStatus(200);
-
-        assertTrue(JankyProxy.wasUsed());
-    }
-
-    @Test
     void canSetAuthenticatedProxy(){
         JankyProxy.runServer("localhost", 4567, 7777);
 
@@ -118,12 +105,12 @@ class ProxyTest extends BddTest {
         assertTrue(JankyProxy.wasUsed());
     }
 
-    @Test @Disabled // https://free-proxy-list.net/
-    void callSomethingRealThroughARealProxy() {
-        Unirest.config().proxy("18.222.230.116",8080);
-        //Unirest.config().proxy("34.73.62.46",3128, "myuser","pass1!");
-        HttpResponse<String> r = Unirest.get("https://twitter.com/ryber").asString();
-        System.out.println("status = " + r.getStatus());
-        System.out.println("body= " + r.getBody());
-    }
+//    @Test @Disabled // https://free-proxy-list.net/
+//    void callSomethingRealThroughARealProxy() {
+//        Unirest.config().proxy("18.222.230.116",8080);
+//        //Unirest.config().proxy("34.73.62.46",3128, "myuser","pass1!");
+//        HttpResponse<String> r = Unirest.get("https://twitter.com/ryber").asString();
+//        System.out.println("status = " + r.getStatus());
+//        System.out.println("body= " + r.getBody());
+//    }
 }
