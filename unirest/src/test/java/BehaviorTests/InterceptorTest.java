@@ -26,8 +26,6 @@
 package BehaviorTests;
 
 import kong.unirest.*;
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequestInterceptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,8 +37,6 @@ import java.util.concurrent.ExecutionException;
 import static com.google.common.collect.Sets.newHashSet;
 import static kong.unirest.TestUtil.rezFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
 
 class InterceptorTest extends BddTest {
 
@@ -127,27 +123,6 @@ class InterceptorTest extends BddTest {
         assertEquals("Something horrible happened", response.getStatusText());
     }
 
-    @Test @Deprecated
-    void canAddApacheInterceptor() {
-        Unirest.config().addInterceptor(new TestInterceptor());
-
-        Unirest.get(MockServer.GET)
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertHeader("x-custom", "foo");
-    }
-
-    @Test @Deprecated
-    void canAddApacheInterceptorToAsync() throws ExecutionException, InterruptedException {
-        Unirest.config().addInterceptor(new TestInterceptor());
-
-        Unirest.get(MockServer.GET)
-                .asObjectAsync(RequestCapture.class)
-                .get()
-                .getBody()
-                .assertHeader("x-custom", "foo");
-    }
-
     @Test
     void loggingBodyPartsExample() {
         final Set<String> values = new HashSet<>();
@@ -168,12 +143,7 @@ class InterceptorTest extends BddTest {
         assertEquals(newHashSet("file=spidey.jpg","fruit=apples"), values);
     }
 
-    private class TestInterceptor implements HttpRequestInterceptor {
-        @Override
-        public void process(org.apache.http.HttpRequest httpRequest, org.apache.http.protocol.HttpContext httpContext) throws HttpException, IOException {
-            httpRequest.addHeader("x-custom", "foo");
-        }
-    }
+
 
     private class UniInterceptor implements Interceptor {
         RequestCapture cap;
