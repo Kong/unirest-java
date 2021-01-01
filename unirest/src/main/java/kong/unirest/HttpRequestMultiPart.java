@@ -25,8 +25,6 @@
 
 package kong.unirest;
 
-import org.apache.http.HttpHeaders;
-
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -116,7 +114,7 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
 
     @Override
     public MultipartBody contentType(String mimeType) {
-        header(HttpHeaders.CONTENT_TYPE, mimeType);
+        header(HeaderNames.CONTENT_TYPE, mimeType);
         return this;
     }
 

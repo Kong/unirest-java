@@ -26,9 +26,7 @@
 package kong.unirest;
 
 import kong.unirest.json.JSONElement;
-import org.apache.http.client.utils.URIBuilder;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -234,15 +232,6 @@ class Invocation implements Expectation, ExpectedResponse {
         return 0;
     }
 
-    private URIBuilder geturi(HttpRequest request) {
-        try {
-            URIBuilder b = new URIBuilder(request.getUrl());
-            return b;
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private int scoreHeaders(HttpRequest request) {
         if(expectedHeaders.size() > 0){
             long b = expectedHeaders.all().stream().filter(h ->
@@ -259,7 +248,7 @@ class Invocation implements Expectation, ExpectedResponse {
 
     private int scoreQuery(HttpRequest request) {
         if(expectedQueryParams.size() > 0){
-            URIBuilder p = geturi(request);
+            URIParts p = new URIParts(request.getUrl());
             long b = expectedQueryParams.all().stream().filter(h ->
                     p.getQueryParams().stream().anyMatch(q -> q.getName().equalsIgnoreCase(h.getName())
                             && q.getValue().equalsIgnoreCase(h.getValue())))

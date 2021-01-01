@@ -1,3 +1,6 @@
+## 3.11.10 (pending)
+* internal pre-factorings to get ready for Unirest 4
+
 ## 3.11.09
 * Expected body param values for Mock expects need to be url encoded
 * Support ANY expectation on methods for MockClient. (e.g. ```expect(HttpMethod.GET)``)
