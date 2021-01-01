@@ -80,12 +80,6 @@
             <version>1.7.30</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.github.paweladamski</groupId>
-            <artifactId>HttpClientMock</artifactId>
-            <version>1.8.1</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>

@@ -25,96 +25,33 @@
 
 package BehaviorTests;
 
-import com.github.paweladamski.httpclientmock.HttpClientMock;
+
+import kong.unirest.Client;
+import kong.unirest.HttpRequest;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
-import kong.unirest.apache.ApacheAsyncClient;
-import kong.unirest.apache.ApacheClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Function;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class CustomClientTest extends BddTest {
 
-    private final String url = "http://localhost/getme";
-    boolean requestConfigUsed = false;
-
-
-    @Override
-    @AfterEach
-    public void tearDown() {
-        super.tearDown();
-        requestConfigUsed = false;
-
-
-    }
-
     @Test
     void settingACustomClient() {
-        HttpClientMock client = getMockClient();
+        Client client = mock(Client.class);;
 
+        HttpResponse mock = mock(HttpResponse.class);
+        when(client.request(any(HttpRequest.class),
+                any(Function.class),
+                any(Class.class))).thenReturn(mock);
         Unirest.config().httpClient(client);
 
-        assertMockResult();
-    }
-
-    @Test
-    void settingACustomClientWithBuilder() {
-        HttpClientMock client = getMockClient();
-
-        Unirest.config().httpClient(ApacheClient.builder(client)
-                .withRequestConfig((c, w) -> {
-                    requestConfigUsed = true;
-                    return RequestConfig.custom().build();
-                }));
-
-        assertMockResult();
-
-        Unirest.config().reset();
-
-        assertMockResult();
-    }
-
-    @Test
-    void canSetACustomAsyncClientWithBuilder() throws Exception {
-        try(CloseableHttpAsyncClient client = HttpAsyncClientBuilder.create().build()) {
-            client.start();
-
-            Unirest.config().asyncClient(ApacheAsyncClient.builder(client)
-                    .withRequestConfig((c, w) -> {
-                        requestConfigUsed = true;
-                        return RequestConfig.custom().build();
-                    })
-            );
-
-            assertAsyncResult();
-            assertTrue(requestConfigUsed);
-        }
-    }
-
-    private void assertAsyncResult() throws Exception {
-        MockServer.setStringResponse("Howdy Ho!");
-        HttpResponse<String> result =  Unirest.get(MockServer.GET).asStringAsync().get();
-        assertEquals(200, result.getStatus());
-        assertEquals("Howdy Ho!", result.getBody());
-    }
-
-
-    private void assertMockResult() {
-        HttpResponse<String> result =  Unirest.get(url).asString();
-        assertEquals(202, result.getStatus());
-        assertEquals("Howdy Ho!", result.getBody());
-    }
-
-    private HttpClientMock getMockClient() {
-        HttpClientMock client = new HttpClientMock();
-        client.onGet(url).doReturn(202, "Howdy Ho!");
-        return client;
+        assertEquals(mock, Unirest.get("http://localhost/getme").asEmpty());
     }
 
 

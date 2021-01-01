@@ -25,7 +25,6 @@
 
 package BehaviorTests;
 
-import com.github.paweladamski.httpclientmock.HttpClientMock;
 import com.google.common.collect.Sets;
 import kong.unirest.*;
 import kong.unirest.apache.AsyncIdleConnectionMonitorThread;
@@ -90,17 +89,6 @@ class LifeCycleTest extends BddTest {
         Unirest.config().addShutdownHook(true).getAsyncClient();
 
         assertShutdownHooks(1);
-    }
-
-    @Test
-    void settingClientAfterClientHasAlreadyBeenSet() {
-        HttpClientMock httpClientMock = new HttpClientMock();
-        httpClientMock.onGet("http://localhost/getme").doReturn(202, "Howdy Ho!");
-        assertEquals(200, Unirest.get(MockServer.GET).asString().getStatus());
-        Unirest.config().httpClient(httpClientMock);
-        HttpResponse<String> result =  Unirest.get("http://localhost/getme").asString();
-        assertEquals(202, result.getStatus());
-        assertEquals("Howdy Ho!", result.getBody());
     }
 
     @Test
