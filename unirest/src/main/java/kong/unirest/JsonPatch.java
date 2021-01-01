@@ -29,6 +29,7 @@ import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -77,7 +78,7 @@ public class JsonPatch {
         return a.toString();
     }
 
-    public Iterable<JsonPatchItem> getOperations(){
+    public Collection<JsonPatchItem> getOperations(){
         return Collections.unmodifiableList(items);
     }
 }

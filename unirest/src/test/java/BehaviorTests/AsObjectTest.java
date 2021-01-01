@@ -34,8 +34,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AsObjectTest extends BddTest {
@@ -43,7 +41,7 @@ class AsObjectTest extends BddTest {
     @Test
     void basicJsonObjectMapperIsTheDefault() {
         Unirest.config().shutDown(true);
-        assertThat(Unirest.config().getObjectMapper(), instanceOf(JsonObjectMapper.class));
+        assertTrue(Unirest.config().getObjectMapper() instanceof  JsonObjectMapper);
     }
 
     @Test

@@ -37,10 +37,7 @@ import java.util.HashMap;
 import java.util.function.Function;
 
 import static BehaviorTests.MockServer.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -172,7 +169,7 @@ class MetricsTest extends BddTest {
 
         Unirest.get(GET).asEmpty();
 
-        assertThat(exTime, greaterThan(0L));
+        assertTrue(exTime > 0L);
     }
 
     @Test

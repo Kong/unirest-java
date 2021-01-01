@@ -33,11 +33,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.management.ManagementFactory;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.lessThan;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class ClientFactoryTest {
@@ -52,7 +48,7 @@ class ClientFactoryTest {
     void shouldReuseThreadPool() {
         int startingCount = ManagementFactory.getThreadMXBean().getThreadCount();
         //IntStream.range(0,100).forEach(i -> ClientFactory.refresh());
-        assertThat(ManagementFactory.getThreadMXBean().getThreadCount(), is(lessThan(startingCount + 10)));
+        assertTrue(ManagementFactory.getThreadMXBean().getThreadCount() < startingCount + 10);
     }
 
     @Test

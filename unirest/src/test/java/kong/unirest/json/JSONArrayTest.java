@@ -41,8 +41,6 @@ import static com.google.common.collect.ImmutableMap.of;
 import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.assertException;
 import static kong.unirest.json.JSONObjectTest.assertEqualJson;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JSONArrayTest {
@@ -346,11 +344,11 @@ class JSONArrayTest {
                 new JSONObject(of("foo", "bar")),
                 new JSONArray(asList(1,2))));
 
-        assertThat(array.get(0), instanceOf(Double.class));
-        assertThat(array.get(1), instanceOf(Integer.class));
-        assertThat(array.get(2), instanceOf(String.class));
-        assertThat(array.get(3), instanceOf(JSONObject.class));
-        assertThat(array.get(4), instanceOf(JSONArray.class));
+        assertTrue(array.get(0) instanceof Double);
+        assertTrue(array.get(1) instanceof Integer);
+        assertTrue(array.get(2) instanceof String);
+        assertTrue(array.get(3) instanceof JSONObject);
+        assertTrue(array.get(4) instanceof JSONArray);
     }
 
     @Test
