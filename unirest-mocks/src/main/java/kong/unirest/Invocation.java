@@ -248,7 +248,7 @@ class Invocation implements Expectation, ExpectedResponse {
 
     private int scoreQuery(HttpRequest request) {
         if(expectedQueryParams.size() > 0){
-            URIParts p = new URIParts(request.getUrl());
+            QueryParams p = QueryParams.fromURI(request.getUrl());
             long b = expectedQueryParams.all().stream().filter(h ->
                     p.getQueryParams().stream().anyMatch(q -> q.getName().equalsIgnoreCase(h.getName())
                             && q.getValue().equalsIgnoreCase(h.getValue())))

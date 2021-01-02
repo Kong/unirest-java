@@ -25,19 +25,15 @@
 
 package BehaviorTests;
 
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.apache.http.nio.client.HttpAsyncClient;
-import kong.unirest.json.JSONObject;
 import kong.unirest.Unirest;
+import kong.unirest.json.JSONObject;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DefectTest extends BddTest {
 
@@ -63,27 +59,6 @@ class DefectTest extends BddTest {
                 .assertParam("foo", "")
                 .assertParam("baz", "qux")
                 .assertQueryString("foo&baz=qux");
-    }
-
-
-    @Test
-    void issue_41_IllegalThreadStateExceptionUnderHighLoad() throws IOException {
-        Unirest.get(MockServer.GET).asStringAsync();
-
-        HttpAsyncClient first = Unirest.config().getAsyncClient().getClient();
-        IntStream.range(1, 50).forEach(i ->{
-            assertSame(first, Unirest.config().getAsyncClient().getClient());
-        });
-
-        ((CloseableHttpAsyncClient)Unirest.config().getAsyncClient().getClient()).close();
-        Unirest.get(MockServer.GET).asStringAsync();
-
-        HttpAsyncClient second = Unirest.config().getAsyncClient().getClient();
-        assertNotSame(first, second);
-
-        IntStream.range(1, 50).forEach(i ->{
-            assertSame(second, Unirest.config().getAsyncClient().getClient());
-        });
     }
 
     @Test @Disabled

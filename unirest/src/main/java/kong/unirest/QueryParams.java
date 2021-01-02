@@ -29,35 +29,54 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 
-class URIParts {
+public class QueryParams {
     private final Collection<NameValuePair> pairs;
-    public URIParts(String url) {
+
+    public static QueryParams fromURI(String uri) {
+        return new QueryParams(uri);
+    }
+
+    public static QueryParams fromBody(String body) {
+        QueryParams queryParams = new QueryParams();
+        queryParams.parse(body);
+        return queryParams;
+    }
+
+    private QueryParams() {
         pairs = new ArrayList<>();
+    }
+
+    private QueryParams(String url) {
+        this();
+        String[] urlParts = url.split("\\?");
+        if (urlParts.length > 1) {
+            parse(urlParts[1]);
+        }
+    }
+
+    private void parse(String urlPart) {
         try {
-            String[] urlParts = url.split("\\?");
-            if (urlParts.length > 1) {
-                String query = urlParts[1];
-                for (String param : query.split("&")) {
-                    String[] pair = param.split("=");
-                    String key = URLDecoder.decode(pair[0], "UTF-8");
-                    String value = "";
-                    if (pair.length > 1) {
-                        value = URLDecoder.decode(pair[1], "UTF-8");
-                    }
-                    pairs.add(new NameValuePair(key, value));
+            String query = urlPart;
+            for (String param : query.split("&")) {
+                String[] pair = param.split("=");
+                String key = URLDecoder.decode(pair[0], "UTF-8");
+                String value = "";
+                if (pair.length > 1) {
+                    value = URLDecoder.decode(pair[1], "UTF-8");
                 }
+                pairs.add(new NameValuePair(key, value));
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new UnirestException(e);
         }
     }
 
 
-    Collection<NameValuePair> getQueryParams() {
-        return pairs;
+    public Collection<NameValuePair> getQueryParams() {
+        return new ArrayList<>(pairs);
     }
 
-    static class NameValuePair {
+    public static class NameValuePair {
         private final String key;
         private final String value;
 

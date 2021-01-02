@@ -26,12 +26,12 @@
 package BehaviorTests;
 
 import kong.unirest.Cookie;
+import kong.unirest.CookieSpecs;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
-import org.apache.http.client.config.CookieSpecs;
+
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;

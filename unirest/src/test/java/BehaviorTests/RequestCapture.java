@@ -33,7 +33,6 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Sets;
 import kong.unirest.*;
-import org.apache.http.client.utils.URLEncodedUtils;
 import spark.Request;
 
 import javax.servlet.MultipartConfigElement;
@@ -98,7 +97,8 @@ public class RequestCapture {
     }
 
     private void parseBodyToFormParams() {
-        URLEncodedUtils.parse(this.body, StandardCharsets.UTF_8)
+        QueryParams.fromBody(this.body)
+                .getQueryParams()
                 .forEach(p -> {
                     params.put(p.getName(), p.getValue());
                 });

@@ -23,39 +23,39 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
+package kong.unirest.apache;
 
-
+import BehaviorTests.BddTest;
+import BehaviorTests.MockServer;
+import kong.unirest.Unirest;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.nio.client.HttpAsyncClient;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.io.IOException;
+import java.util.stream.IntStream;
 
-class ContentTypeTest {
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
+public class ApacheBehaviorTest extends BddTest {
     @Test
-    void contentTypeWithEncoding() {
-        verifySame(org.apache.http.entity.ContentType.APPLICATION_ATOM_XML,
-                ContentType.APPLICATION_ATOM_XML);
-    }
+    void issue_41_IllegalThreadStateExceptionUnderHighLoad() throws IOException {
+        Unirest.get(MockServer.GET).asStringAsync();
 
-    @Test
-    void imageTypes() {
-        verifySame(org.apache.http.entity.ContentType.IMAGE_GIF,
-                ContentType.IMAGE_GIF);
-    }
+        HttpAsyncClient first = Unirest.config().getAsyncClient().getClient();
+        IntStream.range(1, 50).forEach(i ->{
+            assertSame(first, Unirest.config().getAsyncClient().getClient());
+        });
 
-    @Test
-    void wildCard() {
-        verifySame(org.apache.http.entity.ContentType.WILDCARD,
-                ContentType.WILDCARD);
-    }
+        ((CloseableHttpAsyncClient)Unirest.config().getAsyncClient().getClient()).close();
+        Unirest.get(MockServer.GET).asStringAsync();
 
-    private void verifySame(org.apache.http.entity.ContentType apache, ContentType unirest) {
-        assertEquals(
-                apache.toString(),
-                unirest.toString()
-        );
-        assertEquals(apache.toString(),
-                org.apache.http.entity.ContentType.parse(unirest.toString()).toString());
+        HttpAsyncClient second = Unirest.config().getAsyncClient().getClient();
+        assertNotSame(first, second);
+
+        IntStream.range(1, 50).forEach(i ->{
+            assertSame(second, Unirest.config().getAsyncClient().getClient());
+        });
     }
 }

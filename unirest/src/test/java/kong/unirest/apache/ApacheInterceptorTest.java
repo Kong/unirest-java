@@ -28,6 +28,7 @@ package kong.unirest.apache;
 import BehaviorTests.BddTest;
 import BehaviorTests.MockServer;
 import BehaviorTests.RequestCapture;
+import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequestInterceptor;
@@ -40,7 +41,17 @@ public class ApacheInterceptorTest extends BddTest {
 
 
     @Test
-    @Deprecated
+    void totalAsyncFailure() throws Exception {
+        Unirest.config().addInterceptor((r, c) -> {
+            throw new IOException("Something horrible happened");
+        });
+
+        TestUtil.assertException(() -> Unirest.get(MockServer.GET).asStringAsync().get(),
+                ExecutionException.class,
+                "java.io.IOException: " + "Something horrible happened");
+    }
+
+    @Test
     void canAddApacheInterceptor() {
         Unirest.config().addInterceptor(new TestInterceptor());
 
@@ -50,7 +61,7 @@ public class ApacheInterceptorTest extends BddTest {
                 .assertHeader("x-custom", "foo");
     }
 
-    @Test @Deprecated
+    @Test
     void canAddApacheInterceptorToAsync() throws ExecutionException, InterruptedException {
         Unirest.config().addInterceptor(new TestInterceptor());
 

@@ -100,17 +100,6 @@ class InterceptorTest extends BddTest {
     }
 
     @Test
-    void totalAsyncFailure() throws Exception {
-        Unirest.config().addInterceptor((r, c) -> {
-            throw new IOException("Something horrible happened");
-        }).interceptor(interceptor);
-
-        TestUtil.assertException(() -> Unirest.get(MockServer.GET).asStringAsync().get(),
-                ExecutionException.class,
-                "java.io.IOException: " + "Something horrible happened");
-    }
-
-    @Test
     void totalAsyncFailure_Recovery() throws Exception {
         interceptor.failResponse = true;
         Unirest.config().addInterceptor((r, c) -> {
