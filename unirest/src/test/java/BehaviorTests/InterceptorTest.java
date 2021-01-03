@@ -29,7 +29,6 @@ import kong.unirest.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -102,9 +101,9 @@ class InterceptorTest extends BddTest {
     @Test
     void totalAsyncFailure_Recovery() throws Exception {
         interceptor.failResponse = true;
-        Unirest.config().addInterceptor((r, c) -> {
-            throw new IOException("Something horrible happened");
-        }).interceptor(interceptor);
+        Unirest.config()
+                .asyncClient(TestUtil.getFailureAsyncClient())
+                .interceptor(interceptor);
 
         HttpResponse<String> response = Unirest.get(MockServer.GET).asStringAsync().get();
 

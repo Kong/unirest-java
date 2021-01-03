@@ -26,16 +26,19 @@
 package kong.unirest;
 
 import BehaviorTests.MockServer;
-import BehaviorTests.UploadProgressTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import com.google.common.io.Resources;
+import kong.unirest.apache.ApacheAsyncClient;
 import kong.unirest.apache.ApacheClient;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -106,14 +109,6 @@ public class TestUtil {
         }
     }
 
-    public static InputStream emptyInput() {
-        return new ByteArrayInputStream(new byte[]{});
-    }
-
-    public static InputStream toInputStream(String s) {
-        return new ByteArrayInputStream(s.getBytes());
-    }
-
     public static <K, V> Map<K, V> mapOf(Object... keyValues) {
         Map<K, V> map = new HashMap<>();
 
@@ -128,21 +123,6 @@ public class TestUtil {
         }
 
         return map;
-    }
-
-    public static void debugApache() {
-        System.setProperty("org.apache.commons.logging.Log","org.apache.commons.logging.impl.SimpleLog");
-        System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
-        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http", "DEBUG");
-        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.wire", "DEBUG");
-    }
-
-    public static <T> T read(String o, Class<T> as){
-        try {
-            return om.readValue(o, as);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static void assertBasicAuth(String raw, String username, String password) {
@@ -211,6 +191,15 @@ public class TestUtil {
         when(client.execute(any(HttpHost.class), any(HttpUriRequest.class))).thenThrow(new IOException("Something horrible happened"));
         when(client.execute(any(HttpUriRequest.class))).thenThrow(new IOException("Something horrible happened"));
         return new ApacheClient(client, Unirest.config());
+    }
+
+    public static AsyncClient getFailureAsyncClient() {
+        CloseableHttpAsyncClient client = HttpAsyncClientBuilder.create()
+                .addInterceptorFirst((HttpRequestInterceptor) (r, c) -> {
+            throw new IOException("Something horrible happened");
+        }).build();
+        client.start();
+        return new ApacheAsyncClient(client, Unirest.config());
     }
 
     @FunctionalInterface

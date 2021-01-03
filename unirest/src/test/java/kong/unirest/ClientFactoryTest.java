@@ -25,8 +25,6 @@
 
 package kong.unirest;
 
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +32,6 @@ import org.junit.jupiter.api.Test;
 import java.lang.management.ManagementFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 class ClientFactoryTest {
 
@@ -49,23 +46,6 @@ class ClientFactoryTest {
         int startingCount = ManagementFactory.getThreadMXBean().getThreadCount();
         //IntStream.range(0,100).forEach(i -> ClientFactory.refresh());
         assertTrue(ManagementFactory.getThreadMXBean().getThreadCount() < startingCount + 10);
-    }
-
-    @Test
-    void canSaveSomeOptions(){
-        HttpRequestInterceptor i = mock(HttpRequestInterceptor.class);
-        CloseableHttpAsyncClient c = mock(CloseableHttpAsyncClient.class);
-
-        Unirest.config()
-                .addInterceptor(i)
-                .connectTimeout(4000)
-                .asyncClient(c);
-
-        Unirest.shutDown(false);
-
-        assertNotEquals(c, Unirest.config().getAsyncClient());
-        assertEquals(i, Unirest.config().getInterceptor().get(0));
-        assertEquals(4000, Unirest.config().getConnectionTimeout());
     }
 
 }

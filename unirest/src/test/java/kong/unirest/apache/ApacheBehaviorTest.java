@@ -28,15 +28,19 @@ package kong.unirest.apache;
 import BehaviorTests.BddTest;
 import BehaviorTests.MockServer;
 import kong.unirest.Unirest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.nio.client.HttpAsyncClient;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
 
 public class ApacheBehaviorTest extends BddTest {
     @Test
@@ -57,5 +61,53 @@ public class ApacheBehaviorTest extends BddTest {
         IntStream.range(1, 50).forEach(i ->{
             assertSame(second, Unirest.config().getAsyncClient().getClient());
         });
+    }
+
+    @Test
+    public void setTimeoutsAndCustomClient() {
+        try {
+            Unirest.config().connectTimeout(1000).socketTimeout(2000);
+        } catch (Exception e) {
+            fail();
+        }
+
+        try {
+            Unirest.config().asyncClient(HttpAsyncClientBuilder.create().build());
+        } catch (Exception e) {
+            fail();
+        }
+
+        try {
+            Unirest.config().asyncClient(HttpAsyncClientBuilder.create().build());
+            Unirest.config().connectTimeout(1000).socketTimeout(2000);
+            fail();
+        } catch (Exception e) {
+            // Ok
+        }
+
+        try {
+            Unirest.config().httpClient(HttpClientBuilder.create().build());
+            Unirest.config().connectTimeout(1000).socketTimeout(2000);
+            fail();
+        } catch (Exception e) {
+            // Ok
+        }
+    }
+
+    @Test
+    void canSaveSomeOptions(){
+        HttpRequestInterceptor i = mock(HttpRequestInterceptor.class);
+        CloseableHttpAsyncClient c = mock(CloseableHttpAsyncClient.class);
+
+        Unirest.config()
+                .addInterceptor(i)
+                .connectTimeout(4000)
+                .asyncClient(c);
+
+        Unirest.shutDown(false);
+
+        assertNotEquals(c, Unirest.config().getAsyncClient());
+        assertEquals(i, Unirest.config().getInterceptor().get(0));
+        assertEquals(4000, Unirest.config().getConnectionTimeout());
     }
 }

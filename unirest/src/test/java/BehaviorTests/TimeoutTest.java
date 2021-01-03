@@ -30,13 +30,9 @@ package BehaviorTests;
 import kong.unirest.Config;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.net.InetAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -104,47 +100,5 @@ class TimeoutTest extends BddTest {
 
         newFixedThreadPool.shutdown();
         newFixedThreadPool.awaitTermination(10, TimeUnit.MINUTES);
-    }
-
-    @Test
-    public void setTimeoutsAndCustomClient() {
-        try {
-            Unirest.config().connectTimeout(1000).socketTimeout(2000);
-        } catch (Exception e) {
-            fail();
-        }
-
-        try {
-            Unirest.config().asyncClient(HttpAsyncClientBuilder.create().build());
-        } catch (Exception e) {
-            fail();
-        }
-
-        try {
-            Unirest.config().asyncClient(HttpAsyncClientBuilder.create().build());
-            Unirest.config().connectTimeout(1000).socketTimeout(2000);
-            fail();
-        } catch (Exception e) {
-            // Ok
-        }
-
-        try {
-            Unirest.config().httpClient(HttpClientBuilder.create().build());
-            Unirest.config().connectTimeout(1000).socketTimeout(2000);
-            fail();
-        } catch (Exception e) {
-            // Ok
-        }
-    }
-
-    private String findAvailableIpAddress() throws IOException {
-        for (int i = 100; i <= 255; i++) {
-            String ip = "192.168.1." + i;
-            if (!InetAddress.getByName(ip).isReachable(1000)) {
-                return ip;
-            }
-        }
-
-        throw new RuntimeException("Couldn't find an available IP address in the range of 192.168.0.100-255");
     }
 }
