@@ -314,8 +314,7 @@
                                     <excludeVulnerabilityIds>
                                         <!-- Only a test dependency. Waiting on
                                         https://github.com/perwendel/spark/pull/1201 -->
-                                        <exclude>2f9b8690-2b13-48ad-adc9-af1489d0a2f3</exclude>
-                                        <exclude>dbc80e9d-e821-4669-a4e1-6a537b6ad365</exclude>
+<!--                                        <exclude>2f9b8690-2b13-48ad-adc9-af1489d0a2f3</exclude>-->
                                     </excludeVulnerabilityIds>
                                 </banVulnerable>
                             </rules>
@@ -436,7 +435,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>29.0-jre</version>
+            <version>30.1-jre</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
