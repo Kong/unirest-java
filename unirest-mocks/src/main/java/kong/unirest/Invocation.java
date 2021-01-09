@@ -31,13 +31,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.lang.System.lineSeparator;
 
 class Invocation implements Expectation, ExpectedResponse {
     private Routes routes;
-    private String response;
+    private Function<ObjectMapper, String> response = o -> null;
     private Headers expectedHeaders = new Headers();
     private Headers expectedQueryParams = new Headers();
     private List<HttpRequest> requests = new ArrayList<>();
@@ -60,24 +61,30 @@ class Invocation implements Expectation, ExpectedResponse {
 
     @Override
     public ExpectedResponse thenReturn(String body) {
-        this.response = body;
+        this.response = o -> body;
         return this;
     }
 
     @Override
     public ExpectedResponse thenReturn(JSONElement jsonObject) {
-        this.response = jsonObject.toString();
+        this.response = o -> jsonObject.toString();
         return this;
     }
 
     @Override
     public ExpectedResponse thenReturn(Object pojo) {
-        this.response = new JsonObjectMapper().writeValue(pojo);
+        this.response = o -> o.writeValue(pojo);
         return this;
     }
 
-    RawResponse getResponse(Config config) {
-        return new MockRawResponse(response, responseHeaders, responseStatus, responseText, config);
+    RawResponse getResponse(Config config, HttpRequest request) {
+        return new MockRawResponse(response.apply(getObjectMapper(request, config)), responseHeaders, responseStatus, responseText, config);
+    }
+
+    private ObjectMapper getObjectMapper(HttpRequest request, Config config) {
+        return Util.tryCast(request, BaseRequest.class)
+                .map(BaseRequest::getObjectMapper)
+                .orElseGet(() -> config.getObjectMapper());
     }
 
     private Headers allHeaders() {

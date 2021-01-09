@@ -96,6 +96,36 @@ class ExpectedResponseTest extends Base {
     void canPassInAndReturnObjectsAsJson() {
         client.expect(HttpMethod.GET, path)
                 .thenReturn(new Pojo("apple"));
+
+        Pojo pojo = Unirest.get(path).asObject(Pojo.class).getBody();
+        assertEquals("apple", pojo.fruit);
+    }
+
+    @Test
+    void willUseRequestObjectMapperIfSupplied() {
+        client.expect(HttpMethod.GET, path)
+                .thenReturn(new Pojo("apple"));
+
+        String pojo = Unirest.get(path)
+                .withObjectMapper(new DerpMapper())
+                .asString()
+                .getBody();
+
+        assertEquals("derp", pojo);
+    }
+
+    @Test
+    void willUseConfigObjectMapperIfSupplied() {
+        client.expect(HttpMethod.GET, path)
+                .thenReturn(new Pojo("apple"));
+
+        Unirest.config().setObjectMapper(new DerpMapper());
+
+        String pojo = Unirest.get(path)
+                .asString()
+                .getBody();
+
+        assertEquals("derp", pojo);
     }
 
     @Test
@@ -118,5 +148,17 @@ class ExpectedResponseTest extends Base {
         HttpResponse<String> rez = Unirest.get(path).asString();
         assertEquals(null, rez.getBody());
         assertEquals("grover", rez.getHeaders().getFirst("monster"));
+    }
+
+    private class DerpMapper implements kong.unirest.ObjectMapper {
+        @Override
+        public <T> T readValue(String value, Class<T> valueType) {
+            return (T)value;
+        }
+
+        @Override
+        public String writeValue(Object value) {
+            return "derp";
+        }
     }
 }

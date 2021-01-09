@@ -82,7 +82,7 @@ public interface Expectation {
     ExpectedResponse thenReturn(JSONElement jsonObject);
 
     /**
-     * expect a json response as defined by a pojo
+     * expect a object response as defined by a pojo using the requests / configuration object mapper
      * @param pojo the expected response body
      * @return The ExpectedResponse
      */
