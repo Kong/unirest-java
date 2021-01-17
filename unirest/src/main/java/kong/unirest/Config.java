@@ -25,12 +25,7 @@
 
 package kong.unirest;
 
-import kong.unirest.apache.ApacheAsyncClient;
-import kong.unirest.apache.ApacheClient;
 import kong.unirest.java.JavaClient;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.client.HttpClient;
-import org.apache.http.nio.client.HttpAsyncClient;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -57,7 +52,6 @@ public class Config {
     private Optional<AsyncClient> asyncClient = Optional.empty();
     private Optional<ObjectMapper> objectMapper = Optional.of(new JsonObjectMapper());
 
-    private List<HttpRequestInterceptor> apacheinterceptors = new ArrayList<>();
     private Headers headers;
     private Proxy proxy;
     private int connectionTimeout;
@@ -92,7 +86,6 @@ public class Config {
     }
 
     private void setDefaults() {
-        apacheinterceptors.clear();
         proxy = null;
         cache = null;
         headers = new Headers();
@@ -129,18 +122,6 @@ public class Config {
      * @param httpClient Custom httpClient implementation
      * @return this config object
      */
-    @Deprecated // use httpClient(Function<Config, Client> httpClient) with the ApacheConfig.builder()
-    public Config httpClient(HttpClient httpClient) {
-        client = Optional.of(new ApacheClient(httpClient, this, null));
-        return this;
-    }
-
-    /**
-     * Set the HttpClient implementation to use for every synchronous request
-     *
-     * @param httpClient Custom httpClient implementation
-     * @return this config object
-     */
     public Config httpClient(Client httpClient) {
         client = Optional.ofNullable(httpClient);
         return this;
@@ -157,18 +138,6 @@ public class Config {
         return this;
     }
 
-    /**
-     * Set the asynchronous AbstractHttpAsyncClient implementation to use for every asynchronous request
-     *
-     * @param value Custom CloseableHttpAsyncClient implementation
-     * @return this config object
-     * @deprecated use asyncClient(AsyncClient value)
-     */
-    @Deprecated
-    public Config asyncClient(HttpAsyncClient value) {
-        this.asyncClient = Optional.of(new ApacheAsyncClient(value, this, null, null));
-        return this;
-    }
 
     /**
      * Set the full async configuration including monitors. These will be shutDown on a Unirest.shudown()
@@ -476,21 +445,6 @@ public class Config {
     public Config interceptor(Interceptor value) {
         Objects.requireNonNull(value, "Interceptor may not be null");
         this.interceptor.register(value);
-        return this;
-    }
-
-    /**
-     * Add a HttpRequestInterceptor to the clients. This can be called multiple times to add as many as you like.
-     * https://hc.apache.org/httpcomponents-core-ga/httpcore/apidocs/org/apache/http/HttpRequestInterceptor.html
-     *
-     * @param value The addInterceptor
-     * @return this config object
-     * @deprecated use the Unirest Interceptors rather than Apache
-     */
-    @Deprecated
-    public Config addInterceptor(HttpRequestInterceptor value) {
-        validateClientsNotRunning();
-        apacheinterceptors.add(value);
         return this;
     }
 
@@ -877,15 +831,6 @@ public class Config {
                             "This should be done rarely."
             );
         }
-    }
-
-    /**
-     * @return currently configured Apache HttpRequestInterceptors
-     * @deprecated use Unirest Interceptors instead
-     */
-    @Deprecated
-    public List<HttpRequestInterceptor> getInterceptor() {
-        return apacheinterceptors;
     }
 
     /**

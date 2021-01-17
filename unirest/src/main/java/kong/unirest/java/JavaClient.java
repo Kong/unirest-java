@@ -49,7 +49,7 @@ public class JavaClient implements Client, AsyncClient {
     private final HttpClient client;
     private boolean hookset = false;
 
-    public JavaClient(Config config){
+    public JavaClient(Config config) {
         this.config = config;
         HttpClient.Builder builder = HttpClient.newBuilder()
                 .followRedirects(redirectPolicy(config));
@@ -77,6 +77,11 @@ public class JavaClient implements Client, AsyncClient {
         }
         builder.sslParameters(params);
         client = builder.build();
+    }
+
+    public JavaClient(Config config, HttpClient client){
+        this.config = config;
+        this.client = client;
     }
 
     private void createProxy(HttpClient.Builder builder, Proxy proxy) {
@@ -140,8 +145,6 @@ public class JavaClient implements Client, AsyncClient {
         } catch (Exception e) {
             metric.complete(null, e);
             return (HttpResponse<T>) config.getUniInterceptor().onFail(e, reqSum, config);
-        } finally {
-           // requestObj.releaseConnection();
         }
     }
 
@@ -185,7 +188,6 @@ public class JavaClient implements Client, AsyncClient {
         java.net.http.HttpRequest requestObj = getRequest(request);
         MetricContext metric = config.getMetric().begin(reqSum);
 
-        //HttpHost host = determineTarget(requestObj, request.getHeaders());
         CompletableFuture<java.net.http.HttpResponse<InputStream>> execute = client.sendAsync(requestObj,
                 java.net.http.HttpResponse.BodyHandlers.ofInputStream());
 
@@ -206,11 +208,8 @@ public class JavaClient implements Client, AsyncClient {
             } catch (Exception ee){
                 callback.completeExceptionally(e);
             }
-            if(e instanceof RuntimeException){
-                throw (RuntimeException) e;
-            } else {
-                throw ex;
-            }
+
+            return new FailedResponse(ex);
         });
     }
 

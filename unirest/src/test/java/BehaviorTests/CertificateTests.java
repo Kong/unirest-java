@@ -29,7 +29,7 @@ import kong.unirest.GetRequest;
 import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
-import org.apache.http.ssl.SSLContextBuilder;
+import kong.unirest.java.SSLContextBuilder;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

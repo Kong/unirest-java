@@ -29,6 +29,7 @@ import kong.unirest.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -108,7 +109,6 @@ class InterceptorTest extends BddTest {
         HttpResponse<String> response = Unirest.get(MockServer.GET).asStringAsync().get();
 
         assertEquals(542, response.getStatus());
-        assertEquals("Something horrible happened", response.getStatusText());
     }
 
     @Test
@@ -137,6 +137,7 @@ class InterceptorTest extends BddTest {
         RequestCapture cap;
         HttpRequestSummary reqSum;
         boolean failResponse;
+        boolean dothrow;
         private String name;
         private String value;
 
@@ -147,6 +148,9 @@ class InterceptorTest extends BddTest {
 
         @Override
         public void onRequest(HttpRequest<?> request, Config config) {
+            if(dothrow){
+                throw new RuntimeException("Something Happened");
+            }
             request.header(name, value);
         }
 

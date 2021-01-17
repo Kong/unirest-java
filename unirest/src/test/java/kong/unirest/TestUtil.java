@@ -31,17 +31,13 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import com.google.common.io.Resources;
-import kong.unirest.apache.ApacheAsyncClient;
-import kong.unirest.apache.ApacheClient;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpRequestInterceptor;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import kong.unirest.java.JavaClient;
 
+import javax.net.ssl.SSLContext;
 import java.io.*;
-import java.net.URISyntaxException;
+import java.net.*;
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
 import java.security.KeyStore;
 import java.time.Instant;
 import java.util.Base64;
@@ -186,20 +182,25 @@ public class TestUtil {
         }
     }
 
-    public static Client getFailureClient() throws IOException {
-        HttpClient client = mock(HttpClient.class);
-        when(client.execute(any(HttpHost.class), any(HttpUriRequest.class))).thenThrow(new IOException("Something horrible happened"));
-        when(client.execute(any(HttpUriRequest.class))).thenThrow(new IOException("Something horrible happened"));
-        return new ApacheClient(client, Unirest.config());
+    public static Client getFailureClient() throws Exception {
+        HttpClient mock = mock(HttpClient.class);
+        when(mock.send(any(java.net.http.HttpRequest.class),
+                any(HttpResponse.BodyHandler.class)))
+                .thenThrow(new IOException("Something horrible happened"));
+        return new JavaClient(Unirest.config(), mock);
     }
 
-    public static AsyncClient getFailureAsyncClient() {
-        CloseableHttpAsyncClient client = HttpAsyncClientBuilder.create()
-                .addInterceptorFirst((HttpRequestInterceptor) (r, c) -> {
-            throw new IOException("Something horrible happened");
-        }).build();
-        client.start();
-        return new ApacheAsyncClient(client, Unirest.config());
+    public static AsyncClient getFailureAsyncClient()  throws Exception {
+
+        HttpClient client  = HttpClient.newBuilder()
+               //.sslContext(new SSLContext())
+                .authenticator(new Authenticator() {
+                    @Override
+                    public PasswordAuthentication requestPasswordAuthenticationInstance(String host, InetAddress addr, int port, String protocol, String prompt, String scheme, URL url, RequestorType reqType) {
+                        throw new RuntimeException("boo");
+                    }
+                }).build();
+        return new JavaClient(Unirest.config(), client);
     }
 
     @FunctionalInterface

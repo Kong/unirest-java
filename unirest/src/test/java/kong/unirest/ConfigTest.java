@@ -25,15 +25,6 @@
 
 package kong.unirest;
 
-import kong.unirest.apache.ApacheAsyncClient;
-import kong.unirest.apache.ApacheClient;
-import kong.unirest.apache.AsyncIdleConnectionMonitorThread;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
-import org.apache.http.nio.client.HttpAsyncClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -52,17 +43,6 @@ import static org.mockito.Mockito.doThrow;
 
 @ExtendWith(MockitoExtension.class)
 class ConfigTest {
-
-    @Mock
-    private CloseableHttpClient httpc;
-    @Mock
-    private PoolingHttpClientConnectionManager clientManager;
-    @Mock
-    private CloseableHttpAsyncClient asyncClient;
-    @Mock
-    private AsyncIdleConnectionMonitorThread asyncMonitor;
-    @Mock
-    private PoolingNHttpClientConnectionManager manager;
 
     @InjectMocks
     private Config config;
@@ -87,58 +67,11 @@ class ConfigTest {
         assertEquals(Config.DEFAULT_MAX_PER_ROUTE, config.getMaxPerRoutes());
     }
 
-    @Test
-    void onceTheConfigIsRunningYouCannotChangeConfig(){
-        config.httpClient(mock(HttpClient.class));
-        config.asyncClient(mock(HttpAsyncClient.class));
 
-        TestUtil.assertException(() -> config.socketTimeout(533),
-                UnirestConfigException.class,
-                "Http Clients are already built in order to build a new config execute Unirest.config().reset() " +
-                        "before changing settings. \n" +
-                        "This should be done rarely.");
-
-        Unirest.shutDown();
-    }
-
-    @Test
-    void willNotRebuildIfNotClosableAsyncClient() {
-        HttpAsyncClient c = mock(HttpAsyncClient.class);
-        config.asyncClient(c);
-
-        assertSame(c, config.getAsyncClient().getClient());
-        assertSame(c, config.getAsyncClient().getClient());
-    }
 
     @Test
     void willRebuildIfEmpty() {
         assertSame(config.getAsyncClient(), config.getAsyncClient());
-    }
-
-    @Test
-    void willRebuildIfClosableAndStopped() {
-        CloseableHttpAsyncClient c = mock(CloseableHttpAsyncClient.class);
-        when(c.isRunning()).thenReturn(false);
-
-        config.asyncClient(c);
-
-        assertNotSame(c, config.getAsyncClient());
-    }
-
-    @Test
-    void testShutdown() throws IOException {
-        when(asyncClient.isRunning()).thenReturn(true);
-
-        Unirest.config()
-                .httpClient(new ApacheClient(httpc, null, clientManager))
-                .asyncClient(new ApacheAsyncClient(asyncClient, null, manager, asyncMonitor));
-
-        Unirest.shutDown();
-
-        verify(httpc).close();
-        verify(clientManager).close();
-        verify(asyncClient).close();
-        verify(asyncMonitor).interrupt();
     }
 
     @Test
@@ -153,46 +86,6 @@ class ConfigTest {
     }
 
     @Test
-    void willPowerThroughErrors() throws IOException {
-        when(asyncClient.isRunning()).thenReturn(true);
-        doThrow(new IOException("1")).when(httpc).close();
-        doThrow(new RuntimeException("2")).when(clientManager).close();
-        doThrow(new IOException("4")).when(asyncClient).close();
-        doThrow(new RuntimeException("5")).when(asyncMonitor).interrupt();
-
-        Unirest.config()
-                .httpClient(new ApacheClient(httpc, null, clientManager))
-                .asyncClient(new ApacheAsyncClient(asyncClient,null, manager, asyncMonitor));
-
-
-        TestUtil.assertException(Unirest::shutDown,
-                UnirestException.class,
-                "java.io.IOException 1\n" +
-                        "java.lang.RuntimeException 2\n" +
-                        "java.io.IOException 4\n" +
-                        "java.lang.RuntimeException 5");
-
-        verify(httpc).close();
-        verify(clientManager).close();
-        verify(asyncClient).close();
-        verify(asyncMonitor).interrupt();
-    }
-
-    @Test
-    void doesNotBombOnNullOptions() throws IOException {
-        when(asyncClient.isRunning()).thenReturn(true);
-
-        Unirest.config()
-                .httpClient(new ApacheClient(httpc, null, null))
-                .asyncClient(new ApacheAsyncClient(asyncClient, null, null, null));
-
-        Unirest.shutDown();
-
-        verify(httpc).close();
-        verify(asyncClient).close();
-    }
-
-    @Test
     void ifTheNextAsyncClientThatIsReturnedIsAlsoOffThrowAnException(){
         AsyncClient c = mock(AsyncClient.class);
         when(c.isRunning()).thenReturn(false);
@@ -202,16 +95,6 @@ class ConfigTest {
         TestUtil.assertException(() -> config.getAsyncClient(),
                 UnirestConfigException.class,
                 "Attempted to get a new async client but it was not started. Please ensure it is");
-    }
-
-    @Test
-    void willNotRebuildIfRunning() {
-        CloseableHttpAsyncClient c = mock(CloseableHttpAsyncClient.class);
-        when(c.isRunning()).thenReturn(true);
-
-        config.asyncClient(c);
-
-        assertSame(c, config.getAsyncClient().getClient());
     }
 
     @Test
