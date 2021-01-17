@@ -1,4 +1,7 @@
-## 3.11.10 (pending)
+## 3.11.11 (pending)
+* useSystemProperties should be reset back to false on reset
+
+## 3.11.10
 * issue #394 use the configured Object Mapper rather than always Json
 * internal pre-factorings to get ready for Unirest 4
 

@@ -100,6 +100,7 @@ public class Config {
         maxTotal = DEFAULT_MAX_CONNECTIONS;
         maxPerRoute = DEFAULT_MAX_PER_ROUTE;
         followRedirects = true;
+        useSystemProperties = false;
         cookieManagement = true;
         requestCompressionOn = true;
         automaticRetries = true;
