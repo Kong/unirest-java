@@ -111,7 +111,10 @@ public class MockClient implements Client, AsyncClient {
     }
 
     @Override
-    public <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, CompletableFuture<HttpResponse<T>> callback) {
+    public <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request,
+                                                          Function<RawResponse, HttpResponse<T>> transformer,
+                                                          CompletableFuture<HttpResponse<T>> callback,
+                                                          Class<?> resultTypes) {
         return CompletableFuture.supplyAsync(() -> request(request, transformer));
     }
 

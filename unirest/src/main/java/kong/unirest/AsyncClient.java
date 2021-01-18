@@ -37,19 +37,6 @@ public interface AsyncClient {
      */
     <T> T getClient();
 
-    /**
-     * Make a Async request
-     * @param <T> The type of the body
-     * @param request the prepared request object
-     * @param transformer the function to transform the response
-     * @param callback the CompletableFuture that will handle the eventual response
-     * @return a CompletableFuture of a response
-     * @deprecated use the version with the resultType
-     */
-    @Deprecated
-    <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request,
-                                                   Function<RawResponse, HttpResponse<T>> transformer,
-                                                   CompletableFuture<HttpResponse<T>> callback);
 
     /**
      * Make a Async request
@@ -60,12 +47,10 @@ public interface AsyncClient {
      * @param resultType the final body result type. This is a hint to downstream systems to make up for type erasure.
      * @return a CompletableFuture of a response
      */
-    default <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request,
+    <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request,
                                                    Function<RawResponse, HttpResponse<T>> transformer,
                                                    CompletableFuture<HttpResponse<T>> callback,
-                                                   Class<?> resultType){
-        return request(request, transformer, callback);
-    }
+                                                   Class<?> resultType);
 
     /**
      * @return a stream of exceptions possibly thrown while closing all the things.

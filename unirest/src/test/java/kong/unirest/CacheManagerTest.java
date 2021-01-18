@@ -90,7 +90,7 @@ class CacheManagerTest {
     private static class MockClient implements Client, AsyncClient {
         public int invokes = 0;
         @Override
-        public <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, CompletableFuture<HttpResponse<T>> callback) {
+        public <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, CompletableFuture<HttpResponse<T>> callback, Class<?> resultType) {
             invokes++;
             return new CompletableFuture<>();
         }

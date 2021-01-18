@@ -176,10 +176,6 @@ public class JavaClient implements Client, AsyncClient {
         }
     }
 
-    @Override
-    public <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, CompletableFuture<HttpResponse<T>> callback) {
-        return request(request, transformer, callback);
-    }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, CompletableFuture<HttpResponse<T>> callback, Class<?> resultType) {
