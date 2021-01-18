@@ -37,7 +37,7 @@ import java.util.function.Supplier;
  * A Mock client for unirest to make requests against
  * This implements both sync and async clients
  */
-public class MockClient implements Client, AsyncClient {
+public class MockClient implements Client {
     private final Supplier<Config> config;
     private List<Routes> routes = new ArrayList<>();
 
@@ -59,7 +59,7 @@ public class MockClient implements Client, AsyncClient {
      */
     public static MockClient register(UnirestInstance unirest) {
         MockClient client = new MockClient(unirest::config);
-        unirest.config().httpClient(client).asyncClient(client);
+        unirest.config().httpClient(client);
         return client;
     }
 
@@ -77,9 +77,6 @@ public class MockClient implements Client, AsyncClient {
     public static void clear(UnirestInstance unirest) {
         if(unirest.config().getClient() instanceof MockClient){
             unirest.config().httpClient((Client) null);
-        }
-        if(unirest.config().getAsyncClient() instanceof MockClient){
-            unirest.config().asyncClient((AsyncClient) null);
         }
     }
 

@@ -144,15 +144,6 @@ public class UnirestInstance {
     }
 
     /**
-     * Does the config have currently running clients? Find out here.
-     *
-     * @return boolean
-     */
-    public boolean isRunning() {
-        return config.isRunning();
-    }
-
-    /**
      * Wraps shutdown and will automatically be called when UnirestInstance is
      * used with try-with-resource. This will alleviate the need to manually
      * call shutDown as it will be done automatically.

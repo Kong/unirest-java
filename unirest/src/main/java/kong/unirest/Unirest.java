@@ -131,15 +131,6 @@ public class Unirest {
     }
 
     /**
-     * Does the config have currently running clients? Find out here.
-     *
-     * @return boolean
-     */
-    public static boolean isRunning() {
-        return primaryInstance.isRunning();
-    }
-
-    /**
      * Spawn a new Unirest Instance with a new config.
      * Don't forget to shut it down when your done.
      * It will not be tracked and shutdown with Unirest.shutDown()

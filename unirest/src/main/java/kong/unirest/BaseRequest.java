@@ -177,13 +177,13 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public CompletableFuture<HttpResponse<Empty>> asEmptyAsync() {
-        return config.getAsyncClient()
+        return config.getClient()
                 .request(this, BasicResponse::new, new CompletableFuture<>(), Empty.class);
     }
 
     @Override
     public CompletableFuture<HttpResponse<Empty>> asEmptyAsync(Callback<Empty> callback) {
-        return config.getAsyncClient()
+        return config.getClient()
                 .request(this, BasicResponse::new, wrap(callback), Empty.class);
     }
 
@@ -194,13 +194,13 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync() {
-        return config.getAsyncClient()
+        return config.getClient()
                 .request(this, r -> new StringResponse(r, responseEncoding), new CompletableFuture<>(), String.class);
     }
 
     @Override
     public CompletableFuture<HttpResponse<String>> asStringAsync(Callback<String> callback) {
-        return config.getAsyncClient()
+        return config.getClient()
                 .request(this, r -> new StringResponse(r, responseEncoding), wrap(callback), String.class);
     }
 
@@ -212,12 +212,12 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public CompletableFuture<HttpResponse<byte[]>> asBytesAsync() {
-        return config.getAsyncClient().request(this, ByteResponse::new, new CompletableFuture<>(), byte[].class);
+        return config.getClient().request(this, ByteResponse::new, new CompletableFuture<>(), byte[].class);
     }
 
     @Override
     public CompletableFuture<HttpResponse<byte[]>> asBytesAsync(Callback<byte[]> callback) {
-        return config.getAsyncClient().request(this, ByteResponse::new, wrap(callback), byte[].class);
+        return config.getClient().request(this, ByteResponse::new, wrap(callback), byte[].class);
     }
 
     @Override
@@ -228,12 +228,12 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync() {
 
-        return config.getAsyncClient().request(this, JsonResponse::new, new CompletableFuture<>(), JsonNode.class);
+        return config.getClient().request(this, JsonResponse::new, new CompletableFuture<>(), JsonNode.class);
     }
 
     @Override
     public CompletableFuture<HttpResponse<JsonNode>> asJsonAsync(Callback<JsonNode> callback) {
-        return config.getAsyncClient().request(this, JsonResponse::new, wrap(callback), JsonNode.class);
+        return config.getClient().request(this, JsonResponse::new, wrap(callback), JsonNode.class);
     }
 
     @Override
@@ -253,12 +253,12 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Function<RawResponse, T> function) {
-        return config.getAsyncClient().request(this, funcResponse(function), new CompletableFuture<>(), JsonNode.class);
+        return config.getClient().request(this, funcResponse(function), new CompletableFuture<>(), JsonNode.class);
     }
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass) {
-        return config.getAsyncClient().request(this,
+        return config.getClient().request(this,
                 r -> new ObjectResponse<T>(getObjectMapper(), r, responseClass),
                 new CompletableFuture<>(),
                 responseClass);
@@ -266,7 +266,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(Class<? extends T> responseClass, Callback<T> callback) {
-        return config.getAsyncClient().request(this,
+        return config.getClient().request(this,
                 r -> new ObjectResponse<>(getObjectMapper(), r, responseClass),
                 wrap(callback),
                 responseClass);
@@ -274,7 +274,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType) {
-        return config.getAsyncClient().request(this,
+        return config.getClient().request(this,
                 r -> new ObjectResponse<>(getObjectMapper(), r, genericType),
                 new CompletableFuture<>(),
                 genericType.getTypeClass());
@@ -282,7 +282,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> asObjectAsync(GenericType<T> genericType, Callback<T> callback) {
-        return config.getAsyncClient().request(this,
+        return config.getClient().request(this,
                 r -> new ObjectResponse<>(getObjectMapper(), r, genericType),
                 wrap(callback),
                 genericType.getTypeClass());
@@ -299,7 +299,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public void thenConsumeAsync(Consumer<RawResponse> consumer) {
-        config.getAsyncClient().request(this, getConsumer(consumer), new CompletableFuture<>(), Object.class);
+        config.getClient().request(this, getConsumer(consumer), new CompletableFuture<>(), Object.class);
     }
 
     @Override
@@ -309,7 +309,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public CompletableFuture<HttpResponse<File>> asFileAsync(String path, CopyOption... copyOptions) {
-        return config.getAsyncClient().request(this,
+        return config.getClient().request(this,
                 r -> new FileResponse(r, path, downloadMonitor, copyOptions),
                 new CompletableFuture<>(),
                 File.class);
@@ -317,7 +317,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public CompletableFuture<HttpResponse<File>> asFileAsync(String path, Callback<File> callback, CopyOption... copyOptions) {
-        return config.getAsyncClient().request(this,
+        return config.getClient().request(this,
                 r -> new FileResponse(r, path, downloadMonitor, copyOptions),
                 wrap(callback),
                 File.class);

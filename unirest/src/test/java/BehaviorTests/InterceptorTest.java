@@ -103,7 +103,7 @@ class InterceptorTest extends BddTest {
     void totalAsyncFailure_Recovery() throws Exception {
         interceptor.failResponse = true;
         Unirest.config()
-                .asyncClient(TestUtil.getFailureAsyncClient())
+                .httpClient(TestUtil.getFailureAsyncClient())
                 .interceptor(interceptor);
 
         HttpResponse<String> response = Unirest.get(MockServer.GET).asStringAsync().get();

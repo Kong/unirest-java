@@ -39,7 +39,7 @@ import java.util.stream.Stream;
 import static kong.unirest.HeaderNames.*;
 
 
-public class JavaClient implements Client, AsyncClient {
+public class JavaClient implements Client {
 
     private final Config config;
     private final HttpClient client;

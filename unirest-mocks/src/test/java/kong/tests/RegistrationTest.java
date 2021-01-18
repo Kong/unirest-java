@@ -25,9 +25,7 @@
 
 package kong.tests;
 
-import kong.unirest.MockClient;
-import kong.unirest.Unirest;
-import kong.unirest.UnirestInstance;
+import kong.unirest.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -39,12 +37,12 @@ class RegistrationTest {
     void canRegisterThePrimaryInstance() {
         MockClient client = MockClient.register();
         assertSame(client, Unirest.primaryInstance().config().getClient());
-        assertSame(client, Unirest.primaryInstance().config().getAsyncClient());
+        assertSame(client, Unirest.primaryInstance().config().getClient());
 
         MockClient.clear();
 
         assertFalse(Unirest.primaryInstance().config().getClient() instanceof MockClient);
-        assertFalse(Unirest.primaryInstance().config().getAsyncClient() instanceof MockClient);
+        assertFalse(Unirest.primaryInstance().config().getClient() instanceof MockClient);
     }
 
     @Test
@@ -52,11 +50,11 @@ class RegistrationTest {
         UnirestInstance i = Unirest.spawnInstance();
         MockClient client = MockClient.register(i);
         assertSame(client, i.config().getClient());
-        assertSame(client, i.config().getAsyncClient());
+        assertSame(client, i.config().getClient());
 
         MockClient.clear(i);
 
         assertFalse(i.config().getClient() instanceof MockClient);
-        assertFalse(i.config().getAsyncClient() instanceof MockClient);
+        assertFalse(i.config().getClient() instanceof MockClient);
     }
 }

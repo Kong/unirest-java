@@ -190,7 +190,7 @@ public class TestUtil {
         return new JavaClient(Unirest.config(), mock);
     }
 
-    public static AsyncClient getFailureAsyncClient()  throws Exception {
+    public static Client getFailureAsyncClient()  throws Exception {
 
         HttpClient client  = HttpClient.newBuilder()
                //.sslContext(new SSLContext())

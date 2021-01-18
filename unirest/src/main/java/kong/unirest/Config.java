@@ -44,7 +44,6 @@ public class Config {
     public static final int DEFAULT_CONNECT_TIMEOUT = 10000;
 
     private Optional<Client> client = Optional.empty();
-    private Optional<AsyncClient> asyncClient = Optional.empty();
     private Optional<ObjectMapper> objectMapper = Optional.of(new JsonObjectMapper());
 
     private Headers headers;
@@ -56,7 +55,6 @@ public class Config {
     private boolean cookieManagement;
     private boolean useSystemProperties;
     private String defaultResponseEncoding = StandardCharsets.UTF_8.name();
-    private Function<Config, AsyncClient> asyncBuilder;
     private Function<Config, Client> clientBuilder;
     private boolean requestCompressionOn = true;
     private boolean automaticRetries;
@@ -99,7 +97,6 @@ public class Config {
 
         this.objectMapper = Optional.of(new JsonObjectMapper());
         try {
-            asyncBuilder = JavaClient::new;
             clientBuilder = JavaClient::new;
         }catch (BootstrapMethodError e){
             throw new UnirestException("It looks like you are using an older version of Apache Http Client. \n" +
@@ -126,29 +123,6 @@ public class Config {
      */
     public Config httpClient(Function<Config, Client> httpClient) {
         clientBuilder = httpClient;
-        return this;
-    }
-
-
-    /**
-     * Set the full async configuration including monitors. These will be shutDown on a Unirest.shudown()
-     *
-     * @param value Custom AsyncConfig class. The actual AsyncHttpClient is required.
-     * @return this config object
-     */
-    public Config asyncClient(AsyncClient value) {
-        asyncClient = Optional.ofNullable(value);
-        return this;
-    }
-
-    /**
-     * Set the full async configuration including monitors. These will be shutDown on a Unirest.shudown()
-     *
-     * @param asyncClientBuilder A builder function for creating a AsyncClient
-     * @return this config object
-     */
-    public Config asyncClient(Function<Config, AsyncClient> asyncClientBuilder) {
-        this.asyncBuilder = asyncClientBuilder;
         return this;
     }
 
@@ -580,7 +554,7 @@ public class Config {
      * @return boolean
      */
     public boolean isRunning() {
-        return client.isPresent() || asyncClient.isPresent();
+        return client.isPresent();
     }
 
     /**
@@ -602,7 +576,6 @@ public class Config {
      */
     public void reset(boolean clearOptions) {
         client = Optional.empty();
-        asyncClient = Optional.empty();
 
         if (clearOptions) {
             setDefaults();
@@ -635,39 +608,6 @@ public class Config {
             client = Optional.of(clientBuilder.apply(this));
         }
     }
-
-    /**
-     * Return the current HttpAsyncClient. One will be build if it does
-     * not yet exist.
-     *
-     * @return Apache HttpAsyncClient
-     */
-    public AsyncClient getAsyncClient() {
-        if (!asyncClientIsReady()) {
-            buildAsyncClient();
-        }
-        return getFinalAsyncClient();
-    }
-
-    private AsyncClient getFinalAsyncClient(){
-        if(cache == null){
-            return asyncClient.get();
-        }
-        return cache.wrapAsync(asyncClient.get());
-    }
-
-    private boolean asyncClientIsReady() {
-        return asyncClient.isPresent();
-    }
-
-    private synchronized void buildAsyncClient() {
-        if (!asyncClientIsReady()) {
-            AsyncClient value = asyncBuilder.apply(this);
-
-            asyncClient = Optional.of(value);
-        }
-    }
-
 
     /**
      * @return if cookie management should be enabled.
@@ -732,7 +672,7 @@ public class Config {
     }
 
     private void validateClientsNotRunning() {
-        if (client.isPresent() || asyncClient.isPresent()) {
+        if (client.isPresent()) {
             throw new UnirestConfigException(
                     "Http Clients are already built in order to build a new config execute Unirest.config().reset() before changing settings. \n" +
                             "This should be done rarely."

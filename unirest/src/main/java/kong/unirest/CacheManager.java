@@ -37,12 +37,11 @@ import java.util.function.Supplier;
 class CacheManager {
 
     private final CacheWrapper wrapper = new CacheWrapper();
-    private final AsyncWrapper asyncWrapper = new AsyncWrapper();
+    private final CacheWrapper asyncWrapper = new CacheWrapper();
     private final Cache backingCache;
     private final Cache.KeyGenerator keyGen;
 
     private Client originalClient;
-    private AsyncClient originalAsync;
 
     public CacheManager() {
         this(100, 0, HashKey::new);
@@ -66,8 +65,8 @@ class CacheManager {
         return wrapper;
     }
 
-    AsyncClient wrapAsync(AsyncClient client) {
-        this.originalAsync = client;
+    Client wrapAsync(Client client) {
+        this.originalClient = client;
         return asyncWrapper;
     }
 
@@ -133,13 +132,6 @@ class CacheManager {
             return backingCache.get(hash,
                     () -> originalClient.request(request, transformer, responseType));
         }
-    }
-
-    private class AsyncWrapper implements AsyncClient {
-        @Override
-        public <T> T getClient() {
-            return originalAsync.getClient();
-        }
 
         @Override
         public <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request,
@@ -148,7 +140,7 @@ class CacheManager {
                                                               Class<?> responseType) {
             Cache.Key key = getHash(request, true, responseType);
             return backingCache.getAsync(key,
-                    () -> originalAsync.request(request, transformer, callback, responseType));
+                    () -> originalClient.request(request, transformer, callback, responseType));
         }
     }
 

@@ -25,13 +25,15 @@
 
 package kong.unirest;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 public interface Client {
     /**
-     * @return the underlying client if this instance is wrapping another library (like Apache).
+     * @param <T> the underlying client
+     * @return the underlying client if this instance is wrapping another library.
      */
-    Object getClient();
+    <T> T getClient();
 
     /**
      * Make a request
@@ -55,4 +57,18 @@ public interface Client {
     default <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, Class<?> resultType){
         return request(request, transformer);
     }
+
+    /**
+     * Make a Async request
+     * @param <T> The type of the body
+     * @param request the prepared request object
+     * @param transformer the function to transform the response
+     * @param callback the CompletableFuture that will handle the eventual response
+     * @param resultType the final body result type. This is a hint to downstream systems to make up for type erasure.
+     * @return a CompletableFuture of a response
+     */
+    <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request,
+                                                   Function<RawResponse, HttpResponse<T>> transformer,
+                                                   CompletableFuture<HttpResponse<T>> callback,
+                                                   Class<?> resultType);
 }

@@ -28,11 +28,9 @@ package kong.unirest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.net.ssl.SSLContext;
-import java.io.IOException;
 import java.security.KeyStore;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
@@ -66,7 +64,7 @@ class ConfigTest {
 
     @Test
     void willRebuildIfEmpty() {
-        assertSame(config.getAsyncClient(), config.getAsyncClient());
+        assertSame(config.getClient(), config.getClient());
     }
 
     @Test
@@ -154,7 +152,7 @@ class ConfigTest {
     @Test
     void isRunningIfAsyncClientIsRunning() {
         assertFalse(config.isRunning());
-        config.getAsyncClient();
+        config.getClient();
         assertTrue(config.isRunning());
     }
 
