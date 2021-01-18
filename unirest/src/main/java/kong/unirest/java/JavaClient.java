@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.nio.charset.Charset;
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -84,7 +85,11 @@ public class JavaClient implements Client, AsyncClient {
         try {
             URI url = URI.create(request.getUrl());
             java.net.http.HttpRequest.Builder jreq = java.net.http.HttpRequest.newBuilder(url)
-                    .method(request.getHttpMethod().name(), new BodyBuilder(config, request).getBody());
+                    .method(
+                            request.getHttpMethod().name(),
+                            new BodyBuilder(config, request).getBody()
+                    ).timeout(Duration.ofMillis(request.getConnectTimeout()));
+            
             setHeaders(request, jreq);
 
             return jreq.build();
