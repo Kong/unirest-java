@@ -51,18 +51,6 @@ class ConfigTest {
     }
 
     @Test
-    void shouldKeepMaxTotalDefault(){
-        assertEquals(Config.DEFAULT_MAX_CONNECTIONS, config.getMaxConnections());
-    }
-
-    @Test
-    void shouldKeepMaxPerRouteDefault(){
-        assertEquals(Config.DEFAULT_MAX_PER_ROUTE, config.getMaxPerRoutes());
-    }
-
-
-
-    @Test
     void willRebuildIfEmpty() {
         assertSame(config.getClient(), config.getClient());
     }

@@ -39,8 +39,6 @@ import java.util.function.Supplier;
 
 public class Config {
     public static final int DEFAULT_CONNECTION_TIMEOUT = 10000;
-    public static final int DEFAULT_MAX_CONNECTIONS = 200;
-    public static final int DEFAULT_MAX_PER_ROUTE = 20;
     public static final int DEFAULT_CONNECT_TIMEOUT = 10000;
 
     private Optional<Client> client = Optional.empty();
@@ -49,8 +47,6 @@ public class Config {
     private Headers headers;
     private Proxy proxy;
     private int connectionTimeout;
-    private int maxTotal;
-    private int maxPerRoute;
     private boolean followRedirects;
     private boolean cookieManagement;
     private boolean useSystemProperties;
@@ -80,8 +76,6 @@ public class Config {
         cache = null;
         headers = new Headers();
         connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
-        maxTotal = DEFAULT_MAX_CONNECTIONS;
-        maxPerRoute = DEFAULT_MAX_PER_ROUTE;
         followRedirects = true;
         useSystemProperties = false;
         cookieManagement = true;
@@ -256,20 +250,6 @@ public class Config {
     public Config connectTimeout(int inMillies) {
         validateClientsNotRunning();
         this.connectionTimeout = inMillies;
-        return this;
-    }
-
-    /**
-     * Set the concurrency levels
-     *
-     * @param total    Defines the overall connection limit for a connection pool. Default is 200.
-     * @param perRoute Defines a connection limit per one HTTP route (this can be considered a per target host limit). Default is 20.
-     * @return this config object
-     */
-    public Config concurrency(int total, int perRoute) {
-        validateClientsNotRunning();
-        this.maxTotal = total;
-        this.maxPerRoute = perRoute;
         return this;
     }
 
@@ -623,22 +603,6 @@ public class Config {
      */
     public boolean getFollowRedirects() {
         return followRedirects;
-    }
-
-    /**
-     * @return the maximum number of connections the clients for this config will manage at once
-     *         default: 200
-     */
-    public int getMaxConnections() {
-        return maxTotal;
-    }
-
-    /**
-     * @return the maximum number of connections per route the clients for this config will manage at once
-     *         default: 20
-     */
-    public int getMaxPerRoutes() {
-        return maxPerRoute;
     }
 
     /**
