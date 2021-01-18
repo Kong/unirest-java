@@ -45,7 +45,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     protected final Config config;
     protected HttpMethod method;
     protected Path url;
-    private Integer socketTimeout;
     private Integer connectTimeout;
     private ProgressMonitor downloadMonitor;
 
@@ -54,7 +53,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         this.method = httpRequest.method;
         this.url = httpRequest.url;
         this.headers.putAll(httpRequest.headers);
-        this.socketTimeout = httpRequest.socketTimeout;
         this.connectTimeout = httpRequest.connectTimeout;
         this.objectMapper = httpRequest.objectMapper;
     }
@@ -150,12 +148,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public R queryString(Map<String, Object> parameters) {
         url.queryString(parameters);
-        return (R) this;
-    }
-
-    @Override
-    public R socketTimeout(int millies) {
-        this.socketTimeout = millies;
         return (R) this;
     }
 
@@ -373,11 +365,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     protected ObjectMapper getObjectMapper() {
         return objectMapper.orElseGet(config::getObjectMapper);
-    }
-
-    @Override
-    public int getSocketTimeout() {
-        return valueOr(socketTimeout, config::getSocketTimeout);
     }
 
     @Override

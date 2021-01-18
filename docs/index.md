@@ -551,7 +551,6 @@ Changing Unirest's config should ideally be done once, or rarely. There are seve
 
 | Builder Method  | Impact | Default |
 | ------------- | ------------- | ------------- |
-| ```socketTimeout(int)``` | Sets the socket timeout for all requests in millis  | 60000 |
 | ```connectTimeout(int)``` | Sets the connection timeout for all requests in millis  | 10000 |
 | ```concurrency(int, int)``` | Sets concurrency rates; max total, max per route  | 200, 20 |
 | ```proxy(proxy)``` | Sets a proxy object for negotiating proxy servers. Can include auth credentials  |  |
@@ -572,7 +571,6 @@ Changing Unirest's config should ideally be done once, or rarely. There are seve
 | ```connectionTTL(Duration)``` | Add total time to live (TTL) by [Duration](https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html). Good for moderns Java APIs. | -1  |
 | ```errorHandler(Consumer<HttpResponse<?>> consumer)``` | Set a global error handler that will be invoked for any status > 400 or a parsing error | | 
 | ```interceptor(Interceptor value)``` | Set a global Interceptor handler that will be invoked before and after each request | | 
-| ```hostNameVerifier(HostNameVerifier value)``` | Set a custom HostNameVerifier for the security configuration | DefaultHostNameVerifier | 
 | ```defaultBaseUrl(String value)``` | Set a default base URL to be used for all requests that do not already contain a scheme |  | 
 
 ##  Global Interceptor

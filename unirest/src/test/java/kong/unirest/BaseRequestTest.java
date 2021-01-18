@@ -52,17 +52,6 @@ class BaseRequestTest {
     }
 
     @Test
-    void socketTimeoutCanOverrrideConfig() {
-        testConfig.socketTimeout(42);
-
-        HttpRequest request = new TestRequest(testConfig);
-
-        assertEquals(42, request.getSocketTimeout());
-        request.socketTimeout(111);
-        assertEquals(111, request.getSocketTimeout());
-    }
-
-    @Test
     void connectTimeoutCanOverrrideConfig() {
         testConfig.connectTimeout(42);
 
@@ -71,19 +60,6 @@ class BaseRequestTest {
         assertEquals(42, request.getConnectTimeout());
         request.connectTimeout(111);
         assertEquals(111, request.getConnectTimeout());
-    }
-
-    @Test
-    void copiesSettingsFromOtherRequest() {
-        testConfig.connectTimeout(42);
-        testConfig.socketTimeout(42);
-
-        TestRequest request = new TestRequest(testConfig);
-        request.socketTimeout(111).connectTimeout(222);
-
-        HttpRequest copy = new TestRequest(request);
-        assertEquals(111, copy.getSocketTimeout());
-        assertEquals(222, copy.getConnectTimeout());
     }
 
     @Test

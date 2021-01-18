@@ -44,7 +44,6 @@ public class Config {
     public static final int DEFAULT_MAX_CONNECTIONS = 200;
     public static final int DEFAULT_MAX_PER_ROUTE = 20;
     public static final int DEFAULT_CONNECT_TIMEOUT = 10000;
-    public static final int DEFAULT_SOCKET_TIMEOUT = 60000;
 
     private Optional<Client> client = Optional.empty();
     private Optional<AsyncClient> asyncClient = Optional.empty();
@@ -53,7 +52,6 @@ public class Config {
     private Headers headers;
     private Proxy proxy;
     private int connectionTimeout;
-    private int socketTimeout;
     private int maxTotal;
     private int maxPerRoute;
     private boolean followRedirects;
@@ -87,7 +85,6 @@ public class Config {
         cache = null;
         headers = new Headers();
         connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
-        socketTimeout = DEFAULT_SOCKET_TIMEOUT;
         maxTotal = DEFAULT_MAX_CONNECTIONS;
         maxPerRoute = DEFAULT_MAX_PER_ROUTE;
         followRedirects = true;
@@ -288,18 +285,6 @@ public class Config {
     public Config connectTimeout(int inMillies) {
         validateClientsNotRunning();
         this.connectionTimeout = inMillies;
-        return this;
-    }
-
-    /**
-     * Set the socket timeout
-     *
-     * @param inMillies The timeout to receive data (in milliseconds). Default is 60000. Set to zero to disable the timeout.
-     * @return this config object
-     */
-    public Config socketTimeout(int inMillies) {
-        validateClientsNotRunning();
-        this.socketTimeout = inMillies;
         return this;
     }
 
@@ -759,14 +744,6 @@ public class Config {
      */
     public int getConnectionTimeout() {
         return connectionTimeout;
-    }
-
-    /**
-     * @return socket timeout in milliseconds
-     *         default: 60000
-     */
-    public int getSocketTimeout() {
-        return socketTimeout;
     }
 
     /**

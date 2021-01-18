@@ -53,11 +53,6 @@ class ConfigTest {
     }
 
     @Test
-    void shouldKeepSocketTimeoutDefault(){
-        assertEquals(Config.DEFAULT_SOCKET_TIMEOUT, config.getSocketTimeout());
-    }
-
-    @Test
     void shouldKeepMaxTotalDefault(){
         assertEquals(Config.DEFAULT_MAX_CONNECTIONS, config.getMaxConnections());
     }

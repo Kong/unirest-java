@@ -56,7 +56,7 @@ class TimeoutTest extends BddTest {
             }
         }
         Unirest.config().reset();
-        Unirest.config().connectTimeout(2000).socketTimeout(10000);
+        Unirest.config().connectTimeout(2000);
 
         start = System.currentTimeMillis();
         try {
@@ -71,13 +71,13 @@ class TimeoutTest extends BddTest {
     @Test
     @Disabled // this is flakey
     void parallelTest() throws InterruptedException {
-        Unirest.config().connectTimeout(10).socketTimeout(5);
+        Unirest.config().connectTimeout(10);
 
         long start = System.currentTimeMillis();
         makeParallelRequests();
         long smallerConcurrencyTime = (System.currentTimeMillis() - start);
 
-        Unirest.config().connectTimeout(200).socketTimeout(20);
+        Unirest.config().connectTimeout(200);
         start = System.currentTimeMillis();
         makeParallelRequests();
         long higherConcurrencyTime = (System.currentTimeMillis() - start);
