@@ -26,16 +26,11 @@
 package kong.unirest.java;
 
 import kong.unirest.*;
-import kong.unirest.Proxy;
 
-import javax.net.ssl.*;
 import java.io.InputStream;
-import java.net.*;
-
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.nio.charset.Charset;
-import java.security.KeyStore;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -51,74 +46,13 @@ public class JavaClient implements Client, AsyncClient {
 
     public JavaClient(Config config) {
         this.config = config;
-        HttpClient.Builder builder = HttpClient.newBuilder()
-                .followRedirects(redirectPolicy(config));
-        SSLParameters params = new SSLParameters();
-        if(!config.isVerifySsl()){
-            builder.sslContext(NeverUseInProdTrustManager.create());
-        } else if (config.getKeystore() != null){
-            builder.sslContext(getSslContext(config.getKeystore()));
-        } else if(config.getSslContext() != null){
-            builder.sslContext(config.getSslContext());
-        }
-        if(config.getProtocols() != null){
-            params.setProtocols(config.getProtocols());
-        }if(config.getCiphers() != null){
-            params.setCipherSuites(config.getCiphers());
-        }
-        if(config.getEnabledCookieManagement()){
-            builder = builder.cookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
-        }
-        if(config.getProxy() != null){
-            createProxy(builder, config.getProxy());
-        }
-        if(config.useSystemProperties()){
-            builder.proxy(ProxySelector.getDefault());
-        }
-        builder.sslParameters(params);
-        client = builder.build();
+        this.client = new JavaClientBuilder().apply(config);
+
     }
 
     public JavaClient(Config config, HttpClient client){
         this.config = config;
         this.client = client;
-    }
-
-    private void createProxy(HttpClient.Builder builder, Proxy proxy) {
-        InetSocketAddress address = InetSocketAddress.createUnresolved(proxy.getHost(), proxy.getPort());
-        builder.proxy(ProxySelector.of(address));
-        if(proxy.isAuthenticated()){
-            builder.authenticator(new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(proxy.getUsername(), proxy.getPassword().toCharArray());
-                }
-            });
-        }
-    }
-
-    private SSLContext getSslContext(KeyStore ks) {
-        try {
-            TrustManagerFactory tmf = TrustManagerFactory
-                    .getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            tmf.init(ks);
-
-            char[] pass = Optional.ofNullable(config.getKeyStorePassword())
-                    .map(String::toCharArray)
-                    .orElse(null);
-            return SSLContextBuilder.create()
-                    .loadKeyMaterial(config.getKeystore(), pass)
-                    .build();
-        }catch (Exception e){
-            throw new UnirestConfigException(e);
-        }
-    }
-
-    private HttpClient.Redirect redirectPolicy(Config config) {
-        if(config.getFollowRedirects()){
-            return HttpClient.Redirect.NORMAL;
-        }
-        return HttpClient.Redirect.NEVER;
     }
 
     @Override
@@ -133,13 +67,11 @@ public class JavaClient implements Client, AsyncClient {
         java.net.http.HttpRequest requestObj = getRequest(request);
         MetricContext metric = config.getMetric().begin(reqSum);
         try {
-            //HttpHost host = determineTarget(requestObj, request.getHeaders());
             java.net.http.HttpResponse<InputStream> execute = client.send(requestObj,
                     responseInfo -> java.net.http.HttpResponse.BodySubscribers.ofInputStream());
             JavaResponse t = new JavaResponse(execute, config);
             metric.complete(t.toSummary(), null);
             HttpResponse<T> httpResponse = transformBody(transformer, t);
-            //requestObj.releaseConnection();
             config.getUniInterceptor().onResponse(httpResponse, reqSum, config);
             return httpResponse;
         } catch (Exception e) {
@@ -153,18 +85,7 @@ public class JavaClient implements Client, AsyncClient {
             URI url = URI.create(request.getUrl());
             java.net.http.HttpRequest.Builder jreq = java.net.http.HttpRequest.newBuilder(url)
                     .method(request.getHttpMethod().name(), new BodyBuilder(config, request).getBody());
-            request.getHeaders().all().forEach(h -> jreq.header(h.getName(), h.getValue()));
-            if (request.getBody().isPresent() && !request.getHeaders().containsKey(CONTENT_TYPE)) {
-                String value = "text/plain";
-                Charset charset = request.getBody().get().getCharset();
-                if (charset != null) {
-                    value = value + "; charset=" + charset.toString();
-                }
-                jreq.header(CONTENT_TYPE, value);
-            }
-            if(!request.getHeaders().containsKey(CONTENT_ENCODING) && config.isRequestCompressionOn()){
-                jreq.header(ACCEPT_ENCODING, "gzip");
-            }
+            setHeaders(request, jreq);
 
             return jreq.build();
         }catch (RuntimeException e){
@@ -173,6 +94,21 @@ public class JavaClient implements Client, AsyncClient {
             } else {
                 throw new UnirestException(e);
             }
+        }
+    }
+
+    private void setHeaders(HttpRequest<?> request, java.net.http.HttpRequest.Builder jreq) {
+        request.getHeaders().all().forEach(h -> jreq.header(h.getName(), h.getValue()));
+        if (request.getBody().isPresent() && !request.getHeaders().containsKey(CONTENT_TYPE)) {
+            String value = "text/plain";
+            Charset charset = request.getBody().get().getCharset();
+            if (charset != null) {
+                value = value + "; charset=" + charset.toString();
+            }
+            jreq.header(CONTENT_TYPE, value);
+        }
+        if(!request.getHeaders().containsKey(CONTENT_ENCODING) && config.isRequestCompressionOn()){
+            jreq.header(ACCEPT_ENCODING, "gzip");
         }
     }
 
@@ -226,8 +162,6 @@ public class JavaClient implements Client, AsyncClient {
             Runtime.getRuntime().addShutdownHook(new Thread(this::close, "Unirest Client Shutdown Hook"));
         }
     }
-
-
 
     protected <T> HttpResponse<T> transformBody(Function<RawResponse, HttpResponse<T>> transformer, RawResponse rr) {
         try {
