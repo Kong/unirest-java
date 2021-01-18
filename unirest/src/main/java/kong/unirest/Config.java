@@ -35,7 +35,6 @@ import java.security.KeyStore;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -414,26 +413,6 @@ public class Config {
      */
     public Config instrumentWith(UniMetric metric) {
         this.metrics = metric;
-        return this;
-    }
-
-    /**
-     * Sets a global error handler by wrapping it in a default interceptor
-     * If the response was NOT a 200-series response or a mapping exception happened. Invoke this consumer,
-     * this function is deprecated in favor of a full interceptor pattern.
-     *
-     * Setting a custom interceptor will make this function throw an exception
-     * @param consumer a function to consume a HttpResponse
-     * @return this config object
-     * @deprecated this is merging with the interceptor concept. see interceptor(Interceptor value)
-     */
-    @Deprecated
-    public Config errorHandler(Consumer<HttpResponse<?>> consumer) {
-        Optional<DefaultInterceptor> df = getDefaultInterceptor();
-        df.ifPresent(d -> d.setConsumer(consumer));
-        df.orElseThrow(() -> new UnirestConfigException(
-                "You attempted to set a custom error handler while also overriding the Unirest interceptor.\n" +
-                "please use the interceptor only. This function is deprecated"));
         return this;
     }
 
@@ -914,28 +893,10 @@ public class Config {
     }
 
     /**
-     * @return  The currently configred error handler
-     * @deprecated use interceptors instead
-     */
-    @Deprecated
-    public Consumer<HttpResponse<?>> getErrorHandler() {
-        return getDefaultInterceptor()
-                .map(DefaultInterceptor::getConsumer)
-                .orElseGet(() -> r -> {});
-    }
-
-    /**
      * @return the SSL connection configuration
      */
     public SSLContext getSslContext() {
         return sslContext;
-    }
-
-    private Optional<DefaultInterceptor> getDefaultInterceptor() {
-        return interceptor.getInterceptors().stream()
-                .filter(i -> i instanceof DefaultInterceptor)
-                .map(i -> (DefaultInterceptor)i)
-                .findFirst();
     }
 
     /**

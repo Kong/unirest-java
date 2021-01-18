@@ -85,25 +85,7 @@ class PostRequestHandlersTest extends BddTest {
         assertEquals("not what you expect", captured.getParsingError().get().getOriginalBody());
     }
 
-    @Test
-    void canConfigureAGlobalErrorHandler(){
-        Error error = new Error();
-        Unirest.config().errorHandler(error);
 
-        Unirest.get(MockServer.INVALID_REQUEST).asEmpty();
-
-        assertEquals(400, error.httpResponse.getStatus());
-    }
-
-    @Test
-    void canConfigureAGlobalErrorHandlerAsync()  throws Exception {
-        Error error = new Error();
-        Unirest.config().errorHandler(error);
-
-        Unirest.get(MockServer.INVALID_REQUEST).asEmptyAsync().get();
-
-        assertEquals(400, error.httpResponse.getStatus());
-    }
 
     private static class Error implements Consumer<HttpResponse<?>> {
 
