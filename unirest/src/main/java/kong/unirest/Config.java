@@ -27,7 +27,6 @@ package kong.unirest;
 
 import kong.unirest.java.JavaClient;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -76,7 +75,6 @@ public class Config {
     private String[] ciphers;
     private String[] protocols;
     private CompoundInterceptor interceptor = new CompoundInterceptor();
-    private HostnameVerifier hostnameVerifier;
     private String defaultBaseUrl;
     private CacheManager cache;
 
@@ -217,16 +215,6 @@ public class Config {
     public Config sslContext(SSLContext ssl) {
         verifySecurityConfig(this.keystore);
         this.sslContext = ssl;
-        return this;
-    }
-
-    /**
-     * Set a custom HostnameVerifier
-     * @param value the verifier
-     * @return this config object
-     */
-    public Config hostnameVerifier(HostnameVerifier value) {
-        this.hostnameVerifier = value;
         return this;
     }
 
@@ -897,13 +885,6 @@ public class Config {
      */
     public SSLContext getSslContext() {
         return sslContext;
-    }
-
-    /**
-     * @return the current HostnameVerifier
-     */
-    public HostnameVerifier getHostnameVerifier() {
-        return hostnameVerifier;
     }
 
     /**

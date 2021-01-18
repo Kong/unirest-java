@@ -10,6 +10,7 @@ Unirest 4 drops the Apache Http Client dependency in favor of the pure Java clie
 * Cookie management follows more modern standards and may differ from apache with regard to non-standard parsing. 
    * related: ```config.cookieSpec(String)``` has been removed as it was Apache specific.
 * Per-Request proxies are no longer supported.  
+* Custom HostNameVerifier is no longer supported.
 
 ## Upgrading to Unirest 3.0
 The primary difference in Unirest 3 is that the org.json dependency has been replaced by a clean-room implementation of org.json's interface using Google Gson as the engine. 

@@ -148,14 +148,6 @@ class CertificateTests extends BddTest {
     }
 
     @Test
-    void canSetHoestNameVerifyer() {
-        Unirest.config().hostnameVerifier((q, w) -> true);
-
-        int response = Unirest.get("https://badssl.com/").asEmpty().getStatus();
-        assertEquals(200, response);
-    }
-
-    @Test
     void badName() {
         fails("https://wrong.host.badssl.com/",
                 SSLPeerUnverifiedException.class,
