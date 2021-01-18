@@ -180,14 +180,6 @@ public interface HttpRequest<R extends HttpRequest>  {
     R connectTimeout(int millies);
 
     /**
-     * Set a proxy for this request. Only basic proxies are supported.
-     * @param host the host url
-     * @param port the proxy port
-     * @return this request builder
-     */
-    R proxy(String host, int port);
-
-    /**
      * sets a download monitor for monitoring the response. this could be used for drawing a progress bar
      * @param monitor a ProgressMonitor
      * @return this request builder
@@ -425,11 +417,6 @@ public interface HttpRequest<R extends HttpRequest>  {
      * @return the connect timeout for this request
      */
     int getConnectTimeout();
-
-    /**
-     * @return the proxy for this request
-     */
-    Proxy getProxy();
 
     /**
      * @return a summary for the response, used in metrics

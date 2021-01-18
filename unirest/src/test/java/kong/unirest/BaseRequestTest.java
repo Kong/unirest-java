@@ -87,19 +87,6 @@ class BaseRequestTest {
     }
 
     @Test
-    void canPassABasicProxyPerRequest() {
-        Proxy cp = new Proxy("foo", 8080, "username", "password");
-        testConfig.proxy(cp);
-
-        HttpRequest request = new TestRequest(testConfig);
-
-        assertEquals(cp, request.getProxy());
-        request.proxy("bar", 7979);
-        assertEquals("bar", request.getProxy().getHost());
-        assertEquals(7979, request.getProxy().getPort().intValue());
-    }
-
-    @Test
     void requestEquals_PathAndVerb() {
         assertEquals(
                 new TestRequest(GET, "/path"),

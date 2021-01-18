@@ -47,7 +47,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     protected Path url;
     private Integer socketTimeout;
     private Integer connectTimeout;
-    private Proxy proxy;
     private ProgressMonitor downloadMonitor;
 
     BaseRequest(BaseRequest httpRequest) {
@@ -57,7 +56,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         this.headers.putAll(httpRequest.headers);
         this.socketTimeout = httpRequest.socketTimeout;
         this.connectTimeout = httpRequest.connectTimeout;
-        this.proxy = httpRequest.proxy;
         this.objectMapper = httpRequest.objectMapper;
     }
 
@@ -164,12 +162,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public R connectTimeout(int millies) {
         this.connectTimeout = millies;
-        return (R) this;
-    }
-
-    @Override
-    public R proxy(String host, int port) {
-        this.proxy = new Proxy(host, port);
         return (R) this;
     }
 
@@ -391,11 +383,6 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public int getConnectTimeout() {
         return valueOr(connectTimeout, config::getConnectionTimeout);
-    }
-
-    @Override
-    public Proxy getProxy() {
-        return valueOr(proxy, config::getProxy);
     }
 
     @Override

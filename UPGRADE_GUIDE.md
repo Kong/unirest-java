@@ -9,6 +9,7 @@ Unirest 4 drops the Apache Http Client dependency in favor of the pure Java clie
 * You may not normally override the `host` header anymore. Starting with Java12 you may only due this by setting a system property of jdk.httpclient.allowRestrictedHeaders=host. see https://bugs.openjdk.java.net/browse/JDK-8213696
 * Cookie management follows more modern standards and may differ from apache with regard to non-standard parsing. 
    * related: ```config.cookieSpec(String)``` has been removed as it was Apache specific.
+* Per-Request proxies are no longer supported.  
 
 ## Upgrading to Unirest 3.0
 The primary difference in Unirest 3 is that the org.json dependency has been replaced by a clean-room implementation of org.json's interface using Google Gson as the engine. 
