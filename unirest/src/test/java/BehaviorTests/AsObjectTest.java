@@ -40,13 +40,13 @@ class AsObjectTest extends BddTest {
 
     @Test
     void basicJsonObjectMapperIsTheDefault() {
-        Unirest.config().shutDown(true);
+        Unirest.config().reset(true);
         assertTrue(Unirest.config().getObjectMapper() instanceof  JsonObjectMapper);
     }
 
     @Test
     void basicJsonObjectMapperIsGoodEnough() {
-        Unirest.config().shutDown(true);
+        Unirest.config().reset(true);
         MockServer.setJsonAsResponse(new Foo("bar"));
 
         Foo f = Unirest.get(MockServer.GET)

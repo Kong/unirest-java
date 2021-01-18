@@ -32,7 +32,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 /**
  * A Mock client for unirest to make requests against
@@ -121,16 +120,6 @@ public class MockClient implements Client, AsyncClient {
     @Override
     public Object getClient() {
         return this;
-    }
-
-    @Override
-    public Stream<Exception> close() {
-        return Stream.empty();
-    }
-
-    @Override
-    public void registerShutdownHook() {
-
     }
 
     /**

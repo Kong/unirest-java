@@ -36,8 +36,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Config {
     public static final int DEFAULT_CONNECTION_TIMEOUT = 10000;
@@ -63,7 +61,6 @@ public class Config {
     private boolean requestCompressionOn = true;
     private boolean automaticRetries;
     private boolean verifySsl = true;
-    private boolean addShutdownHook = false;
     private KeyStore keystore;
     private Supplier<String> keystorePassword = () -> null;
     private String cookieSpec;
@@ -553,22 +550,6 @@ public class Config {
     }
 
     /**
-     * Register the client with a system shutdown hook. Note that this creates up to two threads
-     * (depending on if you use both sync and async clients). default is false
-     *
-     * @param value a bool is its true or not.
-     * @return this config object
-     */
-    public Config addShutdownHook(boolean value) {
-        this.addShutdownHook = value;
-        if (value) {
-            client.ifPresent(Client::registerShutdownHook);
-            asyncClient.ifPresent(AsyncClient::registerShutdownHook);
-        }
-        return this;
-    }
-
-    /**
      * set a default base url for all routes.
      * this is overridden if the url contains a valid base already
      * the url may contain path params
@@ -608,7 +589,7 @@ public class Config {
      * @return this config
      */
     public Config reset() {
-        shutDown(false);
+        reset(false);
         return this;
     }
 
@@ -619,21 +600,12 @@ public class Config {
      *
      * @param clearOptions should the current non-client settings be retained.
      */
-    public void shutDown(boolean clearOptions) {
-        List<Exception> ex = Stream.concat(
-                client.map(Client::close).orElseGet(Stream::empty),
-                asyncClient.map(AsyncClient::close).orElseGet(Stream::empty)
-        ).collect(Collectors.toList());
-
+    public void reset(boolean clearOptions) {
         client = Optional.empty();
         asyncClient = Optional.empty();
 
         if (clearOptions) {
             setDefaults();
-        }
-
-        if (!ex.isEmpty()) {
-            throw new UnirestException(ex);
         }
     }
 
@@ -685,26 +657,17 @@ public class Config {
     }
 
     private boolean asyncClientIsReady() {
-        return asyncClient
-                .map(AsyncClient::isRunning)
-                .orElse(false);
+        return asyncClient.isPresent();
     }
 
     private synchronized void buildAsyncClient() {
         if (!asyncClientIsReady()) {
             AsyncClient value = asyncBuilder.apply(this);
-            verifyIsOn(value);
+
             asyncClient = Optional.of(value);
         }
     }
 
-    private void verifyIsOn(AsyncClient value) {
-        if (!value.isRunning()) {
-            throw new UnirestConfigException("Attempted to get a new async client but it was not started. Please ensure it is");
-        }
-    }
-
-    // Accessors for unirest.
 
     /**
      * @return if cookie management should be enabled.
@@ -820,13 +783,6 @@ public class Config {
      */
     public boolean isVerifySsl() {
         return verifySsl;
-    }
-
-    /**
-     * @return if shutdown hooks configure automatically (default is false)
-     */
-    public boolean shouldAddShutdownHook() {
-        return addShutdownHook;
     }
 
     /**

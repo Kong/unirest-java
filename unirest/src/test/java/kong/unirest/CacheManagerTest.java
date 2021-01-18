@@ -105,15 +105,5 @@ class CacheManagerTest {
             invokes++;
             return new MockResponse();
         }
-
-        @Override
-        public Stream<Exception> close() {
-            return null;
-        }
-
-        @Override
-        public void registerShutdownHook() {
-
-        }
     }
 }

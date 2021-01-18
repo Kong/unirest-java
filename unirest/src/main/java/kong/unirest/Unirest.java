@@ -50,7 +50,7 @@ public class Unirest {
      * @param clearOptions  indicates if options should be cleared. Note that the HttpClient, AsyncClient and thread monitors will not be retained after shutDown.
      */
     public static void shutDown(boolean clearOptions) {
-        primaryInstance.shutDown(clearOptions);
+        primaryInstance.reset(clearOptions);
     }
 
     /**

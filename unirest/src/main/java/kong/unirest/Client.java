@@ -26,7 +26,6 @@
 package kong.unirest;
 
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 public interface Client {
     /**
@@ -56,11 +55,4 @@ public interface Client {
     default <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, Class<?> resultType){
         return request(request, transformer);
     }
-
-    /**
-     * @return a stream of exceptions possibly thrown while closing all the things.
-     */
-    Stream<Exception> close();
-
-    void registerShutdownHook();
 }

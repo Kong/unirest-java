@@ -33,8 +33,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
-
 
 class CacheManager {
 
@@ -135,16 +133,6 @@ class CacheManager {
             return backingCache.get(hash,
                     () -> originalClient.request(request, transformer, responseType));
         }
-
-        @Override
-        public Stream<Exception> close() {
-            return originalClient.close();
-        }
-
-        @Override
-        public void registerShutdownHook() {
-            originalClient.registerShutdownHook();
-        }
     }
 
     private class AsyncWrapper implements AsyncClient {
@@ -161,21 +149,6 @@ class CacheManager {
             Cache.Key key = getHash(request, true, responseType);
             return backingCache.getAsync(key,
                     () -> originalAsync.request(request, transformer, callback, responseType));
-        }
-
-        @Override
-        public void registerShutdownHook() {
-            originalAsync.registerShutdownHook();
-        }
-
-        @Override
-        public Stream<Exception> close() {
-            return originalAsync.close();
-        }
-
-        @Override
-        public boolean isRunning() {
-            return originalAsync.isRunning();
         }
     }
 

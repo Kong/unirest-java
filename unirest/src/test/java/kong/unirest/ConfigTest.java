@@ -81,31 +81,12 @@ class ConfigTest {
     }
 
     @Test
-    void ifTheNextAsyncClientThatIsReturnedIsAlsoOffThrowAnException(){
-        AsyncClient c = mock(AsyncClient.class);
-        when(c.isRunning()).thenReturn(false);
-        config.asyncClient(g -> c);
-
-
-        TestUtil.assertException(() -> config.getAsyncClient(),
-                UnirestConfigException.class,
-                "Attempted to get a new async client but it was not started. Please ensure it is");
-    }
-
-    @Test
     void provideYourOwnClientBuilder() {
         Client cli = mock(Client.class);
 
         config.httpClient(c -> cli);
 
         assertSame(cli, config.getClient());
-    }
-
-    @Test
-    void canSignalForShutdownHook() {
-        assertFalse(config.shouldAddShutdownHook());
-        config.addShutdownHook(true);
-        assertTrue(config.shouldAddShutdownHook());
     }
 
     @Test
@@ -121,16 +102,6 @@ class ConfigTest {
         assertTrue(config.isAutomaticRetries());
         config.automaticRetries(false);
         assertFalse(config.isAutomaticRetries());
-    }
-
-    @Test
-    void provideYourOwnAsyncClientBuilder() {
-        AsyncClient cli = mock(AsyncClient.class);
-        when(cli.isRunning()).thenReturn(true);
-
-        config.asyncClient(c -> cli);
-
-        assertSame(cli, config.getAsyncClient());
     }
 
     @Test

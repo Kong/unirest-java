@@ -48,7 +48,6 @@ public class JavaClient implements Client, AsyncClient {
     public JavaClient(Config config) {
         this.config = config;
         this.client = new JavaClientBuilder().apply(config);
-
     }
 
     public JavaClient(Config config, HttpClient client){
@@ -148,24 +147,6 @@ public class JavaClient implements Client, AsyncClient {
 
             return new FailedResponse(ex);
         });
-    }
-
-    @Override
-    public Stream<Exception> close() {
-        return Stream.of();
-    }
-
-    @Override
-    public boolean isRunning() {
-        return true;
-    }
-
-    @Override
-    public void registerShutdownHook() {
-        if(!hookset) {
-            hookset = true;
-            Runtime.getRuntime().addShutdownHook(new Thread(this::close, "Unirest Client Shutdown Hook"));
-        }
     }
 
     protected <T> HttpResponse<T> transformBody(Function<RawResponse, HttpResponse<T>> transformer, RawResponse rr) {

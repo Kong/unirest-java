@@ -35,9 +35,7 @@ import javax.net.ssl.TrustManagerFactory;
 import java.net.*;
 import java.net.http.HttpClient;
 import java.time.Duration;
-import java.time.temporal.TemporalUnit;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 class JavaClientBuilder implements Function<Config, HttpClient> {

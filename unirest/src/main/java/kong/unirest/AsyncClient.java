@@ -28,7 +28,6 @@ package kong.unirest;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 public interface AsyncClient {
     /**
@@ -51,23 +50,4 @@ public interface AsyncClient {
                                                    Function<RawResponse, HttpResponse<T>> transformer,
                                                    CompletableFuture<HttpResponse<T>> callback,
                                                    Class<?> resultType);
-
-    /**
-     * @return a stream of exceptions possibly thrown while closing all the things.
-     */
-    default Stream<Exception> close() {
-        return Stream.empty();
-    }
-
-    /**
-     * @return is the client running?
-     */
-    default boolean isRunning() {
-        return true;
-    }
-
-    /**
-     * Register the Async clients with shutdown hooks
-     */
-    void registerShutdownHook();
 }

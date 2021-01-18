@@ -30,7 +30,7 @@ package kong.unirest;
  * and its clients where all the action happens.
  * This class is suitable for mocking.
  */
-public class UnirestInstance implements AutoCloseable {
+public class UnirestInstance {
 
     private final Config config;
 
@@ -53,8 +53,8 @@ public class UnirestInstance implements AutoCloseable {
      * Close the asynchronous client and its event loop. Use this method to close all the threads and allow an application to exit.
      * This will also clear any options returning Unirest to a default state
      */
-    public void shutDown() {
-        shutDown(true);
+    public void reset() {
+        reset(true);
     }
 
     /**
@@ -62,8 +62,8 @@ public class UnirestInstance implements AutoCloseable {
      *
      * @param clearOptions indicates if options should be cleared. Note that the HttpClient, AsyncClient and thread monitors will not be retained after shutDown.
      */
-    public void shutDown(boolean clearOptions) {
-        config.shutDown(clearOptions);
+    public void reset(boolean clearOptions) {
+        config.reset(clearOptions);
     }
 
     /**
@@ -158,6 +158,6 @@ public class UnirestInstance implements AutoCloseable {
      * call shutDown as it will be done automatically.
      */
     public void close() {
-        shutDown(true);
+        reset(true);
     }
 }
