@@ -51,7 +51,7 @@ class TimeoutTest extends BddTest {
         try {
             Unirest.get(address).asString();
         } catch (Exception e) {
-            if (System.currentTimeMillis() - start > Config.DEFAULT_CONNECTION_TIMEOUT + 100) { // Add 100ms for code execution
+            if (System.currentTimeMillis() - start > Config.DEFAULT_CONNECT_TIMEOUT + 100) { // Add 100ms for code execution
                 fail();
             }
         }

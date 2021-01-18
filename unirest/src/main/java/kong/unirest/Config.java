@@ -38,7 +38,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class Config {
-    public static final int DEFAULT_CONNECTION_TIMEOUT = 10000;
     public static final int DEFAULT_CONNECT_TIMEOUT = 10000;
 
     private Optional<Client> client = Optional.empty();
@@ -75,7 +74,7 @@ public class Config {
         proxy = null;
         cache = null;
         headers = new Headers();
-        connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
+        connectionTimeout = DEFAULT_CONNECT_TIMEOUT;
         followRedirects = true;
         useSystemProperties = false;
         cookieManagement = true;
