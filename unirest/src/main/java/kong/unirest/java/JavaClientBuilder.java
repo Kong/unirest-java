@@ -47,6 +47,9 @@ class JavaClientBuilder implements Function<Config, HttpClient> {
 
         configureTLSOptions(config, builder);
 
+        if(config.getCustomExecutor() != null){
+            builder.executor(config.getCustomExecutor());
+        }
         if(config.getEnabledCookieManagement()){
             builder = builder.cookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
         }

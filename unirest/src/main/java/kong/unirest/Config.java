@@ -33,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -43,6 +44,7 @@ public class Config {
     private Optional<Client> client = Optional.empty();
     private Optional<ObjectMapper> objectMapper = Optional.of(new JsonObjectMapper());
 
+    private Executor customExecutor;
     private Headers headers;
     private Proxy proxy;
     private int connectionTimeout;
@@ -73,6 +75,7 @@ public class Config {
     private void setDefaults() {
         proxy = null;
         cache = null;
+        customExecutor =  null;
         headers = new Headers();
         connectionTimeout = DEFAULT_CONNECT_TIMEOUT;
         followRedirects = true;
@@ -116,6 +119,20 @@ public class Config {
      */
     public Config httpClient(Function<Config, Client> httpClient) {
         clientBuilder = httpClient;
+        return this;
+    }
+
+    /**
+     * Sets a custom executor for requests
+     * @param executor – the Executor
+     * @return this config builder
+     * Implementation Note:
+     * The default executor uses a thread pool, with a custom thread factory.
+     * If a security manager has been installed, the thread factory creates
+     * threads that run with an access control context that has no permissions.
+     */
+    public Config executor(Executor executor){
+        this.customExecutor  = executor;
         return this;
     }
 
@@ -742,5 +759,9 @@ public class Config {
      */
     public String getDefaultBaseUrl() {
         return this.defaultBaseUrl;
+    }
+
+    public Executor getCustomExecutor(){
+        return customExecutor;
     }
 }

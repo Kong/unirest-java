@@ -34,7 +34,6 @@ import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import static kong.unirest.HeaderNames.*;
 
@@ -43,7 +42,6 @@ public class JavaClient implements Client {
 
     private final Config config;
     private final HttpClient client;
-    private boolean hookset = false;
 
     public JavaClient(Config config) {
         this.config = config;
