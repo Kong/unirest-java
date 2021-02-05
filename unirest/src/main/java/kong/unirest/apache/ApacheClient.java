@@ -57,8 +57,7 @@ public class ApacheClient extends BaseApacheClient implements Client {
                 .setDefaultRequestConfig(RequestOptions.toRequestConfig(config))
                 .setDefaultCredentialsProvider(toApacheCreds(config.getProxy()))
                 .setConnectionManager(manager)
-                .evictIdleConnections(30, TimeUnit.SECONDS)
-                .useSystemProperties();
+                .evictIdleConnections(30, TimeUnit.SECONDS);
 
         setOptions(cb);
         client = cb.build();
