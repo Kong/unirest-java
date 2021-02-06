@@ -1,5 +1,5 @@
 ## 3.11.11 (pending)
-* useSystemProperties should be reset back to false on reset
+* useSystemProperties is not overwritten and should be reset back to true on reset
 
 ## 3.11.10
 * issue #394 use the configured Object Mapper rather than always Json
