@@ -13,6 +13,7 @@ Unirest 4 drops the Apache Http Client dependency in favor of the pure Java clie
 * Custom HostNameVerifier is no longer supported.
 * Socket timeout is no longer set independent of connection timeout and has been removed
 * There are no longer any monitoring threads to shut down, as such, all close methods and the registering of shutdown hooks have been removed.
+* Using system props for proxy settings is false by default (was true in previous versions)
 
 ## Upgrading to Unirest 3.0
 The primary difference in Unirest 3 is that the org.json dependency has been replaced by a clean-room implementation of org.json's interface using Google Gson as the engine. 
