@@ -312,9 +312,7 @@
                             <rules>
                                 <banVulnerable implementation="org.sonatype.ossindex.maven.enforcer.BanVulnerableDependencies">
                                     <excludeVulnerabilityIds>
-                                        <!-- Only a test dependency. Waiting on
-                                        https://github.com/perwendel/spark/pull/1201 -->
-<!--                                        <exclude>2f9b8690-2b13-48ad-adc9-af1489d0a2f3</exclude>-->
+
                                     </excludeVulnerabilityIds>
                                 </banVulnerable>
                             </rules>

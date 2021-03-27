@@ -157,7 +157,7 @@ class PathParamTest extends BddTest {
                 .routeParam("params", null)
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertUrl("http://localhost:4567/get//passed")
-                .assertPathParam("params", null);
+                .assertStatus(404)
+                .assertUrl("http://localhost:4567/get//passed");
     }
 }

@@ -71,7 +71,7 @@ class VerbTest extends BddTest {
         HttpResponse response = Unirest.head(MockServer.GET).asEmpty();
 
         assertEquals(200, response.getStatus());
-        assertEquals("text/html;charset=utf-8", response.getHeaders().getFirst("Content-Type"));
+        assertEquals("text/plain;charset=utf-8", response.getHeaders().getFirst("Content-Type"));
     }
 
     @Test

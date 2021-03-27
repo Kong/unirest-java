@@ -38,7 +38,6 @@ import static BehaviorTests.MockServer.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class MetricsTest extends BddTest {
     @Test
@@ -168,8 +167,8 @@ class MetricsTest extends BddTest {
     }
 
     @Test
-    void showWhatSparkDoes() {
-        HashMap map = Unirest.get(SPARKLE)
+    void showWhatJavalinDoes() {
+        HashMap map = Unirest.get(JAVALIN)
                 .routeParam("spark", "joy")
                 .queryString("food", "hamberders")
                 .queryString("colour", "red")
@@ -179,7 +178,7 @@ class MetricsTest extends BddTest {
         assertEquals("localhost:4567", map.get("host()"));
         assertEquals("/sparkle/joy/yippy", map.get("uri()")); // this is different from what the Spark doc says.
         assertEquals("http://localhost:4567/sparkle/joy/yippy", map.get("url()"));
-        assertNull(map.get("contextPath()"));
+        assertEquals("", map.get("contextPath()"));
         assertEquals("/sparkle/joy/yippy", map.get("pathInfo()"));
         assertEquals("food=hamberders&colour=red", map.get("queryString()"));
     }

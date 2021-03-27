@@ -25,6 +25,7 @@
 
 package BehaviorTests;
 
+import io.javalin.core.util.Header;
 import org.junit.jupiter.api.Test;
 import kong.unirest.HttpResponse;
 import kong.unirest.TestUtil;
@@ -35,6 +36,13 @@ import java.util.concurrent.CompletableFuture;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AsStringTest extends BddTest {
+
+    @Test
+    void simpleExample() {
+        MockServer.setStringResponse("Hi Mom");
+        String body = Unirest.get(MockServer.GET).asString().getBody();
+        assertEquals("Hi Mom", body);
+    }
 
     @Test
     void whenNoBodyIsReturned() {
@@ -48,6 +56,7 @@ class AsStringTest extends BddTest {
     void canParseGzippedStringResponse() {
         HttpResponse<String> i = Unirest.get(MockServer.GZIP)
                 .queryString("foo", "bar")
+                .header(Header.ACCEPT_ENCODING, "gzip")
                 .asString();
 
         RequestCapture cap = TestUtil.readValue(i.getBody(), RequestCapture.class);

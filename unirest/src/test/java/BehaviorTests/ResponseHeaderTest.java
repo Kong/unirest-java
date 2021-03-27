@@ -25,36 +25,34 @@
 
 package BehaviorTests;
 
-import org.junit.jupiter.api.Test;
-import kong.unirest.Header;
+import com.google.common.collect.Lists;
 import kong.unirest.Headers;
 import kong.unirest.Unirest;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class ResponseHeaderTest extends BddTest {
 
     @Test
-    void responseHeadersAreInTheSameOrderAsTheResponse() {
+    void readingResponseHeaders() {
         MockServer.addResponseHeader("zed", "oranges");
         MockServer.addResponseHeader("alpha", "apples");
-        MockServer.addResponseHeader("Content", "application/xml");
+        MockServer.addResponseHeader("zed", "grapes");
         MockServer.expectCookie("JSESSIONID", "ABC123");
 
         Headers h = Unirest.get(MockServer.GET).asString().getHeaders();
 
-       // assertHeader("Date", "Fri, 04 Jan 2019 01:46:34 GMT", h.all().get(0));
-        assertHeader("Set-Cookie", "JSESSIONID=ABC123", h);
-        assertHeader("Expires", "Thu, 01 Jan 1970 00:00:00 GMT", h);
-        assertHeader("zed", "oranges", h);
-        assertHeader("alpha", "apples", h);
-        assertHeader("Content", "application/xml", h);
-        assertHeader("Content-Type", "text/html;charset=utf-8", h);
-        assertHeader("Transfer-Encoding", "chunked", h);
+        // assertHeader("Date", "Fri, 04 Jan 2019 01:46:34 GMT", h.all().get(0));
+        assertEquals("Javalin", h.getFirst("Server"));
+        assertEquals("text/plain;charset=utf-8", h.getFirst("Content-Type"));
+        assertEquals("JSESSIONID=ABC123; Path=/", h.getFirst("Set-Cookie"));
+        assertEquals("Thu, 01 Jan 1970 00:00:00 GMT", h.getFirst("Expires"));
+        assertEquals(Lists.newArrayList("oranges", "grapes"), h.get("zed"));
+        assertEquals("apples", h.getFirst("alpha"));
     }
 
     @Test
@@ -68,12 +66,5 @@ class ResponseHeaderTest extends BddTest {
         List<String> headers = h.get("fruit");
         assertEquals(3, headers.size());
         assertEquals(Arrays.asList("oranges","apples","grapes"), headers);
-    }
-
-    private void assertHeader(String name, String value, Headers header) {
-        List<String> v = header.get(name);
-        assertFalse(v.isEmpty(), "Missing header for " + name);
-        assertEquals(1, v.size(), "Expected only 1 header for " + name);
-        assertEquals(value, v.get(0));
     }
 }

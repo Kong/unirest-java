@@ -32,15 +32,14 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Sets;
+import io.javalin.http.Context;
 import kong.unirest.*;
-import spark.Request;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 import javax.servlet.http.Part;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -66,26 +65,27 @@ public class RequestCapture {
     public HashMap<String, String> cookies = new HashMap<>();
 
 
-    public RequestCapture() {
+    public RequestCapture(){
+
     }
 
-    public RequestCapture(Request req) {
+    public RequestCapture(Context req) {
         url = req.url();
         queryString = req.queryString();
-        method = HttpMethod.valueOf(req.requestMethod());
+        method = HttpMethod.valueOf(req.method());
         writeHeaders(req);
         writeQuery(req);
         populateParams(req);
-        cookies.putAll(req.cookies());
+        cookies.putAll(req.cookieMap());
         contentType = req.contentType();
         status = 200;
     }
 
-    private void populateParams(Request req) {
-        routeParams.putAll(req.params());
+    private void populateParams(Context req) {
+        routeParams.putAll(req.pathParamMap());
     }
 
-    public void writeBody(Request req) {
+    public void writeBody(Context req) {
         if (Strings.nullToEmpty(req.contentType()).equals(CONTENT_TYPE)) {
             String body = req.body();
             jsonPatches = new JsonPatch(body);
@@ -104,11 +104,11 @@ public class RequestCapture {
                 });
     }
 
-    public void writeMultipart(Request req) {
-        req.raw().setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement(getProperty("java.io.tmpdir")));
+    public void writeMultipart(Context req) {
+        req.req.setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement(getProperty("java.io.tmpdir")));
 
         try {
-            for (Part p : req.raw().getParts()) {
+            for (Part p : req.req.getParts()) {
                 if (!Strings.isNullOrEmpty(p.getSubmittedFileName())) {
                     buildFilePart(p);
                 } else {
@@ -151,8 +151,8 @@ public class RequestCapture {
         return h;
     }
 
-    private void writeQuery(Request req) {
-        req.queryParams().forEach(q -> params.putAll(q, Sets.newHashSet(req.queryMap(q).values())));
+    private void writeQuery(Context req) {
+        req.queryParamMap().forEach((key, value) -> params.putAll(key, value));
     }
 
     public RequestCapture assertNoHeader(String s) {
@@ -160,8 +160,10 @@ public class RequestCapture {
         return this;
     }
 
-    private RequestCapture writeHeaders(Request req) {
-        req.headers().forEach(h -> headers.putAll(h, Collections.list(req.raw().getHeaders(h))));
+    private RequestCapture writeHeaders(Context req) {
+        Collections.list(req.req.getHeaderNames())
+                .forEach(name -> Collections.list(req.req.getHeaders(name))
+                        .forEach(value -> headers.put(name, value)));
         return this;
     }
 
@@ -225,7 +227,7 @@ public class RequestCapture {
     }
 
     public RequestCapture assertPathParam(String name, String value) {
-        assertEquals(value, routeParams.get(":" + name));
+        assertEquals(value, routeParams.get(name));
         return this;
     }
 
