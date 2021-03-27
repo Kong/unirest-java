@@ -42,7 +42,7 @@ class AsEmptyTest extends BddTest {
 
         assertNull(res.getBody());
         assertEquals(200, res.getStatus());
-        assertEquals("json", res.getHeaders().getFirst("Content-Type"));
+        assertEquals("json;charset=utf-8", res.getHeaders().getFirst("Content-Type"));
     }
 
     @Test
@@ -52,18 +52,18 @@ class AsEmptyTest extends BddTest {
 
         assertNull(res.getBody());
         assertEquals(200, res.getStatus());
-        assertEquals("json", res.getHeaders().getFirst("Content-Type"));
+        assertEquals("json;charset=utf-8", res.getHeaders().getFirst("Content-Type"));
     }
 
     @Test
     void canDoEmptyAsyncWithCallback() {
-        MockServer.addResponseHeader("Content-Type", "json");
+        MockServer.addResponseHeader("Content-Type", "json;charset=utf-8");
 
         Unirest.get(MockServer.GET)
                 .asEmptyAsync(res -> {
                     assertNull(res.getBody());
                     assertEquals(200, res.getStatus());
-                    assertEquals("json", res.getHeaders().getFirst("Content-Type"));
+                    assertEquals("json;charset=utf-8", res.getHeaders().getFirst("Content-Type"));
                     asyncSuccess();
                 });
 

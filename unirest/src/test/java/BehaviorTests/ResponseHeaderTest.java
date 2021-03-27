@@ -25,10 +25,13 @@
 
 package BehaviorTests;
 
+import com.google.common.collect.Lists;
 import org.junit.jupiter.api.Test;
 import kong.unirest.Header;
 import kong.unirest.Headers;
 import kong.unirest.Unirest;
+
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -36,29 +39,20 @@ class ResponseHeaderTest extends BddTest {
 
 
     @Test
-    void responseHeadersAreInTheSameOrderAsTheResponse() {
+    void readingResponseHeaders() {
         MockServer.addResponseHeader("zed", "oranges");
         MockServer.addResponseHeader("alpha", "apples");
-        MockServer.addResponseHeader("Content", "application/xml");
         MockServer.addResponseHeader("zed", "grapes");
         MockServer.expectCookie("JSESSIONID", "ABC123");
 
         Headers h = Unirest.get(MockServer.GET).asString().getHeaders();
 
        // assertHeader("Date", "Fri, 04 Jan 2019 01:46:34 GMT", h.all().get(0));
-        assertHeader("Set-Cookie", "JSESSIONID=ABC123", h.all().get(1));
-        assertHeader("Expires", "Thu, 01 Jan 1970 00:00:00 GMT", h.all().get(2));
-        assertHeader("zed", "oranges", h.all().get(3));
-        assertHeader("alpha", "apples", h.all().get(4));
-        assertHeader("Content", "application/xml", h.all().get(5));
-        assertHeader("zed", "grapes", h.all().get(6));
-        assertHeader("Content-Type", "text/html;charset=utf-8", h.all().get(7));
-        assertHeader("Transfer-Encoding", "chunked", h.all().get(8));
-
-    }
-
-    private void assertHeader(String name, String value, Header header) {
-        assertEquals(name, header.getName());
-        assertEquals(value, header.getValue());
+        assertEquals("Javalin", h.getFirst("Server"));
+        assertEquals("text/plain;charset=utf-8", h.getFirst("Content-Type"));
+        assertEquals("JSESSIONID=ABC123; Path=/", h.getFirst("Set-Cookie"));
+        assertEquals("Thu, 01 Jan 1970 00:00:00 GMT", h.getFirst("Expires"));
+        assertEquals(Lists.newArrayList("oranges", "grapes"), h.get("zed"));
+        assertEquals("apples", h.getFirst("alpha"));
     }
 }
