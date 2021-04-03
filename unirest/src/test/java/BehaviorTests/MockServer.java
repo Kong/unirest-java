@@ -26,250 +26,273 @@
 
 package BehaviorTests;
 
-import org.eclipse.jetty.util.UrlEncoded;
-import spark.Request;
-import spark.Response;
-import spark.Spark;
-import spark.utils.IOUtils;
+import com.google.common.base.Strings;
+import io.javalin.Javalin;
+import io.javalin.http.Context;
 import kong.unirest.JacksonObjectMapper;
 import kong.unirest.TestUtil;
+import org.apache.commons.io.IOUtils;
+import org.eclipse.jetty.util.UrlEncoded;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
-import static spark.Spark.*;
 
 public class MockServer {
     public static int timesCalled;
     private static int pages = 1;
-	private static int onPage = 1;
-	private static final List<Pair<String,String>> responseHeaders = new ArrayList<>();
-	private static final List<Cookie> cookies = new ArrayList<>();
+    private static int onPage = 1;
+    private static final List<Pair<String, String>> responseHeaders = new ArrayList<>();
+    private static final List<Cookie> cookies = new ArrayList<>();
 
-	private static final JacksonObjectMapper om = new JacksonObjectMapper();
-	private static String responseBody;
-	public static final int PORT = 4567;
-	public static final String HOST = "http://localhost:" + PORT;
-	public static final String WINDOWS_LATIN_1_FILE = HOST + "/data/cp1250.txt";
-	public static final String REDIRECT = HOST + "/redirect";
-	public static final String SPARKLE = HOST + "/sparkle/{spark}/yippy";
-	public static final String BINARYFILE = HOST + "/binary";
-	public static final String NOBODY = HOST + "/nobody";
-	public static final String PAGED = HOST + "/paged";
-	public static final String PROXY = "localhost:4567";
-	public static final String POST = HOST + "/post";
-	public static final String GET = HOST + "/get";
-	public static final String ERROR_RESPONSE = HOST + "/error";
-	public static final String DELETE = HOST + "/delete";
-	public static final String GZIP = HOST + "/gzip";
-	public static final String EMPTY_GZIP = HOST + "/empty-gzip";
-	public static final String PATCH = HOST + "/patch";
-	public static final String INVALID_REQUEST = HOST + "/invalid";
-	public static final String PASSED_PATH_PARAM = GET + "/{params}/passed";
-	public static final String PASSED_PATH_PARAM_MULTI = PASSED_PATH_PARAM + "/{another}";
-	public static final String CHEESE = HOST + "/cheese";
-	public static final String ALTGET = "http://127.0.0.1:" + PORT + "/get";
-	public static final String ECHO_RAW = HOST + "/raw";
+    private static final JacksonObjectMapper om = new JacksonObjectMapper();
+    private static String responseBody;
+    public static final int PORT = 4567;
+    public static final String HOST = "http://localhost:" + PORT;
+    public static final String WINDOWS_LATIN_1_FILE = HOST + "/data/cp1250.txt";
+    public static final String REDIRECT = HOST + "/redirect";
+    public static final String JAVALIN = HOST + "/sparkle/{spark}/yippy";
+    public static final String BINARYFILE = HOST + "/binary";
+    public static final String NOBODY = HOST + "/nobody";
+    public static final String PAGED = HOST + "/paged";
+    public static final String POST = HOST + "/post";
+    public static final String GET = HOST + "/get";
+    public static final String ERROR_RESPONSE = HOST + "/error";
+    public static final String DELETE = HOST + "/delete";
+    public static final String GZIP = HOST + "/gzip";
+    public static final String EMPTY_GZIP = HOST + "/empty-gzip";
+    public static final String PATCH = HOST + "/patch";
+    public static final String INVALID_REQUEST = HOST + "/invalid";
+    public static final String PASSED_PATH_PARAM = GET + "/{params}/passed";
+    public static final String PASSED_PATH_PARAM_MULTI = PASSED_PATH_PARAM + "/{another}";
+    public static final String CHEESE = HOST + "/cheese";
+    public static final String ALTGET = "http://127.0.0.1:" + PORT + "/get";
+    public static final String ECHO_RAW = HOST + "/raw";
+    private static Javalin app;
 
 
-	public static void setJsonAsResponse(Object o){
-		responseBody = om.writeValue(o);
-	}
+    public static void setJsonAsResponse(Object o) {
+        responseBody = om.writeValue(o);
+    }
 
-	public static void reset(){
-		responseBody = null;
-		responseHeaders.clear();
-		cookies.clear();
-		pages = 1;
-		onPage = 1;
-		timesCalled = 0;
-	}
+    public static void reset() {
+        responseBody = null;
+        responseHeaders.clear();
+        cookies.clear();
+        pages = 1;
+        onPage = 1;
+        timesCalled = 0;
+    }
 
-	static {
-		Spark.staticFileLocation("public/");
-		port(PORT);
-		Spark.notFound(MockServer::notFound);
-		Spark.before((p,f) -> timesCalled++);
-		delete("/delete", MockServer::jsonResponse);
-		get("/sparkle/:spark/yippy", MockServer::sparkle);
-		post("/post", MockServer::jsonResponse);
-		get("/get", MockServer::jsonResponse);
-		get("/gzip", MockServer::gzipResponse);
-		post("/empty-gzip", MockServer::emptyGzipResponse);
-		get("/redirect", MockServer::redirect);
-		patch("/patch", MockServer::jsonResponse);
-		get("/invalid", MockServer::inValid);
-		options("/get", MockServer::jsonResponse);
-		get("/nobody", MockServer::nobody);
-		head("/get", MockServer::jsonResponse);
-		put("/post", MockServer::jsonResponse);
-		get("/get/:params/passed", MockServer::jsonResponse);
-		get("/get/:params/passed/:another", MockServer::jsonResponse);
-		get("/proxy", MockServer::proxiedResponse);
-		get("/binary", MockServer::file);
-		get("/paged", MockServer::paged);
-		post("/raw", MockServer::echo);
-		get("/error", MockServer::error);
-        Runtime.getRuntime().addShutdownHook(new Thread(Spark::stop));
-		try {
-			new CountDownLatch(1).await(2, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
+    static {
+        app = Javalin.create(c -> {
+            c.addStaticFiles("public/");
 
-	private static Object sparkle(Request request, Response response) {
-		Map<String, String> sparks = new HashMap<>();
-		sparks.put("contentType()", request.contentType());
-		sparks.put("contextPath()", request.contextPath());
-		sparks.put("host()", request.host());
-		sparks.put("ip()", request.ip());
-		sparks.put("pathInfo()", request.pathInfo());
-		sparks.put("port()", String.valueOf(request.port()));
-		sparks.put("protocol()", request.protocol());
-		sparks.put("scheme()", request.scheme());
-		sparks.put("servletPath()", request.servletPath());
-		sparks.put("requestMethod()", request.requestMethod());
-		sparks.put("splat()", String.join(" | ", request.splat()));
-		sparks.put("uri()", request.uri());
-		sparks.put("url()", request.url());
-		sparks.put("userAgent()", request.userAgent());
-		sparks.put("queryString()", request.queryString());
+        }).start(PORT);
+        app.error(404, MockServer::notFound);
+        app.before(c -> timesCalled++);
+        app.delete("/delete", MockServer::jsonResponse);
+        app.get("/sparkle/:spark/yippy", MockServer::sparkle);
+        app.post("/post", MockServer::jsonResponse);
+        app.get("/get", MockServer::jsonResponse);
+        app.get("/gzip", MockServer::gzipResponse);
+        app.post("/empty-gzip", MockServer::emptyGzipResponse);
+        app.get("/redirect", MockServer::redirect);
+        app.patch("/patch", MockServer::jsonResponse);
+        app.get("/invalid", MockServer::inValid);
+        app.options("/get", MockServer::jsonResponse);
+        app.get("/nobody", MockServer::nobody);
+        app.head("/get", MockServer::jsonResponse);
+        app.put("/post", MockServer::jsonResponse);
+        app.get("/get/:params/passed", MockServer::jsonResponse);
+        app.get("/get/:params/passed/:another", MockServer::jsonResponse);
+        app.get("/proxy", MockServer::proxiedResponse);
+        app.get("/binary", MockServer::file);
+        app.get("/paged", MockServer::paged);
+        app.post("/raw", MockServer::echo);
+        app.get("/error", MockServer::error);
+        Runtime.getRuntime().addShutdownHook(new Thread(app::stop));
+        try {
+            new CountDownLatch(1).await(2, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
-		return om.writeValue(sparks);
-	}
+    private static void sparkle(Context request) {
+        Map<String, String> sparks = new HashMap<>();
+        sparks.put("contentType()", request.contentType());
+        sparks.put("contextPath()", request.contextPath());
+        sparks.put("host()", request.host());
+        sparks.put("ip()", request.ip());
+        sparks.put("pathInfo()", request.req.getPathInfo());
+        sparks.put("port()", String.valueOf(request.port()));
+        sparks.put("protocol()", request.protocol());
+        sparks.put("scheme()", request.scheme());
+        sparks.put("servletPath()", request.req.getServletPath());
+        sparks.put("requestMethod()", request.method());
+        sparks.put("uri()", request.req.getRequestURI());
+        sparks.put("url()", request.url());
+        sparks.put("userAgent()", request.userAgent());
+        sparks.put("queryString()", request.queryString());
+        request.result(om.writeValue(sparks));
+    }
 
-	private static Object error(Request request, Response response) {
-		return Spark.halt(400, responseBody);
-	}
+    private static void error(Context request) {
+        request.status(400);
+        request.result(Strings.nullToEmpty(responseBody));
+    }
 
-	private static Object echo(Request request, Response response) {
-		return request.body();
-	}
+    private static void echo(Context request) {
+        request.result(request.body());
+    }
 
-	private static Object paged(Request request, Response response) {
-		if(pages > onPage){
-			onPage++;
-			response.header("nextPage", PAGED + "?page=" + onPage);
-		}
-		return jsonResponse(request, response);
-	}
+    private static void paged(Context context) {
+        if (pages > onPage) {
+            onPage++;
+            context.header("nextPage", PAGED + "?page=" + onPage);
+        }
+        jsonResponse(context);
+    }
 
-	private static Object notFound(Request req, Response res) {
-		RequestCapture value = getRequestCapture(req, res);
-		value.setStatus(404);
-		return om.writeValue(value);
-	}
+    private static void notFound(Context context) {
+        RequestCapture value = getRequestCapture(context);
+        value.setStatus(404);
+        context.status(404);
+        context.result(om.writeValue(value));
+    }
 
-	private static Object file(Request request, Response response) throws Exception {
-		 File f = TestUtil.rezFile("/spidey.jpg");
-		 response.raw().setContentType("application/octet-stream");
-		 response.raw().setHeader("Content-Disposition", "attachment;filename=image.jpg");
-		 response.raw().setHeader("Content-Length", String.valueOf(f.length()));
-		 response.status(200);
-		 final ServletOutputStream out = response.raw().getOutputStream();
-		 final FileInputStream in = new FileInputStream(f);
-		 IOUtils.copy(in, out);
-		 out.close();
-		 in.close();
-		 return null;
-	}
+    private static Object file(Context context) throws Exception {
+        File f = TestUtil.rezFile("/spidey.jpg");
+        context.res.setContentType("application/octet-stream");
+        context.res.setHeader("Content-Disposition", "attachment;filename=image.jpg");
+        context.res.setHeader("Content-Length", String.valueOf(f.length()));
+        context.status(200);
+        final ServletOutputStream out = context.res.getOutputStream();
+        final FileInputStream in = new FileInputStream(f);
+        IOUtils.copy(in, out);
+        out.close();
+        in.close();
+        return null;
+    }
 
-	private static Object nobody(Request request, Response response) {
-		Spark.halt(200);
-		return null;
-	}
+    private static void nobody(Context request) {
+        request.status(200);
+    }
 
-	private static Object redirect(Request request, Response response) {
-		response.redirect("/get", 301);
-		return null;
-	}
+    private static void redirect(Context request) {
+        request.redirect("/get", 301);
+    }
 
-	private static Object inValid(Request request, Response response) {
-		response.status(400);
-		return "You did something bad";
-	}
+    private static void inValid(Context request) {
+        request.status(400);
+        request.result("You did something bad");
+    }
 
-  private static Object emptyGzipResponse(Request request, Response response) throws Exception {
-    response.raw().setHeader("Content-Encoding", "gzip");
-    response.raw().setContentType("application/json");
-    response.raw().setStatus(200);
-    response.raw().getOutputStream().close();
-    return null;
-  }
+    private static Object emptyGzipResponse(Context response) throws Exception {
+        response.res.setHeader("Content-Encoding", "gzip");
+        response.res.setContentType("application/json");
+        response.res.setStatus(200);
+        response.res.getOutputStream().close();
+        return null;
+    }
 
-	private static Object gzipResponse(Request request, Response response) {
-		response.header("Content-Encoding", "gzip");
-		return jsonResponse(request, response);
-	}
+    private static void gzipResponse(Context context) {
+        context.header("Content-Encoding", "gzip");
+        jsonResponse(context, true);
+    }
 
-	private static Object proxiedResponse(Request req, Response res) {
-		return simpleResponse(req, res)
-				.orElseGet(() -> {
-					RequestCapture value = getRequestCapture(req, res);
-					value.setIsProxied(true);
-					return om.writeValue(value);
-				});
-	}
+    private static void proxiedResponse(Context context) {
+         simpleResponse(context)
+                .orElseGet(() -> {
+                    RequestCapture value = getRequestCapture(context);
+                    value.setIsProxied(true);
+                    return om.writeValue(value);
+                });
+    }
 
-	private static Optional<Object> simpleResponse(Request req, Response res) {
-		cookies.forEach(c -> res.raw().addCookie(c));
-		responseHeaders.forEach(h -> res.header(h.key, h.value));
+    private static Optional<String> simpleResponse(Context context) {
+        cookies.forEach(context::cookie);
+        responseHeaders.forEach(h -> context.res.addHeader(h.key, h.value));
 
-		if(responseBody != null) {
-			return Optional.of(responseBody);
-		}
-		return Optional.empty();
-	}
+        if (responseBody != null) {
+            return Optional.of(responseBody);
+        }
+        return Optional.empty();
+    }
 
-	private static Object jsonResponse(Request req, Response res) {
-		return simpleResponse(req, res)
-				.orElseGet(() -> {
-					RequestCapture value = getRequestCapture(req, res);
-					return om.writeValue(value);
-				});
-	}
+    private static void jsonResponse(Context c){
+        jsonResponse(c, false);
+    }
+    private static void jsonResponse(Context c, Boolean compress) {
+         String content = simpleResponse(c)
+                .orElseGet(() -> {
+                    RequestCapture value = getRequestCapture(c);
+                    return om.writeValue(value);
+                });
+         if(compress){
+             c.result(zip(content));
+         } else {
+             c.res.setCharacterEncoding(StandardCharsets.UTF_8.name());
+             c.result(content);
+         }
+    }
 
-	private static RequestCapture getRequestCapture(Request req, Response res) {
-		RequestCapture value = new RequestCapture(req);
-		value.writeBody(req);
-		return value;
-	}
+    private static byte[] zip(String content) {
+        try {
+            ByteArrayOutputStream obj = new ByteArrayOutputStream();
+            GZIPOutputStream gzip = new GZIPOutputStream(obj);
+            gzip.write(content.getBytes("UTF-8"));
+            gzip.close();
 
-	public static void shutdown() {
-		Spark.stop();
-	}
+            return obj.toByteArray();
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
 
-	public static void setStringResponse(String stringResponse) {
-		MockServer.responseBody = stringResponse;
-	}
+    private static RequestCapture getRequestCapture(Context context) {
+        RequestCapture value = new RequestCapture(context);
+        value.writeBody(context);
+        return value;
+    }
 
-	public static void addResponseHeader(String key, String value) {
-		responseHeaders.add(new Pair<>(key, value));
-	}
+    public static void shutdown() {
+        app.stop();
+    }
 
-	public static void expectedPages(int expected) {
-		pages = expected;
-	}
+    public static void setStringResponse(String stringResponse) {
+        MockServer.responseBody = stringResponse;
+    }
 
-	public static void clearCookies(){
-		cookies.clear();
-	}
+    public static void addResponseHeader(String key, String value) {
+        responseHeaders.add(new Pair<>(key, value));
+    }
 
-	public static void expectCookie(String name, String value) {
-		cookies.add(new Cookie(name, UrlEncoded.encodeString(value)));
-	}
+    public static void expectedPages(int expected) {
+        pages = expected;
+    }
 
-	public static void expectCookie(Cookie cookie) {
-		cookies.add(cookie);
-	}
+    public static void clearCookies() {
+        cookies.clear();
+    }
 
-	public static void clearHeaders() {
-		responseHeaders.clear();
-	}
+    public static void expectCookie(String name, String value) {
+        cookies.add(new Cookie(name, UrlEncoded.encodeString(value)));
+    }
+
+    public static void expectCookie(Cookie cookie) {
+        cookies.add(cookie);
+    }
+
+    public static void clearHeaders() {
+        responseHeaders.clear();
+    }
 }

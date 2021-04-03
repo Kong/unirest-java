@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.net.URISyntaxException;
+import java.util.concurrent.CompletableFuture;
 
 import static java.util.Arrays.asList;
 import static kong.unirest.TestUtil.getFileBytes;
