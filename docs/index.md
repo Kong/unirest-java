@@ -62,6 +62,27 @@ rightmenu: true
 
 ```
 
+### Install With [Gradle](https://mvnrepository.com/artifact/com.konghq/unirest-java)[:](https://repo.maven.apache.org/maven2/com/konghq/unirest-java/)
+```gradle
+// Make sure you added the mavencentral repository
+repositories {
+    mavenCentral()
+}
+
+// Pull in as a traditional dependency
+dependencies {
+    // ... Your other dependencies
+    implementation 'com.konghq:unirest-java:3.11.09'
+}
+
+// OR as a snazzy new standalone
+dependencies {
+    // ... Your other dependencies
+    implementation 'com.konghq:unirest-java:3.11.09:standalone'
+}
+```
+
+
 ### Upgrading from Previous Versions
 See the [Upgrade Guide](https://github.com/Kong/unirest-java/blob/master/UPGRADE_GUIDE.md)
 
