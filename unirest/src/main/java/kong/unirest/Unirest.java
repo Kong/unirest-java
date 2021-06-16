@@ -25,16 +25,18 @@
 
 package kong.unirest;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class Unirest {
 
-    private static UnirestInstance primaryInstance = new UnirestInstance(new Config());
+    private static final AtomicBoolean PRIMARY_INSTANCE_ACTIVE = new AtomicBoolean();
 
     /**
      * Access the default configuration for the primary Unirest instance.
      * @return the config object of the primary instance
      */
     public static Config config() {
-        return primaryInstance.config();
+        return primaryInstance().config();
     }
 
     /**
@@ -50,7 +52,7 @@ public class Unirest {
      * @param clearOptions  indicates if options should be cleared. Note that the HttpClient, AsyncClient and thread monitors will not be retained after shutDown.
      */
     public static void shutDown(boolean clearOptions) {
-        primaryInstance.shutDown(clearOptions);
+        if (PRIMARY_INSTANCE_ACTIVE.compareAndSet(false, true)) Primary.INSTANCE.shutDown(clearOptions);
     }
 
     /**
@@ -59,7 +61,7 @@ public class Unirest {
      * @return A HttpRequest builder
      */
     public static GetRequest get(String url) {
-        return primaryInstance.get(url);
+        return primaryInstance().get(url);
     }
 
     /**
@@ -68,7 +70,7 @@ public class Unirest {
      * @return A HttpRequest builder
      */
     public static GetRequest head(String url) {
-        return primaryInstance.head(url);
+        return primaryInstance().head(url);
     }
 
     /**
@@ -77,7 +79,7 @@ public class Unirest {
      * @return A HttpRequest builder
      */
     public static GetRequest options(String url) {
-        return primaryInstance.options(url);
+        return primaryInstance().options(url);
     }
 
     /**
@@ -86,7 +88,7 @@ public class Unirest {
      * @return A HttpRequest builder
      */
     public static HttpRequestWithBody post(String url) {
-        return primaryInstance.post(url);
+        return primaryInstance().post(url);
     }
 
     /**
@@ -95,7 +97,7 @@ public class Unirest {
      * @return A HttpRequest builder
      */
     public static HttpRequestWithBody delete(String url) {
-        return primaryInstance.delete(url);
+        return primaryInstance().delete(url);
     }
 
     /**
@@ -104,7 +106,7 @@ public class Unirest {
      * @return A HttpRequest builder
      */
     public static HttpRequestWithBody patch(String url) {
-        return primaryInstance.patch(url);
+        return primaryInstance().patch(url);
     }
 
     /**
@@ -113,7 +115,7 @@ public class Unirest {
      * @return A HttpRequest builder
      */
     public static HttpRequestWithBody put(String url) {
-        return primaryInstance.put(url);
+        return primaryInstance().put(url);
     }
 
     /**
@@ -123,11 +125,11 @@ public class Unirest {
      * @return A HttpRequest builder
      */
     public static JsonPatchRequest jsonPatch(String url) {
-        return primaryInstance.jsonPatch(url);
+        return primaryInstance().jsonPatch(url);
     }
 
     public static HttpRequestWithBody request(String method, String url) {
-        return primaryInstance.request(method, url);
+        return primaryInstance().request(method, url);
     }
 
     /**
@@ -136,7 +138,7 @@ public class Unirest {
      * @return boolean
      */
     public static boolean isRunning() {
-        return primaryInstance.isRunning();
+        return PRIMARY_INSTANCE_ACTIVE.get();
     }
 
     /**
@@ -151,11 +153,30 @@ public class Unirest {
     }
 
     /**
-     * return the primary UnirestInstance.
+     * Return the primary UnirestInstance.
      *
-     * @return a new UnirestInstance
+     * @return primary UnirestInstance
      */
     public static UnirestInstance primaryInstance() {
-        return primaryInstance;
+        return Primary.INSTANCE;
+    }
+
+    /**
+     * Internal holder class which allows lazy initialization of primary {@link UnirestInstance}.
+     */
+    private static final class Primary {
+
+        /**
+         * Instance of the Unirest runtime lazily initialized on startup.
+         */
+        private static final UnirestInstance INSTANCE = new UnirestInstance(new Config());
+
+        static {
+            PRIMARY_INSTANCE_ACTIVE.set(true);
+        }
+
+        private Primary() {
+            throw new AssertionError("Primary should never be constructed");
+        }
     }
 }
