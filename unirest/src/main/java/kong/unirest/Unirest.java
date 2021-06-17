@@ -52,7 +52,9 @@ public class Unirest {
      * @param clearOptions  indicates if options should be cleared. Note that the HttpClient, AsyncClient and thread monitors will not be retained after shutDown.
      */
     public static void shutDown(boolean clearOptions) {
-        if (PRIMARY_INSTANCE_ACTIVE.compareAndSet(false, true)) Primary.INSTANCE.shutDown(clearOptions);
+        if (PRIMARY_INSTANCE_ACTIVE.compareAndSet(false, true)) {
+            Primary.INSTANCE.shutDown(clearOptions);
+        }
     }
 
     /**
@@ -169,9 +171,10 @@ public class Unirest {
         /**
          * Instance of the Unirest runtime lazily initialized on startup.
          */
-        private static final UnirestInstance INSTANCE = new UnirestInstance(new Config());
+        private static final UnirestInstance INSTANCE;
 
         static {
+            INSTANCE = new UnirestInstance(new Config());
             PRIMARY_INSTANCE_ACTIVE.set(true);
         }
 
