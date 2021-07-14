@@ -82,6 +82,7 @@ public class JavaClient implements Client {
         try {
             URI url = URI.create(request.getUrl());
             java.net.http.HttpRequest.Builder jreq = java.net.http.HttpRequest.newBuilder(url)
+                    .version(HttpClient.Version.HTTP_2)
                     .method(
                             request.getHttpMethod().name(),
                             new BodyBuilder(config, request).getBody()

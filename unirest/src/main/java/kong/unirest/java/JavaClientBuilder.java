@@ -44,7 +44,7 @@ class JavaClientBuilder implements Function<Config, HttpClient> {
         HttpClient.Builder builder = HttpClient.newBuilder()
                 .followRedirects(redirectPolicy(config))
                 .connectTimeout(Duration.ofMillis(config.getConnectionTimeout()));
-
+        builder.version(HttpClient.Version.HTTP_2);
         configureTLSOptions(config, builder);
 
         if(config.getCustomExecutor() != null){
