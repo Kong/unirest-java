@@ -1,4 +1,7 @@
-## 3.11.11 (pending)
+## 3.11.12 (pending)
+* make the default basic cache concurrent.
+
+## 3.11.11
 * useSystemProperties is not overwritten and should be reset back to true on reset
 
 ## 3.11.10
