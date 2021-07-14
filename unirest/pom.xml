@@ -79,7 +79,7 @@
         <dependency>
             <groupId>io.javalin</groupId>
             <artifactId>javalin</artifactId>
-            <version>3.13.6</version>
+            <version>3.13.9</version>
             <scope>test</scope>
         </dependency>
 
