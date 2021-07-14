@@ -89,6 +89,11 @@ class LifeCycleTest extends BddTest {
     }
 
     @Test
+    void shutdownOnAlreadyShutDownDoesntReallyDoAnything() {
+        Unirest.shutDown(true);
+    }
+
+    @Test
     void willReinitIfLibraryIsUsedAfterShutdown() {
         Unirest.shutDown();
         assertFalse(Unirest.isRunning());

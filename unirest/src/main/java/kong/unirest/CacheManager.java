@@ -27,6 +27,7 @@ package kong.unirest;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -186,37 +187,39 @@ class CacheManager {
         }
     }
 
-    private static class CacheMap extends LinkedHashMap<Cache.Key, Object> implements Cache {
+    private static class CacheMap implements Cache {
+        private Map<Cache.Key, Object> map;
         private final int maxSize;
         private long ttl;
 
         CacheMap(int maxSize, long ttl) {
             this.maxSize = maxSize;
             this.ttl = ttl;
+            this.map = Collections.synchronizedMap(new LinkedHashMap<Cache.Key, Object>(){
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<Key, Object> eldest) {
+                    return size() > maxSize;
+                }
+            });
         }
 
         @Override
         public <T> HttpResponse<T> get(Key key, Supplier<HttpResponse<T>> fetcher) {
             clearOld();
-            return (HttpResponse<T>)super.computeIfAbsent(key, (k) -> fetcher.get());
+            return (HttpResponse<T>)map.computeIfAbsent(key, (k) -> fetcher.get());
         }
 
         @Override
         public <T> CompletableFuture getAsync(Key key, Supplier<CompletableFuture<HttpResponse<T>>> fetcher) {
             clearOld();
-            return (CompletableFuture)super.computeIfAbsent(key, (k) -> fetcher.get());
+            return (CompletableFuture)map.computeIfAbsent(key, (k) -> fetcher.get());
         }
 
         private void clearOld() {
             if (ttl > 0) {
                 Instant now = Util.now();
-                keySet().removeIf(k -> ChronoUnit.MILLIS.between(k.getTime(), now) > ttl);
+                map.keySet().removeIf(k -> ChronoUnit.MILLIS.between(k.getTime(), now) > ttl);
             }
-        }
-
-        @Override
-        protected boolean removeEldestEntry(Map.Entry<Key, Object> eldest) {
-            return size() > maxSize;
         }
 
     }

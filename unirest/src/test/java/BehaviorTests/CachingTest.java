@@ -168,4 +168,24 @@ class CachingTest extends BddTest {
         );
         assertEquals(1,  MockServer.timesCalled);
     }
+
+    @Test
+    void load() {
+        Unirest.config().cacheResponses(true);
+        IntStream.range(0, 100)
+                .parallel()
+                .forEach(i ->
+                {
+                    HttpResponse r = Unirest.get(MockServer.PASSED_PATH_PARAM)
+                    .routeParam("params", key(i)).asString();
+                    assertEquals(200, r.getStatus());
+                });
+    }
+
+    private String key(int i) {
+        if(i % 2 == 0){
+            return "psycho";
+        }
+        return "disco";
+    }
 }
