@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -48,7 +49,7 @@ class DefectTest extends BddTest {
 
     @Test
     void nullAndObjectValuesInMap() {
-        Map<String, Object> queryParams = new HashMap<>();
+        Map<String, Object> queryParams = new LinkedHashMap<>();
         queryParams.put("foo", null);
         queryParams.put("baz", "qux");
 
