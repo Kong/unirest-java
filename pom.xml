@@ -32,7 +32,7 @@
         <main.dir>${project.basedir}</main.dir>
         <junit.version>5.7.2</junit.version>
         <mockito.version>3.12.4</mockito.version>
-        <maven-checkstyle-plugin.version>3.1.1</maven-checkstyle-plugin.version>
+        <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
     </properties>
 
     <scm>
