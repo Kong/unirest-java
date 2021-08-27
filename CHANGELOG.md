@@ -1,3 +1,6 @@
+## 3.11.14 (pending)
+* Bump GSON to 2.8.8
+
 ## 3.11.13 
 * Bump Jackson version in object-mapper-jackson to 2.12.4
 * Bump test and CI dependencies
