@@ -1,3 +1,7 @@
+## 3.11.13 (pending)
+* Bump Jackson version in object-mapper-jackson to 2.12.4
+* Bump test and CI dependencies
+
 ## 3.11.12 (pending)
 * make the default basic cache concurrent.
 
