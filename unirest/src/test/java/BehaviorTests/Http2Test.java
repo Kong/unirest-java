@@ -25,17 +25,24 @@
 
 package BehaviorTests;
 
+import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
 import kong.unirest.Unirest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-public class Http2Test extends BddTest {
-    @Test
-    void canMakeHttp2Requests() {
+import java.net.http.HttpClient;
 
-        Unirest.get(MockServer.HTTP2_GET)
-                .header("wu","tang")
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertStatus(200);
+public class Http2Test {
+    @Test @Disabled
+    void canMakeHttp2Requests() {
+        Unirest.config().version(HttpClient.Version.HTTP_2);
+
+        HttpResponse<JsonNode> httpResponse = Unirest.get("https://nghttp2.org/httpbin/get")
+                .accept("application/json")
+                //.header("wu","tang")
+                .asJson();
+
+        System.out.println("httpResponse = " + httpResponse);
     }
 }

@@ -29,6 +29,7 @@ import kong.unirest.java.JavaClient;
 
 import javax.net.ssl.SSLContext;
 import java.io.InputStream;
+import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.time.Duration;
@@ -67,6 +68,7 @@ public class Config {
     private CompoundInterceptor interceptor = new CompoundInterceptor();
     private String defaultBaseUrl;
     private CacheManager cache;
+    private HttpClient.Version version;
 
     public Config() {
         setDefaults();
@@ -520,6 +522,34 @@ public class Config {
     }
 
     /**
+     * Requests a specific HTTP protocol version where possible.
+     *
+     * This is a direct proxy setter for the Java Http-Client that powers unirest.
+     *
+     * <p> If this method is not invoked prior to using, then newly built clients will prefer {@linkplain
+     * HttpClient.Version#HTTP_2 HTTP/2}.
+     *
+     * <p> If set to {@linkplain HttpClient.Version#HTTP_2 HTTP/2}, then each request
+     * will attempt to upgrade to HTTP/2. If the upgrade succeeds, then the
+     * response to this request will use HTTP/2 and all subsequent requests
+     * and responses to the same
+     * <a href="https://tools.ietf.org/html/rfc6454#section-4">origin server</a>
+     * will use HTTP/2. If the upgrade fails, then the response will be
+     * handled using HTTP/1.1
+     *
+     * @implNote Constraints may also affect the selection of protocol version.
+     * For example, if HTTP/2 is requested through a proxy, and if the implementation
+     * does not support this mode, then HTTP/1.1 may be used
+     *
+     * @param value the requested HTTP protocol version
+     * @return this config
+     */
+    public Config version(HttpClient.Version value) {
+        version = value;
+        return this;
+    }
+
+    /**
      * set a default base url for all routes.
      * this is overridden if the url contains a valid base already
      * the url may contain path params
@@ -763,5 +793,12 @@ public class Config {
 
     public Executor getCustomExecutor(){
         return customExecutor;
+    }
+
+    /**
+     * @return the preferred http version
+     */
+    public HttpClient.Version getVersion() {
+        return version;
     }
 }
