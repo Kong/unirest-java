@@ -28,10 +28,10 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jackson.version>2.11.3</jackson.version>
+        <jackson.version>2.12.5</jackson.version>
         <main.dir>${project.basedir}</main.dir>
-        <junit.version>5.7.0</junit.version>
-        <mockito.version>3.5.13</mockito.version>
+        <junit.version>5.7.2</junit.version>
+        <mockito.version>3.12.4</mockito.version>
         <maven-checkstyle-plugin.version>3.1.1</maven-checkstyle-plugin.version>
     </properties>
 

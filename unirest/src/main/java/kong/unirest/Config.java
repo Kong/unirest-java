@@ -537,7 +537,7 @@ public class Config {
      * will use HTTP/2. If the upgrade fails, then the response will be
      * handled using HTTP/1.1
      *
-     * @implNote Constraints may also affect the selection of protocol version.
+     * Constraints may also affect the selection of protocol version.
      * For example, if HTTP/2 is requested through a proxy, and if the implementation
      * does not support this mode, then HTTP/1.1 may be used
      *

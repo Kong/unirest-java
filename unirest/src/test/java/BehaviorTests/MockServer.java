@@ -32,24 +32,17 @@ import io.javalin.http.Context;
 import kong.unirest.JacksonObjectMapper;
 import kong.unirest.TestUtil;
 import org.apache.commons.io.IOUtils;
-import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
-import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.util.UrlEncoded;
-
-import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
-import org.eclipse.jetty.http2.HTTP2Cipher;
-import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 
@@ -63,9 +56,7 @@ public class MockServer {
     private static final JacksonObjectMapper om = new JacksonObjectMapper();
     private static String responseBody;
     public static final int PORT = 4567;
-    public static final int PORT_H2 = 4568;
     public static final String HOST = "http://localhost:" + PORT;
-    public static final String HOST_H2 = "http://localhost:" + PORT_H2;
     public static final String WINDOWS_LATIN_1_FILE = HOST + "/data/cp1250.txt";
     public static final String REDIRECT = HOST + "/redirect";
     public static final String JAVALIN = HOST + "/sparkle/{spark}/yippy";
@@ -74,7 +65,6 @@ public class MockServer {
     public static final String PAGED = HOST + "/paged";
     public static final String POST = HOST + "/post";
     public static final String GET = HOST + "/get";
-    public static final String HTTP2_GET = HOST_H2 + "/hello";
     public static final String ERROR_RESPONSE = HOST + "/error";
     public static final String DELETE = HOST + "/delete";
     public static final String GZIP = HOST + "/gzip";
@@ -104,10 +94,9 @@ public class MockServer {
 
     static {
         app = Javalin.create(c -> {
-            c.server(() -> serverConfig());
             c.addStaticFiles("public/");
 
-        }).start();
+        }).start(PORT);
         app.error(404, MockServer::notFound);
         app.before(c -> timesCalled++);
         app.delete("/delete", MockServer::jsonResponse);
@@ -144,36 +133,6 @@ public class MockServer {
          c.result("Hello World");
     }
 
-    private static Server serverConfig() {
-        Server server = new Server();
-
-        ServerConnector connector = new ServerConnector(server);
-        connector.setPort(PORT);
-        server.addConnector(connector);
-
-        // Common HTTP configuration.
-        final HttpConfiguration config = new HttpConfiguration();
-
-        // HTTP/1.1 support.
-        final HttpConnectionFactory http1 = new HttpConnectionFactory(config);
-
-        // HTTP/2 cleartext support.
-        final HTTP2CServerConnectionFactory http2c = new HTTP2CServerConnectionFactory(config);
-        ServerConnector h2 = new ServerConnector(server, http2c);
-        h2.setPort(PORT_H2);
-        server.addConnector(h2);
-
-//        // HTTP/2 Connection Factory
-//        HTTP2ServerConnectionFactory h2 = new HTTP2ServerConnectionFactory(httpConfig);
-//        ALPNServerConnectionFactory alpn = new ALPNServerConnectionFactory();
-//        alpn.setDefaultProtocol("h2");
-
-        // HTTP/2 Connector
-//        ServerConnector http2Connector = new ServerConnector(server,  h2);
-//        http2Connector.setPort(PORT_H2);
-//        server.addConnector(http2Connector);
-        return server;
-    }
 
     public static void main(String[] args){
 
