@@ -54,12 +54,12 @@ public class JavaClient implements Client {
     }
 
     @Override
-    public Object getClient() {
+    public HttpClient getClient() {
         return client;
     }
 
     @Override
-    public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
+    public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, Class<?> resultType) {
         HttpRequestSummary reqSum = request.toSummary();
         config.getUniInterceptor().onRequest(request, config);
         java.net.http.HttpRequest requestObj = getRequest(request);

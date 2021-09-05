@@ -81,7 +81,7 @@ public class MockClient implements Client {
     }
 
     @Override
-    public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
+    public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, Class<?> resultType) {
         Routes exp = findExpecation(request);
         Config c = this.config.get();
         c.getUniInterceptor().onRequest(request, c);
@@ -111,7 +111,7 @@ public class MockClient implements Client {
                                                           Function<RawResponse, HttpResponse<T>> transformer,
                                                           CompletableFuture<HttpResponse<T>> callback,
                                                           Class<?> resultTypes) {
-        return CompletableFuture.supplyAsync(() -> request(request, transformer));
+        return CompletableFuture.supplyAsync(() -> request(request, transformer, resultTypes));
     }
 
     @Override

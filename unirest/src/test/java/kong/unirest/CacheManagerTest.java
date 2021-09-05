@@ -101,7 +101,7 @@ class CacheManagerTest {
         }
 
         @Override
-        public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
+        public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, Class<?> resultType) {
             invokes++;
             return new MockResponse();
         }
