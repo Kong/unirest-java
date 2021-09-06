@@ -82,18 +82,13 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public R basicAuth(String username, String password) {
-        this.headers.replace("Authorization", Util.toBasicAuthValue(username, password));
+        this.headers.setBasicAuth(username, password);
         return (R) this;
     }
 
     @Override
     public R accept(String value) {
-        return header(HeaderNames.ACCEPT, value);
-    }
-
-    @Override
-    public R responseEncoding(String encoding) {
-        this.responseEncoding = encoding;
+        this.headers.accepts(value);
         return (R) this;
     }
 
@@ -111,11 +106,13 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public R headers(Map<String, String> headerMap) {
-        if (headerMap != null) {
-            for (Map.Entry<String, String> entry : headerMap.entrySet()) {
-                header(entry.getKey(), entry.getValue());
-            }
-        }
+        this.headers.add(headerMap);
+        return (R) this;
+    }
+
+    @Override
+    public R responseEncoding(String encoding) {
+        this.responseEncoding = encoding;
         return (R) this;
     }
 

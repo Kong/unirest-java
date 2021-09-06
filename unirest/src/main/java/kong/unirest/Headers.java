@@ -187,6 +187,22 @@ public class Headers {
         return Objects.hash(headers);
     }
 
+    public void setBasicAuth(String username, String password) {
+        this.replace("Authorization", Util.toBasicAuthValue(username, password));
+    }
+
+    public void accepts(String value) {
+        add(HeaderNames.ACCEPT, value);
+    }
+
+    public void add(Map<String, String> headerMap) {
+        if (headerMap != null) {
+            for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+                add(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
     static class Entry implements Header {
 
         private final String name;
