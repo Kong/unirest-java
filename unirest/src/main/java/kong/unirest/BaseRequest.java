@@ -364,12 +364,10 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public String getUrl() {
-        return escape(url.toString());
+        return url.toString();
     }
 
-    private String escape(String string) {
-        return string.replaceAll(" ", "%20").replaceAll("\t", "%09");
-    }
+
 
     @Override
     public Headers getHeaders() {

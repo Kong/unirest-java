@@ -109,7 +109,11 @@ class Path {
 
     @Override
     public String toString() {
-        return url;
+        return escape(url);
+    }
+
+    private String escape(String string) {
+        return string.replaceAll(" ", "%20").replaceAll("\t", "%09");
     }
 
     public String rawPath() {
