@@ -93,7 +93,7 @@ See the [Change Log](https://github.com/Kong/unirest-java/blob/master/CHANGELOG.
 So you're probably wondering how using Unirest makes creating requests in Java easier, here is a basic POST request that will explain everything:
 
 ```java
-HttpResponse<JsonNode> response = Unirest.post("http://httpbin.org/post")
+HttpResponse<JsonNode> response = Unirest.post("http://localhost/post")
       .header("accept", "application/json")
       .queryString("apiKey", "123")
       .field("parameter", "value")
@@ -108,11 +108,11 @@ Requests are made when `as[Type]()` is invoked, possible types include `Json`, `
 Sometimes you want to add dynamic parameters in the URL, you can easily do that by adding a placeholder in the URL, and then by setting the route parameters with the `routeParam` function, like:
 
 ```java
-Unirest.get("http://httpbin.org/{fruit}")
+Unirest.get("http://localhost/{fruit}")
      .routeParam("fruit", "apple")
      .asString();
 
-// Results in `http://httpbin.org/apple`
+// Results in `http://localhost/apple`
 ```
 The placeholder `{fruit}` will be replaced with `apple`.
 
@@ -134,30 +134,30 @@ This configuration will result in a GET to "http://homestar.com/runner"
 Query-string params can be built up one by one
 
 ```java
-Unirest.get("http://httpbin.org")
+Unirest.get("http://localhost")
                 .queryString("fruit", "apple")
                 .queryString("droid", "R2D2")
                 .asString();
 
-// Results in "http://httpbin.org?fruit=apple&droid=R2D2"
+// Results in "http://localhost?fruit=apple&droid=R2D2"
 ```
 
 Again all param values will be URL-Encoded.
 
 You can also pass in query strings as arrays and maps:
 ```java
-Unirest.get("http://httpbin.org")
+Unirest.get("http://localhost")
         .queryString("fruit", Arrays.asList("apple", "orange"))
         .queryString(ImmutableMap.of("droid", "R2D2", "beatle", "Ringo"))
         .asString();
 
- // Results in "http://httpbin.org?fruit=apple&fruit=orange&droid=R2D2&beatle=Ringo"
+ // Results in "http://localhost?fruit=apple&fruit=orange&droid=R2D2&beatle=Ringo"
 ```
 
 ## Headers
 Request headers can be added with the ```header``` method.
 ```java
-Unirest.get("http://httpbin.org")
+Unirest.get("http://localhost")
             .header("Accept", "application/json")
             .header("x-custom-header", "hello")
             .asString();
@@ -168,7 +168,7 @@ Unirest exposes a shortcut for doing basic auth when you need to. Unirest handle
 Please make sure you are always doing this over HTTPS!
 
 ```java
-Unirest.get("http://httpbin.org")
+Unirest.get("http://localhost")
             .basicAuth("user", "password1!")
             .asString();
 
@@ -183,7 +183,7 @@ You can post entity objects as the full body easily. This is the default behavio
 Unless you specify otherwise the default ```Content-Type``` is ```text/plain; charset=UTF-8```
 
 ```java
-Unirest.post("http://httpbin.org")
+Unirest.post("http://localhost")
                 .body("This is the entire body")
                 .asEmpty();
 ```
@@ -191,7 +191,7 @@ Unirest.post("http://httpbin.org")
 You can also post as a Object that is serialized using a configured ObjectMapper. (see [Object Mappers](#object-mappers) for implementation details.
 Unirest comes with a default mapper that will serialize to json using the popular Google Gson library
 ```java
-Unirest.post("http://httpbin.org")
+Unirest.post("http://localhost")
             .header("Content-Type", "application/json")
             .body(new SomeUserObject("Bob"))
             .asEmpty();
@@ -204,7 +204,7 @@ Unirest has full native support for JSON Patch requests (RFC-6902 see <http://js
 Per the spec, the default ```Content-Type``` for json-patch is ```application/json-patch+json```
 
 ```java
-     Unirest.jsonPatch("http://httpbin.org")
+     Unirest.jsonPatch("http://localhost")
             .add("/fruits/-", "Apple")
             .remove("/bugs")
             .replace("/lastname", "Flintstone")
@@ -230,7 +230,7 @@ Basic http name value body params can be passed with simple field calls.
 The ```Content-Type``` for this type of request is defaulted to  ```application/x-www-form-urlencoded```
 
 ```java
-Unirest.post("http://httpbin.org")
+Unirest.post("http://localhost")
        .field("fruit", "apple")
        .field("droid", "R2D2")
        .asEmpty();
@@ -245,7 +245,7 @@ You can also post binary data in a form. Like a file.
 The ```Content-Type``` for this type of request is defaulted to  ```multipart/form-data```
 
 ```java
-Unirest.post("http://httpbin.org")
+Unirest.post("http://localhost")
        .field("upload", new File("/MyFile.zip"))
        .asEmpty();
 ```
@@ -256,7 +256,7 @@ We are using a FileInputStream here but it can actually be any kind of InputStre
 ```java
 InputStream file = new FileInputStream(new File("/MyFile.zip"));
 
-Unirest.post("http://httpbin.org")
+Unirest.post("http://localhost")
        .field("upload", file, "MyFile.zip")
        .asEmpty();
 ```
@@ -265,7 +265,7 @@ Unirest.post("http://httpbin.org")
 If you are uploading large files you might want to provide some time of progress bar to a user. You can monitor this progress by providing a ProgresMonitor.
 
 ```java
-          Unirest.post("http://httpbin.org")
+          Unirest.post("http://localhost")
                 .field("upload", new File("/MyFile.zip"))
                 .uploadMonitor((field, fileName, bytesWritten, totalBytes) -> {
                     updateProgressBarWithBytesLeft(totalBytes - bytesWritten);
@@ -277,7 +277,7 @@ If you are uploading large files you might want to provide some time of progress
 Sometimes, well most of the time, you want your application to be asynchronous and not block, Unirest supports this in Java using anonymous callbacks, or direct method placement. All request types also support async versions.
 
 ```java
-CompletableFuture<HttpResponse<JsonNode>> future = Unirest.post("http://httpbin.org/post")
+CompletableFuture<HttpResponse<JsonNode>> future = Unirest.post("http://localhost/post")
   .header("accept", "application/json")
   .field("param1", "value1")
   .field("param2", "value2")
@@ -337,14 +337,14 @@ The response returns as a ```HttpResponse<T>``` where the ```HttpResponse``` obj
 If you aren't expecting a body back, ```asEmpty``` is the easiest choice. You will still get back response information like status and headers.
 
 ```java
-HttpResponse response = Unirest.delete("http://httpbin.org").asEmpty()
+HttpResponse response = Unirest.delete("http://localhost").asEmpty()
 ```
 
 ## String Responses
 The next easiest response type is String. You can do whatever you want with it after that.
 
 ```java
-String body = Unirest.get("http://httpbin.org")
+String body = Unirest.get("http://localhost")
 					 .asString()
 					 .getBody();
 ```
@@ -363,16 +363,16 @@ Unirest offers a few plug-ins implementing popular object mappers like Jackson a
 For example, 
 ```java
 // Response to Object
-Book book = Unirest.get("http://httpbin.org/books/1")
+Book book = Unirest.get("http://localhost/books/1")
                    .asObject(Book.class)
                    .getBody();
 
 // Generic types can be resolved by using a GenericType subclass to avoid erasure
-List<Book> books = Unirest.get("http://httpbin.org/books/")
+List<Book> books = Unirest.get("http://localhost/books/")
 			  .asObject(new GenericType<List<Book>>(){})
 			  .getBody();
 
-Author author = Unirest.get("http://httpbin.org/books/{id}/author")
+Author author = Unirest.get("http://localhost/books/{id}/author")
                        .routeParam("id", bookObject.getId())
                        .asObject(Author.class)
                        .getBody();
@@ -394,14 +394,14 @@ ex.getCause(); // of course will have the original parsing exception itself.
 Sometimes with REST API's the service will return a error object that can be parsed. You can optionally map this into an POJO like
 
 ```java
-    HttpResponse<Book> book = Unirest.get("http://httpbin.org/books/{id}")
+    HttpResponse<Book> book = Unirest.get("http://localhost/books/{id}")
                                      .asObject(Book.class);
 
     // This will be null if there wasn't an error
     Error er = book.mapError(Error.class);
 
     // You can also take advantage of this inside of the ifFailure method
-    Unirest.get("http://httpbin.org/books/{id}")
+    Unirest.get("http://localhost/books/{id}")
            .asObject(Book.class)
            .ifFailure(Error.class, r -> {
                     Error e = r.getBody();
@@ -430,7 +430,7 @@ File result = Unirest.get("http://some.file.location/file.zip")
 If you are uploading large files you might want to provide some time of progress bar to a user. You can monitor this progress by providing a ProgresMonitor.
 
 ```java
-          Unirest.get("http://httpbin.org")
+          Unirest.get("http://localhost")
                 .downLoadMonitor((b, fileName, bytesWritten, totalBytes) -> {
                     updateProgressBarWithBytesLeft(totalBytes - bytesWritten);
                 })
