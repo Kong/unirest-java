@@ -642,8 +642,8 @@ public class Config {
      * @param value a bool is its true or not.
      * @return this config object
      */
-    public Config automaticRetryAfter(boolean value) {
-       return automaticRetryAfter(value, 10);
+    public Config retryAfter(boolean value) {
+       return retryAfter(value, 10);
     }
 
     /**
@@ -653,7 +653,7 @@ public class Config {
      * @param value a bool is its true or not.
      * @return this config object
      */
-    public Config automaticRetryAfter(boolean value, int maxRetryAttempts) {
+    public Config retryAfter(boolean value, int maxRetryAttempts) {
         this.retry = value;
         this.maxRetries = maxRetryAttempts;
         return this;

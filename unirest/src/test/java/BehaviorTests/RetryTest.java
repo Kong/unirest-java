@@ -135,7 +135,7 @@ public class RetryTest extends BddTest {
     @Test
     void willReturn429OnceItExceedsMaxAttempts() {
         MockServer.retryTimes(10, 429, .01);
-        Unirest.config().automaticRetryAfter(true, 3);
+        Unirest.config().retryAfter(true, 3);
 
         HttpResponse resp = Unirest.get(MockServer.GET).asEmpty();
         assertEquals(429, resp.getStatus());
@@ -149,7 +149,7 @@ public class RetryTest extends BddTest {
     }
 
     private void assertDidNotRetry() {
-        Unirest.config().automaticRetryAfter(true);
+        Unirest.config().retryAfter(true);
         assertEquals(429, Unirest.get(MockServer.GET).asEmpty().getStatus());
         MockServer.assertRequestCount(1);
     }
@@ -157,7 +157,7 @@ public class RetryTest extends BddTest {
     private <R> R doWithRetry(Function<HttpRequest, HttpResponse<R>> bodyExtractor) {
         MockServer.retryTimes(1, 429, 0.01);
 
-        Unirest.config().automaticRetryAfter(true);
+        Unirest.config().retryAfter(true);
 
         HttpRequest request = Unirest.get(MockServer.GET);
 
