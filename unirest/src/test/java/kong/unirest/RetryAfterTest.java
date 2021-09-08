@@ -63,7 +63,7 @@ class RetryAfterTest {
         Headers h = new Headers();
         h.add("Retry-After", s);
         Headers headers = h;
-        return RetryAfter.parse(headers).millies();
+        return RetryAfter.from(headers).millies();
     }
 
 }

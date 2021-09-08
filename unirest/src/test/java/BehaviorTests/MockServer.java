@@ -54,7 +54,7 @@ public class MockServer {
     private static int onPage = 1;
     private static int retryTimes = 0;
     private static int retryStatus = 429;
-    private static double retrySeconds = 1d;
+    private static String retrySeconds = "";
     private static final List<Pair<String, String>> responseHeaders = new ArrayList<>();
     private static final List<Cookie> cookies = new ArrayList<>();
 
@@ -82,6 +82,7 @@ public class MockServer {
     public static final String ALTGET = "http://127.0.0.1:" + PORT + "/get";
     public static final String ECHO_RAW = HOST + "/raw";
     private static Javalin app;
+    private static int errorCode = 400;
 
 
     public static void setJsonAsResponse(Object o) {
@@ -96,6 +97,7 @@ public class MockServer {
         onPage = 1;
         timesCalled = 0;
         retryTimes = 0;
+        errorCode = 400;
     }
 
     static {
@@ -153,7 +155,7 @@ public class MockServer {
     }
 
     private static void error(Context request) {
-        request.status(400);
+        request.status(errorCode);
         request.result(Strings.nullToEmpty(responseBody));
     }
 
@@ -240,7 +242,9 @@ public class MockServer {
     }
     private static void jsonResponse(Context c, Boolean compress) {
         if(retryTimes > 0){
-            c.header("Retry-After", String.valueOf(retrySeconds));
+            if(retrySeconds != null) {
+                c.header("Retry-After", retrySeconds);
+            }
             retryTimes--;
             c.status(retryStatus);
             return;
@@ -310,7 +314,11 @@ public class MockServer {
         responseHeaders.clear();
     }
 
-    public static void retryTimes(int numberOfTimeToFail, int status, Double seconds) {
+    public static void retryTimes(int numberOfTimeToFail, int status, Double seconds){
+        retryTimes(numberOfTimeToFail, status, String.valueOf(seconds));
+    }
+
+    public static void retryTimes(int numberOfTimeToFail, int status, String seconds) {
         retryTimes = numberOfTimeToFail;
         retryStatus = status;
         retrySeconds = seconds;
@@ -318,5 +326,9 @@ public class MockServer {
 
     public static void assertRequestCount(int i) {
         assertEquals(i, timesCalled);
+    }
+
+    public static void expectErrorCode(int i) {
+        errorCode = i;
     }
 }

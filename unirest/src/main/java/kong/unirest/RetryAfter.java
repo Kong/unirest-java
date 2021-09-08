@@ -26,26 +26,44 @@ package kong.unirest;
  */
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 class RetryAfter {
+    private static final Set<Integer> RETRY_CODES = new HashSet<>(Arrays.asList(429, 529, 301));
+    private static final String RETRY_AFTER = "Retry-After";;
+    private static final RetryAfter EMPTY = new RetryAfter(0L);
     private long millies;
 
-    public RetryAfter(Long millies) {
+    RetryAfter(Long millies) {
         this.millies = millies;
     }
 
-    public static RetryAfter parse(Headers response) {
-        String value = response.getFirst("Retry-After");
+    static RetryAfter from(HttpResponse response) {
+        return from(response.getHeaders());
+    }
+
+    static boolean isRetriable(HttpResponse response) {
+        return RETRY_CODES.contains(response.getStatus()) && response.getHeaders().containsKey(RETRY_AFTER);
+    }
+
+    static RetryAfter from(Headers response) {
+        String value = response.getFirst(RETRY_AFTER);
         return tryAsDouble(value)
                 .orElseGet(() -> tryAsDateTime(value));
     }
 
     private static RetryAfter tryAsDateTime(String value) {
+        ZonedDateTime zdt = Util.tryParseToDate(value);
+        if(zdt == null){
+            return RetryAfter.EMPTY;
+        }
         Instant now = Util.now();
-        Instant zdt = Util.tryParseToDate(value).toInstant();
-        long diff = ChronoUnit.MILLIS.between(now, zdt);
+        long diff = ChronoUnit.MILLIS.between(now, zdt.toInstant());
         return new RetryAfter(diff);
     }
 
@@ -66,15 +84,19 @@ class RetryAfter {
         return Long.parseLong(s) * 1000;
     }
 
-    public long millies() {
+    long millies() {
         return millies;
     }
 
-    public void waitForIt() {
+    void waitForIt() {
         try {
             Thread.currentThread().sleep(millies);
         } catch (InterruptedException e) {
             throw new UnirestException(e);
         }
+    }
+
+    boolean canWait() {
+        return millies > 0;
     }
 }

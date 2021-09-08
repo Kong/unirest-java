@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 import static kong.unirest.CallbackFuture.wrap;
 
 abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
-    protected static final Set<Integer> RETRY_CODES = new HashSet<>(Arrays.asList(429, 529, 301));
+
     private Instant creation = Util.now();
     private int callCount = 0;
     private Optional<ObjectMapper> objectMapper = Optional.empty();
@@ -352,21 +352,16 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     private <E> HttpResponse<E> request(Function<RawResponse, HttpResponse<E>> transformer, Class<?> resultType){
         HttpResponse<E> response = config.getClient().request(this, transformer, resultType);
         callCount++;
-        if(config.isAutomaticRetryAfter() && isRetryRequest(response) && callCount < config.maxRetries()){
-            waitForIt(response.getHeaders());
-            return request(transformer, resultType);
+        if(config.isAutomaticRetryAfter() && RetryAfter.isRetriable(response) && callCount < config.maxRetries()){
+            RetryAfter retryAfter = RetryAfter.from(response);
+            if(retryAfter.canWait()) {
+                retryAfter.waitForIt();
+                return request(transformer, resultType);
+            }
         }
         return response;
     }
 
-    private boolean isRetryRequest(HttpResponse response) {
-        return RETRY_CODES.contains(response.getStatus()) && response.getHeaders().containsKey("Retry-After");
-    }
-
-
-    private void waitForIt(Headers response) {
-        RetryAfter.parse(response).waitForIt();
-    }
 
     private Function<RawResponse, HttpResponse<Object>> getConsumer(Consumer<RawResponse> consumer) {
         return r -> {

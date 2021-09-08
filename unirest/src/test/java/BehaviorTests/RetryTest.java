@@ -43,8 +43,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RetryTest extends BddTest {
 
-
-
     @Test
     void whenSettingIsOff() {
         MockServer.retryTimes(100, 429, 1d);
@@ -52,6 +50,30 @@ public class RetryTest extends BddTest {
         assertEquals(429, Unirest.get(MockServer.GET).asString().getStatus());
         assertEquals(429, Unirest.get(MockServer.GET).asBytes().getStatus());
         assertEquals(429, Unirest.get(MockServer.GET).asObject(RequestCapture.class).getStatus());
+    }
+
+    @Test
+    void dontRetry_whenHeaderIsMissing(){
+        MockServer.retryTimes(100, 429, (String)null);
+        assertDidNotRetry();
+    }
+
+    @Test
+    void dontRetry_whenHeaderIsUnparseable(){
+        MockServer.retryTimes(100, 429, "David S Pumpkins");
+        assertDidNotRetry();
+    }
+
+    @Test
+    void dontRetry_whenHeaderIsNegative(){
+        MockServer.retryTimes(100, 429, -5.5);
+        assertDidNotRetry();
+    }
+
+    @Test
+    void dontRetry_whenHeaderIsEmpty(){
+        MockServer.retryTimes(100, 429, "");
+        assertDidNotRetry();
     }
 
     @Test
@@ -124,6 +146,12 @@ public class RetryTest extends BddTest {
         try {
             Files.delete(path);
         } catch (Exception ignored) { }
+    }
+
+    private void assertDidNotRetry() {
+        Unirest.config().automaticRetryAfter(true);
+        assertEquals(429, Unirest.get(MockServer.GET).asEmpty().getStatus());
+        MockServer.assertRequestCount(1);
     }
 
     private <R> R doWithRetry(Function<HttpRequest, HttpResponse<R>> bodyExtractor) {
