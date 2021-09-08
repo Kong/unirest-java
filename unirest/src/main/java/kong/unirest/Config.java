@@ -86,6 +86,7 @@ public class Config {
     private String defaultBaseUrl;
     private CacheManager cache;
     private boolean retry = false;
+    private int maxRetries;
 
     public Config() {
         setDefaults();
@@ -113,6 +114,7 @@ public class Config {
         protocols = null;
         interceptor = new CompoundInterceptor();
         retry = false;
+        maxRetries = 10;
 
         this.objectMapper = Optional.of(new JsonObjectMapper());
         try {
@@ -641,7 +643,19 @@ public class Config {
      * @return this config object
      */
     public Config automaticRetryAfter(boolean value) {
+       return automaticRetryAfter(value, 10);
+    }
+
+    /**
+     * Automatically retry synchronous requests on 429/529 responses with the Retry-After response header
+     * Default is false
+     *
+     * @param value a bool is its true or not.
+     * @return this config object
+     */
+    public Config automaticRetryAfter(boolean value, int maxRetryAttempts) {
         this.retry = value;
+        this.maxRetries = maxRetryAttempts;
         return this;
     }
 
@@ -1038,5 +1052,12 @@ public class Config {
      */
     public boolean isAutomaticRetryAfter(){
         return retry;
+    }
+
+    /**
+     * @return the max number of times to attempt to do a 429/529 retry-after
+     */
+    public int maxRetries() {
+        return maxRetries;
     }
 }

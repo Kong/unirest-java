@@ -39,6 +39,7 @@ import static kong.unirest.CallbackFuture.wrap;
 abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     protected static final Set<Integer> RETRY_CODES = new HashSet<>(Arrays.asList(429, 529, 301));
     private Instant creation = Util.now();
+    private int callCount = 0;
     private Optional<ObjectMapper> objectMapper = Optional.empty();
     private String responseEncoding;
     protected Headers headers = new Headers();
@@ -350,12 +351,18 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     private <E> HttpResponse<E> request(Function<RawResponse, HttpResponse<E>> transformer, Class<?> resultType){
         HttpResponse<E> response = config.getClient().request(this, transformer, resultType);
-        if(config.isAutomaticRetryAfter() && RETRY_CODES.contains(response.getStatus()) && response.getHeaders().containsKey("Retry-After")){
+        callCount++;
+        if(config.isAutomaticRetryAfter() && isRetryRequest(response) && callCount < config.maxRetries()){
             waitForIt(response.getHeaders());
             return request(transformer, resultType);
         }
         return response;
     }
+
+    private boolean isRetryRequest(HttpResponse response) {
+        return RETRY_CODES.contains(response.getStatus()) && response.getHeaders().containsKey("Retry-After");
+    }
+
 
     private void waitForIt(Headers response) {
         RetryAfter.parse(response).waitForIt();
