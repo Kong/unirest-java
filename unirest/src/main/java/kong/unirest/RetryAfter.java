@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 class RetryAfter {
     private static final Set<Integer> RETRY_CODES = new HashSet<>(Arrays.asList(429, 529, 301));
@@ -90,7 +91,7 @@ class RetryAfter {
 
     void waitForIt() {
         try {
-            Thread.currentThread().sleep(millies);
+            TimeUnit.MILLISECONDS.sleep(millies);
         } catch (InterruptedException e) {
             throw new UnirestException(e);
         }
