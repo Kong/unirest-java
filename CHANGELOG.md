@@ -1,4 +1,12 @@
-## 3.11.14 (pending)
+## 3.12.0 (pending)
+* Support honoring Retry-After headers on 429/529 for regular (not async) requests.
+  * Can be enabled with ```Unirest.config().automaticRetryAfter(true);```
+  * Has a max re-try counter with a default of 10 which can be set with:
+    * ```Unirest.config().automaticRetryAfter(true, maxNumberOfRetries);```
+  * **While Honoring The Retry-After header the thread will be blocked!**
+  * This feature will likely not make it to async until Unirest 4.
+
+## 3.11.14
 * Bump GSON to 2.8.8
 
 ## 3.11.13 
