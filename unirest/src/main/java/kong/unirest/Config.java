@@ -85,6 +85,7 @@ public class Config {
     private HostnameVerifier hostnameVerifier;
     private String defaultBaseUrl;
     private CacheManager cache;
+    private boolean retry = false;
 
     public Config() {
         setDefaults();
@@ -111,6 +112,7 @@ public class Config {
         ciphers = null;
         protocols = null;
         interceptor = new CompoundInterceptor();
+        retry = false;
 
         this.objectMapper = Optional.of(new JsonObjectMapper());
         try {
@@ -631,6 +633,17 @@ public class Config {
         return this;
     }
 
+    /**
+     * Automatically retry synchronous requests on 429/529 responses with the Retry-After response header
+     * Default is false
+     *
+     * @param value a bool is its true or not.
+     * @return this config object
+     */
+    public Config automaticRetryAfter(boolean value) {
+        this.retry = value;
+        return this;
+    }
 
     /**
      * Sugar!
@@ -1018,5 +1031,12 @@ public class Config {
      */
     public String getDefaultBaseUrl() {
         return this.defaultBaseUrl;
+    }
+
+    /**
+     * @return if unirest will retry requests on 429/529
+     */
+    public boolean isAutomaticRetryAfter(){
+        return retry;
     }
 }

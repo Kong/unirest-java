@@ -30,23 +30,30 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.Optional;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 class Util {
+    public static final DateTimeFormatter DEFAULT_PATTERN = DateTimeFormatter.ofPattern("EEE, dd-MMM-yyyy HH:mm:ss zzz");
+    static final List<DateTimeFormatter> FORMATS = Arrays.asList(
+            DEFAULT_PATTERN,
+            DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz")
+    );
     private static Supplier<Instant> clock = Instant::now;
 
-    static void freezeClock(Instant instant){
+    static void freezeClock(Instant instant) {
         clock = () -> instant;
     }
 
-    static void resetClock(){
+    static void resetClock() {
         clock = Instant::now;
     }
 
-    static Instant now(){
+    static Instant now() {
         return clock.get();
     }
 
@@ -63,7 +70,7 @@ class Util {
     }
 
     static String nullToEmpty(Object v) {
-        if(v == null){
+        if (v == null) {
             return "";
         }
         return String.valueOf(v);
@@ -85,11 +92,23 @@ class Util {
         return "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
     }
 
-    static FileInputStream getFileInputStream(String location){
+    static FileInputStream getFileInputStream(String location) {
         try {
             return new FileInputStream(location);
         } catch (FileNotFoundException e) {
             throw new UnirestConfigException(e);
         }
+    }
+
+    public static ZonedDateTime tryParseToDate(String text) {
+        return FORMATS.stream().map(f -> {
+                    try {
+                        return ZonedDateTime.parse(text, f);
+                    } catch (DateTimeParseException e) {
+                        return null;
+                    }
+                }).filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
     }
 }

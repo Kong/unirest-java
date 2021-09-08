@@ -36,19 +36,25 @@ import org.eclipse.jetty.util.UrlEncoded;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class MockServer {
     public static int timesCalled;
     private static int pages = 1;
     private static int onPage = 1;
+    private static int retryTimes = 0;
+    private static int retryStatus = 429;
+    private static double retrySeconds = 1d;
     private static final List<Pair<String, String>> responseHeaders = new ArrayList<>();
     private static final List<Cookie> cookies = new ArrayList<>();
 
@@ -89,6 +95,7 @@ public class MockServer {
         pages = 1;
         onPage = 1;
         timesCalled = 0;
+        retryTimes = 0;
     }
 
     static {
@@ -232,6 +239,13 @@ public class MockServer {
         jsonResponse(c, false);
     }
     private static void jsonResponse(Context c, Boolean compress) {
+        if(retryTimes > 0){
+            c.header("Retry-After", String.valueOf(retrySeconds));
+            retryTimes--;
+            c.status(retryStatus);
+            return;
+        }
+
          String content = simpleResponse(c)
                 .orElseGet(() -> {
                     RequestCapture value = getRequestCapture(c);
@@ -294,5 +308,15 @@ public class MockServer {
 
     public static void clearHeaders() {
         responseHeaders.clear();
+    }
+
+    public static void retryTimes(int numberOfTimeToFail, int status, Double seconds) {
+        retryTimes = numberOfTimeToFail;
+        retryStatus = status;
+        retrySeconds = seconds;
+    }
+
+    public static void assertRequestCount(int i) {
+        assertEquals(i, timesCalled);
     }
 }
