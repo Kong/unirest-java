@@ -1,4 +1,4 @@
-## 3.12.0 (pending)
+## 3.12.0
 * Bump GSON to 2.8.8
 * Support honoring Retry-After headers on 429/529 for regular (not async) requests.
   * This feature will likely not make it to async until Unirest 4.
