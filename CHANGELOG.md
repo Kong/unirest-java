@@ -1,4 +1,5 @@
 ## 3.12.0 (pending)
+* Bump GSON to 2.8.8
 * Support honoring Retry-After headers on 429/529 for regular (not async) requests.
   * This feature will likely not make it to async until Unirest 4.
   * Can be enabled with ```Unirest.config().retryAfter(true);```
@@ -7,11 +8,7 @@
   * 🔥 While Honoring The Retry-After header the thread will be blocked! 🔥
     * It is highly recommend that this feature be used in conjunction with a circuit-breaking framework. 
     * Let's say you have a web app that is making Unirest calls to downstream system X. You have many requests invoking this same service. If X starts to return 429's and Unirest is waiting on ALL of those requests. Unirest will quickly consume all your threads. At this time Unirest has no circuit-breaker of it's own to detect that this is happening. It will simply be happy to pause all of your threads forever.
-  
-
-## 3.11.14
-* Bump GSON to 2.8.8
-
+    
 ## 3.11.13 
 * Bump Jackson version in object-mapper-jackson to 2.12.4
 * Bump test and CI dependencies
