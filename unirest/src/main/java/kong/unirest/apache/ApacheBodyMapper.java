@@ -31,6 +31,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -71,8 +72,10 @@ class ApacheBodyMapper {
         BodyPart bodyPart = b.uniPart();
         if(bodyPart == null){
             return new StringEntity("", StandardCharsets.UTF_8);
-        } else if(String.class.isAssignableFrom(bodyPart.getPartType())){
+        } else if(String.class.isAssignableFrom(bodyPart.getPartType())) {
             return new StringEntity((String) bodyPart.getValue(), b.getCharset());
+        } else if (InputStream.class.isAssignableFrom(bodyPart.getPartType())){
+            return new InputStreamEntity((InputStream) bodyPart.getValue());
         } else {
             return new ByteArrayEntity((byte[])bodyPart.getValue());
         }

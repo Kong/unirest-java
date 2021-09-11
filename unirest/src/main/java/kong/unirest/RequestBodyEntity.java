@@ -27,6 +27,7 @@ package kong.unirest;
 
 import kong.unirest.json.JSONElement;
 
+import java.io.InputStream;
 import java.nio.charset.Charset;
 
 public interface RequestBodyEntity extends HttpRequest<RequestBodyEntity>, Body {
@@ -50,6 +51,13 @@ public interface RequestBodyEntity extends HttpRequest<RequestBodyEntity>, Body 
      * @return this request builder
      */
     RequestBodyEntity body(JsonNode jsonBody);
+
+    /**
+     * Set a InputStream as the body
+     * @param body the Object
+     * @return this request builder
+     */
+    RequestBodyEntity body(InputStream body);
 
     /**
      * Set JSON on the body

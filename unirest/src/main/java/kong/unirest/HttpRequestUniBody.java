@@ -27,6 +27,7 @@ package kong.unirest;
 
 import kong.unirest.json.JSONElement;
 
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
@@ -43,6 +44,12 @@ class HttpRequestUniBody extends BaseRequest<RequestBodyEntity> implements Reque
 	@Override
 	public RequestBodyEntity body(JsonNode jsonBody) {
 		return body(jsonBody.toString());
+	}
+
+	@Override
+	public RequestBodyEntity body(InputStream inputStreamBody) {
+		this.body = new InputStreamBody(inputStreamBody);
+		return this;
 	}
 
 	@Override

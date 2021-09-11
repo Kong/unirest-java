@@ -140,6 +140,13 @@ public interface HttpRequestWithBody extends HttpRequest<HttpRequestWithBody> {
     RequestBodyEntity body(String body);
 
     /**
+     * Set a InputStream as the body
+     * @param body the Object
+     * @return this request builder
+     */
+    RequestBodyEntity body(InputStream body);
+
+    /**
      * Set a Object as the body of the request. This will be serialized with one of the following methods:
      *      - Strings are native
      *      - JSONElements use their native toString
