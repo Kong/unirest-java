@@ -25,6 +25,7 @@
 
 package kong.unirest;
 
+import java.net.http.WebSocket;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
@@ -136,6 +137,11 @@ class CacheManager {
             Cache.Key key = getHash(request, true, responseType);
             return backingCache.getAsync(key,
                     () -> originalClient.request(request, transformer, callback, responseType));
+        }
+
+        @Override //
+        public WebSocketResponse websocket(WebSocketRequest request, WebSocket.Listener listener) {
+            return originalClient.websocket(request, listener);
         }
     }
 

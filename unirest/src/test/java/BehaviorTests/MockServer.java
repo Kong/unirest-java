@@ -29,10 +29,14 @@ package BehaviorTests;
 import com.google.common.base.Strings;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import io.javalin.websocket.WsHandler;
+import io.javalin.websocket.WsMessageContext;
+import io.javalin.websocket.WsMessageHandler;
 import kong.unirest.JacksonObjectMapper;
 import kong.unirest.TestUtil;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.util.UrlEncoded;
+import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
@@ -43,20 +47,23 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.zip.GZIPOutputStream;
 
 
 public class MockServer {
+
     public static int timesCalled;
     private static int pages = 1;
     private static int onPage = 1;
     private static final List<Pair<String, String>> responseHeaders = new ArrayList<>();
     private static final List<Cookie> cookies = new ArrayList<>();
-
+    private static final WebSocketHandler ws = new WebSocketHandler();
     private static final JacksonObjectMapper om = new JacksonObjectMapper();
     private static String responseBody;
     public static final int PORT = 4567;
     public static final String HOST = "http://localhost:" + PORT;
+    public static final String WEBSOCKET = "ws://localhost:" + PORT + "/websocket";
     public static final String WINDOWS_LATIN_1_FILE = HOST + "/data/cp1250.txt";
     public static final String REDIRECT = HOST + "/redirect";
     public static final String JAVALIN = HOST + "/sparkle/{spark}/yippy";
@@ -90,6 +97,7 @@ public class MockServer {
         pages = 1;
         onPage = 1;
         timesCalled = 0;
+        WebSocketHandler.reset();
     }
 
     static {
@@ -99,6 +107,7 @@ public class MockServer {
         }).start(PORT);
         app.error(404, MockServer::notFound);
         app.before(c -> timesCalled++);
+        app.ws("/websocket", ws);
         app.delete("/delete", MockServer::jsonResponse);
         app.get("/sparkle/:spark/yippy", MockServer::sparkle);
         app.post("/post", MockServer::jsonResponse);
@@ -306,5 +315,36 @@ public class MockServer {
 
     public static void clearHeaders() {
         responseHeaders.clear();
+    }
+
+
+
+    public static class WebSocketHandler implements Consumer<WsHandler> {
+
+        private static String onOpenMessage = "Open";
+        private WsHandler handler;
+        public static Map<String, String> headers = new HashMap<>();
+
+        public static void reset(){
+            headers.clear();
+            onOpenMessage = "Open";
+        }
+
+        public static void expectOpeningMessage(String message) {
+            onOpenMessage = message;
+        }
+
+        @Override
+        public void accept(WsHandler wsHandler) {
+            this.handler = wsHandler;
+            this.handler.onMessage(c -> {
+                c.send("thank you");
+            });
+            this.handler.onConnect(c -> {
+                headers = c.headerMap();
+                c.send(onOpenMessage);
+            });
+        }
+
     }
 }

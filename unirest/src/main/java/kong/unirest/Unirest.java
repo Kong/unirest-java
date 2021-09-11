@@ -130,6 +130,10 @@ public class Unirest {
         return primaryInstance.request(method, url);
     }
 
+    public static WebSocketRequest webSocket(String url) {
+        return primaryInstance.webSocket(url);
+    }
+
     /**
      * Spawn a new Unirest Instance with a new config.
      * Don't forget to shut it down when your done.

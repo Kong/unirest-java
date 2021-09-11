@@ -30,6 +30,7 @@ import kong.unirest.*;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.WebSocket;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
@@ -146,6 +147,13 @@ public class JavaClient implements Client {
 
             return new FailedResponse(ex);
         });
+    }
+
+    @Override
+    public WebSocketResponse websocket(WebSocketRequest request, WebSocket.Listener listener) {
+        WebSocket.Builder b = client.newWebSocketBuilder();
+        request.getHeaders().all().forEach(h -> b.header(h.getName(), h.getValue()));
+        return new WebSocketResponse(b.buildAsync(URI.create(request.getUrl()), listener));
     }
 
     protected <T> HttpResponse<T> transformBody(Function<RawResponse, HttpResponse<T>> transformer, RawResponse rr) {

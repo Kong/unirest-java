@@ -28,6 +28,7 @@ package kong.unirest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.net.http.WebSocket;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -93,6 +94,11 @@ class CacheManagerTest {
         public <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, CompletableFuture<HttpResponse<T>> callback, Class<?> resultType) {
             invokes++;
             return new CompletableFuture<>();
+        }
+
+        @Override
+        public WebSocketResponse websocket(WebSocketRequest request, WebSocket.Listener listener) {
+            return null;
         }
 
         @Override

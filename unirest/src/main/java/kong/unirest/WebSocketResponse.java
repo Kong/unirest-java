@@ -25,44 +25,17 @@
 
 package kong.unirest;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.net.http.WebSocket;
+import java.util.concurrent.CompletableFuture;
 
-public class HttpMethod {
-	private static final Map<String, HttpMethod> REGISTRY = new HashMap<>();
+public class WebSocketResponse {
+    private final CompletableFuture<WebSocket> webSocketFuture;
 
-	public static final HttpMethod GET = valueOf("GET");
-	public static final HttpMethod POST = valueOf("POST");
-	public static final HttpMethod PUT = valueOf("PUT");
-	public static final HttpMethod DELETE = valueOf("DELETE");
-	public static final HttpMethod PATCH = valueOf("PATCH");
-	public static final HttpMethod HEAD = valueOf("HEAD");
-	public static final HttpMethod OPTIONS = valueOf("OPTIONS");
-	public static final HttpMethod TRACE = valueOf("TRACE");
-	public static final HttpMethod WEBSOCKET = valueOf("WEBSOCKET");
+    public WebSocketResponse(CompletableFuture<WebSocket> webSocketFuture) {
+        this.webSocketFuture = webSocketFuture;
+    }
 
-	private final String name;
-
-	private HttpMethod(String name){
-		this.name = name;
-	}
-
-	public static HttpMethod valueOf(String verb){
-		return REGISTRY.computeIfAbsent(String.valueOf(verb).toUpperCase(), HttpMethod::new);
-	}
-
-	public Set<HttpMethod> all(){
-		return new HashSet<>(REGISTRY.values());
-	}
-
-	public String name() {
-		return name;
-	}
-
-	@Override
-	public String toString() {
-		return name;
-	}
+    public CompletableFuture<WebSocket> socket(){
+        return webSocketFuture;
+    }
 }

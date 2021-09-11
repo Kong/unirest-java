@@ -25,6 +25,7 @@
 
 package kong.unirest;
 
+import java.net.http.WebSocket;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -58,4 +59,6 @@ public interface Client {
                                                    Function<RawResponse, HttpResponse<T>> transformer,
                                                    CompletableFuture<HttpResponse<T>> callback,
                                                    Class<?> resultType);
+
+    WebSocketResponse websocket(WebSocketRequest request, WebSocket.Listener listener);
 }

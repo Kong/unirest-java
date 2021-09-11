@@ -151,4 +151,8 @@ public class UnirestInstance {
     public void close() {
         reset(true);
     }
+
+    public WebSocketRequest webSocket(String url) {
+        return new WebSocketRequestImpl(config, url);
+    }
 }
