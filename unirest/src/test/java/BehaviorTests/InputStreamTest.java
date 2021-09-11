@@ -39,4 +39,26 @@ public class InputStreamTest extends BddTest {
                 .getBody()
                 .assertBody("Hi Mom");
     }
+
+    @Test
+    void canSendInputStreamAsBodyAsync() throws Exception {
+        Unirest.post(MockServer.POST)
+                .body(new ByteArrayInputStream("Hi Mom".getBytes()))
+                .asObjectAsync(RequestCapture.class)
+                .get()
+                .getBody()
+                .assertBody("Hi Mom");
+    }
+
+    @Test
+    void canSendInputStreamAsBodyAsyncWithCallback() throws Exception {
+        Unirest.post(MockServer.POST)
+                .body(new ByteArrayInputStream("Hi Mom".getBytes()))
+                .asObjectAsync(RequestCapture.class, r -> {
+                    r.getBody().assertBody("Hi Mom");
+                    asyncSuccess();
+                });
+
+        assertAsync();
+    }
 }
