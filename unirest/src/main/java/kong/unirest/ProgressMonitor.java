@@ -27,7 +27,7 @@ package kong.unirest;
 
 /**
  * A ProgressMonitor is a functional interface which can be passed to unirest for the purposes of
- * monitoring file uploads and downloads. A common use case is for drawing progress bars.
+ * monitoring uploads and downloads. A common use case is for drawing progress bars.
  *
  * If an upload contains multiple files each one is called individually and the file name is provided.
  *
@@ -39,7 +39,7 @@ package kong.unirest;
 public interface ProgressMonitor {
     /**
      * Accept stats about the current file upload chunk for a file.
-     * @param field the field name, or 'body' on file downloads
+     * @param field the field name, or 'body' on non-multipart uploads/downloads
      * @param fileName the name of the file in question if available (InputStreams and byte arrays may not have file names)
      * @param bytesWritten the number of bytes that have been uploaded or downloaded so far
      * @param totalBytes the total bytes that will be uploaded or downloaded.

@@ -75,6 +75,12 @@ class ApacheBodyMapper {
         } else if(String.class.isAssignableFrom(bodyPart.getPartType())) {
             return new StringEntity((String) bodyPart.getValue(), b.getCharset());
         } else if (InputStream.class.isAssignableFrom(bodyPart.getPartType())){
+            if(b.getMonitor() != null){
+                return new InputStreamEntity(new MonitoringInputStream(
+                        (InputStream) bodyPart.getValue(),
+                        b.getMonitor()
+                ));
+            }
             return new InputStreamEntity((InputStream) bodyPart.getValue());
         } else {
             return new ByteArrayEntity((byte[])bodyPart.getValue());

@@ -87,6 +87,16 @@ public class UploadProgressTest extends BddTest {
         monitor.assertSpideyFileUpload("spidey");
     }
 
+    @Test
+    void canUseWithInputStreamBody() throws Exception {
+        Unirest.post(MockServer.POST)
+                .body(new FileInputStream(monitor.spidey))
+                .uploadMonitor(monitor)
+                .asEmpty();
+
+        monitor.assertSpideyFileUpload("body");
+    }
+
     private void assertOtherFileUpload() {
         TestMonitor.Stats stat = monitor.get("test.txt");
         assertEquals(1, stat.timesCalled);

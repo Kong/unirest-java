@@ -99,4 +99,11 @@ public interface RequestBodyEntity extends HttpRequest<RequestBodyEntity>, Body 
      * @return this request builder
      */
     RequestBodyEntity contentType(String type);
+
+    /**
+     * Set a Progress upload monitor suitable for drawing progress bars and whatnot. Works With
+     * @param monitor a monitor
+     * @return The same MultipartBody
+     * */
+    RequestBodyEntity uploadMonitor(ProgressMonitor monitor);
 }

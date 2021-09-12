@@ -1,3 +1,7 @@
+## 3.13.0
+* Support InputStreams as bodies.
+* Support ProgressMonitors for InputStream bodies
+
 ## 3.12.0
 * Bump GSON to 2.8.8
 * Support honoring Retry-After headers on 429/529 for regular (not async) requests.
