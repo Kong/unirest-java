@@ -164,13 +164,28 @@ class BodyBuilder {
         if (bodyPart == null) {
             return HttpRequest.BodyPublishers.noBody();
         } else if (String.class.isAssignableFrom(bodyPart.getPartType())) {
-            Charset charset = b.getCharset();
-            if (charset == null) {
-                return HttpRequest.BodyPublishers.ofString((String) bodyPart.getValue());
-            }
-            return HttpRequest.BodyPublishers.ofString((String) bodyPart.getValue(), charset);
-        } else {
+            return createStringBody(b, bodyPart);
+        } else if (InputStream.class.isAssignableFrom(bodyPart.getPartType())) {
+            return createInputStreamBody(b, bodyPart);
+        }else {
             return HttpRequest.BodyPublishers.ofByteArray((byte[]) bodyPart.getValue());
         }
+    }
+
+    private HttpRequest.BodyPublisher createInputStreamBody(Body b, BodyPart bodyPart) {
+        if(b.getMonitor() != null){
+            return HttpRequest.BodyPublishers.ofInputStream(
+                    () -> new MonitoringInputStream((InputStream) bodyPart.getValue(), b.getMonitor()));
+        }
+        return HttpRequest.BodyPublishers.ofInputStream(
+                () -> (InputStream) bodyPart.getValue());
+    }
+
+    private HttpRequest.BodyPublisher createStringBody(Body b, BodyPart bodyPart) {
+        Charset charset = b.getCharset();
+        if (charset == null) {
+            return HttpRequest.BodyPublishers.ofString((String) bodyPart.getValue());
+        }
+        return HttpRequest.BodyPublishers.ofString((String) bodyPart.getValue(), charset);
     }
 }

@@ -97,11 +97,13 @@ public class RequestCapture {
     }
 
     private void parseBodyToFormParams() {
-        QueryParams.fromBody(this.body)
-                .getQueryParams()
-                .forEach(p -> {
-                    params.put(p.getName(), p.getValue());
-                });
+        try {
+            QueryParams.fromBody(this.body)
+                    .getQueryParams()
+                    .forEach(p -> {
+                        params.put(p.getName(), p.getValue());
+                    });
+        }catch (UnirestException e){}
     }
 
     public void writeMultipart(Context req) {

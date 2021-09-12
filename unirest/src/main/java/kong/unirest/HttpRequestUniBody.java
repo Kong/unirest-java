@@ -35,6 +35,7 @@ class HttpRequestUniBody extends BaseRequest<RequestBodyEntity> implements Reque
 
 	private BodyPart body;
 	private Charset charSet;
+	private ProgressMonitor monitor;
 
 	HttpRequestUniBody(HttpRequestBody httpRequest) {
 		super(httpRequest);
@@ -94,6 +95,12 @@ class HttpRequestUniBody extends BaseRequest<RequestBodyEntity> implements Reque
 	}
 
 	@Override
+	public RequestBodyEntity uploadMonitor(ProgressMonitor progressMonitor) {
+		this.monitor = progressMonitor;
+		return this;
+	}
+
+	@Override
 	public Optional<Body> getBody() {
 		return Optional.of(this);
 	}
@@ -116,5 +123,10 @@ class HttpRequestUniBody extends BaseRequest<RequestBodyEntity> implements Reque
 	@Override
 	public BodyPart uniPart() {
 		return body;
+	}
+
+	@Override
+	public ProgressMonitor getMonitor(){
+		return monitor;
 	}
 }
