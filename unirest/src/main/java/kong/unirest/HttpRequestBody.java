@@ -105,6 +105,11 @@ class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRe
 	}
 
 	@Override
+	public RequestBodyEntity body(InputStream body) {
+		return new HttpRequestUniBody(this).body(body);
+	}
+
+	@Override
 	public RequestBodyEntity body(Object body) {
 		return new HttpRequestUniBody(this).body(body);
 	}
