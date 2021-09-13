@@ -26,12 +26,15 @@
 package kong.unirest;
 
 
+import java.net.http.WebSocket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 /**
  * A Mock client for unirest to make requests against
@@ -40,6 +43,7 @@ import java.util.function.Supplier;
 public class MockClient implements Client {
     private final Supplier<Config> config;
     private List<Routes> routes = new ArrayList<>();
+    private SocketSet remoteSocket;
 
     public MockClient(Supplier<Config> config){
         this.config = config;
@@ -113,6 +117,30 @@ public class MockClient implements Client {
                                                           Class<?> resultTypes) {
         return CompletableFuture.supplyAsync(() -> request(request, transformer, resultTypes));
     }
+
+    @Override
+    public WebSocketResponse websocket(WebSocketRequest request, WebSocket.Listener listener) {
+        MockWebSocket clientSocket = new MockWebSocket();
+        WebSocket.Listener clientListener = listener;
+
+        MockWebSocket serverWebSocket = new MockWebSocket();
+        MockListener serverListener = new MockListener();
+
+        remoteSocket = new SocketSet(serverWebSocket, serverListener, "server");
+        clientSocket.init(remoteSocket);
+        serverWebSocket.init(new SocketSet(clientSocket, clientListener, "client"));
+
+        return new WebSocketResponse(completedFuture(clientSocket), clientListener);
+    }
+
+    public SocketSet<MockWebSocket, MockListener> serversSocket() {
+        if(remoteSocket == null){
+            throw new UnirestException("No Socket Yet Established");
+        }
+        return remoteSocket;
+    }
+
+
 
     @Override
     public Object getClient() {

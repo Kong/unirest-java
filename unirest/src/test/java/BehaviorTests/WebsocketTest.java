@@ -42,7 +42,7 @@ public class WebsocketTest extends BddTest {
     void makeAWebSocket() throws Exception {
         TheListener listener = new TheListener();
         MockServer.WebSocketHandler.expectOpeningMessage("Darkness Rises When Silence Dies");
-
+        assertEquals("ws://localhost:4567/websocket", MockServer.WEBSOCKET);
         Unirest.webSocket(MockServer.WEBSOCKET)
                 .connect(listener)
                 .socket()
@@ -57,6 +57,7 @@ public class WebsocketTest extends BddTest {
 
     @Test
     void sendsHeaders() throws Exception {
+        assertEquals("ws://localhost:4567/websocket", MockServer.WEBSOCKET);
         Unirest.webSocket(MockServer.WEBSOCKET)
                 .header("Authentication", "Sanguine, my Brother.")
                 .connect(new TheListener())

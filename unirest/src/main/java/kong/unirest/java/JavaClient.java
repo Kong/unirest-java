@@ -153,7 +153,7 @@ public class JavaClient implements Client {
     public WebSocketResponse websocket(WebSocketRequest request, WebSocket.Listener listener) {
         WebSocket.Builder b = client.newWebSocketBuilder();
         request.getHeaders().all().forEach(h -> b.header(h.getName(), h.getValue()));
-        return new WebSocketResponse(b.buildAsync(URI.create(request.getUrl()), listener));
+        return new WebSocketResponse(b.buildAsync(URI.create(request.getUrl()), listener), listener);
     }
 
     protected <T> HttpResponse<T> transformBody(Function<RawResponse, HttpResponse<T>> transformer, RawResponse rr) {

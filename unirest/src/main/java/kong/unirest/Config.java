@@ -91,6 +91,7 @@ public class Config {
         sslContext = null;
         ciphers = null;
         protocols = null;
+        defaultBaseUrl = null;
         interceptor = new CompoundInterceptor();
 
         this.objectMapper = Optional.of(new JsonObjectMapper());

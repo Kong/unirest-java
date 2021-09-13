@@ -26,22 +26,41 @@
 package kong.unirest;
 
 import java.net.http.WebSocket;
-import java.util.concurrent.CompletableFuture;
 
-public class WebSocketResponse {
-    private final CompletableFuture<WebSocket> webSocketFuture;
-    private final WebSocket.Listener listener;
+/**
+ * A socket set represents a websocket and the listener for a target.
+ * Each side of a websocket communcation would be represented by a set
+ */
+public class SocketSet<S extends WebSocket, L extends WebSocket.Listener> {
 
-    public WebSocketResponse(CompletableFuture<WebSocket> webSocketFuture, WebSocket.Listener listener) {
-        this.webSocketFuture = webSocketFuture;
+    private final S socket;
+    private final L listener;
+    private final String name;
+
+    public SocketSet(S socket, L listener, String name){
+        this.socket = socket;
         this.listener = listener;
+        this.name = name;
     }
 
-    public CompletableFuture<WebSocket> socket(){
-        return webSocketFuture;
+    public S getSocket() {
+        return socket;
     }
 
-    public WebSocket.Listener listener(){
+    public L getListener() {
         return listener;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    public void open() {
+        listener.onOpen(socket);
     }
 }
