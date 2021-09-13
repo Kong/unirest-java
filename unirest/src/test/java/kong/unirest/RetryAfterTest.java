@@ -23,36 +23,47 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package BehaviorTests;
+package kong.unirest;
 
-import com.google.common.base.MoreObjects;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
-import java.util.Objects;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
-public class Foo {
-    public String bar;
+import static org.junit.jupiter.api.Assertions.*;
 
-    public Foo(){ }
+class RetryAfterTest {
 
-    public Foo(String bar) {
-        this.bar = bar;
+    @AfterEach
+    void tearDown() {
+        Util.resetClock();
     }
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this).add("bar",bar).toString();
+    @Test
+    void parseInts() {
+        assertEquals(1000, parseToMillies("1"));
+        assertEquals(10000, parseToMillies("10"));
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {return true;}
-        if (o == null || getClass() != o.getClass()) {return false;}
-        Foo foo = (Foo) o;
-        return Objects.equals(bar, foo.bar);
+    @Test
+    void parseDoubles() {
+        assertEquals(1500, parseToMillies("1.5"));
+        assertEquals(50, parseToMillies(".05"));
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(bar);
+    @Test
+    void parseHttpDateFormat() {
+        Util.freezeClock(ZonedDateTime.parse("2015-10-21T07:28:00Z", DateTimeFormatter.ISO_ZONED_DATE_TIME).toInstant());
+
+        assertEquals(1000, parseToMillies("Wed, 21 Oct 2015 07:28:01 GMT"));
     }
+
+    private long parseToMillies(String s) {
+        Headers h = new Headers();
+        h.add("Retry-After", s);
+        Headers headers = h;
+        return RetryAfter.from(headers).millies();
+    }
+
 }

@@ -28,8 +28,6 @@ package kong.unirest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -130,20 +128,8 @@ public class Cookie {
         }
     }
 
-    public static final DateTimeFormatter DEFAULT_PATTERN = DateTimeFormatter.ofPattern("EEE, dd-MMM-yyyy HH:mm:ss zzz");
-    private static final List<DateTimeFormatter> FORMATS = Arrays.asList(
-            DEFAULT_PATTERN,
-            DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz")
-    );
-
     private void parseExpires(String text) {
-            FORMATS.forEach(f -> {
-                try{
-                    expires = ZonedDateTime.parse(text, f);
-                }catch (DateTimeParseException e){
-
-                }
-            });
+        expires = Util.tryParseToDate(text);
     }
 
     @Override
@@ -157,7 +143,7 @@ public class Cookie {
             pairs.add(new Pair("Domain", domain));
         }
         if(expires != null){
-            pairs.add(new Pair("Expires", expires.format(DEFAULT_PATTERN)));
+            pairs.add(new Pair("Expires", expires.format(Util.DEFAULT_PATTERN)));
         }
         if(maxAge != null){
             pairs.add(new Pair("Max-Age", String.valueOf(maxAge)));

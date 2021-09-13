@@ -47,8 +47,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
 import java.util.function.Consumer;
 import java.util.zip.GZIPOutputStream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class MockServer {
@@ -56,6 +59,9 @@ public class MockServer {
     public static int timesCalled;
     private static int pages = 1;
     private static int onPage = 1;
+    private static int retryTimes = 0;
+    private static int retryStatus = 429;
+    private static String retrySeconds = "";
     private static final List<Pair<String, String>> responseHeaders = new ArrayList<>();
     private static final List<Cookie> cookies = new ArrayList<>();
     private static final WebSocketHandler ws = new WebSocketHandler();
@@ -84,6 +90,7 @@ public class MockServer {
     public static final String ALTGET = "http://127.0.0.1:" + PORT + "/get";
     public static final String ECHO_RAW = HOST + "/raw";
     private static Javalin app;
+    private static int errorCode = 400;
 
 
     public static void setJsonAsResponse(Object o) {
@@ -98,6 +105,8 @@ public class MockServer {
         onPage = 1;
         timesCalled = 0;
         WebSocketHandler.reset();
+        retryTimes = 0;
+        errorCode = 400;
     }
 
     static {
@@ -167,7 +176,7 @@ public class MockServer {
     }
 
     private static void error(Context request) {
-        request.status(400);
+        request.status(errorCode);
         request.result(Strings.nullToEmpty(responseBody));
     }
 
@@ -253,6 +262,15 @@ public class MockServer {
         jsonResponse(c, false);
     }
     private static void jsonResponse(Context c, Boolean compress) {
+        if(retryTimes > 0){
+            if(retrySeconds != null) {
+                c.header("Retry-After", retrySeconds);
+            }
+            retryTimes--;
+            c.status(retryStatus);
+            return;
+        }
+
          String content = simpleResponse(c)
                 .orElseGet(() -> {
                     RequestCapture value = getRequestCapture(c);
@@ -317,15 +335,13 @@ public class MockServer {
         responseHeaders.clear();
     }
 
-
-
     public static class WebSocketHandler implements Consumer<WsHandler> {
 
         private static String onOpenMessage = "Open";
         private WsHandler handler;
         public static Map<String, String> headers = new HashMap<>();
 
-        public static void reset(){
+        public static void reset() {
             headers.clear();
             onOpenMessage = "Open";
         }
@@ -346,5 +362,23 @@ public class MockServer {
             });
         }
 
+    }
+
+    public static void retryTimes(int numberOfTimeToFail, int status, Double seconds){
+        retryTimes(numberOfTimeToFail, status, String.valueOf(seconds));
+    }
+
+    public static void retryTimes(int numberOfTimeToFail, int status, String seconds) {
+        retryTimes = numberOfTimeToFail;
+        retryStatus = status;
+        retrySeconds = seconds;
+    }
+
+    public static void assertRequestCount(int i) {
+        assertEquals(i, timesCalled);
+    }
+
+    public static void expectErrorCode(int i) {
+        errorCode = i;
     }
 }
