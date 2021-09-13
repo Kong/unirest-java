@@ -37,13 +37,15 @@ import java.util.concurrent.CompletionStage;
  */
 public class MockListener implements WebSocket.Listener {
     private List<Message> messagesReceived = new ArrayList<>();
+    private ByteBuffer ping;
     private ByteBuffer pong;
-    private boolean open = true;
+    private boolean open = false;
     private int closedStatus;
     private String closedMessage;
 
     @Override
     public void onOpen(WebSocket webSocket) {
+        open = true;
         WebSocket.Listener.super.onOpen(webSocket);
     }
 
@@ -61,6 +63,7 @@ public class MockListener implements WebSocket.Listener {
 
     @Override
     public CompletionStage<?> onPing(WebSocket webSocket, ByteBuffer message) {
+        ping = message;
         webSocket.sendPong(message);
         return WebSocket.Listener.super.onPing(webSocket, message);
     }
@@ -85,15 +88,8 @@ public class MockListener implements WebSocket.Listener {
     }
 
     public void assertReceivedMessage(Object message, boolean last) {
-        boolean has = messagesReceived.stream().anyMatch(e -> Objects.equals(e.data, message) && Objects.equals(e.last, last));
-        if(!has){
-            throw new UnirestAssertion("Did not receive any message: " + message);
-        }
-    }
-
-    public void assertPong(ByteBuffer message) {
-        if(!message.equals(pong)){
-            throw new UnirestAssertion("Expected Pong Message %s but got %s", message, pong);
+        if(!messagesReceived.stream().anyMatch(e -> Objects.equals(e.data, message) && Objects.equals(e.last, last))){
+            throw new UnirestAssertion("Did not receive any message: [%s : %s] ", message, last);
         }
     }
 
@@ -103,6 +99,34 @@ public class MockListener implements WebSocket.Listener {
         } else if (closedStatus != status || !Objects.equals(closedMessage, message)){
             throw new UnirestAssertion("Incorrect Closed Status/Message. Expected [%s : %s] but got [%s : %s]",
                     status, message, closedStatus, closedMessage);
+        }
+    }
+
+    /**
+     * assert that a ping message was received.
+     * Note that the onPing method will automatically send a pong to the WebSocket
+     * @param message the message
+     */
+    public void assertPing(ByteBuffer message) {
+        if(!Objects.equals(ping, message)){
+            throw new UnirestAssertion("Expected Ping Call with buffer %s but got %s", message, ping);
+        }
+    }
+
+    /**
+     * assert that a pong message was received.
+     * Note that the onPing method will automatically send a pong to the WebSocket
+     * @param message the message
+     */
+    public void assertPong(ByteBuffer message) {
+        if(!message.equals(pong)){
+            throw new UnirestAssertion("Expected Pong Message %s but got %s", message, pong);
+        }
+    }
+
+    public void assertIsOpen() {
+        if(!open){
+            throw new UnirestAssertion("Expected socket to be open but was closed.");
         }
     }
 
