@@ -25,17 +25,11 @@
 
 package kong.unirest.json;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonPrimitive;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * https://json.org/
@@ -43,13 +37,13 @@ import java.util.stream.StreamSupport;
  * Represents a JSON Array
  */
 public class JSONArray extends JSONElement implements Iterable<Object> {
-    private transient final JsonArray obj;
+    private transient final EngineArray obj;
 
     /**
      * construct a empty JSONArray
      */
     public JSONArray() {
-        this(new JsonArray());
+        this(CoreFactory.getCore().newEngineArray());
     }
 
     /**
@@ -57,7 +51,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @param jsonString a JSON String
      */
     public JSONArray(String jsonString) {
-        this(fromJson(jsonString, JsonArray.class));
+        this(CoreFactory.getCore().newJsonArray(jsonString));
     }
 
     /**
@@ -65,7 +59,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @param collection a collection which contains json types
      */
     public JSONArray(Collection<?> collection) {
-        this(toJsonArray(collection.stream().map(JSONElement::unwrap).collect(Collectors.toList())));
+        this(CoreFactory.getCore().newJsonArray(collection));
     }
 
     /**
@@ -76,23 +70,27 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
         this(toJsonArray(array));
     }
 
-    private static JsonArray toJsonArray(Object array) {
-        if (array == null || !array.getClass().isArray()) {
-            throw new JSONException("JSONArray initial value should be a string or collection or array.");
+    private static EngineArray toJsonArray(Object thing) {
+        if(thing instanceof Collection){
+            return CoreFactory.getCore().newJsonArray((Collection)thing);
         }
-        Collection pre = new ArrayList();
-        for (Object o : (Object[]) array) {
-            pre.add(unwrap(o));
+        if (thing != null && thing.getClass().isArray()) {
+            Collection pre = new ArrayList();
+            for (Object o : (Object[]) thing) {
+                pre.add(o);
+            }
+            return CoreFactory.getCore().newJsonArray(pre);
         }
-        return toJsonArray(pre);
+
+        throw new JSONException("JSONArray initial value should be a string or collection or array.");
     }
 
-    JSONArray(JsonArray array) {
+    JSONArray(EngineArray array) {
         super(array);
         obj = array;
     }
 
-    JSONArray(JsonElement jsonElement) {
+    JSONArray(EngineElement jsonElement) {
         this(jsonElement.getAsJsonArray());
     }
 
@@ -231,7 +229,8 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return this JSONArray
      */
     public JSONArray put(int index, long number) throws JSONException {
-        return put(index, new JsonPrimitive(number));
+        put(index, CoreFactory.getCore().newJsonPrimitive(number));
+        return this;
     }
 
     /**
@@ -242,7 +241,8 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return this JSONArray
      */
     public JSONArray put(int index, double number) throws JSONException {
-        return put(index, new JsonPrimitive(number));
+        put(index, CoreFactory.getCore().newJsonPrimitive(number));
+        return this;
     }
 
     /**
@@ -252,7 +252,8 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return this JSONArray
      */
     public JSONArray put(int index, boolean bool) throws JSONException {
-        return put(index, new JsonPrimitive(bool));
+        put(index, CoreFactory.getCore().newJsonPrimitive(bool));
+        return this;
     }
 
     /**
@@ -265,7 +266,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      */
     public JSONArray put(int index, Object object) throws JSONException {
         if (object == null) {
-            put(index, JsonNull.INSTANCE);
+            put(index, (EngineElement) null);
         } else if (object instanceof Number) {
             put(index, (Number) object);
         } else if (object instanceof Boolean) {
@@ -288,7 +289,8 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return this JSONArray
      */
     public JSONArray put(int index, float number) throws JSONException {
-        return put(index, new JsonPrimitive(number));
+        put(index, CoreFactory.getCore().newJsonPrimitive(number));
+        return this;
     }
 
     /**
@@ -299,7 +301,8 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return this JSONArray
      */
     public JSONArray put(int index, int number) throws JSONException {
-        return put(index, new JsonPrimitive(number));
+        put(index, CoreFactory.getCore().newJsonPrimitive(number));
+        return this;
     }
 
     /**
@@ -310,7 +313,8 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return this JSONArray
      */
     public JSONArray put(int index, Number number) {
-        return put(index, number == null ? JsonNull.INSTANCE : new JsonPrimitive(number));
+        put(index, CoreFactory.getCore().newJsonPrimitive(number));
+        return this;
     }
 
     /**
@@ -321,7 +325,8 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return this JSONArray
      */
     public JSONArray put(int index, String string) {
-        return put(index, string == null ? JsonNull.INSTANCE : new JsonPrimitive(string));
+        put(index, CoreFactory.getCore().newJsonPrimitive(string));
+        return this;
     }
 
     /**
@@ -355,12 +360,12 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @return this JSONArray
      */
     public <T extends Enum> JSONArray put(int index, T enumValue) {
-        return put(index, enumValue == null ? null : enumValue.name());
+        return put(index, CoreFactory.getCore().newJsonPrimitive(enumValue));
     }
 
-    private JSONArray put(int index, JsonElement o) {
+    private JSONArray put(int index, EngineElement o) {
         while (obj.size() < index + 1) {
-            obj.add(JsonNull.INSTANCE);
+            obj.add((EngineElement) null);
         }
         if (index < obj.size()) {
             obj.set(index, o);
@@ -378,7 +383,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      */
     public JSONArray put(Object object) {
         if (object == null) {
-            obj.add(JsonNull.INSTANCE);
+            obj.add((EngineElement) null);
         } else if (object instanceof Number) {
             put((Number) object);
         } else if (object instanceof Boolean) {
@@ -402,7 +407,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      */
     public Object remove(int index) {
         try {
-            JsonElement remove = obj.remove(index);
+            EngineElement remove = obj.remove(index);
             return MAPPER.apply(remove);
         } catch (IndexOutOfBoundsException e) {
             return null;
@@ -416,8 +421,8 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @throws JSONException if the element is not a boolean or index is out of bounds
      */
     public boolean getBoolean(int index) throws JSONException {
-        JsonElement e = getElement(index);
-        if (!e.isJsonPrimitive() || !e.getAsJsonPrimitive().isBoolean()) {
+        EngineElement e = getElement(index);
+        if (!e.isJsonPrimitive() || !e.getAsPrimitive().isBoolean()) {
             throw new JSONException("JSONArray[%s] is not a boolean.", index);
         }
         return e.getAsBoolean();
@@ -791,9 +796,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @throws JSONException if something goes wrong
      */
     public String join(String token) throws JSONException {
-        return StreamSupport.stream(obj.spliterator(), false)
-                .map(String::valueOf)
-                .collect(Collectors.joining(token));
+        return obj.join(token);
     }
 
     /**
@@ -815,7 +818,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
             return false;
         }
         JSONArray cst = (JSONArray) o;
-        return this.obj.equals(cst.obj);
+        return this.equals(cst);
     }
 
     /**
@@ -842,7 +845,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
     public boolean equals(Object o) {
         if (o == this) {
             return true;
-        } else if (o instanceof JsonArray) {
+        } else if (o instanceof EngineArray) {
             return this.obj.equals(o);
         } else if (o instanceof JSONArray) {
             return this.obj.equals(((JSONArray) o).obj);
@@ -854,12 +857,12 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
         return this.obj.hashCode();
     }
 
-    JsonArray getArray() {
+    EngineArray getArray() {
         return obj;
     }
 
 
-    private JsonElement getElement(int index) {
+    private EngineElement getElement(int index) {
         try {
             return obj.get(index);
         } catch (IndexOutOfBoundsException e) {

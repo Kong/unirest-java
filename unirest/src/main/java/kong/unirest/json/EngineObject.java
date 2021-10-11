@@ -25,13 +25,24 @@
 
 package kong.unirest.json;
 
-import kong.unirest.json.gson.GsonEngine;
 
-class CoreFactory {
+import java.util.Set;
 
-    static JsonEngine getCore() {
-        return new GsonEngine();
-    }
+public interface EngineObject extends EngineElement {
+    int size();
+    boolean has(String key);
+    EngineElement get(String key);
 
+    void add(String key, EngineElement value);
 
+    void addProperty(String key, Boolean value);
+    void addProperty(String key, String value);
+    void addProperty(String key, Number value);
+    void addProperty(String key, EngineElement value);
+
+    void remove(String key);
+
+    <E extends Enum> void add(String key, E enumValue);
+
+    Set<String> keySet();
 }

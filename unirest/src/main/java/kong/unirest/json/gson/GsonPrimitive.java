@@ -23,15 +23,24 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.json;
+package kong.unirest.json.gson;
 
-import kong.unirest.json.gson.GsonEngine;
+import com.google.gson.JsonPrimitive;
+import kong.unirest.json.EnginePrimitive;
 
-class CoreFactory {
+class GsonPrimitive extends GsonElement<JsonPrimitive> implements EnginePrimitive {
 
-    static JsonEngine getCore() {
-        return new GsonEngine();
+    GsonPrimitive(JsonPrimitive valueType) {
+        super(valueType);
     }
 
+    @Override
+    public boolean isBoolean() {
+        return element.isBoolean();
+    }
 
+    @Override
+    public boolean isNumber() {
+        return element.isNumber();
+    }
 }

@@ -25,13 +25,7 @@
 
 package kong.unirest.json;
 
-import kong.unirest.json.gson.GsonEngine;
-
-class CoreFactory {
-
-    static JsonEngine getCore() {
-        return new GsonEngine();
-    }
-
-
+public interface EnginePrimitive extends EngineElement {
+    boolean isBoolean();
+    boolean isNumber();
 }

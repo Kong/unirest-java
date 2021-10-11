@@ -25,13 +25,32 @@
 
 package kong.unirest.json;
 
-import kong.unirest.json.gson.GsonEngine;
+import java.io.Writer;
+import java.util.Collection;
 
-class CoreFactory {
+public interface JsonEngine {
+    String toPrettyJson(Object obj);
+    String toJson(Object obj);
+    void toJson(EngineElement obj, Writer sw);
+    void toPrettyJson(EngineElement engineElement, Writer sw);
 
-    static JsonEngine getCore() {
-        return new GsonEngine();
-    }
+    EngineElement toJsonTree(Object obj);
 
+    EngineObject newEngineObject();
 
+    EngineObject newEngineObject(String string) throws JSONException;
+
+    EngineArray newJsonArray(String jsonString) throws JSONException;
+
+    EngineArray newJsonArray(Collection<?> collection);
+
+    EngineArray newEngineArray();
+
+    <T> T fromJson(EngineElement obj, Class<T> mapClass);
+
+    <T extends Enum> EnginePrimitive newJsonPrimitive(T enumValue);
+
+    EnginePrimitive newJsonPrimitive(String string);
+    EnginePrimitive newJsonPrimitive(Number number);
+    EnginePrimitive newJsonPrimitive(Boolean bool);
 }

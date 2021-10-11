@@ -25,9 +25,6 @@
 
 package kong.unirest.json;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -35,17 +32,17 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 class ToObjectMapper {
-    private static Map<Predicate<JsonElement>, Function<JsonElement, Object>> mappers;
+    private static Map<Predicate<EngineElement>, Function<EngineElement, Object>> mappers;
 
     static {
         mappers = new HashMap<>();
         mappers.put(j -> j == null || j.isJsonNull(), j -> null);
-        mappers.put(JsonElement::isJsonArray, JSONArray::new);
-        mappers.put(JsonElement::isJsonObject, JSONObject::new);
-        mappers.put(JsonElement::isJsonPrimitive, j -> mapPrimative(j.getAsJsonPrimitive()));
+        mappers.put(EngineElement::isJsonArray, JSONArray::new);
+        mappers.put(EngineElement::isJsonObject, JSONObject::new);
+        mappers.put(EngineElement::isJsonPrimitive, j -> mapPrimative(j.getAsJsonPrimitive()));
     }
 
-    private static Object mapPrimative(JsonPrimitive e) {
+    private static Object mapPrimative(EnginePrimitive e) {
         if(e.isBoolean()){
             return e.getAsBoolean();
         } else if (e.isNumber()){
@@ -60,7 +57,7 @@ class ToObjectMapper {
         return e.getAsString();
     }
 
-    public Object apply(JsonElement e){
+    public Object apply(EngineElement e){
         return mappers.entrySet()
                 .stream()
                 .filter(r -> r.getKey().test(e))

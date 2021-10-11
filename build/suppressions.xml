@@ -8,6 +8,8 @@
     <suppress checks="MethodCount" files="HttpRequest.java"/>
     <suppress checks="MethodCount" files="BaseRequest.java"/>
     <suppress checks="MethodCount" files="JSONArray.java"/>
+    <suppress checks="MethodCount" files="GsonElememnt.java"/>
+    <suppress checks="MethodLength" files="GsonEngine.java"/>
     <suppress checks="MethodCount" files="JSONObject.java"/>
     <suppress checks="FileLength" files="JSONObject.java"/>
     <suppress checks="MethodLength" files="ApacheAsyncClient.java"/>

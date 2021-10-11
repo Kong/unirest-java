@@ -25,13 +25,27 @@
 
 package kong.unirest.json;
 
-import kong.unirest.json.gson.GsonEngine;
 
-class CoreFactory {
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
-    static JsonEngine getCore() {
-        return new GsonEngine();
-    }
+public interface EngineElement {
+    EngineObject getAsJsonObject();
+    boolean isJsonNull();
+    EnginePrimitive getAsJsonPrimitive();
+    EngineArray getAsJsonArray();
+    float getAsFloat();
+    double getAsDouble();
+    String getAsString();
+    long getAsLong();
+    int getAsInt();
+    boolean getAsBoolean();
+    BigInteger getAsBigInteger();
+    BigDecimal getAsBigDecimal();
+    EnginePrimitive getAsPrimitive();
 
-
+    boolean isJsonArray();
+    boolean isJsonPrimitive();
+    boolean isJsonObject();
+    <T> T getEngineElement();
 }

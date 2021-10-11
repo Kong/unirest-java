@@ -25,13 +25,17 @@
 
 package kong.unirest.json;
 
-import kong.unirest.json.gson.GsonEngine;
-
-class CoreFactory {
-
-    static JsonEngine getCore() {
-        return new GsonEngine();
-    }
-
-
+public interface EngineArray extends EngineElement {
+    int size();
+    EngineElement get(int index);
+    EngineElement remove(int index);
+    EngineElement put(int index, Number number);
+    EngineElement put(int index, String number);
+    EngineElement put(int index, Boolean number);
+    void add(EngineElement obj);
+    void set(int index, EngineElement o);
+    void add(Number num);
+    void add(String str);
+    void add(Boolean bool);
+    String join(String token);
 }

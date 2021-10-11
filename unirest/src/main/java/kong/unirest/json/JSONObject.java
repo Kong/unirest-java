@@ -25,7 +25,6 @@
 
 package kong.unirest.json;
 
-import com.google.gson.*;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -45,14 +44,14 @@ import static java.util.Objects.requireNonNull;
 public class JSONObject extends JSONElement {
 
     public static final Object NULL = new NullObject();
-    private transient final JsonObject obj;
+    private transient final EngineObject obj;
 
     /**
      * https://tools.ietf.org/html/rfc7159#section-4
      * @param string a json object string
      */
     public JSONObject(String string) {
-        this(fromJson(string, JsonObject.class));
+        this(CoreFactory.getCore().newEngineObject(string));
     }
 
     /**
@@ -76,11 +75,11 @@ public class JSONObject extends JSONElement {
      * an empty JSON object
      */
     public JSONObject() {
-        this(new JsonObject());
+        this(CoreFactory.getCore().newEngineObject());
     }
 
 
-    JSONObject(JsonElement jsonElement) {
+    JSONObject(EngineElement jsonElement) {
         super(jsonElement);
         this.obj = jsonElement.getAsJsonObject();
     }
@@ -91,7 +90,7 @@ public class JSONObject extends JSONElement {
      * @return a quoted string
      */
     public static String quote(String s) {
-        return new Gson().toJson(s);
+        return CoreFactory.getCore().toJson(s);
     }
 
     /**
@@ -205,7 +204,7 @@ public class JSONObject extends JSONElement {
         if(o instanceof JSONElement){
             return o.toString();
         }
-        return new Gson().toJson(o);
+        return CoreFactory.getCore().toJson(o);
     }
 
     /**
@@ -233,7 +232,7 @@ public class JSONObject extends JSONElement {
         return new String[]{};
     }
 
-    JsonElement asElement() {
+    EngineElement asElement() {
         return obj;
     }
 
@@ -561,7 +560,7 @@ public class JSONObject extends JSONElement {
      * @throws JSONException if the element does not exist or is not a boolean
      */
     public boolean getBoolean(String key) throws JSONException {
-        JsonElement e = getProperty(key);
+        EngineElement e = getProperty(key);
         if (!e.isJsonPrimitive() || !e.getAsJsonPrimitive().isBoolean()) {
             throw new JSONException("JSONObject[\"%s\"] is not a boolean.", key);
         }
@@ -762,7 +761,7 @@ public class JSONObject extends JSONElement {
      * @throws JSONException if something goes wrong
      */
     public <T extends Enum<T>> JSONObject put(String key, T enumvalue) throws JSONException {
-        obj.add(key, enumvalue == null ? JsonNull.INSTANCE : new JsonPrimitive(enumvalue.name()));
+        obj.add(key, enumvalue);
         return this;
     }
 
@@ -958,7 +957,7 @@ public class JSONObject extends JSONElement {
         return array;
     }
 
-    private JsonElement getProperty(String key) {
+    private EngineElement getProperty(String key) {
         if (!obj.has(key)) {
             throw new JSONException("JSONObject[\"%s\"] not found.", key);
         }
