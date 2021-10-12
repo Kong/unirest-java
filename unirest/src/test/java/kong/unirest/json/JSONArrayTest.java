@@ -195,8 +195,10 @@ class JSONArrayTest {
         JSONArray obj = new JSONArray();
         assertSame(obj, obj.put(true));
         obj.put("nan");
+        obj.put((Object)false);
 
         assertTrue(obj.getBoolean(0));
+        assertFalse(obj.getBoolean(2));
         assertNotFound(() -> obj.getBoolean(5));
         assertNotType(() -> obj.getBoolean(1), "JSONArray[1] is not a boolean.");
 
@@ -281,8 +283,11 @@ class JSONArrayTest {
         JSONArray obj = new JSONArray();
         assertSame(obj, obj.put(subObj));
         obj.put(45);
+        JSONArray other = new JSONArray("[false]");
+        obj.put((Object) other);
 
         assertEqualJson(subObj, obj.getJSONArray(0));
+        assertEqualJson(other, obj.get(2));
         assertNotFound(() -> obj.getJSONArray(5));
         assertNotType(() -> obj.getJSONArray(1), "JSONArray[1] is not a JSONArray.");
         assertEqualJson(subObj, obj.optJSONArray(0));
@@ -528,6 +533,17 @@ class JSONArrayTest {
         for(Object i : array){
             assertTrue(list.contains(i));
         }
+    }
+
+    @Test
+    void equalsTests() {
+        JSONArray a1 = new JSONArray();
+        JSONArray a2 = new JSONArray();
+        JSONArray a3 = new JSONArray("[false]");
+        assertTrue(a1.equals(a1));
+        assertTrue(a1.equals(a2));
+        assertFalse(a1.equals("moop"));
+        assertFalse(a1.equals(a3));
     }
 
     public static void assertNotType(TestUtil.ExRunnable exRunnable, String message) {
