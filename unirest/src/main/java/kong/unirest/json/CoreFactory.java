@@ -25,13 +25,16 @@
 
 package kong.unirest.json;
 
-import kong.unirest.json.gson.GsonEngine;
+import java.util.ServiceLoader;
 
 class CoreFactory {
-
-    static JsonEngine getCore() {
-        return new GsonEngine();
+    private static final JsonEngine ENGINE;
+    static {
+        ENGINE = ServiceLoader.load(JsonEngine.class)
+                .findFirst()
+                .orElse(null);
     }
-
-
+    static JsonEngine getCore() {
+        return ENGINE;
+    }
 }
