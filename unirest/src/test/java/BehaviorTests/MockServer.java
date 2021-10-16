@@ -33,7 +33,6 @@ import io.javalin.websocket.WsHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
 import kong.unirest.JacksonObjectMapper;
-import kong.unirest.TestUtil;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.jetbrains.annotations.NotNull;
@@ -200,7 +199,7 @@ public class MockServer {
     }
 
     private static Object file(Context context) throws Exception {
-        File f = TestUtil.rezFile("/spidey.jpg");
+        File f = TestUtils.rezFile("/spidey.jpg");
         context.res.setContentType("application/octet-stream");
         context.res.setHeader("Content-Disposition", "attachment;filename=image.jpg");
         context.res.setHeader("Content-Length", String.valueOf(f.length()));

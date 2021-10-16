@@ -25,28 +25,22 @@
 
 package kong.unirest;
 
-import BehaviorTests.MockServer;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import kong.unirest.java.JavaClient;
 
-import javax.net.ssl.SSLContext;
-import java.io.*;
 import java.net.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
+import java.io.IOException;
+import java.io.InputStream;
+
 import java.security.KeyStore;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -58,19 +52,6 @@ public class TestUtil {
         om.registerModule(new GuavaModule());
     }
 
-    public static String toString(InputStream is) {
-        return new BufferedReader(new InputStreamReader(is))
-                .lines().collect(Collectors.joining("\n"));
-    }
-
-    public static <T> T readValue(InputStream i, Class<T> clss) {
-        try {
-            return om.readValue(i, clss);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static <T> T readValue(String body, Class<T> as) {
         try {
             return om.readValue(body, as);
@@ -79,65 +60,12 @@ public class TestUtil {
         }
     }
 
-    public static <K, V> Map<K, V> mapOf(Object... keyValues) {
-        Map<K, V> map = new HashMap<>();
-
-        K key = null;
-        for (int index = 0; index < keyValues.length; index++) {
-            if (index % 2 == 0) {
-                key = (K)keyValues[index];
-            }
-            else {
-                map.put(key, (V)keyValues[index]);
-            }
-        }
-
-        return map;
-    }
-
-    public static void assertBasicAuth(String raw, String username, String password) {
-        assertNotNull(raw, "Authorization Header Missing");
-        String credentials = raw.replace("Basic ","");
-        assertEquals(username + ":" + password, new String(Base64.getDecoder().decode(credentials)));
-    }
-
     public static String getResource(String resourceName){
         try {
             return Resources.toString(Resources.getResource(resourceName), Charsets.UTF_8);
         }catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static File rezFile(String name) {
-        try {
-            return new File(MockServer.class.getResource(name).toURI());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static byte[] getFileBytes(String s) {
-        try {
-            final InputStream stream = new FileInputStream(rezFile(s));
-            final byte[] bytes = new byte[stream.available()];
-            stream.read(bytes);
-            stream.close();
-            return bytes;
-        }catch (IOException e){
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static File getImageFile() {
-        return rezFile("/image.jpg");
-    }
-
-    public static <T> T defaultIfNull(T t, Supplier<T> supplier) {
-        if(t == null){
-            return supplier.get();
-        }
-        return t;
     }
 
     public static void freeze(Instant now) {
@@ -175,11 +103,6 @@ public class TestUtil {
                     }
                 }).build();
         return new JavaClient(Unirest.config(), client);
-    }
-
-    @FunctionalInterface
-    public interface ExRunnable {
-       void run() throws Exception;
     }
 
 }

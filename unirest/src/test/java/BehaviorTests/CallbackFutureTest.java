@@ -31,10 +31,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-import java.nio.file.Watchable;
 import java.util.concurrent.CompletableFuture;
 
-import static kong.unirest.MockCallback.json;
+import static BehaviorTests.MockCallback.json;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CallbackFutureTest extends BddTest {

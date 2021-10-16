@@ -33,10 +33,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static kong.unirest.TestUtil.defaultIfNull;
-import static kong.unirest.TestUtil.rezFile;
+import static BehaviorTests.TestUtils.rezFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -55,6 +55,13 @@ class TestMonitor implements ProgressMonitor {
             s.total = totalBytes;
             return s;
         });
+    }
+
+    private static <T> T defaultIfNull(T t, Supplier<T> supplier) {
+        if(t == null){
+            return supplier.get();
+        }
+        return t;
     }
 
     private String firstNotEmpty(String... s) {

@@ -30,11 +30,10 @@ import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.net.URISyntaxException;
-import java.util.concurrent.CompletableFuture;
 
 import static java.util.Arrays.asList;
-import static kong.unirest.TestUtil.getFileBytes;
-import static kong.unirest.TestUtil.rezFile;
+import static BehaviorTests.TestUtils.getFileBytes;
+import static BehaviorTests.TestUtils.rezFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MultiPartFormPostingTest extends BddTest {
@@ -231,7 +230,7 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void canPostInputStreamWithContentType() throws Exception {
-        File file = TestUtil.getImageFile();
+        File file = TestUtils.getImageFile();
         Unirest.post(MockServer.POST)
                 .field("testfile", new FileInputStream(file), ContentType.IMAGE_JPEG, "image.jpg")
                 .asObject(RequestCapture.class)
@@ -244,7 +243,7 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void canPostInputStream() throws Exception {
-        File file = TestUtil.getImageFile();
+        File file = TestUtils.getImageFile();
         Unirest.post(MockServer.POST)
                 .field("testfile", new FileInputStream(file), "image.jpg")
                 .asObject(RequestCapture.class)
@@ -257,10 +256,10 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void postFieldsAsMap() throws URISyntaxException {
-        File file = TestUtil.getImageFile();
+        File file = TestUtils.getImageFile();
 
         Unirest.post(MockServer.POST)
-                .fields(TestUtil.mapOf("big", "bird", "charlie", 42, "testfile", file, "gonzo", null))
+                .fields(TestUtils.mapOf("big", "bird", "charlie", 42, "testfile", file, "gonzo", null))
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertParam("big", "bird")
@@ -273,7 +272,7 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void postFileWithoutContentType() {
-        File file = TestUtil.getImageFile();
+        File file = TestUtils.getImageFile();
         Unirest.post(MockServer.POST)
                 .field("testfile", file)
                 .asObject(RequestCapture.class)
@@ -285,7 +284,7 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void postFileWithContentType() {
-        File file = TestUtil.getImageFile();
+        File file = TestUtils.getImageFile();
         Unirest.post(MockServer.POST)
                 .field("testfile", file, ContentType.IMAGE_JPEG.getMimeType())
                 .asObject(RequestCapture.class)
@@ -375,7 +374,7 @@ class MultiPartFormPostingTest extends BddTest {
     void passFileAsByteArray() {
         Unirest.post(MockServer.POST)
                 .field("foo", "bar")
-                .field("filecontents", TestUtil.getFileBytes("/image.jpg"), ContentType.IMAGE_JPEG, "image.jpg")
+                .field("filecontents", TestUtils.getFileBytes("/image.jpg"), ContentType.IMAGE_JPEG, "image.jpg")
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertMultiPartContentType()

@@ -32,9 +32,11 @@ import kong.unirest.Unirest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.Base64;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static kong.unirest.TestUtil.assertBasicAuth;
-import static kong.unirest.TestUtil.mapOf;
+import static BehaviorTests.TestUtils.mapOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class HeaderTest extends BddTest {
 
@@ -263,7 +265,9 @@ class HeaderTest extends BddTest {
                 .getBody();
 
         String header = bin.getObject().getJSONObject("headers").getString("Authorization");
-        assertBasicAuth(header, "user2", "pass2");
+        assertNotNull(header, "Authorization Header Missing");
+        String credentials = header.replace("Basic ","");
+        assertEquals("user2" + ":" + "pass2", new String(Base64.getDecoder().decode(credentials)));
     }
 
     @Test //https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
