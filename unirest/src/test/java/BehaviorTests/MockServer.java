@@ -30,7 +30,6 @@ import com.google.common.base.Strings;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import kong.unirest.JacksonObjectMapper;
-import kong.unirest.TestUtil;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.util.UrlEncoded;
 
@@ -179,7 +178,7 @@ public class MockServer {
     }
 
     private static Object file(Context context) throws Exception {
-        File f = TestUtil.rezFile("/spidey.jpg");
+        File f = TestUtils.rezFile("/spidey.jpg");
         context.res.setContentType("application/octet-stream");
         context.res.setHeader("Content-Disposition", "attachment;filename=image.jpg");
         context.res.setHeader("Content-Length", String.valueOf(f.length()));

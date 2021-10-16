@@ -23,9 +23,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
+package BehaviorTests;
 
-import BehaviorTests.BddTest;
+import kong.unirest.Callback;
+import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
+import kong.unirest.UnirestException;
 
 import java.util.function.Consumer;
 

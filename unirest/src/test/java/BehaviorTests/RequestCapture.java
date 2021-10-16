@@ -31,14 +31,16 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Sets;
 import io.javalin.http.Context;
 import kong.unirest.*;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 import javax.servlet.http.Part;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -79,6 +81,11 @@ public class RequestCapture {
         cookies.putAll(req.cookieMap());
         contentType = req.contentType();
         status = 200;
+    }
+
+    private static String toString(InputStream is) {
+        return new BufferedReader(new InputStreamReader(is))
+                .lines().collect(Collectors.joining("\n"));
     }
 
     private void populateParams(Context req) {
@@ -139,7 +146,7 @@ public class RequestCapture {
         file.inputName = part.getName();
         file.fileType = part.getContentType();
         file.size = part.getSize();
-        file.body = TestUtil.toString(part.getInputStream());
+        file.body = toString(part.getInputStream());
         file.headers = extractHeaders(part);
 
         files.add(file);
@@ -214,7 +221,9 @@ public class RequestCapture {
 
     public RequestCapture assertBasicAuth(String username, String password) {
         String raw = headers.get("Authorization").get(0);
-        TestUtil.assertBasicAuth(raw, username, password);
+        assertNotNull(raw, "Authorization Header Missing");
+        String credentials = raw.replace("Basic ","");
+        assertEquals(username + ":" + password, new String(Base64.getDecoder().decode(credentials)));
         return this;
     }
 
