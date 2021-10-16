@@ -29,8 +29,7 @@ import kong.unirest.TestUtil;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class JSONPointerTest {
     // https://tools.ietf.org/html/rfc6901
@@ -39,45 +38,39 @@ class JSONPointerTest {
 
     @Test
     void nullQuery() {
-        TestUtil.assertException(() -> obj.query((String)null),
-                NullPointerException.class,
-                "pointer cannot be null");
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> obj.query((String)null));
+        assertEquals("pointer cannot be null", ex.getMessage());
     }
 
     @Test
     void invalidPathQuery() {
-        TestUtil.assertException(() -> obj.query("foo"),
-                IllegalArgumentException.class,
-                "a JSON pointer should start with '/' or '#/'");
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> obj.query("foo"));
+        assertEquals("a JSON pointer should start with '/' or '#/'", ex.getMessage());
     }
 
     @Test
     void invalidPathQuery_downpath() {
-        TestUtil.assertException(() -> obj.query("/shwoop/dedoop"),
-                JSONPointerException.class,
-                "Path Segment Missing: shwoop");
+        JSONPointerException ex = assertThrows(JSONPointerException.class, () -> obj.query("/shwoop/dedoop"));
+        assertEquals("Path Segment Missing: shwoop", ex.getMessage());
     }
 
     @Test
     void arrayPartThatDoesNotExist() {
-        TestUtil.assertException(() -> obj.query("/foo/5"),
-                JSONPointerException.class,
-                "index 5 is out of bounds - the array has 2 elements");
+        JSONPointerException ex = assertThrows(JSONPointerException.class, () -> obj.query("/foo/5"));
+        assertEquals("index 5 is out of bounds - the array has 2 elements", ex.getMessage());
     }
 
     @Test
     void referenceAnArrayAsAThing() {
-        TestUtil.assertException(() -> obj.query("/foo/bar"),
-                JSONPointerException.class,
-                "bar is not an array index");
+        JSONPointerException ex = assertThrows(JSONPointerException.class, () -> obj.query("/foo/bar"));
+        assertEquals("bar is not an array index", ex.getMessage());
     }
 
     @Test
     @SuppressWarnings("RedundantCast")
     void constructorMayNotTakeNull() {
-        TestUtil.assertException(() -> new JSONPointer((String) null),
-                NullPointerException.class,
-                "pointer cannot be null");
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> new JSONPointer((String) null));
+        assertEquals("pointer cannot be null", ex.getMessage());
     }
 
     @Test

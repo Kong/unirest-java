@@ -28,7 +28,6 @@ package kong.unirest.apache;
 import BehaviorTests.BddTest;
 import BehaviorTests.MockServer;
 import BehaviorTests.RequestCapture;
-import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequestInterceptor;
@@ -36,6 +35,9 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ApacheInterceptorTest extends BddTest {
 
@@ -46,9 +48,8 @@ public class ApacheInterceptorTest extends BddTest {
             throw new IOException("Something horrible happened");
         });
 
-        TestUtil.assertException(() -> Unirest.get(MockServer.GET).asStringAsync().get(),
-                ExecutionException.class,
-                "java.io.IOException: " + "Something horrible happened");
+        ExecutionException ex = assertThrows(ExecutionException.class, () -> Unirest.get(MockServer.GET).asStringAsync().get());
+        assertEquals("java.io.IOException: " + "Something horrible happened", ex.getMessage());
     }
 
     @Test

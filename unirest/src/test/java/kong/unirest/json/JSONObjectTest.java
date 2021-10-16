@@ -26,9 +26,9 @@
 package kong.unirest.json;
 
 import BehaviorTests.Foo;
-import kong.unirest.TestUtil;
 import kong.unirest.UnirestException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.IOException;
@@ -42,7 +42,6 @@ import java.util.Set;
 import static com.google.common.collect.ImmutableMap.of;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
-import static kong.unirest.TestUtil.assertException;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JSONObjectTest {
@@ -77,9 +76,8 @@ class JSONObjectTest {
 
     @Test
     void contructInvalid() {
-        TestUtil.assertException(() -> new JSONObject("foo"),
-                JSONException.class,
-                "Invalid JSON");
+        JSONException ex = assertThrows(JSONException.class, () -> new JSONObject("foo"));
+        assertEquals("Invalid JSON", ex.getMessage());
     }
 
     @Test
@@ -383,7 +381,8 @@ class JSONObjectTest {
         assertEquals(42, obj.get("bar"));
         assertSame(obj, obj.put("bar", 33));
         assertEquals(33, obj.get("bar"));
-        assertException(() -> obj.put(null, "hi"), NullPointerException.class, "key == null");
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> obj.put(null, "hi"));
+        assertEquals("key == null", ex.getMessage());
     }
 
     @Test
@@ -404,9 +403,8 @@ class JSONObjectTest {
 
     @Test
     void accumulateNullKey() {
-        assertException(() -> new JSONObject().accumulate(null, "hi"),
-                NullPointerException.class,
-                "Null key.");
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> new JSONObject().accumulate(null, "hi"));
+        assertEquals("Null key.", ex.getMessage());
     }
 
     @Test
@@ -421,18 +419,16 @@ class JSONObjectTest {
 
     @Test
     void appendNullKey() {
-        assertException(() -> new JSONObject().append(null, "hi"),
-                NullPointerException.class,
-                "Null key.");
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> new JSONObject().append(null, "hi"));
+        assertEquals("Null key.", ex.getMessage());
     }
 
     @Test
     void appendToNotAnArrary() {
         JSONObject obj = new JSONObject();
         assertSame(obj, obj.put("bar", "not"));
-        assertException(() -> obj.append("bar", 33),
-                JSONException.class,
-                "JSONObject[\"bar\"] is not a JSONArray.");
+        JSONException ex = assertThrows(JSONException.class, () -> obj.append("bar", 33));
+        assertEquals("JSONObject[\"bar\"] is not a JSONArray.", ex.getMessage());
     }
 
     @Test
@@ -556,9 +552,8 @@ class JSONObjectTest {
         assertEquals(42, JSONObject.stringToValue("42"));
         assertEquals(45.25, JSONObject.stringToValue("45.25"));
         assertEquals(-45.25, JSONObject.stringToValue("-45.25"));
-        TestUtil.assertException(() -> JSONObject.stringToValue(null),
-                NullPointerException.class,
-                null);
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> JSONObject.stringToValue(null));
+        assertEquals(null, ex.getMessage());
     }
 
     @Test
@@ -619,12 +614,13 @@ class JSONObjectTest {
         assertArrayEquals(new String[]{"a","b"}, JSONObject.getNames(new JSONObject(of("a",1,"b",2))));
     }
 
-    private void assertNotFound(TestUtil.ExRunnable exRunnable) {
+    private void assertNotFound(Executable exRunnable) {
         assertJSONEx(exRunnable, "JSONObject[\"boo\"] not found.");
     }
 
-    public static void assertJSONEx(TestUtil.ExRunnable exRunnable, String message) {
-        assertException(exRunnable, JSONException.class, message);
+    public static void assertJSONEx(Executable exRunnable, String message) {
+        JSONException ex = assertThrows(JSONException.class, exRunnable);
+        assertEquals(message, ex.getMessage());
     }
 
     public static void assertEqualJson(Object subObj, Object value){

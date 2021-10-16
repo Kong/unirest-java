@@ -92,11 +92,10 @@ class ConfigTest {
         config.httpClient(mock(HttpClient.class));
         config.asyncClient(mock(HttpAsyncClient.class));
 
-        TestUtil.assertException(() -> config.socketTimeout(533),
-                UnirestConfigException.class,
-                "Http Clients are already built in order to build a new config execute Unirest.config().reset() " +
+        UnirestConfigException ex = assertThrows(UnirestConfigException.class, () -> config.socketTimeout(533));
+        assertEquals("Http Clients are already built in order to build a new config execute Unirest.config().reset() " +
                         "before changing settings. \n" +
-                        "This should be done rarely.");
+                        "This should be done rarely.", ex.getMessage());
 
         Unirest.shutDown();
     }
@@ -165,12 +164,11 @@ class ConfigTest {
                 .asyncClient(new ApacheAsyncClient(asyncClient,null, manager, asyncMonitor));
 
 
-        TestUtil.assertException(Unirest::shutDown,
-                UnirestException.class,
-                "java.io.IOException 1\n" +
+        UnirestException ex = assertThrows(UnirestException.class, Unirest::shutDown);
+        assertEquals("java.io.IOException 1\n" +
                         "java.lang.RuntimeException 2\n" +
                         "java.io.IOException 4\n" +
-                        "java.lang.RuntimeException 5");
+                        "java.lang.RuntimeException 5", ex.getMessage());
 
         verify(httpc).close();
         verify(clientManager).close();
@@ -199,9 +197,8 @@ class ConfigTest {
         config.asyncClient(g -> c);
 
 
-        TestUtil.assertException(() -> config.getAsyncClient(),
-                UnirestConfigException.class,
-                "Attempted to get a new async client but it was not started. Please ensure it is");
+        UnirestConfigException ex = assertThrows(UnirestConfigException.class, () -> config.getAsyncClient());
+        assertEquals("Attempted to get a new async client but it was not started. Please ensure it is", ex.getMessage());
     }
 
     @Test
@@ -274,9 +271,8 @@ class ConfigTest {
 
         config.clientCertificateStore(store, "foo");
 
-        TestUtil.assertException(() -> config.sslContext(context),
-                UnirestConfigException.class,
-                "You may only configure a SSLContext OR a Keystore, but not both");
+        UnirestConfigException ex = assertThrows(UnirestConfigException.class, () -> config.sslContext(context));
+        assertEquals("You may only configure a SSLContext OR a Keystore, but not both", ex.getMessage());
     }
 
     @Test
@@ -286,13 +282,11 @@ class ConfigTest {
 
         config.sslContext(context);
 
-        TestUtil.assertException(() -> config.clientCertificateStore(store, "foo"),
-                UnirestConfigException.class,
-                "You may only configure a SSLContext OR a Keystore, but not both");
+        UnirestConfigException ex1 = assertThrows(UnirestConfigException.class, () -> config.clientCertificateStore(store, "foo"));
+        assertEquals("You may only configure a SSLContext OR a Keystore, but not both", ex1.getMessage());
 
-        TestUtil.assertException(() -> config.clientCertificateStore("/a/path/file.pk12", "foo"),
-                UnirestConfigException.class,
-                "You may only configure a SSLContext OR a Keystore, but not both");
+        UnirestConfigException ex = assertThrows(UnirestConfigException.class, () -> config.clientCertificateStore("/a/path/file.pk12", "foo"));
+        assertEquals("You may only configure a SSLContext OR a Keystore, but not both", ex.getMessage());
     }
 
     @Test

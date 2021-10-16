@@ -32,8 +32,8 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 
-import static kong.unirest.TestUtil.assertException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UniBodyPostingTest extends BddTest {
 
@@ -181,9 +181,8 @@ class UniBodyPostingTest extends BddTest {
     void cantPostObjectWithoutObjectMapper(){
         Unirest.config().setObjectMapper(null);
 
-        assertException(() -> Unirest.post(MockServer.POST).body(new Foo("die")),
-                UnirestConfigException.class,
-                "No Object Mapper Configured. Please config one with Unirest.config().setObjectMapper");
+        UnirestConfigException ex = assertThrows(UnirestConfigException.class, () -> Unirest.post(MockServer.POST).body(new Foo("die")));
+        assertEquals("No Object Mapper Configured. Please config one with Unirest.config().setObjectMapper", ex.getMessage());
     }
 
     @Test

@@ -893,7 +893,7 @@ public class Config {
      * @throws UnirestException if none has been configured.
      */
     public ObjectMapper getObjectMapper() {
-        return objectMapper.orElseThrow(() -> new UnirestException("No Object Mapper Configured. Please config one with Unirest.config().setObjectMapper"));
+        return objectMapper.orElseThrow(() -> new UnirestConfigException("No Object Mapper Configured. Please config one with Unirest.config().setObjectMapper"));
     }
 
     private void validateClientsNotRunning() {
