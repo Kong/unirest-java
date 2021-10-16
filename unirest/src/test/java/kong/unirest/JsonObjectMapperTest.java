@@ -104,9 +104,8 @@ class JsonObjectMapperTest {
 
     @Test
     void deserializeDate_iso_datetime_Errors() {
-        TestUtil.assertException(() -> getTestDate("date", "Leeeeeeeroy Jenkins!"),
-                UnirestException.class,
-                "Could Not Parse as java.util.Date: Leeeeeeeroy Jenkins!");
+        UnirestException ex = assertThrows(UnirestException.class, () -> getTestDate("date", "Leeeeeeeroy Jenkins!"));
+        assertEquals("Could Not Parse as java.util.Date: Leeeeeeeroy Jenkins!", ex.getMessage());
     }
 
     @Test
@@ -173,9 +172,8 @@ class JsonObjectMapperTest {
 
     @Test
     void deserializeCalendar_iso_datetime_Errors() {
-        TestUtil.assertException(() -> getTestDate("calendar", "Leeeeeeeroy Jenkins!"),
-                UnirestException.class,
-                "Could Not Parse as java.util.Calendar: Leeeeeeeroy Jenkins!");
+        UnirestException ex = assertThrows(UnirestException.class, () -> getTestDate("calendar", "Leeeeeeeroy Jenkins!"));
+        assertEquals("Could Not Parse as java.util.Calendar: Leeeeeeeroy Jenkins!", ex.getMessage());
     }
 
     @Test

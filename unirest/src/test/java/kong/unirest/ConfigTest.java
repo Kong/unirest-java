@@ -109,9 +109,8 @@ class ConfigTest {
 
         config.clientCertificateStore(store, "foo");
 
-        TestUtil.assertException(() -> config.sslContext(context),
-                UnirestConfigException.class,
-                "You may only configure a SSLContext OR a Keystore, but not both");
+        UnirestConfigException ex = assertThrows(UnirestConfigException.class, () -> config.sslContext(context));
+        assertEquals("You may only configure a SSLContext OR a Keystore, but not both", ex.getMessage());
     }
 
     @Test
@@ -121,13 +120,11 @@ class ConfigTest {
 
         config.sslContext(context);
 
-        TestUtil.assertException(() -> config.clientCertificateStore(store, "foo"),
-                UnirestConfigException.class,
-                "You may only configure a SSLContext OR a Keystore, but not both");
+        UnirestConfigException ex1 = assertThrows(UnirestConfigException.class, () -> config.clientCertificateStore(store, "foo"));
+        assertEquals("You may only configure a SSLContext OR a Keystore, but not both", ex1.getMessage());
 
-        TestUtil.assertException(() -> config.clientCertificateStore("/a/path/file.pk12", "foo"),
-                UnirestConfigException.class,
-                "You may only configure a SSLContext OR a Keystore, but not both");
+        UnirestConfigException ex = assertThrows(UnirestConfigException.class, () -> config.clientCertificateStore("/a/path/file.pk12", "foo"));
+        assertEquals("You may only configure a SSLContext OR a Keystore, but not both", ex.getMessage());
     }
 
     @Test

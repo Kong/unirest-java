@@ -29,9 +29,11 @@ import com.google.common.collect.ImmutableMap;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
 import org.junit.jupiter.api.Test;
-import kong.unirest.TestUtil;
 
 import java.net.URLEncoder;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PathParamTest extends BddTest {
 
@@ -108,23 +110,21 @@ class PathParamTest extends BddTest {
 
     @Test
     void testMissingPathParameter() {
-        TestUtil.assertException(() ->
+        UnirestException ex = assertThrows(UnirestException.class, () ->
                         Unirest.get(MockServer.HOST + "/{method}")
                         .routeParam("method222", "get")
                         .queryString("name", "Mark")
-                        .asEmpty(),
-                UnirestException.class,
-                "Can't find route parameter name \"method222\"");
+                        .asEmpty());
+        assertEquals("Can't find route parameter name \"method222\"", ex.getMessage());
     }
 
     @Test
     void testMissingPathParameterValue() {
-        TestUtil.assertException(() ->
+        UnirestException ex = assertThrows(UnirestException.class, () ->
                         Unirest.get(MockServer.HOST + "/{method}")
                                 .queryString("name", "Mark")
-                                .asEmpty(),
-                UnirestException.class,
-                "java.lang.IllegalArgumentException: Illegal character in path at index 22: http://localhost:4567/{method}?name=Mark");
+                                .asEmpty());
+        assertEquals("java.lang.IllegalArgumentException: Illegal character in path at index 22: http://localhost:4567/{method}?name=Mark", ex.getMessage());
     }
 
     @Test

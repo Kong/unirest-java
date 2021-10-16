@@ -29,7 +29,6 @@ import BehaviorTests.MockServer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Charsets;
-import com.google.common.base.Throwables;
 import com.google.common.io.Resources;
 import kong.unirest.java.JavaClient;
 
@@ -48,7 +47,6 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -70,30 +68,6 @@ public class TestUtil {
             return om.readValue(i, clss);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    public static void assertException(ExRunnable runnable, Class<? extends Throwable> exClass, String message) {
-        try{
-            runnable.run();
-            fail("Expected exception but got none. \nExpected " + exClass);
-        } catch (Exception e){
-            if (!e.getClass().isAssignableFrom(exClass)) {
-                fail("Expected wrong exception type \n Expected: " + exClass + "\n but got " + e.getClass() + "\n\n" + Throwables.getStackTraceAsString(e));
-            }
-            assertEquals(message, e.getMessage(), "Wrong Error Message");
-        }
-    }
-
-    public static void assertExceptionUnwrapped(ExRunnable runnable, Class<? extends Throwable> exClass, String message) {
-        try{
-            runnable.run();
-            fail("Expected exception but got none. \nExpected " + exClass);
-        } catch (Exception e){
-            if (!e.getCause().getClass().isAssignableFrom(exClass)) {
-                fail("Expected wrong exception type \n Expected: " + exClass + "\n but got " + e.getCause().getClass());
-            }
-            assertEquals(message, e.getMessage(), "Wrong Error Message");
         }
     }
 

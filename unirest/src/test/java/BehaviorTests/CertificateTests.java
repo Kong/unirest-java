@@ -214,15 +214,19 @@ class CertificateTests extends BddTest {
     }
 
     private void failsAsync(String url, Class<? extends Throwable> exClass, String error) {
-        TestUtil.assertExceptionUnwrapped(() -> Unirest.get(url).asEmptyAsync().get(),
-                exClass,
-                error);
+        Exception e = assertThrows(Exception.class, () -> Unirest.get(url).asEmptyAsync().get());
+        if (!e.getCause().getClass().isAssignableFrom(exClass)) {
+            fail("Expected wrong exception type \n Expected: " + exClass + "\n but got " + e.getCause().getClass());
+        }
+        assertEquals(error, e.getMessage(), "Wrong Error Message");
     }
 
     private void fails(String url, Class<? extends Throwable> exClass, String error) {
-        TestUtil.assertExceptionUnwrapped(() -> Unirest.get(url).asEmpty(),
-                exClass,
-                error);
+        Exception e = assertThrows(Exception.class, () -> Unirest.get(url).asEmpty());
+        if (!e.getCause().getClass().isAssignableFrom(exClass)) {
+            fail("Expected wrong exception type \n Expected: " + exClass + "\n but got " + e.getCause().getClass());
+        }
+        assertEquals(error, e.getMessage(), "Wrong Error Message");
     }
 
     private void canCall(String url) {
