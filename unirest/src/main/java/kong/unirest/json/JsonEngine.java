@@ -25,6 +25,8 @@
 
 package kong.unirest.json;
 
+import kong.unirest.ObjectMapper;
+
 import java.io.Writer;
 import java.util.Collection;
 
@@ -53,4 +55,6 @@ public interface JsonEngine {
     EnginePrimitive newJsonPrimitive(String string);
     EnginePrimitive newJsonPrimitive(Number number);
     EnginePrimitive newJsonPrimitive(Boolean bool);
+
+    ObjectMapper getObjectMapper();
 }

@@ -23,13 +23,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.json.gson;
+package kong.unirest.gson;
 
 import com.google.gson.*;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import kong.unirest.ObjectMapper;
 import kong.unirest.json.*;
 
 import java.io.IOException;
@@ -194,6 +195,11 @@ public class GsonEngine implements JsonEngine {
         } else {
             return new GsonPrimitive(new JsonPrimitive(bool));
         }
+    }
+
+    @Override
+    public ObjectMapper getObjectMapper() {
+        return new GsonObjectMapper();
     }
 
     static class JavaTypeAdapter extends TypeAdapter<Object> {

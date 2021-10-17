@@ -23,8 +23,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
+package kong.unirest.gson;
 
+import kong.unirest.UnirestException;
 import kong.unirest.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class JsonObjectMapperTest {
 
-    JsonObjectMapper om = new JsonObjectMapper();
+    GsonObjectMapper om = new GsonObjectMapper();
 
     @BeforeEach
     void before() {

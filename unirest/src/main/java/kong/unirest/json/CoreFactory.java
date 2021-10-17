@@ -27,14 +27,14 @@ package kong.unirest.json;
 
 import java.util.ServiceLoader;
 
-class CoreFactory {
+public class CoreFactory {
     private static final JsonEngine ENGINE;
     static {
         ENGINE = ServiceLoader.load(JsonEngine.class)
                 .findFirst()
                 .orElse(null);
     }
-    static JsonEngine getCore() {
+    public static JsonEngine getCore() {
         return ENGINE;
     }
 }

@@ -28,6 +28,7 @@ package BehaviorTests;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.gson.Gson;
 import kong.unirest.*;
+import kong.unirest.gson.GsonObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -41,7 +42,7 @@ class AsObjectTest extends BddTest {
     @Test
     void basicJsonObjectMapperIsTheDefault() {
         Unirest.config().reset(true);
-        assertTrue(Unirest.config().getObjectMapper() instanceof  JsonObjectMapper);
+        assertTrue(Unirest.config().getObjectMapper() instanceof GsonObjectMapper);
     }
 
     @Test

@@ -23,9 +23,13 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.json;
+package kong.unirest.gson;
 
 
+import kong.unirest.json.Foo;
+import kong.unirest.json.JSONArray;
+import kong.unirest.json.JSONException;
+import kong.unirest.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
@@ -38,7 +42,7 @@ import java.util.List;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static java.util.Arrays.asList;
-import static kong.unirest.json.JSONObjectTest.assertEqualJson;
+import static kong.unirest.gson.JSONObjectTest.assertEqualJson;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JSONArrayTest {

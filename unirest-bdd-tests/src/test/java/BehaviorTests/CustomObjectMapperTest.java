@@ -25,7 +25,7 @@
 
 package BehaviorTests;
 
-import kong.unirest.JsonObjectMapper;
+import kong.unirest.ObjectMapper;
 import kong.unirest.Unirest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,13 +37,13 @@ import static org.mockito.Mockito.verify;
 
 class CustomObjectMapperTest extends BddTest {
 
-    private JsonObjectMapper customOm;
+    private ObjectMapper customOm;
 
     @Override
     @BeforeEach
     public void setUp() {
         super.setUp();
-        customOm = Mockito.spy(JsonObjectMapper.class);
+        customOm = Mockito.spy(ObjectMapper.class);
     }
 
     @Test

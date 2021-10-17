@@ -23,10 +23,13 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.json;
+package kong.unirest.gson;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import kong.unirest.json.JSONObject;
+import kong.unirest.json.JSONPointer;
+import kong.unirest.json.JSONPointerException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 

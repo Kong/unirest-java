@@ -23,7 +23,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.json.gson;
+package kong.unirest.gson;
 
 import com.google.gson.*;
 import kong.unirest.json.EngineArray;

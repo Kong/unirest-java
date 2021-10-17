@@ -23,10 +23,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.json;
+package kong.unirest.gson;
 
 
 import kong.unirest.UnirestException;
+import kong.unirest.json.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -193,6 +194,7 @@ class JSONObjectTest {
         assertEquals(66, obj.optInt("boo", 66));
         assertEquals(0, obj.optInt("boo"));
     }
+
     @Test
     void numbers() {
         Number tt =  33;

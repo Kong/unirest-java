@@ -26,6 +26,7 @@
 package kong.unirest;
 
 import kong.unirest.java.JavaClient;
+import kong.unirest.json.CoreFactory;
 
 import javax.net.ssl.SSLContext;
 import java.io.InputStream;
@@ -43,7 +44,7 @@ public class Config {
     public static final int DEFAULT_CONNECT_TIMEOUT = 10000;
 
     private Optional<Client> client = Optional.empty();
-    private Optional<ObjectMapper> objectMapper = Optional.of(new JsonObjectMapper());
+    private Supplier<ObjectMapper> objectMapper;
 
     private Executor customExecutor;
     private Headers headers;
@@ -97,8 +98,8 @@ public class Config {
         interceptor = new CompoundInterceptor();
         retry = false;
         maxRetries = 10;
+        objectMapper = () -> CoreFactory.getCore().getObjectMapper();
 
-        this.objectMapper = Optional.of(new JsonObjectMapper());
         try {
             clientBuilder = JavaClient::new;
         }catch (BootstrapMethodError e){
@@ -186,7 +187,7 @@ public class Config {
      * @return this config object
      */
     public Config setObjectMapper(ObjectMapper om) {
-        this.objectMapper = Optional.ofNullable(om);
+        this.objectMapper = () -> om;
         return this;
     }
 
@@ -706,7 +707,11 @@ public class Config {
      * @throws UnirestException if none has been configured.
      */
     public ObjectMapper getObjectMapper() {
-        return objectMapper.orElseThrow(() -> new UnirestConfigException("No Object Mapper Configured. Please config one with Unirest.config().setObjectMapper"));
+        ObjectMapper om = this.objectMapper.get();
+        if(om == null){
+            throw new UnirestConfigException("No Object Mapper Configured. Please config one with Unirest.config().setObjectMapper");
+        }
+        return om;
     }
 
     private void validateClientsNotRunning() {
