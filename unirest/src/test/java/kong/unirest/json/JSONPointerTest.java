@@ -25,7 +25,8 @@
 
 package kong.unirest.json;
 
-import kong.unirest.TestUtil;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -33,8 +34,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class JSONPointerTest {
     // https://tools.ietf.org/html/rfc6901
-    private static final String RFC_TEST = TestUtil.getResource("JSON_POINTER_REF.json");
+    private static final String RFC_TEST = getResource("JSON_POINTER_REF.json");
     private final JSONObject obj = new JSONObject(RFC_TEST);
+
+    public static String getResource(String resourceName){
+        try {
+            return Resources.toString(Resources.getResource(resourceName), Charsets.UTF_8);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Test
     void nullQuery() {

@@ -31,7 +31,7 @@ import kong.unirest.json.JSONArray;
 import kong.unirest.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
-import kong.unirest.TestUtil;
+
 
 import static kong.unirest.JsonPatchOperation.*;
 

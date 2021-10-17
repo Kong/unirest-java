@@ -128,7 +128,7 @@ class CachingTest extends BddTest {
     @Test
     void canSetATTLOfACacheEntry() {
         Instant now = Instant.now();
-        TestUtil.freeze(now);
+        Clock.freeze(now);
 
         Unirest.config().cacheResponses(builder().maxAge(5, TimeUnit.MINUTES));
 
@@ -137,7 +137,7 @@ class CachingTest extends BddTest {
 
         assertEquals(1, MockServer.timesCalled);
 
-        TestUtil.freeze(now.plus(10, ChronoUnit.MINUTES));
+        Clock.freeze(now.plus(10, ChronoUnit.MINUTES));
 
         Unirest.get(MockServer.GET).asEmpty();
 

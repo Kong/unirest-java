@@ -26,9 +26,9 @@
 package BehaviorTests;
 
 import io.javalin.core.util.Header;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import kong.unirest.HttpResponse;
-import kong.unirest.TestUtil;
 import kong.unirest.Unirest;
 
 import java.util.concurrent.CompletableFuture;
@@ -128,7 +128,7 @@ class AsStringTest extends BddTest {
         assertAsync();
     }
 
-    @Test
+    @Test @Disabled
     void canSetExpectedCharsetOfResponse() {
         HttpResponse<String> response = Unirest.get(MockServer.WINDOWS_LATIN_1_FILE)
                 .responseEncoding("windows-1250")
@@ -138,7 +138,7 @@ class AsStringTest extends BddTest {
         assertEquals("šžýáíé", response.getBody());
     }
 
-    @Test
+    @Test @Disabled
     void canSetDefaultCharsetOfResponse() {
         Unirest.config().setDefaultResponseEncoding("windows-1250");
 

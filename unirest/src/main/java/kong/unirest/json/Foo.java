@@ -23,21 +23,38 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
+package kong.unirest.json;
 
-public class NoopCallback<T> implements Callback<T> {
-    @Override
-    public void completed(HttpResponse<T> response) {
 
+
+import java.util.Objects;
+
+public class Foo {
+    public String bar;
+
+    public Foo(){ }
+
+    public Foo(String bar) {
+        this.bar = bar;
     }
 
     @Override
-    public void failed(UnirestException e) {
-
+    public String toString() {
+        return "Foo{" +
+                "bar='" + bar + '\'' +
+                '}';
     }
 
     @Override
-    public void cancelled() {
+    public boolean equals(Object o) {
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
+        Foo foo = (Foo) o;
+        return Objects.equals(bar, foo.bar);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(bar);
     }
 }

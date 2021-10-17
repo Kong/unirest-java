@@ -25,42 +25,15 @@
 
 package kong.unirest;
 
-import BehaviorTests.RequestCapture;
-import org.json.JSONException;
-import org.junit.jupiter.api.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
+import java.time.Instant;
 
-class JacksonObjectMapperTest {
-
-    private final JacksonObjectMapper om = new JacksonObjectMapper();
-
-    @Test
-    void jsonPatch() throws JSONException {
-        JsonPatch patch = new JsonPatch();
-        patch.add("/foo", "bar");
-        patch.add("/baz", "qux");
-
-        String expectStr = patch.toString();
-        String actualStr = om.writeValue(patch);
-
-        JSONAssert.assertEquals(expectStr,
-                actualStr,
-                true);
+public class Clock {
+    public static void freeze(Instant now) {
+        Util.freezeClock(now);
     }
 
-    @Test
-    void jsonPatchInRequestCapture() throws JSONException {
-        JsonPatch patch = new JsonPatch();
-        patch.add("/foo", "bar");
-        patch.add("/baz", "qux");
-
-        RequestCapture rc = new RequestCapture();
-        rc.setPatch(patch);
-
-        String actualStr = om.writeValue(rc);
-        System.out.println("actualStr = " + actualStr);
-        JSONAssert.assertEquals("{}",
-                actualStr,
-                false);
+    public static void reset() {
+        Util.resetClock();
     }
+
 }

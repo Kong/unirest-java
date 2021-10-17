@@ -25,8 +25,6 @@
 
 package kong.unirest.json;
 
-import BehaviorTests.Foo;
-import kong.unirest.TestUtil;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -87,7 +85,7 @@ class JSONArrayTest {
         array.put((Object)"abc");
         array.put((Object)new JSONObject(of("foo", "bar")));
 
-        assertEquals("Foo{bar=fooooo}", array.get(0).toString());
+        assertEquals("Foo{bar='fooooo'}", array.get(0).toString());
         assertEquals("abc", array.get(1));
         assertEquals("{\"foo\":\"bar\"}", array.get(2).toString());
     }

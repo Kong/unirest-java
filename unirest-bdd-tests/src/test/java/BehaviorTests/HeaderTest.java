@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static BehaviorTests.TestUtils.mapOf;
+import static BehaviorTests.TestUtil.mapOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class HeaderTest extends BddTest {

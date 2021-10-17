@@ -26,7 +26,7 @@
 package BehaviorTests;
 
 import kong.unirest.GetRequest;
-import kong.unirest.TestUtil;
+
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
 import kong.unirest.java.SSLContextBuilder;

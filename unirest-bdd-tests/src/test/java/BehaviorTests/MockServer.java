@@ -30,12 +30,8 @@ import com.google.common.base.Strings;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.websocket.WsHandler;
-import io.javalin.websocket.WsMessageContext;
-import io.javalin.websocket.WsMessageHandler;
-import kong.unirest.JacksonObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.util.UrlEncoded;
-import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
@@ -69,7 +65,7 @@ public class MockServer {
     public static final int PORT = 4567;
     public static final String HOST = "http://localhost:" + PORT;
     public static final String WEBSOCKET = "ws://localhost:" + PORT + "/websocket";
-    public static final String WINDOWS_LATIN_1_FILE = HOST + "/data/cp1250.txt";
+    public static final String WINDOWS_LATIN_1_FILE = HOST + "/public/data/cp1250.txt";
     public static final String REDIRECT = HOST + "/redirect";
     public static final String JAVALIN = HOST + "/sparkle/{spark}/yippy";
     public static final String BINARYFILE = HOST + "/binary";
@@ -199,7 +195,7 @@ public class MockServer {
     }
 
     private static Object file(Context context) throws Exception {
-        File f = TestUtils.rezFile("/spidey.jpg");
+        File f = TestUtil.rezFile("/spidey.jpg");
         context.res.setContentType("application/octet-stream");
         context.res.setHeader("Content-Disposition", "attachment;filename=image.jpg");
         context.res.setHeader("Content-Length", String.valueOf(f.length()));

@@ -22,6 +22,7 @@
         <module>object-mapper-gson</module>
         <module>object-mapper-jackson</module>
         <module>unirest-mocks</module>
+        <module>unirest-bdd-tests</module>
         <!--<module>bad-maven-test</module>-->
     </modules>
 

@@ -28,7 +28,6 @@ package BehaviorTests;
 import kong.unirest.HttpResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import kong.unirest.JacksonObjectMapper;
 import kong.unirest.Unirest;
 
 import java.io.File;
@@ -105,7 +104,7 @@ class AsFileTest extends BddTest {
 
     @Test
     void canDownloadABinaryFile() throws Exception {
-        File f1 = TestUtils.rezFile("/spidey.jpg");
+        File f1 = TestUtil.rezFile("/spidey.jpg");
 
         File f2 = Unirest.get(MockServer.BINARYFILE)
                 .asFile(test.toString())

@@ -25,7 +25,6 @@
 
 package BehaviorTests;
 
-import kong.unirest.JacksonObjectMapper;
 import kong.unirest.Unirest;
 import org.junit.jupiter.api.Test;
 

@@ -23,34 +23,40 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest;
-
+package BehaviorTests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import kong.unirest.Client;
+import kong.unirest.Config;
+import kong.unirest.Unirest;
 import kong.unirest.java.JavaClient;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
-import java.io.IOException;
-import java.io.InputStream;
-
 import java.security.KeyStore;
-import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class TestUtil {
+class TestUtil {
     private static final ObjectMapper om = new ObjectMapper();
 
     static {
         om.registerModule(new GuavaModule());
     }
+
 
     public static <T> T readValue(String body, Class<T> as) {
         try {
@@ -60,20 +66,44 @@ public class TestUtil {
         }
     }
 
-    public static String getResource(String resourceName){
+    public static File getImageFile() {
+        return rezFile("/image.jpg");
+    }
+
+    public static File rezFile(String name) {
         try {
-            return Resources.toString(Resources.getResource(resourceName), Charsets.UTF_8);
-        }catch (Exception e) {
+            return new File(MockServer.class.getResource(name).toURI());
+        } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static void freeze(Instant now) {
-        Util.freezeClock(now);
+    public static byte[] getFileBytes(String s) {
+        try {
+            final InputStream stream = new FileInputStream(rezFile(s));
+            final byte[] bytes = new byte[stream.available()];
+            stream.read(bytes);
+            stream.close();
+            return bytes;
+        }catch (IOException e){
+            throw new RuntimeException(e);
+        }
     }
 
-    public static void reset() {
-        Util.resetClock();
+    public static <K, V> Map<K, V> mapOf(Object... keyValues) {
+        Map<K, V> map = new HashMap<>();
+
+        K key = null;
+        for (int index = 0; index < keyValues.length; index++) {
+            if (index % 2 == 0) {
+                key = (K)keyValues[index];
+            }
+            else {
+                map.put(key, (V)keyValues[index]);
+            }
+        }
+
+        return map;
     }
 
     public static KeyStore readStore() throws Exception {
@@ -81,6 +111,14 @@ public class TestUtil {
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
             keyStore.load(keyStoreStream, "badssl.com".toCharArray());
             return keyStore;
+        }
+    }
+
+    public static String getResource(String resourceName) {
+        try {
+            return Resources.toString(Resources.getResource(resourceName), Charsets.UTF_8);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -92,10 +130,13 @@ public class TestUtil {
         return new JavaClient(Unirest.config(), mock);
     }
 
-    public static Client getFailureAsyncClient()  throws Exception {
+    public static void reset() {
 
+    }
+
+    public static Client getFailureAsyncClient() {
         HttpClient client  = HttpClient.newBuilder()
-               //.sslContext(new SSLContext())
+                //.sslContext(new SSLContext())
                 .authenticator(new Authenticator() {
                     @Override
                     public PasswordAuthentication requestPasswordAuthenticationInstance(String host, InetAddress addr, int port, String protocol, String prompt, String scheme, URL url, RequestorType reqType) {
@@ -104,5 +145,4 @@ public class TestUtil {
                 }).build();
         return new JavaClient(Unirest.config(), client);
     }
-
 }

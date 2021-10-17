@@ -26,7 +26,7 @@
 package BehaviorTests;
 
 import kong.unirest.HttpRequestSummary;
-import kong.unirest.TestUtil;
+
 import kong.unirest.Unirest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -36,8 +36,6 @@ import java.util.function.Function;
 
 import static BehaviorTests.MockServer.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 
 class MetricsTest extends BddTest {
     @Test

@@ -29,7 +29,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import kong.unirest.HttpResponse;
-import kong.unirest.JacksonObjectMapper;
 import kong.unirest.Unirest;
 import org.junit.jupiter.api.Test;
 

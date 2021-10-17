@@ -30,7 +30,7 @@ import kong.unirest.json.JSONObject;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static BehaviorTests.TestUtils.rezFile;
+import static BehaviorTests.TestUtil.rezFile;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BodyLogSummaryTest extends BddTest {
