@@ -23,40 +23,23 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.json;
+package kong.unirest.jackson;
 
-import kong.unirest.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ValueNode;
+import kong.unirest.json.EnginePrimitive;
 
-import java.io.Writer;
-import java.util.Collection;
+class JacksonPrimitive extends JacksonElement<ValueNode> implements EnginePrimitive {
+    public JacksonPrimitive(ValueNode element) {
+        super(element);
+    }
 
-public interface JsonEngine {
-    String toPrettyJson(EngineElement obj);
-    String toJson(EngineElement obj);
-    void toJson(EngineElement obj, Writer sw);
-    void toPrettyJson(EngineElement engineElement, Writer sw);
+    @Override
+    public boolean isBoolean() {
+        return element.isBoolean();
+    }
 
-    EngineElement toJsonTree(Object obj);
-
-    EngineObject newEngineObject();
-
-    EngineObject newEngineObject(String string) throws JSONException;
-
-    EngineArray newJsonArray(String jsonString) throws JSONException;
-
-    EngineArray newJsonArray(Collection<?> collection);
-
-    EngineArray newEngineArray();
-
-    <T> T fromJson(EngineElement obj, Class<T> mapClass);
-
-    <T extends Enum> EnginePrimitive newJsonPrimitive(T enumValue);
-
-    EnginePrimitive newJsonPrimitive(String string);
-    EnginePrimitive newJsonPrimitive(Number number);
-    EnginePrimitive newJsonPrimitive(Boolean bool);
-
-    ObjectMapper getObjectMapper();
-
-    String quote(Object s);
+    @Override
+    public boolean isNumber() {
+        return element.isNumber();
+    }
 }

@@ -79,7 +79,7 @@ public class GsonEngine implements JsonEngine {
     }
 
     @Override
-    public String toPrettyJson(Object obj) {
+    public String toPrettyJson(EngineElement obj) {
         if(obj instanceof EngineElement){
             return pretty.toJson(((EngineElement)obj).getEngineElement());
         }
@@ -88,7 +88,7 @@ public class GsonEngine implements JsonEngine {
 
 
     @Override
-    public String toJson(Object obj) {
+    public String toJson(EngineElement obj) {
         if(obj instanceof EngineElement){
             return gson.toJson(((EngineElement)obj).getEngineElement());
         }
@@ -200,6 +200,11 @@ public class GsonEngine implements JsonEngine {
     @Override
     public ObjectMapper getObjectMapper() {
         return new GsonObjectMapper();
+    }
+
+    @Override
+    public String quote(Object s) {
+        return gson.toJson(s);
     }
 
     static class JavaTypeAdapter extends TypeAdapter<Object> {

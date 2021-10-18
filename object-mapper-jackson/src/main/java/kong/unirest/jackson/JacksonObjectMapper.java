@@ -52,23 +52,41 @@ package kong.unirest.jackson;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import kong.unirest.GenericType;
 import kong.unirest.ObjectMapper;
 import kong.unirest.UnirestException;
 
 import java.io.IOException;
+import java.util.function.Consumer;
+
 
 public class JacksonObjectMapper implements ObjectMapper {
     private final com.fasterxml.jackson.databind.ObjectMapper om;
 
-    public JacksonObjectMapper() {
+    public JacksonObjectMapper(){
+        this(c -> {});
+    }
+
+    /**
+     * Pass in any additional ObjectMapper configurations you want
+     * @param configurations consumer of confiruations to perform on the com.fasterxml.jackson.databind.ObjectMapper
+     */
+    public JacksonObjectMapper(Consumer<com.fasterxml.jackson.databind.ObjectMapper> configurations) {
         this(new com.fasterxml.jackson.databind.ObjectMapper());
         om.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
         om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        //om.configure(WRITE_DATES_AS_TIMESTAMPS, false);
+        om.registerModule(new JavaTimeModule());
+        configurations.accept(om);
     }
 
     public JacksonObjectMapper(com.fasterxml.jackson.databind.ObjectMapper om){
         this.om = om;
+    }
+
+    public com.fasterxml.jackson.databind.ObjectMapper getJacksonMapper(){
+        return om;
     }
 
     @Override

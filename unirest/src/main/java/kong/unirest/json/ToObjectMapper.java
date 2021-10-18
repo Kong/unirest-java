@@ -53,6 +53,8 @@ class ToObjectMapper {
                 return e.getAsInt();
             }
             return e.getAsLong();
+        } else if (e.isJsonNull()){
+            return null;
         }
         return e.getAsString();
     }

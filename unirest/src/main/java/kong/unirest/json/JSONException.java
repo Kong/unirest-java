@@ -33,4 +33,8 @@ public class JSONException extends RuntimeException {
     public JSONException(String message, Object... tokens) {
         super(String.format(message, tokens));
     }
+
+    public JSONException(Exception e) {
+        super(e);
+    }
 }

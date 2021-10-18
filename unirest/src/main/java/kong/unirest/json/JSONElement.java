@@ -109,7 +109,7 @@ public abstract class JSONElement {
         return JSONElement.toTree(map).getAsJsonObject();
     }
 
-    static String toJson(Object collection) {
+    static String toJson(EngineElement collection) {
         return ENGINE.toJson(collection);
     }
 
@@ -121,11 +121,11 @@ public abstract class JSONElement {
         ENGINE.toJson(obj, sw);
     }
 
-    static String toPrettyJson(EngineElement obj) {
+    protected static String toPrettyJson(EngineElement obj) {
         return ENGINE.toPrettyJson(obj);
     }
 
-    static Map<String, Object> toMap(EngineElement obj) {
+    protected static Map<String, Object> toMap(EngineElement obj) {
         return ENGINE.fromJson(obj, Map.class);
     }
 }

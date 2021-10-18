@@ -25,6 +25,8 @@
 
 package kong.unirest.json;
 
+import kong.unirest.UnirestConfigException;
+
 import java.util.ServiceLoader;
 
 public class CoreFactory {
@@ -35,6 +37,24 @@ public class CoreFactory {
                 .orElse(null);
     }
     public static JsonEngine getCore() {
+        if(ENGINE == null){
+            throw new UnirestConfigException("No Json Parsing Implementation Provided\n" +
+                    "Please add a dependency for a Unirest JSON Engine. This can be one of:" +
+                    "\n" +
+                    "<!-- Google Gson (the previous core impl) -->\n" +
+                    "<dependency>\n" +
+                    "  <groupId>com.konghq</groupId>\n" +
+                    "  <artifactId>unirest-object-mappers-gson</artifactId>\n" +
+                    "  <version>${latest-version}</version>\n" +
+                    "</dependency>\n" +
+                    "\n" +
+                    "<!-- Jackson -->\n" +
+                    "<dependency>\n" +
+                    "  <groupId>com.konghq</groupId>\n" +
+                    "  <artifactId>unirest-object-mappers-jackson</artifactId>\n" +
+                    "  <version>${latest-version}</version>\n" +
+                    "</dependency>)");
+        }
         return ENGINE;
     }
 }

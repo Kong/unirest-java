@@ -25,38 +25,31 @@
 
 package kong.unirest.json;
 
-import kong.unirest.ObjectMapper;
+import kong.unirest.UnirestConfigException;
+import org.junit.jupiter.api.Test;
 
-import java.io.Writer;
-import java.util.Collection;
+import static org.junit.jupiter.api.Assertions.*;
 
-public interface JsonEngine {
-    String toPrettyJson(EngineElement obj);
-    String toJson(EngineElement obj);
-    void toJson(EngineElement obj, Writer sw);
-    void toPrettyJson(EngineElement engineElement, Writer sw);
+class CoreFactoryTest {
 
-    EngineElement toJsonTree(Object obj);
-
-    EngineObject newEngineObject();
-
-    EngineObject newEngineObject(String string) throws JSONException;
-
-    EngineArray newJsonArray(String jsonString) throws JSONException;
-
-    EngineArray newJsonArray(Collection<?> collection);
-
-    EngineArray newEngineArray();
-
-    <T> T fromJson(EngineElement obj, Class<T> mapClass);
-
-    <T extends Enum> EnginePrimitive newJsonPrimitive(T enumValue);
-
-    EnginePrimitive newJsonPrimitive(String string);
-    EnginePrimitive newJsonPrimitive(Number number);
-    EnginePrimitive newJsonPrimitive(Boolean bool);
-
-    ObjectMapper getObjectMapper();
-
-    String quote(Object s);
+    @Test
+    void whenThereIsNoImpl() {
+        var ex = assertThrows(UnirestConfigException.class,
+                () -> CoreFactory.getCore());
+        assertEquals("No Json Parsing Implementation Provided\n" +
+                "Please add a dependency for a Unirest JSON Engine. This can be one of:\n" +
+                "<!-- Google Gson (the previous core impl) -->\n" +
+                "<dependency>\n" +
+                "  <groupId>com.konghq</groupId>\n" +
+                "  <artifactId>unirest-object-mappers-gson</artifactId>\n" +
+                "  <version>${latest-version}</version>\n" +
+                "</dependency>\n" +
+                "\n" +
+                "<!-- Jackson -->\n" +
+                "<dependency>\n" +
+                "  <groupId>com.konghq</groupId>\n" +
+                "  <artifactId>unirest-object-mappers-jackson</artifactId>\n" +
+                "  <version>${latest-version}</version>\n" +
+                "</dependency>)", ex.getMessage());
+    }
 }
