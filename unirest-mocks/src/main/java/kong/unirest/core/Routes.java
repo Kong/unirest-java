@@ -145,4 +145,10 @@ class Routes implements Assert {
     String getPath() {
         return path;
     }
+
+    void addInvoke(Invocation invocation) {
+        if(invocation != null){
+            invokes.add(new Invocation(this, invocation));
+        }
+    }
 }

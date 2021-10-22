@@ -44,6 +44,7 @@ public class MockClient implements Client {
     private final Supplier<Config> config;
     private List<Routes> routes = new ArrayList<>();
     private SocketSet remoteSocket;
+    private Invocation defaultResponse;
 
     public MockClient(Supplier<Config> config){
         this.config = config;
@@ -107,6 +108,7 @@ public class MockClient implements Client {
     private Routes createNewPath(HttpRequest request) {
         Routes p = new Routes(request);
         routes.add(p);
+        p.addInvoke(defaultResponse);
         return p;
     }
 
@@ -193,5 +195,21 @@ public class MockClient implements Client {
      */
     public void verifyAll() {
         routes.forEach(Routes::verifyAll);
+    }
+
+    /**
+     * Reset all expectations
+     */
+    public void reset() {
+        routes.clear();
+        defaultResponse = null;
+    }
+
+    /**
+     * return this status for any request that doesn't match a expectation
+     */
+    public ExpectedResponse defaultResponse() {
+        this.defaultResponse = new Invocation();
+        return this.defaultResponse;
     }
 }
