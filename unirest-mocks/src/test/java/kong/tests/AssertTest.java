@@ -27,8 +27,11 @@ package kong.tests;
 
 import kong.unirest.Assert;
 import kong.unirest.HttpMethod;
+import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.junit.jupiter.api.Test;
+
+import java.util.function.Supplier;
 
 import static kong.unirest.HttpMethod.GET;
 import static kong.unirest.HttpMethod.POST;
@@ -144,5 +147,45 @@ class AssertTest extends Base {
                 "A expectation was never invoked! POST http://basic\n" +
                         "Body:\n" +
                         "\tfoo");
+    }
+
+    @Test
+    void canResetExpects() {
+        client.expect(GET).thenReturn("HI");
+        client.reset();
+        assertEquals(null, Unirest.get(path).asString().getBody());
+    }
+
+    @Test
+    void canBeStrictAndForbidAnythingWithoutAMatch() {
+        client.defaultResponse().withStatus(400, "wtf")
+                .thenReturn("boo");
+
+        client.expect(GET, otherPath).thenReturn("Hi");
+
+        HttpResponse<String> res = Unirest.get(path).asString();
+        assertEquals(400, res.getStatus());
+        assertEquals("wtf", res.getStatusText());
+        assertEquals("boo", res.getBody());
+
+        assertEquals("Hi", Unirest.get(otherPath).asString().getBody());
+    }
+
+    @Test
+    void canSetASupplierForTheReponseBody() {
+        BodyBuddy supplier = new BodyBuddy();
+        client.expect(GET).thenReturn(supplier);
+        supplier.body = "Hey Buddy";
+        assertEquals("Hey Buddy", Unirest.get(path).asString().getBody());
+        supplier.body = "Yeaaaah Buddy";
+        assertEquals("Yeaaaah Buddy", Unirest.get(path).asString().getBody());
+    }
+
+    private static class BodyBuddy implements Supplier<String>{
+        String body;
+        @Override
+        public String get() {
+            return body;
+        }
     }
 }

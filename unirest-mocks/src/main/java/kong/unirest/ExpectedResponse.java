@@ -25,8 +25,30 @@
 
 package kong.unirest;
 
+import kong.unirest.json.JSONElement;
+
 public interface ExpectedResponse {
     ExpectedResponse withHeader(String key, String value);
     ExpectedResponse withStatus(int httpStatus);
     ExpectedResponse withStatus(int httpStatus, String statusMessage);
+    /**
+     * expect a string response
+     * @param body the expected response body
+     * @return The ExpectedResponse
+     */
+    ExpectedResponse thenReturn(String body);
+
+    /**
+     * expect a json response
+     * @param jsonObject the expected response body
+     * @return The ExpectedResponse
+     */
+    ExpectedResponse thenReturn(JSONElement jsonObject);
+
+    /**
+     * expect a object response as defined by a pojo using the requests / configuration object mapper
+     * @param pojo the expected response body
+     * @return The ExpectedResponse
+     */
+    ExpectedResponse thenReturn(Object pojo);
 }

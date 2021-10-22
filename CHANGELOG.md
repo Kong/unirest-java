@@ -1,3 +1,9 @@
+## 3.13.1
+* add some new features to MockClient
+    * mockClient.reset() will clear any expectations
+    * mockClient.defaultResponse() returns a default response expectation for when an explicit expectation was not matched 
+    * thenReturn(Supplier<String> supplier) allows you to set the response body as a supplier to be invoked at request time.
+
 ## 3.13.0
 * Support InputStreams as bodies.
 * Support ProgressMonitors for InputStream bodies

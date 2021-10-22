@@ -27,6 +27,8 @@ package kong.unirest;
 
 import kong.unirest.json.JSONElement;
 
+import java.util.function.Supplier;
+
 /**
  * A expectation for a particular method/path
  */
@@ -87,4 +89,11 @@ public interface Expectation {
      * @return The ExpectedResponse
      */
     ExpectedResponse thenReturn(Object pojo);
+
+    /**
+     * A supplier for the expected body which will get invoked at the time of build the response.
+     * @param supplier the expected response body supplier
+     * @return The ExpectedResponse
+     */
+    ExpectedResponse thenReturn(Supplier<String> supplier);
 }

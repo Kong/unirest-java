@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.lang.System.lineSeparator;
@@ -59,6 +60,18 @@ class Invocation implements Expectation, ExpectedResponse {
         this.expectedHeaders = request.getHeaders();
     }
 
+    Invocation(Routes routes, Invocation other) {
+        this.routes = routes;
+        this.response = other.response;
+        this.responseStatus = other.responseStatus;
+        this.responseText = other.responseText;
+        this.responseHeaders.putAll(other.responseHeaders);
+    }
+
+    Invocation() {
+
+    }
+
     @Override
     public ExpectedResponse thenReturn(String body) {
         this.response = o -> body;
@@ -74,6 +87,12 @@ class Invocation implements Expectation, ExpectedResponse {
     @Override
     public ExpectedResponse thenReturn(Object pojo) {
         this.response = o -> o.writeValue(pojo);
+        return this;
+    }
+
+    @Override
+    public ExpectedResponse thenReturn(Supplier<String> supplier) {
+        this.response = o -> supplier.get();
         return this;
     }
 
