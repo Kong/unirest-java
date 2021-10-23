@@ -33,11 +33,15 @@ class Routes implements Assert {
     private final List<Invocation> invokes = new ArrayList<>();
 
 
-    Routes(HttpRequest request) {
+    Routes(HttpRequest request, Invocation expected) {
         Path p = new Path(request.getUrl());
         this.method = request.getHttpMethod();
         this.path = p.baseUrl();
-        invokes.add(new Invocation(this, request));
+        if(expected != null){
+            invokes.add(new Invocation(this, expected));
+        } else {
+            invokes.add(new Invocation(this, request));
+        }
     }
 
     public Routes(HttpMethod method, Path p) {
@@ -144,11 +148,5 @@ class Routes implements Assert {
 
     String getPath() {
         return path;
-    }
-
-    void addInvoke(Invocation invocation) {
-        if(invocation != null){
-            invokes.add(new Invocation(this, invocation));
-        }
     }
 }

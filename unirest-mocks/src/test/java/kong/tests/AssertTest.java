@@ -158,7 +158,8 @@ class AssertTest extends Base {
 
     @Test
     void canBeStrictAndForbidAnythingWithoutAMatch() {
-        client.defaultResponse().withStatus(400, "wtf")
+        client.defaultResponse()
+                .withStatus(400, "wtf")
                 .thenReturn("boo");
 
         client.expect(GET, otherPath).thenReturn("Hi");
