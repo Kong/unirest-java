@@ -91,6 +91,13 @@ public interface Expectation {
     ExpectedResponse thenReturn(Object pojo);
 
     /**
+     * expect a object response as defined by a pojo using the requests / configuration object mapper
+     * @param response the expected response body
+     * @return The ExpectedResponse
+     */
+    ExpectedResponse thenReturn(MockResponse<?> response);
+
+    /**
      * A supplier for the expected body which will get invoked at the time of build the response.
      * @param supplier the expected response body supplier
      * @return The ExpectedResponse

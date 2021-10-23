@@ -91,6 +91,21 @@ class Invocation implements Expectation, ExpectedResponse {
     }
 
     @Override
+    public ExpectedResponse thenReturn(MockResponse<?> mockResponse) {
+        this.responseStatus = mockResponse.getStatus();
+        this.responseText = mockResponse.getStatusText();
+        this.responseHeaders.putAll(mockResponse.getHeaders());
+        Object body = mockResponse.getBody();
+        if(body instanceof String){
+            return thenReturn((String)body);
+        } else if (body instanceof JSONElement){
+            return thenReturn((JSONElement) body);
+        } else {
+            return thenReturn(body);
+        }
+    }
+
+    @Override
     public ExpectedResponse thenReturn(Supplier<String> supplier) {
         this.response = o -> supplier.get();
         return this;
