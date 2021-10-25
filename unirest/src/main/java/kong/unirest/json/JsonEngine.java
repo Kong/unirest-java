@@ -28,35 +28,81 @@ package kong.unirest.json;
 import kong.unirest.ObjectMapper;
 
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collection;
+import java.util.Set;
 
 public interface JsonEngine {
-    String toPrettyJson(EngineElement obj);
-    String toJson(EngineElement obj);
-    void toJson(EngineElement obj, Writer sw);
-    void toPrettyJson(EngineElement engineElement, Writer sw);
-
-    EngineElement toJsonTree(Object obj);
-
-    EngineObject newEngineObject();
-
-    EngineObject newEngineObject(String string) throws JSONException;
-
-    EngineArray newJsonArray(String jsonString) throws JSONException;
-
-    EngineArray newJsonArray(Collection<?> collection);
-
-    EngineArray newEngineArray();
-
-    <T> T fromJson(EngineElement obj, Class<T> mapClass);
-
-    <T extends Enum> EnginePrimitive newJsonPrimitive(T enumValue);
-
-    EnginePrimitive newJsonPrimitive(String string);
-    EnginePrimitive newJsonPrimitive(Number number);
-    EnginePrimitive newJsonPrimitive(Boolean bool);
-
+    String toPrettyJson(Element obj);
+    String toJson(Element obj);
+    void toJson(Element obj, Writer sw);
+    void toPrettyJson(Element engineElement, Writer sw);
+    Element toJsonTree(java.lang.Object obj);
+    Object newEngineObject();
+    Object newEngineObject(String string) throws JSONException;
+    Array newJsonArray(String jsonString) throws JSONException;
+    Array newJsonArray(Collection<?> collection);
+    Array newEngineArray();
+    <T> T fromJson(Element obj, Class<T> mapClass);
+    <T extends Enum> Primitive newJsonPrimitive(T enumValue);
+    Primitive newJsonPrimitive(String string);
+    Primitive newJsonPrimitive(Number number);
+    Primitive newJsonPrimitive(Boolean bool);
     ObjectMapper getObjectMapper();
+    String quote(java.lang.Object s);
 
-    String quote(Object s);
+    interface Element {
+        Object getAsJsonObject();
+        boolean isJsonNull();
+        Primitive getAsJsonPrimitive();
+        Array getAsJsonArray();
+        float getAsFloat();
+        double getAsDouble();
+        String getAsString();
+        long getAsLong();
+        int getAsInt();
+        boolean getAsBoolean();
+        BigInteger getAsBigInteger();
+        BigDecimal getAsBigDecimal();
+        Primitive getAsPrimitive();
+        boolean isJsonArray();
+        boolean isJsonPrimitive();
+        boolean isJsonObject();
+        <T> T getEngineElement();
+    }
+
+    interface Array extends Element {
+        int size();
+        Element get(int index);
+        Element remove(int index);
+        Element put(int index, Number number);
+        Element put(int index, String number);
+        Element put(int index, Boolean number);
+        void add(Element obj);
+        void set(int index, Element o);
+        void add(Number num);
+        void add(String str);
+        void add(Boolean bool);
+        String join(String token);
+    }
+
+    interface Object extends Element {
+        int size();
+        boolean has(String key);
+        Element get(String key);
+        void add(String key, Element value);
+        void addProperty(String key, Boolean value);
+        void addProperty(String key, String value);
+        void addProperty(String key, Number value);
+        void addProperty(String key, Element value);
+        void remove(String key);
+        <E extends Enum> void add(String key, E enumValue);
+        Set<String> keySet();
+    }
+
+    interface Primitive extends Element {
+        boolean isBoolean();
+        boolean isNumber();
+    }
 }

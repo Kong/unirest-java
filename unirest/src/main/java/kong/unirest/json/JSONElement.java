@@ -32,9 +32,9 @@ public abstract class JSONElement {
     protected static transient final ToObjectMapper MAPPER = new ToObjectMapper();
     private static transient final JsonEngine ENGINE = CoreFactory.getCore();
 
-    private final EngineElement element;
+    private final JsonEngine.Element element;
 
-    protected JSONElement(EngineElement e){
+    protected JSONElement(JsonEngine.Element e){
         this.element = e;
     }
 
@@ -101,31 +101,31 @@ public abstract class JSONElement {
         }
     }
 
-    public EngineElement getElement() {
+    public JsonEngine.Element getElement() {
         return element;
     }
 
-    static EngineObject toJsonObject(Map map){
+    static JsonEngine.Object toJsonObject(Map map){
         return JSONElement.toTree(map).getAsJsonObject();
     }
 
-    static String toJson(EngineElement collection) {
+    static String toJson(JsonEngine.Element collection) {
         return ENGINE.toJson(collection);
     }
 
-    static EngineElement toTree(Object obj){
+    static JsonEngine.Element toTree(Object obj){
         return ENGINE.toJsonTree(obj);
     }
 
-    static void write(EngineElement obj, Writer sw) {
+    static void write(JsonEngine.Element obj, Writer sw) {
         ENGINE.toJson(obj, sw);
     }
 
-    protected static String toPrettyJson(EngineElement obj) {
+    protected static String toPrettyJson(JsonEngine.Element obj) {
         return ENGINE.toPrettyJson(obj);
     }
 
-    protected static Map<String, Object> toMap(EngineElement obj) {
+    protected static Map<String, Object> toMap(JsonEngine.Element obj) {
         return ENGINE.fromJson(obj, Map.class);
     }
 }

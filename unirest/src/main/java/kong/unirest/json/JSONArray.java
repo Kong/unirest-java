@@ -37,7 +37,7 @@ import java.util.function.Supplier;
  * Represents a JSON Array
  */
 public class JSONArray extends JSONElement implements Iterable<Object> {
-    private transient final EngineArray obj;
+    private transient final JsonEngine.Array obj;
 
     /**
      * construct a empty JSONArray
@@ -70,7 +70,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
         this(toJsonArray(array));
     }
 
-    private static EngineArray toJsonArray(Object thing) {
+    private static JsonEngine.Array toJsonArray(Object thing) {
         if(thing instanceof Collection){
             return CoreFactory.getCore().newJsonArray((Collection)thing);
         }
@@ -85,12 +85,12 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
         throw new JSONException("JSONArray initial value should be a string or collection or array.");
     }
 
-    JSONArray(EngineArray array) {
+    JSONArray(JsonEngine.Array array) {
         super(array);
         obj = array;
     }
 
-    JSONArray(EngineElement jsonElement) {
+    JSONArray(JsonEngine.Element jsonElement) {
         this(jsonElement.getAsJsonArray());
     }
 
@@ -266,7 +266,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      */
     public JSONArray put(int index, Object object) throws JSONException {
         if (object == null) {
-            put(index, (EngineElement) null);
+            put(index, (JsonEngine.Element) null);
         } else if (object instanceof Number) {
             put(index, (Number) object);
         } else if (object instanceof Boolean) {
@@ -363,9 +363,9 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
         return put(index, CoreFactory.getCore().newJsonPrimitive(enumValue));
     }
 
-    private JSONArray put(int index, EngineElement o) {
+    private JSONArray put(int index, JsonEngine.Element o) {
         while (obj.size() < index + 1) {
-            obj.add((EngineElement) null);
+            obj.add((JsonEngine.Element) null);
         }
         if (index < obj.size()) {
             obj.set(index, o);
@@ -383,7 +383,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      */
     public JSONArray put(Object object) {
         if (object == null) {
-            obj.add((EngineElement) null);
+            obj.add((JsonEngine.Element) null);
         } else if (object instanceof Number) {
             put((Number) object);
         } else if (object instanceof Boolean) {
@@ -407,7 +407,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      */
     public Object remove(int index) {
         try {
-            EngineElement remove = obj.remove(index);
+            JsonEngine.Element remove = obj.remove(index);
             return MAPPER.apply(remove);
         } catch (IndexOutOfBoundsException e) {
             return null;
@@ -421,7 +421,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
      * @throws JSONException if the element is not a boolean or index is out of bounds
      */
     public boolean getBoolean(int index) throws JSONException {
-        EngineElement e = getElement(index);
+        JsonEngine.Element e = getElement(index);
         if (!e.isJsonPrimitive() || !e.getAsPrimitive().isBoolean()) {
             throw new JSONException("JSONArray[%s] is not a boolean.", index);
         }
@@ -845,7 +845,7 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
     public boolean equals(Object o) {
         if (o == this) {
             return true;
-        } else if (o instanceof EngineArray) {
+        } else if (o instanceof JsonEngine.Array) {
             return this.obj.equals(o);
         } else if (o instanceof JSONArray) {
             return this.obj.equals(((JSONArray) o).obj);
@@ -857,12 +857,12 @@ public class JSONArray extends JSONElement implements Iterable<Object> {
         return this.obj.hashCode();
     }
 
-    EngineArray getArray() {
+    JsonEngine.Array getArray() {
         return obj;
     }
 
 
-    private EngineElement getElement(int index) {
+    private JsonEngine.Element getElement(int index) {
         try {
             return obj.get(index);
         } catch (IndexOutOfBoundsException e) {

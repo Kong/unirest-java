@@ -604,7 +604,6 @@ class JSONObjectTest {
         assertEquals("42", JSONObject.valueToString(42));
         assertEquals("42.5643", JSONObject.valueToString(42.5643f));
         assertEquals("\"Hello World\"", JSONObject.valueToString("Hello World"));
-        assertEquals(ImmaJson.HI_MOM, JSONObject.valueToString(new ImmaJson()));
         assertEquals("{\"bar\":\"me\"}", JSONObject.valueToString(new Foo("me")));
         assertEquals("{}", JSONObject.valueToString(new JSONObject()));
         assertEquals("[]", JSONObject.valueToString(new JSONArray()));
@@ -639,16 +638,6 @@ class JSONObjectTest {
     }
 
     public enum fruit {orange, apple}
-
-    public static class ImmaJson implements JSONString {
-
-        public static final String HI_MOM = "Hi Mom";
-
-        @Override
-        public String toJSONString() {
-            return HI_MOM;
-        }
-    }
 
     public static class TestMe {
         private boolean aBoolean;

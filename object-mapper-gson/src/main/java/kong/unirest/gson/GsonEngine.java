@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 public class GsonEngine implements JsonEngine {
-    private static final TypeAdapter<Object> ADAPTER = new JavaTypeAdapter();
+    private static final TypeAdapter<java.lang.Object> ADAPTER = new JavaTypeAdapter();
     private Gson gson;
     private Gson pretty;
 
@@ -57,7 +57,7 @@ public class GsonEngine implements JsonEngine {
         pretty = builder.setPrettyPrinting().create();
     }
 
-    static EngineElement toElement(JsonElement jsonElement) {
+    static Element toElement(JsonElement jsonElement) {
         if (jsonElement instanceof JsonObject){
             return new GsonObject((JsonObject) jsonElement);
         } else if (jsonElement instanceof JsonArray) {
@@ -69,45 +69,45 @@ public class GsonEngine implements JsonEngine {
     }
 
     @Override
-    public void toJson(EngineElement obj, Writer sw) {
+    public void toJson(Element obj, Writer sw) {
         gson.toJson(obj.getEngineElement(), sw);
     }
 
     @Override
-    public void toPrettyJson(EngineElement obj, Writer sw) {
+    public void toPrettyJson(Element obj, Writer sw) {
         pretty.toJson(obj.getEngineElement(), sw);
     }
 
     @Override
-    public String toPrettyJson(EngineElement obj) {
-        if(obj instanceof EngineElement){
-            return pretty.toJson(((EngineElement)obj).getEngineElement());
+    public String toPrettyJson(Element obj) {
+        if(obj instanceof Element){
+            return pretty.toJson(((Element)obj).getEngineElement());
         }
         return pretty.toJson(obj);
     }
 
 
     @Override
-    public String toJson(EngineElement obj) {
-        if(obj instanceof EngineElement){
-            return gson.toJson(((EngineElement)obj).getEngineElement());
+    public String toJson(Element obj) {
+        if(obj instanceof Element){
+            return gson.toJson(((Element)obj).getEngineElement());
         }
         return gson.toJson(obj);
     }
 
     @Override
-    public EngineElement toJsonTree(Object obj) {
+    public Element toJsonTree(java.lang.Object obj) {
         return toElement(gson.toJsonTree(obj));
     }
 
 
     @Override
-    public EngineObject newEngineObject() {
+    public Object newEngineObject() {
         return new GsonObject();
     }
 
     @Override
-    public EngineObject newEngineObject(String string) {
+    public Object newEngineObject(String string) {
         try {
             JsonObject element = gson.fromJson(string, JsonObject.class);
             return new GsonObject(element);
@@ -117,17 +117,17 @@ public class GsonEngine implements JsonEngine {
     }
 
     @Override
-    public EngineArray newEngineArray() {
+    public Array newEngineArray() {
         return new GsonArray();
     }
 
     @Override
-    public <T> T fromJson(EngineElement obj, Class<T> mapClass) {
+    public <T> T fromJson(Element obj, Class<T> mapClass) {
         return gson.fromJson((JsonElement) obj.getEngineElement(), mapClass);
     }
 
     @Override
-    public EngineArray newJsonArray(String jsonString) {
+    public Array newJsonArray(String jsonString) {
         try {
             return new GsonArray(gson.fromJson(jsonString, JsonArray.class));
         }catch (JsonSyntaxException e){
@@ -136,15 +136,15 @@ public class GsonEngine implements JsonEngine {
     }
 
     @Override
-    public EngineArray newJsonArray(Collection<?> collection) {
+    public Array newJsonArray(Collection<?> collection) {
         GsonArray a = new GsonArray();
-        for(Object o : collection){
+        for(java.lang.Object o : collection){
             add(a, o);
         }
         return a;
     }
 
-    private void add(GsonArray a, Object o) {
+    private void add(GsonArray a, java.lang.Object o) {
         if(o instanceof Number){
             a.add((Number) o);
         } else if (o instanceof String) {
@@ -153,8 +153,8 @@ public class GsonEngine implements JsonEngine {
             a.add((Boolean) o);
         }else if(o instanceof JSONElement) {
             a.add(((JSONElement) o).getElement());
-        } else if(o instanceof EngineElement) {
-            a.add((EngineElement) o);
+        } else if(o instanceof Element) {
+            a.add((Element) o);
         } else {
             JsonElement tree = gson.toJsonTree(o);
             a.add(toElement(tree));
@@ -162,7 +162,7 @@ public class GsonEngine implements JsonEngine {
     }
 
     @Override
-    public <T extends Enum> EnginePrimitive newJsonPrimitive(T enumValue) {
+    public <T extends Enum> Primitive newJsonPrimitive(T enumValue) {
         if(enumValue == null){
             return new GsonNull();
         } else {
@@ -171,7 +171,7 @@ public class GsonEngine implements JsonEngine {
     }
 
     @Override
-    public EnginePrimitive newJsonPrimitive(String string) {
+    public Primitive newJsonPrimitive(String string) {
         if(string == null){
             return new GsonNull();
         } else {
@@ -180,7 +180,7 @@ public class GsonEngine implements JsonEngine {
     }
 
     @Override
-    public EnginePrimitive newJsonPrimitive(Number number) {
+    public Primitive newJsonPrimitive(Number number) {
         if(number == null){
             return new GsonNull();
         } else {
@@ -189,7 +189,7 @@ public class GsonEngine implements JsonEngine {
     }
 
     @Override
-    public EnginePrimitive newJsonPrimitive(Boolean bool) {
+    public Primitive newJsonPrimitive(Boolean bool) {
         if(bool == null){
             return new GsonNull();
         } else {
@@ -203,25 +203,25 @@ public class GsonEngine implements JsonEngine {
     }
 
     @Override
-    public String quote(Object s) {
+    public String quote(java.lang.Object s) {
         return gson.toJson(s);
     }
 
-    static class JavaTypeAdapter extends TypeAdapter<Object> {
+    static class JavaTypeAdapter extends TypeAdapter<java.lang.Object> {
 
-        private final TypeAdapter<Object> delegate = new Gson().getAdapter(Object.class);
+        private final TypeAdapter<java.lang.Object> delegate = new Gson().getAdapter(java.lang.Object.class);
 
         @Override
-        public void write(JsonWriter out, Object value) throws IOException {
+        public void write(JsonWriter out, java.lang.Object value) throws IOException {
             delegate.write(out, value);
         }
 
         @Override
-        public Object read(JsonReader in) throws IOException {
+        public java.lang.Object read(JsonReader in) throws IOException {
             JsonToken token = in.peek();
             switch (token) {
                 case BEGIN_ARRAY:
-                    List<Object> list = new ArrayList<>();
+                    List<java.lang.Object> list = new ArrayList<>();
                     in.beginArray();
                     while (in.hasNext()) {
                         list.add(read(in));
@@ -230,7 +230,7 @@ public class GsonEngine implements JsonEngine {
                     return list;
 
                 case BEGIN_OBJECT:
-                    Map<String, Object> map = new LinkedTreeMap<>();
+                    Map<String, java.lang.Object> map = new LinkedTreeMap<>();
                     in.beginObject();
                     while (in.hasNext()) {
                         map.put(in.nextName(), read(in));

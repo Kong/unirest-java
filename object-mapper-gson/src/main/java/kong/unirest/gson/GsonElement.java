@@ -26,16 +26,13 @@
 package kong.unirest.gson;
 
 import com.google.gson.*;
-import kong.unirest.json.EngineArray;
-import kong.unirest.json.EngineElement;
-import kong.unirest.json.EngineObject;
-import kong.unirest.json.EnginePrimitive;
+import kong.unirest.json.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
 
-class GsonElement<T extends JsonElement> implements EngineElement {
+class GsonElement<T extends JsonElement> implements JsonEngine.Element {
     protected T element;
 
     GsonElement(T element) {
@@ -43,7 +40,7 @@ class GsonElement<T extends JsonElement> implements EngineElement {
     }
 
     @Override
-    public EngineObject getAsJsonObject() {
+    public JsonEngine.Object getAsJsonObject() {
         return new GsonObject(element.getAsJsonObject());
     }
 
@@ -53,12 +50,12 @@ class GsonElement<T extends JsonElement> implements EngineElement {
     }
 
     @Override
-    public EnginePrimitive getAsJsonPrimitive() {
+    public JsonEngine.Primitive getAsJsonPrimitive() {
         return new GsonPrimitive(element.getAsJsonPrimitive());
     }
 
     @Override
-    public EngineArray getAsJsonArray() {
+    public JsonEngine.Array getAsJsonArray() {
         return new GsonArray(element.getAsJsonArray());
     }
 
@@ -108,7 +105,7 @@ class GsonElement<T extends JsonElement> implements EngineElement {
     }
 
     @Override
-    public EnginePrimitive getAsPrimitive() {
+    public JsonEngine.Primitive getAsPrimitive() {
         return new GsonPrimitive(element.getAsJsonPrimitive());
     }
 

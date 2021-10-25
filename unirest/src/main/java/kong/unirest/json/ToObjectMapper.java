@@ -32,17 +32,17 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 class ToObjectMapper {
-    private static Map<Predicate<EngineElement>, Function<EngineElement, Object>> mappers;
+    private static Map<Predicate<JsonEngine.Element>, Function<JsonEngine.Element, Object>> mappers;
 
     static {
         mappers = new HashMap<>();
         mappers.put(j -> j == null || j.isJsonNull(), j -> null);
-        mappers.put(EngineElement::isJsonArray, JSONArray::new);
-        mappers.put(EngineElement::isJsonObject, JSONObject::new);
-        mappers.put(EngineElement::isJsonPrimitive, j -> mapPrimative(j.getAsJsonPrimitive()));
+        mappers.put(JsonEngine.Element::isJsonArray, JSONArray::new);
+        mappers.put(JsonEngine.Element::isJsonObject, JSONObject::new);
+        mappers.put(JsonEngine.Element::isJsonPrimitive, j -> mapPrimative(j.getAsJsonPrimitive()));
     }
 
-    private static Object mapPrimative(EnginePrimitive e) {
+    private static Object mapPrimative(JsonEngine.Primitive e) {
         if(e.isBoolean()){
             return e.getAsBoolean();
         } else if (e.isNumber()){
@@ -59,7 +59,7 @@ class ToObjectMapper {
         return e.getAsString();
     }
 
-    public Object apply(EngineElement e){
+    public Object apply(JsonEngine.Element e){
         return mappers.entrySet()
                 .stream()
                 .filter(r -> r.getKey().test(e))

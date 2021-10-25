@@ -37,14 +37,14 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
 
-class JacksonElement<T extends JsonNode> implements EngineElement {
+class JacksonElement<T extends JsonNode> implements JsonEngine.Element {
     protected T element;
 
     JacksonElement(T element){
         this.element = element;
     }
 
-    static EngineElement wrap(JsonNode node) {
+    static JsonEngine.Element wrap(JsonNode node) {
         if(node == null || node.isNull()){
             return new JacksonPrimitive(NullNode.getInstance());
         } else if(node.isArray()){
@@ -58,7 +58,7 @@ class JacksonElement<T extends JsonNode> implements EngineElement {
     }
 
     @Override
-    public EngineObject getAsJsonObject() {
+    public JsonEngine.Object getAsJsonObject() {
         if(element.isObject()) {
             return new JacksonObject((ObjectNode) element);
         }
@@ -71,12 +71,12 @@ class JacksonElement<T extends JsonNode> implements EngineElement {
     }
 
     @Override
-    public EnginePrimitive getAsJsonPrimitive() {
+    public JsonEngine.Primitive getAsJsonPrimitive() {
         return new JacksonPrimitive((ValueNode) element);
     }
 
     @Override
-    public EngineArray getAsJsonArray() {
+    public JsonEngine.Array getAsJsonArray() {
         if(!element.isArray()){
             throw new IllegalStateException("Not an Array");
         }
@@ -142,7 +142,7 @@ class JacksonElement<T extends JsonNode> implements EngineElement {
     }
 
     @Override
-    public EnginePrimitive getAsPrimitive() {
+    public JsonEngine.Primitive getAsPrimitive() {
         if(element.isValueNode()){
             return new JacksonPrimitive((ValueNode) element);
         }

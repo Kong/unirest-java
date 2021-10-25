@@ -29,13 +29,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
-import kong.unirest.json.EngineArray;
-import kong.unirest.json.EngineElement;
+import kong.unirest.json.JsonEngine;
 
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-class GsonArray extends GsonElement<JsonArray> implements EngineArray {
+class GsonArray extends GsonElement<JsonArray> implements JsonEngine.Array {
     GsonArray(JsonArray jsonElement) {
         super(jsonElement);
     }
@@ -50,12 +49,12 @@ class GsonArray extends GsonElement<JsonArray> implements EngineArray {
     }
 
     @Override
-    public EngineElement get(int index) {
+    public JsonEngine.Element get(int index) {
         return GsonEngine.toElement(element.get(index));
     }
 
     @Override
-    public void add(EngineElement obj) {
+    public void add(JsonEngine.Element obj) {
         if(obj == null){
             element.add(JsonNull.INSTANCE);
         } else {
@@ -64,7 +63,7 @@ class GsonArray extends GsonElement<JsonArray> implements EngineArray {
     }
 
     @Override
-    public void set(int index, EngineElement o) {
+    public void set(int index, JsonEngine.Element o) {
         element.set(index, o == null ? JsonNull.INSTANCE : o.getEngineElement());
     }
 
@@ -91,26 +90,26 @@ class GsonArray extends GsonElement<JsonArray> implements EngineArray {
     }
 
     @Override
-    public EngineArray put(int index, Number number) {
+    public JsonEngine.Array put(int index, Number number) {
         element.set(index, new JsonPrimitive(number));
         return this;
     }
 
     @Override
-    public EngineElement put(int index, String str) {
+    public JsonEngine.Element put(int index, String str) {
         element.set(index, new JsonPrimitive(str));
         return this;
     }
 
     @Override
-    public EngineElement put(int index, Boolean number) {
+    public JsonEngine.Element put(int index, Boolean number) {
         element.set(index, new JsonPrimitive(number));
         return this;
     }
 
 
     @Override
-    public EngineElement remove(int index) {
+    public JsonEngine.Element remove(int index) {
         return GsonEngine.toElement(element.remove(index));
     }
 

@@ -28,15 +28,14 @@ package kong.unirest.jackson;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
-import kong.unirest.json.EngineArray;
-import kong.unirest.json.EngineElement;
+import kong.unirest.json.JsonEngine;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-class JacksonArray extends JacksonElement<ArrayNode> implements EngineArray {
+class JacksonArray extends JacksonElement<ArrayNode> implements JsonEngine.Array {
     JacksonArray(ArrayNode element) {
         super(element);
     }
@@ -47,7 +46,7 @@ class JacksonArray extends JacksonElement<ArrayNode> implements EngineArray {
     }
 
     @Override
-    public EngineElement get(int index) {
+    public JsonEngine.Element get(int index) {
         validateIndex(index);
         return wrap(element.get(index));
     }
@@ -60,12 +59,12 @@ class JacksonArray extends JacksonElement<ArrayNode> implements EngineArray {
 
 
     @Override
-    public EngineElement remove(int index) {
+    public JsonEngine.Element remove(int index) {
         return wrap(element.remove(index));
     }
 
     @Override
-    public EngineElement put(int index, Number number) {
+    public JsonEngine.Element put(int index, Number number) {
         if(number instanceof Integer){
             element.insert(index, (Integer) number);
         } else if (number instanceof Double){
@@ -81,19 +80,19 @@ class JacksonArray extends JacksonElement<ArrayNode> implements EngineArray {
     }
 
     @Override
-    public EngineElement put(int index, String value) {
+    public JsonEngine.Element put(int index, String value) {
         element.insert(index, value);
         return this;
     }
 
     @Override
-    public EngineElement put(int index, Boolean value) {
+    public JsonEngine.Element put(int index, Boolean value) {
         element.insert(index, value);
         return this;
     }
 
     @Override
-    public void add(EngineElement obj) {
+    public void add(JsonEngine.Element obj) {
         if(obj == null){
             element.add(NullNode.getInstance());
             return;
@@ -102,7 +101,7 @@ class JacksonArray extends JacksonElement<ArrayNode> implements EngineArray {
     }
 
     @Override
-    public void set(int index, EngineElement o) {
+    public void set(int index, JsonEngine.Element o) {
         if(o == null){
             element.set(index, NullNode.getInstance());
         } else {

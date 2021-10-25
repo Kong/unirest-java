@@ -44,7 +44,7 @@ import static java.util.Objects.requireNonNull;
 public class JSONObject extends JSONElement {
 
     public static final Object NULL = new NullObject();
-    private transient final EngineObject obj;
+    private transient final JsonEngine.Object obj;
 
     /**
      * https://tools.ietf.org/html/rfc7159#section-4
@@ -79,7 +79,7 @@ public class JSONObject extends JSONElement {
     }
 
 
-    JSONObject(EngineElement jsonElement) {
+    JSONObject(JsonEngine.Element jsonElement) {
         super(jsonElement);
         this.obj = jsonElement.getAsJsonObject();
     }
@@ -198,9 +198,6 @@ public class JSONObject extends JSONElement {
         if(o == null){
             return "null";
         }
-        if(o instanceof JSONString){
-            return ((JSONString)o).toJSONString();
-        }
         if(o instanceof JSONElement){
             return o.toString();
         }
@@ -232,7 +229,7 @@ public class JSONObject extends JSONElement {
         return new String[]{};
     }
 
-    EngineElement asElement() {
+    JsonEngine.Element asElement() {
         return obj;
     }
 
@@ -289,7 +286,7 @@ public class JSONObject extends JSONElement {
      * @throws JSONException if the key does not exist
      */
     public Object get(String key) throws JSONException {
-        EngineElement property = getProperty(key);
+        JsonEngine.Element property = getProperty(key);
         return MAPPER.apply(property);
     }
 
@@ -561,7 +558,7 @@ public class JSONObject extends JSONElement {
      * @throws JSONException if the element does not exist or is not a boolean
      */
     public boolean getBoolean(String key) throws JSONException {
-        EngineElement e = getProperty(key);
+        JsonEngine.Element e = getProperty(key);
         if (!e.isJsonPrimitive() || !e.getAsJsonPrimitive().isBoolean()) {
             throw new JSONException("JSONObject[\"%s\"] is not a boolean.", key);
         }
@@ -959,7 +956,7 @@ public class JSONObject extends JSONElement {
         return array;
     }
 
-    private EngineElement getProperty(String key) {
+    private JsonEngine.Element getProperty(String key) {
         if (!obj.has(key)) {
             throw new JSONException("JSONObject[\"%s\"] not found.", key);
         }

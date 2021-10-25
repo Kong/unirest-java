@@ -27,8 +27,7 @@ package kong.unirest.jackson;
 
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import kong.unirest.json.EngineElement;
-import kong.unirest.json.EngineObject;
+import kong.unirest.json.JsonEngine;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -38,7 +37,7 @@ import java.util.Spliterators;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-class JacksonObject extends JacksonElement<ObjectNode> implements EngineObject  {
+class JacksonObject extends JacksonElement<ObjectNode> implements JsonEngine.Object {
 
     public  JacksonObject(ObjectNode element) {
         super(element);
@@ -55,12 +54,12 @@ class JacksonObject extends JacksonElement<ObjectNode> implements EngineObject  
     }
 
     @Override
-    public EngineElement get(String key) {
+    public JsonEngine.Element get(String key) {
         return wrap(element.get(key));
     }
 
     @Override
-    public void add(String key, EngineElement value) {
+    public void add(String key, JsonEngine.Element value) {
         element.set(key, value.getEngineElement());
     }
 
@@ -92,7 +91,7 @@ class JacksonObject extends JacksonElement<ObjectNode> implements EngineObject  
     }
 
     @Override
-    public void addProperty(String key, EngineElement value) {
+    public void addProperty(String key, JsonEngine.Element value) {
         element.set(key, value.getEngineElement());
     }
 

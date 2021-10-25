@@ -51,7 +51,7 @@ public class JacksonEngine implements JsonEngine {
     }
 
     @Override
-    public String toPrettyJson(EngineElement obj) {
+    public String toPrettyJson(Element obj) {
         try {
             return om.writerWithDefaultPrettyPrinter()
                     .writeValueAsString(obj.getEngineElement());
@@ -61,7 +61,7 @@ public class JacksonEngine implements JsonEngine {
     }
 
     @Override
-    public String toJson(EngineElement obj) {
+    public String toJson(Element obj) {
         try {
             return om.writeValueAsString(obj.getEngineElement());
         } catch (JsonProcessingException e) {
@@ -70,7 +70,7 @@ public class JacksonEngine implements JsonEngine {
     }
 
     @Override
-    public void toJson(EngineElement obj, Writer sw) {
+    public void toJson(Element obj, Writer sw) {
         try {
             om.writeValue(sw, obj.getEngineElement());
         } catch (IOException e) {
@@ -79,7 +79,7 @@ public class JacksonEngine implements JsonEngine {
     }
 
     @Override
-    public void toPrettyJson(EngineElement obj, Writer sw) {
+    public void toPrettyJson(Element obj, Writer sw) {
         try {
             om.writerWithDefaultPrettyPrinter()
                     .writeValue(sw, obj.getEngineElement());
@@ -89,17 +89,17 @@ public class JacksonEngine implements JsonEngine {
     }
 
     @Override
-    public EngineElement toJsonTree(Object obj) {
+    public Element toJsonTree(java.lang.Object obj) {
         return JacksonElement.wrap(om.convertValue(obj, JsonNode.class));
     }
 
     @Override
-    public EngineObject newEngineObject() {
+    public Object newEngineObject() {
         return new JacksonObject(om.createObjectNode());
     }
 
     @Override
-    public EngineObject newEngineObject(String string) throws JSONException {
+    public Object newEngineObject(String string) throws JSONException {
         try {
             return new JacksonObject(om.readValue(string, ObjectNode.class));
         } catch (JsonProcessingException e) {
@@ -108,7 +108,7 @@ public class JacksonEngine implements JsonEngine {
     }
 
     @Override
-    public EngineArray newJsonArray(String jsonString) throws JSONException {
+    public Array newJsonArray(String jsonString) throws JSONException {
         try {
             return new JacksonArray(om.readValue(jsonString, ArrayNode.class));
         } catch (JsonProcessingException e) {
@@ -117,15 +117,15 @@ public class JacksonEngine implements JsonEngine {
     }
 
     @Override
-    public EngineArray newJsonArray(Collection<?> collection) {
+    public Array newJsonArray(Collection<?> collection) {
             JacksonArray a = new JacksonArray(om.createArrayNode());
-            for(Object o : collection){
+            for(java.lang.Object o : collection){
                 add(a, o);
             }
             return a;
     }
 
-    private void add(JacksonArray a, Object o) {
+    private void add(JacksonArray a, java.lang.Object o) {
         if(o instanceof Number){
             a.add((Number) o);
         } else if (o instanceof String) {
@@ -134,8 +134,8 @@ public class JacksonEngine implements JsonEngine {
             a.add((Boolean) o);
         }else if(o instanceof JSONElement) {
             a.add(((JSONElement) o).getElement());
-        } else if(o instanceof EngineElement) {
-            a.add((EngineElement) o);
+        } else if(o instanceof Element) {
+            a.add((Element) o);
         } else {
             JsonNode tree = om.convertValue(o, JsonNode.class);
             a.add(JacksonElement.wrap(tree));
@@ -143,17 +143,17 @@ public class JacksonEngine implements JsonEngine {
     }
 
     @Override
-    public EngineArray newEngineArray() {
+    public Array newEngineArray() {
         return new JacksonArray(om.createArrayNode());
     }
 
     @Override
-    public <T> T fromJson(EngineElement obj, Class<T> mapClass) {
+    public <T> T fromJson(Element obj, Class<T> mapClass) {
         return om.convertValue(obj.getEngineElement(), mapClass);
     }
 
     @Override
-    public <T extends Enum> EnginePrimitive newJsonPrimitive(T enumValue) {
+    public <T extends Enum> Primitive newJsonPrimitive(T enumValue) {
             if (enumValue == null){
                 return new JacksonPrimitive(NullNode.getInstance());
             }
@@ -161,12 +161,12 @@ public class JacksonEngine implements JsonEngine {
     }
 
     @Override
-    public EnginePrimitive newJsonPrimitive(String string) {
+    public Primitive newJsonPrimitive(String string) {
         return convert(string, v -> new TextNode(v));
     }
 
     @Override
-    public EnginePrimitive newJsonPrimitive(Number number) {
+    public Primitive newJsonPrimitive(Number number) {
         if(number instanceof Integer) {
             return convert((Integer) number, IntNode::new);
         }else if (number instanceof Long){
@@ -182,7 +182,7 @@ public class JacksonEngine implements JsonEngine {
     }
 
     @Override
-    public EnginePrimitive newJsonPrimitive(Boolean bool) {
+    public Primitive newJsonPrimitive(Boolean bool) {
         return convert(bool, v -> BooleanNode.valueOf(v));
     }
 
@@ -192,7 +192,7 @@ public class JacksonEngine implements JsonEngine {
     }
 
     @Override
-    public String quote(Object s) {
+    public String quote(java.lang.Object s) {
         try {
             return om.writeValueAsString(s);
         } catch (JsonProcessingException e) {
@@ -205,7 +205,7 @@ public class JacksonEngine implements JsonEngine {
         ValueNode getIt(V value) throws JsonProcessingException;
     }
 
-    private <T> EnginePrimitive convert(T value, ValueSupplier<T> supplier){
+    private <T> Primitive convert(T value, ValueSupplier<T> supplier){
         try {
             if (value == null){
                 return new JacksonPrimitive(NullNode.getInstance());
