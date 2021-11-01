@@ -55,11 +55,6 @@ class Invocation implements Expectation, ExpectedResponse {
         this.expected = true;
     }
 
-    public Invocation(Routes routes, HttpRequest request) {
-        this.routes = routes;
-        this.expectedHeaders = request.getHeaders();
-    }
-
     Invocation(Routes routes, Invocation other) {
         this.routes = routes;
         this.response = other.response;
