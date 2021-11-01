@@ -1,3 +1,13 @@
+## 3.13.3
+* Support a way to override Apache HttpClientBuilder options with the Client Builder. All Unirest configs are set first, then the consumer is called which allows consumers to override or add additional configs:
+```java
+ Unirest.config()
+        .httpClient(ApacheClient.builder(c -> c.setMaxConnTotal(5000));
+```
+
+## 3.13.2
+* Allow using a MockResponse in the MockRequestBuilder
+
 ## 3.13.1
 * add some new features to MockClient
     * mockClient.reset() will clear any expectations
