@@ -27,6 +27,7 @@ package kong.unirest.apache;
 
 import BehaviorTests.BddTest;
 import BehaviorTests.MockServer;
+import BehaviorTests.RequestCapture;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.apache.http.HttpRequestInterceptor;
@@ -35,9 +36,12 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.message.BasicHeader;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -72,6 +76,17 @@ public class ApacheClientTest extends BddTest {
                 }));
 
         assertMockResult();
+    }
+
+    @Test
+    void creatingADefaultClientWithCustomConfg() {
+        Unirest.config().httpClient(ApacheClient.builder(c -> c.setDefaultHeaders(Collections.singleton(
+                new BasicHeader("Hot", "Chip")
+        ))));
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("Hot", "Chip");
     }
 
     @Test

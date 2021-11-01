@@ -38,6 +38,7 @@ import java.io.Closeable;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -49,17 +50,17 @@ public class ApacheClient extends BaseApacheClient implements Client {
     private boolean hookset;
 
     public ApacheClient(Config config) {
+        this(config, a -> {});
+    }
+
+    public ApacheClient(Config config, Consumer<HttpClientBuilder> builderConfig) {
         this.config = config;
         security = new SecurityConfig(config);
         manager = security.createManager();
 
-        HttpClientBuilder cb = HttpClients.custom()
-                .setDefaultRequestConfig(RequestOptions.toRequestConfig(config))
-                .setDefaultCredentialsProvider(toApacheCreds(config.getProxy()))
-                .setConnectionManager(manager)
-                .evictIdleConnections(30, TimeUnit.SECONDS);
-
+        HttpClientBuilder cb = HttpClients.custom();
         setOptions(cb);
+        builderConfig.accept(cb);
         client = cb.build();
     }
 
@@ -79,6 +80,11 @@ public class ApacheClient extends BaseApacheClient implements Client {
     }
 
     private void setOptions(HttpClientBuilder cb) {
+        cb.setDefaultRequestConfig(RequestOptions.toRequestConfig(config))
+                .setDefaultCredentialsProvider(toApacheCreds(config.getProxy()))
+                .setConnectionManager(manager)
+                .evictIdleConnections(30, TimeUnit.SECONDS);
+
         security.configureSecurity(cb);
         if (!config.isAutomaticRetries()) {
             cb.disableAutomaticRetries();
@@ -154,22 +160,42 @@ public class ApacheClient extends BaseApacheClient implements Client {
         );
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static Builder builder(Consumer<HttpClientBuilder> configOptions) {
+        return new Builder(configOptions);
+    }
+
     public static Builder builder(HttpClient baseClient) {
         return new Builder(baseClient);
     }
 
     public static class Builder implements Function<Config, Client> {
 
-        private HttpClient baseClient;
+        private final Optional<HttpClient> baseClient;
         private RequestConfigFactory configFactory;
+        private Consumer<HttpClientBuilder> options = c -> {};
 
         public Builder(HttpClient baseClient) {
-            this.baseClient = baseClient;
+            this.baseClient = Optional.ofNullable(baseClient);
+        }
+
+        public Builder() {
+            baseClient = Optional.empty();
+        }
+
+        public Builder(Consumer<HttpClientBuilder> configOptions) {
+            Objects.requireNonNull(configOptions, "Config Options Cannot Be Null");
+            baseClient = Optional.empty();
+            this.options = configOptions;
         }
 
         @Override
         public Client apply(Config config) {
-            ApacheClient apacheClient = new ApacheClient(baseClient, config);
+            ApacheClient apacheClient = baseClient.map(c -> new ApacheClient(c, config))
+                    .orElseGet(() -> new ApacheClient(config, options));
             if(configFactory != null){
                 apacheClient.setConfigFactory(configFactory);
             }
