@@ -41,7 +41,7 @@ import java.util.stream.Stream;
 public class MockClient implements Client, AsyncClient {
     private final Supplier<Config> config;
     private List<Routes> routes = new ArrayList<>();
-    private Invocation defaultResponse;
+    private Invocation defaultResponse = new Invocation();
 
     public MockClient(Supplier<Config> config){
         this.config = config;
@@ -87,7 +87,7 @@ public class MockClient implements Client, AsyncClient {
 
     @Override
     public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer) {
-        Routes exp = findExpecation(request);
+        Routes exp = findExpectation(request);
         Config c = this.config.get();
         c.getUniInterceptor().onRequest(request, c);
         MetricContext metric = c.getMetric().begin(request.toSummary());
@@ -98,7 +98,7 @@ public class MockClient implements Client, AsyncClient {
         return rez;
     }
 
-    private Routes findExpecation(HttpRequest request) {
+    private Routes findExpectation(HttpRequest request) {
         return routes.stream()
                 .filter(e -> e.matches(request))
                 .findFirst()
@@ -184,14 +184,12 @@ public class MockClient implements Client, AsyncClient {
      */
     public void reset() {
         routes.clear();
-        defaultResponse = null;
     }
 
     /**
      * return this status for any request that doesn't match a expectation
      */
     public ExpectedResponse defaultResponse() {
-        this.defaultResponse = new Invocation();
         return this.defaultResponse;
     }
 }
