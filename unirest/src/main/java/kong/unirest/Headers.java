@@ -203,6 +203,16 @@ public class Headers {
         }
     }
 
+    /**
+     * Replace all headers from a given map.
+     * @param headerMap the map of headers
+     */
+    public void replace(Map<String, String> headerMap) {
+        if (headerMap != null) {
+            headerMap.forEach(this::replace);
+        }
+    }
+
     static class Entry implements Header {
 
         private final String name;
