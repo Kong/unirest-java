@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static BehaviorTests.TestUtils.mapOf;
@@ -345,5 +346,17 @@ class HeaderTest extends BddTest {
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertHeader("foo","bar");
+    }
+
+    @Test
+    void replaceHeadersTests() {
+        Unirest.config().addDefaultHeader("foo", "default");
+        Unirest.get(MockServer.GET)
+                .header("foo","bar")
+                .headersReplace(mapOf("foo", "replace", "two", "bar"))
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("foo","replace")
+                .assertHeader("two","bar");
     }
 }
