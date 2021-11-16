@@ -108,6 +108,12 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
+    public R headersReplace(Map<String, String> headerMap) {
+        this.headers.replace(headerMap);
+        return (R) this;
+    }
+
+    @Override
     public R responseEncoding(String encoding) {
         this.responseEncoding = encoding;
         return (R) this;
