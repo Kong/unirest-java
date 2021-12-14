@@ -1,3 +1,9 @@
+## 3.13.5
+* Bump httpasyncclient dependency to 4.1.5 for [bug fixes](http://www.apache.org/dist/httpcomponents/httpasyncclient/RELEASE_NOTES-4.1.x.txt).
+
+## 3.13.4
+* Add ability to override all Headers with a map
+
 ## 3.13.3
 * Support a way to override Apache HttpClientBuilder options with the Client Builder. All Unirest configs are set first, then the consumer is called which allows consumers to override or add additional configs:
 ```java
