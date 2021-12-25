@@ -5,7 +5,6 @@ target
 .DS_Store
 .settings
 release.properties
-META-INF
 .idea
 *.iml
 .gitconfig
