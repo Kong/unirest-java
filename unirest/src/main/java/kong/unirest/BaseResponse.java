@@ -25,6 +25,7 @@
 
 package kong.unirest;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -141,6 +142,9 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
             return null;
         }
         try {
+            if(body instanceof byte[]){
+                return new String((byte[])body, StandardCharsets.UTF_8);
+            }
             return config.getObjectMapper().writeValue(body);
         } catch (Exception e) {
             return String.valueOf(body);

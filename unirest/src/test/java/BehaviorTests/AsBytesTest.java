@@ -29,14 +29,18 @@ import kong.unirest.JacksonObjectMapper;
 import kong.unirest.Unirest;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 class AsBytesTest extends BddTest {
     JacksonObjectMapper om = new JacksonObjectMapper();
 
     @Test
     void getGetResultAsBytes() {
         byte[] content = Unirest.get(MockServer.GET)
-                                .asBytes()
-                                .getBody();
+                .asBytes()
+                .getBody();
 
         RequestCapture cap = om.readValue(content, RequestCapture.class);
 
@@ -58,15 +62,35 @@ class AsBytesTest extends BddTest {
     @Test
     void getGetResultAsBytesAsyncCallback() throws Exception {
         Unirest.get(MockServer.GET)
-                .queryString("fruit","apple")
+                .queryString("fruit", "apple")
                 .asBytesAsync(r -> {
                     RequestCapture cap = om.readValue(r.getBody(), RequestCapture.class);
-                    cap.assertParam("fruit","apple");
+                    cap.assertParam("fruit", "apple");
                     asyncSuccess();
                 })
                 .get()
                 .getBody();
 
         assertAsync();
+    }
+
+    @Test // https://github.com/Kong/unirest-java/issues/424
+    void mappingErrorsFromAsBytes() {
+        MockServer.setStringResponse("howdy");
+        String r = Unirest.get(MockServer.ERROR_RESPONSE)
+                .asBytes()
+                .mapError(String.class);
+
+        assertEquals("howdy", r);
+    }
+
+    @Test // https://github.com/Kong/unirest-java/issues/424
+    void mappingErrorsFromAsBytesMapped() {
+        MockServer.setJsonAsResponse(new Foo("howdy"));
+        Foo r = Unirest.get(MockServer.ERROR_RESPONSE)
+                .asBytes()
+                .mapError(Foo.class);
+
+        assertEquals("howdy", r.bar);
     }
 }
