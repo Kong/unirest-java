@@ -1,5 +1,6 @@
 ## 3.13.5
 * Bump httpasyncclient dependency to 4.1.5 for [bug fixes](http://www.apache.org/dist/httpcomponents/httpasyncclient/RELEASE_NOTES-4.1.x.txt).
+* issue #424 Cannot use response.mapError with ByteResponse 
 
 ## 3.13.4
 * Add ability to override all Headers with a map
