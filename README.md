@@ -7,20 +7,38 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/UnirestJava.svg?style=social)](https://twitter.com/UnirestJava) 
 
 ## Install With [Maven](https://mvnrepository.com/artifact/com.konghq/unirest-java)[:](https://repo.maven.apache.org/maven2/com/konghq/unirest-java/)
+### 🚨 Attention JSON users 🚨
+Unirest now uses a modular json system. If you want to use JSON you MUST include in the pom the JSON implementation you wish to use. This can be either Jackson or Gson.
+
 ```xml
 <!-- Pull in as a traditional dependency -->
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>3.11.09</version>
+    <version>4.0.0-RC2</version>
 </dependency>
 
 <!-- OR as a snazzy new standalone jar with shaded dependencies -->
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>3.11.09</version>
+    <version>4.0.0-RC2</version>
     <classifier>standalone</classifier>
+</dependency>
+
+<!-- ONE of the following, if BOTH are on the path Unirest will pick the first it finds -->
+<!-- GSON -->
+<dependency>
+   <groupId>com.konghq</groupId>
+   <artifactId>unirest-object-mappers-gson</artifactId>
+   <version>4.0.0-RC2</version>
+</dependency>
+
+<!-- Jackson -->
+<dependency>
+   <groupId>com.konghq</groupId>
+   <artifactId>unirest-object-mappers-jackson</artifactId>
+   <version>$4.0.0-RC2</version>
 </dependency>
 
 ```
