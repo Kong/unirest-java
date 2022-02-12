@@ -25,11 +25,11 @@
 
 package kong.tests;
 
-import kong.unirest.HttpMethod;
-import kong.unirest.Unirest;
+import kong.unirest.core.HttpMethod;
+import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
 
-import static kong.unirest.HttpStatus.INTERNAL_SERVER_ERROR;
+import static kong.unirest.core.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ErrorTest extends Base {

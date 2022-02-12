@@ -26,10 +26,8 @@
 package kong.unirest.jackson;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import kong.unirest.UnirestException;
-import kong.unirest.json.JSONObject;
+import kong.unirest.core.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.time.*;

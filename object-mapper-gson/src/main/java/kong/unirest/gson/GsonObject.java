@@ -28,7 +28,7 @@ package kong.unirest.gson;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import kong.unirest.json.JsonEngine;
+import kong.unirest.core.json.JsonEngine;
 
 import java.util.Set;
 

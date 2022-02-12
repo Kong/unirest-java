@@ -26,9 +26,9 @@
 package BehaviorTests;
 
 import com.google.gson.Gson;
-import kong.unirest.HttpResponse;
+import kong.unirest.core.HttpResponse;
 import org.junit.jupiter.api.Test;
-import kong.unirest.Unirest;
+import kong.unirest.core.Unirest;
 
 import java.util.HashMap;
 import java.util.Map;

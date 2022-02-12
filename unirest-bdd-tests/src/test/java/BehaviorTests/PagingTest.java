@@ -26,8 +26,8 @@
 package BehaviorTests;
 
 import org.junit.jupiter.api.Test;
-import kong.unirest.PagedList;
-import kong.unirest.Unirest;
+import kong.unirest.core.PagedList;
+import kong.unirest.core.Unirest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

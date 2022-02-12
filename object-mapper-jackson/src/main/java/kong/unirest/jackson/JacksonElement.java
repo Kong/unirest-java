@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
-import kong.unirest.json.*;
+import kong.unirest.core.json.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

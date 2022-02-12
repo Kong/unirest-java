@@ -30,9 +30,9 @@ import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.node.*;
-import kong.unirest.ObjectMapper;
-import kong.unirest.UnirestException;
-import kong.unirest.json.*;
+import kong.unirest.core.ObjectMapper;
+import kong.unirest.core.UnirestException;
+import kong.unirest.core.json.*;
 
 import java.io.IOException;
 import java.io.Writer;

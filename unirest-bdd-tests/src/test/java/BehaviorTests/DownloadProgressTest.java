@@ -25,14 +25,12 @@
 
 package BehaviorTests;
 
-import kong.unirest.Unirest;
+import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
 
 class DownloadProgressTest extends BddTest {
     @TempDir

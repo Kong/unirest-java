@@ -25,8 +25,8 @@
 
 package BehaviorTests;
 
-import kong.unirest.ObjectMapper;
-import kong.unirest.Unirest;
+import kong.unirest.core.ObjectMapper;
+import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

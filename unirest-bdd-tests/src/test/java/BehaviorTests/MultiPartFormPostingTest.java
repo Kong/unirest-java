@@ -25,7 +25,9 @@
 
 package BehaviorTests;
 
-import kong.unirest.*;
+import kong.unirest.core.ContentType;
+import kong.unirest.core.MultipartMode;
+import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;

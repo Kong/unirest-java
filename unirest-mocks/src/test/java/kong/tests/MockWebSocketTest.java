@@ -26,8 +26,8 @@
 package kong.tests;
 
 
-import kong.unirest.MockWebSocket;
-import kong.unirest.SocketSet;
+import kong.unirest.core.MockWebSocket;
+import kong.unirest.core.SocketSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -25,10 +25,10 @@
 
 package kong.tests;
 
-import kong.unirest.Unirest;
+import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
 
-import static kong.unirest.HttpMethod.GET;
+import static kong.unirest.core.HttpMethod.GET;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MultipleExpectsTest extends Base {

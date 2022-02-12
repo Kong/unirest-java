@@ -50,9 +50,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 package kong.unirest.gson;
 
 import com.google.gson.*;
-import kong.unirest.GenericType;
-import kong.unirest.ObjectMapper;
-import kong.unirest.UnirestException;
+import kong.unirest.core.GenericType;
+import kong.unirest.core.ObjectMapper;
+import kong.unirest.core.UnirestException;
 
 import java.lang.reflect.Type;
 import java.time.*;

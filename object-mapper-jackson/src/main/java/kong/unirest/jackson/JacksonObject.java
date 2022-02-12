@@ -27,7 +27,7 @@ package kong.unirest.jackson;
 
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import kong.unirest.json.JsonEngine;
+import kong.unirest.core.json.JsonEngine;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

@@ -51,8 +51,7 @@ package kong.unirest.jackson;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kong.unirest.GenericType;
-import kong.unirest.jackson.JacksonObjectMapper;
+import kong.unirest.core.GenericType;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;

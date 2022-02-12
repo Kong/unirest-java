@@ -16,5 +16,5 @@
     <suppress checks="MethodLength" files="CoreFactory.java"/>
 
     <!-- tmp while we work this out -->
-    <suppress checks="." files="kong[\\/]unirest[\\/]java[\\/]"/>
+    <suppress checks="." files="kong[\\/]unirest[\\/]core[\\/]java[\\/]"/>
 </suppressions>

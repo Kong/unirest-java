@@ -25,8 +25,8 @@
 
 package BehaviorTests;
 
-import kong.unirest.Unirest;
-import kong.unirest.json.JSONObject;
+import kong.unirest.core.Unirest;
+import kong.unirest.core.json.JSONObject;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

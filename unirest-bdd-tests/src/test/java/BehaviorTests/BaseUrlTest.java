@@ -25,7 +25,7 @@
 
 package BehaviorTests;
 
-import kong.unirest.Unirest;
+import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
 
 class BaseUrlTest extends BddTest {

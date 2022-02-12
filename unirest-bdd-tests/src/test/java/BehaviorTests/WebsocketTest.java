@@ -25,14 +25,13 @@
 
 package BehaviorTests;
 
-import kong.unirest.Unirest;
+import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
 
 import java.net.http.WebSocket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

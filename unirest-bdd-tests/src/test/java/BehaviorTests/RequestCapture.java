@@ -32,7 +32,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 import io.javalin.http.Context;
-import kong.unirest.*;
+import kong.unirest.core.*;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.System.getProperty;
-import static kong.unirest.JsonPatchRequest.CONTENT_TYPE;
+import static kong.unirest.core.JsonPatchRequest.CONTENT_TYPE;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RequestCapture {

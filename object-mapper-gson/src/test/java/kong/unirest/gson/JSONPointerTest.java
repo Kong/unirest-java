@@ -27,9 +27,9 @@ package kong.unirest.gson;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import kong.unirest.json.JSONObject;
-import kong.unirest.json.JSONPointer;
-import kong.unirest.json.JSONPointerException;
+import kong.unirest.core.json.JSONObject;
+import kong.unirest.core.json.JSONPointer;
+import kong.unirest.core.json.JSONPointerException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 

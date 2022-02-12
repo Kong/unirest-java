@@ -25,14 +25,15 @@
 
 package kong.tests;
 
-import kong.unirest.HttpMethod;
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
-import kong.unirest.json.JSONObject;
+import kong.unirest.core.HttpMethod;
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.ObjectMapper;
+import kong.unirest.core.Unirest;
+import kong.unirest.core.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
-import static kong.unirest.HttpMethod.GET;
-import static kong.unirest.HttpStatus.BAD_REQUEST;
+import static kong.unirest.core.HttpMethod.GET;
+import static kong.unirest.core.HttpStatus.BAD_REQUEST;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ExpectedResponseTest extends Base {
@@ -150,7 +151,7 @@ class ExpectedResponseTest extends Base {
         assertEquals("grover", rez.getHeaders().getFirst("monster"));
     }
 
-    private class DerpMapper implements kong.unirest.ObjectMapper {
+    private class DerpMapper implements ObjectMapper {
         @Override
         public <T> T readValue(String value, Class<T> valueType) {
             return (T)value;

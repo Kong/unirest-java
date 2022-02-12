@@ -26,9 +26,9 @@
 package BehaviorTests;
 
 import com.google.common.cache.CacheBuilder;
-import kong.unirest.Cache;
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
+import kong.unirest.core.Cache;
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;

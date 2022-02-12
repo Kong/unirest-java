@@ -25,7 +25,9 @@
 
 package kong.tests;
 
-import kong.unirest.*;
+import kong.unirest.core.MockClient;
+import kong.unirest.core.Unirest;
+import kong.unirest.core.UnirestInstance;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;

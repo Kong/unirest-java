@@ -26,10 +26,10 @@
 package BehaviorTests;
 
 import com.google.common.collect.ArrayListMultimap;
-import kong.unirest.HttpRequestSummary;
-import kong.unirest.HttpResponseSummary;
-import kong.unirest.MetricContext;
-import kong.unirest.UniMetric;
+import kong.unirest.core.HttpRequestSummary;
+import kong.unirest.core.HttpResponseSummary;
+import kong.unirest.core.MetricContext;
+import kong.unirest.core.UniMetric;
 
 import java.util.function.Function;
 

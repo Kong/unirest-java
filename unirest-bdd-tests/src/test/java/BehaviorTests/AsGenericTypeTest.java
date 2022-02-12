@@ -25,8 +25,8 @@
 
 package BehaviorTests;
 
-import kong.unirest.Unirest;
-import kong.unirest.GenericType;
+import kong.unirest.core.Unirest;
+import kong.unirest.core.GenericType;
 import kong.unirest.gson.GsonObjectMapper;
 import org.junit.jupiter.api.Test;
 

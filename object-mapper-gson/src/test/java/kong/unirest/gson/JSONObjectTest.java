@@ -26,8 +26,8 @@
 package kong.unirest.gson;
 
 
-import kong.unirest.UnirestException;
-import kong.unirest.json.*;
+import kong.unirest.core.UnirestException;
+import kong.unirest.core.json.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.skyscreamer.jsonassert.JSONAssert;

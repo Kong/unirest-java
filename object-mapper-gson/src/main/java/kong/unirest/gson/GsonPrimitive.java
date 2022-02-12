@@ -26,7 +26,7 @@
 package kong.unirest.gson;
 
 import com.google.gson.JsonPrimitive;
-import kong.unirest.json.JsonEngine;
+import kong.unirest.core.json.JsonEngine;
 
 class GsonPrimitive extends GsonElement<JsonPrimitive> implements JsonEngine.Primitive {
 

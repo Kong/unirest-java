@@ -25,12 +25,11 @@
 
 package BehaviorTests;
 
-import kong.unirest.Proxy;
+import kong.unirest.core.Proxy;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
+import kong.unirest.core.Unirest;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

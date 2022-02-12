@@ -25,8 +25,7 @@
 
 package BehaviorTests;
 
-import kong.unirest.*;
-
+import kong.unirest.core.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;

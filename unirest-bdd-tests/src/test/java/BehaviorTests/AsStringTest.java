@@ -28,8 +28,8 @@ package BehaviorTests;
 import io.javalin.core.util.Header;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.Unirest;
 
 import java.util.concurrent.CompletableFuture;
 

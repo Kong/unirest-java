@@ -25,11 +25,11 @@
 
 package BehaviorTests;
 
-import kong.unirest.GetRequest;
+import kong.unirest.core.GetRequest;
 
-import kong.unirest.Unirest;
-import kong.unirest.UnirestException;
-import kong.unirest.java.SSLContextBuilder;
+import kong.unirest.core.Unirest;
+import kong.unirest.core.UnirestException;
+import kong.unirest.core.java.SSLContextBuilder;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

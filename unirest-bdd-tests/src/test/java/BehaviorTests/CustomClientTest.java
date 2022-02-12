@@ -26,10 +26,10 @@
 package BehaviorTests;
 
 
-import kong.unirest.Client;
-import kong.unirest.HttpRequest;
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
+import kong.unirest.core.Client;
+import kong.unirest.core.HttpRequest;
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.Function;

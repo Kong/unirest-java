@@ -51,8 +51,7 @@ package kong.unirest.gson;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import kong.unirest.GenericType;
-import kong.unirest.gson.GsonObjectMapper;
+import kong.unirest.core.GenericType;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 

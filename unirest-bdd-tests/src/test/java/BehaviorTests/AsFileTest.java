@@ -25,10 +25,10 @@
 
 package BehaviorTests;
 
-import kong.unirest.HttpResponse;
+import kong.unirest.core.HttpResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import kong.unirest.Unirest;
+import kong.unirest.core.Unirest;
 
 import java.io.File;
 import java.nio.file.FileAlreadyExistsException;

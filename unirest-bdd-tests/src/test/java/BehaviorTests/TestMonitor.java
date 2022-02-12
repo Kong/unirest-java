@@ -26,7 +26,7 @@
 package BehaviorTests;
 
 import com.google.common.base.Strings;
-import kong.unirest.ProgressMonitor;
+import kong.unirest.core.ProgressMonitor;
 
 import java.io.File;
 import java.util.ArrayList;

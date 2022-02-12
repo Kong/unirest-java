@@ -35,9 +35,9 @@ Several reasons:
 ### How was this done?
 Implementation was done without looking at the internals of the org.json classes. This was accomplished by  writing extensive unit tests in order to document behavior and method signatures and then simply changing the test to use this projects own classes as well as Google Gson.
 
-### Differences between org.json and kong.unirest.json
-* The namespace is now ```kong.unirest.json```
-* For the most part kong.unirest.json honors all public interfaces and behavior of ```JSONArray```, ```JSONObject```, and ```JSONPointer```. 
+### Differences between org.json and kong.unirest.core.json
+* The namespace is now ```kong.unirest.core.json```
+* For the most part kong.unirest.core.json honors all public interfaces and behavior of ```JSONArray```, ```JSONObject```, and ```JSONPointer```. 
 * The utility classes in org.json have NOT been implemented as they are not required for Unirest's use case. So things like XML-to-JSON, and CSV-to-JSON have not been implemented.
 * Custom indenting with ```.toString(int spaces)``` does not honor the indent factor and always uses 2 spaces. Waiting on https://github.com/google/gson/pull/1280 for a fix.
 * There are some slight differences in the details of some error messages.

@@ -25,15 +25,14 @@
 
 package BehaviorTests;
 
-import kong.unirest.GetRequest;
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
+import kong.unirest.core.GetRequest;
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.JsonNode;
+import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static BehaviorTests.TestUtil.mapOf;

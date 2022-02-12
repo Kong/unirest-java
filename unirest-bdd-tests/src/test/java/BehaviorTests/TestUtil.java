@@ -29,10 +29,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import kong.unirest.Client;
-import kong.unirest.Config;
-import kong.unirest.Unirest;
-import kong.unirest.java.JavaClient;
+import kong.unirest.core.Client;
+import kong.unirest.core.Unirest;
+import kong.unirest.core.java.JavaClient;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,7 +43,6 @@ import java.net.http.HttpResponse;
 import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;

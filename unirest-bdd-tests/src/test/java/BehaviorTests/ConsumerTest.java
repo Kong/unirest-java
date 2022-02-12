@@ -28,7 +28,7 @@ package BehaviorTests;
 import com.google.common.base.Throwables;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import kong.unirest.Unirest;
+import kong.unirest.core.Unirest;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

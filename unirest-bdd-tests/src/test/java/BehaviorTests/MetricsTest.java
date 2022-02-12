@@ -25,9 +25,9 @@
 
 package BehaviorTests;
 
-import kong.unirest.HttpRequestSummary;
+import kong.unirest.core.HttpRequestSummary;
 
-import kong.unirest.Unirest;
+import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

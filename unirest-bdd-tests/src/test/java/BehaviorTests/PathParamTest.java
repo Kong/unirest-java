@@ -26,8 +26,8 @@
 package BehaviorTests;
 
 import com.google.common.collect.ImmutableMap;
-import kong.unirest.Unirest;
-import kong.unirest.UnirestException;
+import kong.unirest.core.Unirest;
+import kong.unirest.core.UnirestException;
 import org.junit.jupiter.api.Test;
 
 import java.net.URLEncoder;

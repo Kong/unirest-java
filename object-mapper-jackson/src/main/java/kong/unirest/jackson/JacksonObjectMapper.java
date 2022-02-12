@@ -53,9 +53,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import kong.unirest.GenericType;
-import kong.unirest.ObjectMapper;
-import kong.unirest.UnirestException;
+import kong.unirest.core.GenericType;
+import kong.unirest.core.ObjectMapper;
+import kong.unirest.core.UnirestException;
 
 import java.io.IOException;
 import java.util.function.Consumer;

@@ -25,8 +25,8 @@
 
 package BehaviorTests;
 
-import kong.unirest.*;
-import kong.unirest.json.JSONObject;
+import kong.unirest.core.*;
+import kong.unirest.core.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -106,7 +106,7 @@ class AsJsonTest extends BddTest {
         assertTrue(response.getParsingError().isPresent());
         UnirestParsingException ex = response.getParsingError().get();
         assertEquals("You did something bad", ex.getOriginalBody());
-        assertEquals("kong.unirest.json.JSONException: Invalid JSON",
+        assertEquals("kong.unirest.core.json.JSONException: Invalid JSON",
                 response.getParsingError().get().getMessage());
 
     }
@@ -118,7 +118,7 @@ class AsJsonTest extends BddTest {
                     assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
                     assertNull(response.getBody());
                     assertTrue(response.getParsingError().isPresent());
-                    assertEquals("kong.unirest.json.JSONException: Invalid JSON",
+                    assertEquals("kong.unirest.core.json.JSONException: Invalid JSON",
                             response.getParsingError().get().getMessage());
 
                 }));

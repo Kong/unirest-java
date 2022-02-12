@@ -30,8 +30,8 @@ import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import kong.unirest.ObjectMapper;
-import kong.unirest.json.*;
+import kong.unirest.core.ObjectMapper;
+import kong.unirest.core.json.*;
 
 import java.io.IOException;
 import java.io.Writer;

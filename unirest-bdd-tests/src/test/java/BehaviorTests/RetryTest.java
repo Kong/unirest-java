@@ -25,7 +25,7 @@
 
 package BehaviorTests;
 
-import kong.unirest.*;
+import kong.unirest.core.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

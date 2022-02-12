@@ -26,8 +26,8 @@
 package BehaviorTests;
 
 import com.google.common.collect.Lists;
-import kong.unirest.Headers;
-import kong.unirest.Unirest;
+import kong.unirest.core.Headers;
+import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

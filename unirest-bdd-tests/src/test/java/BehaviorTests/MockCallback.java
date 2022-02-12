@@ -25,10 +25,10 @@
 
 package BehaviorTests;
 
-import kong.unirest.Callback;
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
-import kong.unirest.UnirestException;
+import kong.unirest.core.Callback;
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.JsonNode;
+import kong.unirest.core.UnirestException;
 
 import java.util.function.Consumer;
 

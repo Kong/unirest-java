@@ -25,7 +25,8 @@
 
 package kong.tests;
 
-import kong.unirest.*;
+import kong.unirest.core.HttpMethod;
+import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;

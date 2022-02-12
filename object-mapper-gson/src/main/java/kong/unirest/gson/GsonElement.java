@@ -26,7 +26,7 @@
 package kong.unirest.gson;
 
 import com.google.gson.*;
-import kong.unirest.json.*;
+import kong.unirest.core.json.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

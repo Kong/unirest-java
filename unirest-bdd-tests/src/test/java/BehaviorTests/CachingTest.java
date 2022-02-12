@@ -25,7 +25,10 @@
 
 package BehaviorTests;
 
-import kong.unirest.*;
+import kong.unirest.core.Clock;
+import kong.unirest.core.HttpResponse;
+import kong.unirest.core.JsonNode;
+import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -34,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import static com.google.common.collect.ImmutableMap.of;
-import static kong.unirest.Cache.builder;
+import static kong.unirest.core.Cache.builder;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CachingTest extends BddTest {

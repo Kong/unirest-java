@@ -26,7 +26,7 @@
 package BehaviorTests;
 
 
-import kong.unirest.JsonPatch;
+import kong.unirest.core.JsonPatch;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;

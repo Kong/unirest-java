@@ -27,7 +27,7 @@ package BehaviorTests;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.gson.Gson;
-import kong.unirest.*;
+import kong.unirest.core.*;
 import kong.unirest.gson.GsonObjectMapper;
 import org.junit.jupiter.api.Test;
 
@@ -157,7 +157,7 @@ class AsObjectTest extends BddTest {
 
         assertNull(request.getBody());
         assertTrue(request.getParsingError().isPresent());
-        assertEquals("kong.unirest.UnirestException: com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'You': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n" +
+        assertEquals("kong.unirest.core.UnirestException: com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'You': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n" +
                 " at [Source: (String)\"You did something bad\"; line: 1, column: 4]", request.getParsingError().get().getMessage());
         assertEquals("You did something bad", request.getParsingError().get().getOriginalBody());
 
@@ -170,7 +170,7 @@ class AsObjectTest extends BddTest {
 
         assertNull(request.getBody());
         assertTrue(request.getParsingError().isPresent());
-        assertEquals("kong.unirest.UnirestException: com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'You': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n" +
+        assertEquals("kong.unirest.core.UnirestException: com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'You': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n" +
                 " at [Source: (String)\"You did something bad\"; line: 1, column: 4]", request.getParsingError().get().getMessage());
         assertEquals("You did something bad", request.getParsingError().get().getOriginalBody());
     }
@@ -182,7 +182,7 @@ class AsObjectTest extends BddTest {
 
         assertNull(request.getBody());
         assertTrue(request.getParsingError().isPresent());
-        assertEquals("kong.unirest.UnirestException: com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'You': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n" +
+        assertEquals("kong.unirest.core.UnirestException: com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'You': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n" +
                 " at [Source: (String)\"You did something bad\"; line: 1, column: 4]", request.getParsingError().get().getMessage());
         assertEquals("You did something bad", request.getParsingError().get().getOriginalBody());
     }
