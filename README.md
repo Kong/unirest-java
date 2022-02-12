@@ -15,14 +15,14 @@ Unirest now uses a modular json system. If you want to use JSON you MUST include
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>4.0.0-RC2</version>
+    <version>4.0.0-RC3</version>
 </dependency>
 
 <!-- OR as a snazzy new standalone jar with shaded dependencies -->
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java</artifactId>
-    <version>4.0.0-RC2</version>
+    <version>4.0.0-RC3</version>
     <classifier>standalone</classifier>
 </dependency>
 
@@ -31,14 +31,14 @@ Unirest now uses a modular json system. If you want to use JSON you MUST include
 <dependency>
    <groupId>com.konghq</groupId>
    <artifactId>unirest-object-mappers-gson</artifactId>
-   <version>4.0.0-RC2</version>
+   <version>4.0.0-RC3</version>
 </dependency>
 
 <!-- Jackson -->
 <dependency>
    <groupId>com.konghq</groupId>
    <artifactId>unirest-object-mappers-jackson</artifactId>
-   <version>$4.0.0-RC2</version>
+   <version>$4.0.0-RC3</version>
 </dependency>
 
 ```

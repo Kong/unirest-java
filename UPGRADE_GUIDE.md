@@ -1,12 +1,57 @@
 # Upgrade Guide
 
 ## Upgrading to Unirest 4.0
-Unirest 4 drops the Apache Http Client dependency in favor of the pure Java client. Due to engine changes there are some differences in behavior. Efforts have been made to limit these changes. The others are documented here.
+ 🚨 **Unirest 4 drops the Apache Http Client dependency in favor of the pure Java client** 🚨. This means that unirest 4 has a dependency on Java-11. Unirest 3 will continue to be supported for bugs and minor features. If you still haven't upgraded from Java 8 now is the time!  
+
+Due to engine changes there are some differences in behavior. Efforts have been made to limit these changes. The others are documented here.
+
+### How to upgrade
+* The core Unirest package has been moved from ```kong.unirest``` to ```kong.unirest.core```, this prevents classloader issues where Unirest 4 may conflict with previous versions which may also be on the classpath.
+* Unirest no longer comes with GSON as a default JSON parser. In order to enable JSON support you must include either the GSON or Jackson JSON packages with:
+```xml
+<dependency>
+  <groupId>com.konghq</groupId>
+  <artifactId>unirest-object-mappers-gson</artifactId>
+  <version>4.0.0-RC3</version>
+</dependency>
+<!-- or -->
+<dependency>
+  <groupId>com.konghq</groupId>
+  <artifactId>unirest-object-mappers-jackson</artifactId>
+  <version>4.0.0-RC3</version>
+</dependency>
+```
+* In order to assist with the various modules Unirest now includes a dependency management BOM. Include the BOM in your dependency management section and then just declare the modules you want without the version.
+
+```xml
+<dependencyManagement>
+  <dependencies>
+      <dependency>
+          <groupId>com.konghq</groupId>
+          <artifactId>unirest-java-bom</artifactId>
+          <version>4.0.0-RC3</version>
+          <type>pom</type>
+          <scope>import</scope>
+      </dependency>
+  </dependencies>
+</dependencyManagement>
+
+<dependencies>
+  <dependency>
+    <groupId>com.konghq</groupId>
+    <artifactId>unirest-java</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>com.konghq</groupId>
+    <artifactId>unirest-object-mappers-gson</artifactId>
+  </dependency>
+</dependencies>
+```
 
 ### Differences
 * null header values are now represented by an empty string rather than null.
 * response headers may return a different order that with Apache.
-* You may not normally override the `host` header anymore. Starting with Java12 you may only due this by setting a system property of jdk.httpclient.allowRestrictedHeaders=host. see https://bugs.openjdk.java.net/browse/JDK-8213696
+* You may not normally override the `host` header anymore. Starting with Java-12 you may only due this by setting a system property of jdk.httpclient.allowRestrictedHeaders=host. see https://bugs.openjdk.java.net/browse/JDK-8213696
 * Cookie management follows more modern standards and may differ from apache with regard to non-standard parsing. 
    * related: ```config.cookieSpec(String)``` has been removed as it was Apache specific.
 * Per-Request proxies are no longer supported.  
