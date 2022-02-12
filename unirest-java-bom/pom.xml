@@ -19,7 +19,7 @@
         <dependencies>
             <dependency>
                 <groupId>com.konghq</groupId>
-                <artifactId>unirest-object-core</artifactId>
+                <artifactId>unirest-java-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
