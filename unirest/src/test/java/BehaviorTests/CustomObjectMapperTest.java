@@ -31,8 +31,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 class CustomObjectMapperTest extends BddTest {

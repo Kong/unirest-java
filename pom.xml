@@ -30,8 +30,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <jackson.version>2.13.2</jackson.version>
         <main.dir>${project.basedir}</main.dir>
-        <junit.version>5.7.2</junit.version>
-        <mockito.version>3.12.4</mockito.version>
+        <junit.version>5.8.2</junit.version>
+        <mockito.version>4.3.1</mockito.version>
         <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
     </properties>
 
@@ -436,7 +436,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>30.1.1-jre</version>
+            <version>31.1-jre</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
