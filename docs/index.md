@@ -354,7 +354,7 @@ Most of the time when consuming RESTful services you probably want to map the re
 
 For this you need to provide the Unirest configuration with a implementation of ```ObjectMapper``` (see [Object Mappers](#object-mappers) for details.).
 
-If the response is JSON you are in luck and Unirest comes with a basic ```JsonObjectMapper``` basic on Google GSON  
+If the response is JSON you are in luck and Unirest comes with a basic ```JsonObjectMapper``` based on Google GSON.  
 
 Before an `asObject(Class)` it is necessary to provide a custom implementation of the `ObjectMapper` interface (if you do not wish to use the default mapper). This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
 
