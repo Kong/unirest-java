@@ -25,9 +25,9 @@
 
 package kong.unirest;
 
-import com.google.common.collect.Sets;
 import org.junit.jupiter.api.Test;
 
+import static java.util.Arrays.asList;
 import static kong.unirest.HttpMethod.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,8 +47,16 @@ class HttpMethodTest {
     }
 
     @Test
-    void shouldReturnAllMethods() {
-        assertEquals(Sets.newHashSet(GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS, HttpMethod.TRACE), HttpMethod.all());
+    void shouldReturnAllStandardMethods() {
+        for (HttpMethod method : asList(GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS, TRACE)) {
+            assertTrue(HttpMethod.all().contains(method));
+        }
+    }
+
+    @Test
+    void allIsCompatibileBackwards() {
+        //noinspection AccessStaticViaInstance
+        assertEquals(HttpMethod.GET.all(), HttpMethod.all());
     }
 
 }
