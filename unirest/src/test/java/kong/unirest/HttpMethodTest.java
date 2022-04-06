@@ -27,6 +27,8 @@ package kong.unirest;
 
 import org.junit.jupiter.api.Test;
 
+import static java.util.Arrays.asList;
+import static kong.unirest.HttpMethod.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HttpMethodTest {
@@ -39,9 +41,22 @@ class HttpMethodTest {
         assertNotEquals(HttpMethod.GET, HttpMethod.PUT);
     }
 
-
     @Test
     void notCaseSensitive() {
         assertEquals(HttpMethod.valueOf("GET"), HttpMethod.valueOf("get"));
     }
+
+    @Test
+    void shouldReturnAllStandardMethods() {
+        for (HttpMethod method : asList(GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS, TRACE)) {
+            assertTrue(HttpMethod.all().contains(method));
+        }
+    }
+
+    @Test
+    void allIsCompatibileBackwards() {
+        //noinspection AccessStaticViaInstance
+        assertEquals(HttpMethod.GET.all(), HttpMethod.all());
+    }
+
 }

@@ -52,7 +52,7 @@ public class HttpMethod {
 		return REGISTRY.computeIfAbsent(String.valueOf(verb).toUpperCase(), HttpMethod::new);
 	}
 
-	public Set<HttpMethod> all(){
+	public static Set<HttpMethod> all(){
 		return new HashSet<>(REGISTRY.values());
 	}
 
