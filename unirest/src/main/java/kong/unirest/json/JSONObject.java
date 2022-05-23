@@ -113,7 +113,7 @@ public class JSONObject extends JSONElement {
      * @return a object
      */
     public static Object stringToValue(String str) {
-        if(str.contentEquals("null")){
+        if(str == null || str.contentEquals("null")){
             return NULL;
         } else if (str.equalsIgnoreCase("true")){
             return true;

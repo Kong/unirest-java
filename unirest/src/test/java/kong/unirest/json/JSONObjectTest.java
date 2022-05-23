@@ -552,8 +552,6 @@ class JSONObjectTest {
         assertEquals(42, JSONObject.stringToValue("42"));
         assertEquals(45.25, JSONObject.stringToValue("45.25"));
         assertEquals(-45.25, JSONObject.stringToValue("-45.25"));
-        NullPointerException ex = assertThrows(NullPointerException.class, () -> JSONObject.stringToValue(null));
-        assertEquals(null, ex.getMessage());
     }
 
     @Test
