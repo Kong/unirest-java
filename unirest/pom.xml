@@ -51,6 +51,14 @@
             </exclusions>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+        <!-- pulling up due to issue:  https://ossindex.sonatype.org/component/pkg:maven/commons-codec/commons-codec@1.11?utm_source=ossindex-client&utm_medium=integration&utm_content=1.1.1 -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.15</version>
+        </dependency>
+
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
