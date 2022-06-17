@@ -4,43 +4,6 @@ title: Documentation
 rightmenu: true
 ---
 
-<div id="spy-nav" class="right-menu" markdown="1">
-- [Requests](#requests)
-  - [Route Parameters](#route-parameters)
-  - [Query Parameters](#query-parameters)
-  - [Headers](#headers)
-    - [Basic Authentication](#basic-authentication)
-  - [Body Data](#body-data)
-    - [Entity Bodies](#entity-bodies)
-    - [JSON Patch Bodies](#json-patch-bodies)
-    - [Basic Forms](#basic-forms)
-    - [File Uploads](#file-uploads)
-    - [Upload Progress Monitoring](#upload-progress-monitoring)
-  - [Asynchronous Requests](#asynchronous-requests)
-  - [Paged Requests](#paged-requests)
-  - [Client Certificates](#client-certificates)
-  - [Proxies](#proxies)
-- [Responses](#responses)
-  - [Empty Responses](#empty-responses)
-  - [String Responses](#string-responses)
-  - [Object Mapped Responses](#object-mapped-responses)
-    - [Errors in Object or JSON parsing](#errors-in-object-or-json-parsing)
-    - [Mapping Error Objects](#mapping-error-objects)
-    - [Mapping one body type to another without an object mapper](#mapping-one-body-type-to-another-without-an-object-mapper)
-  - [File Responses](#file-responses)
-  - [JSON responses](#json-responses)
-  - [Large Responses](#large-responses)
-  - [Error Handling](#error-handling)
-  - [Caching](#caching)
-- [Configuration](#configuration)
-  - [Config Options](#config-options)
-  - [Custom Apache Clients](#custom-apache-clients)
-  - [Multiple Configurations](#multiple-configurations)
-  - [Object Mappers](#object-mappers)
-  - [Metrics](#metrics)
-- [Shutting Down](#shutting-down)
-</div>
-
 <h1 class="no-margin-top">Documentation</h1>
 
 ### Install With [Maven](https://mvnrepository.com/artifact/com.konghq/unirest-java)[:](https://repo.maven.apache.org/maven2/com/konghq/unirest-java/)
