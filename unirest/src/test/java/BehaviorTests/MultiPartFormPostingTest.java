@@ -57,6 +57,24 @@ class MultiPartFormPostingTest extends BddTest {
     }
 
     @Test
+    void overridingForcingMultiTypeOverridesHeader(){
+        Unirest.config().setDefaultHeader("Accept", "application/json")
+                .setDefaultHeader("Content-Type", "application/json")
+                .setDefaultHeader("Authorization", "Bearer xxx-abc-123");
+
+        Unirest.post(MockServer.POST)
+                .basicAuth("username", "password")
+                .multiPartContent()
+                .field("username", "xxx")
+                .field("token", "abc")
+                .field("grant_type", "password")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeaderSize("Content-Type", 1)
+                .assertMultiPartContentType();
+    }
+
+    @Test
     void testMultipart() throws Exception {
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")

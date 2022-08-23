@@ -201,6 +201,7 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
 
     MultipartBody forceMultiPart(boolean value) {
         forceMulti = value;
+        headers.remove("Content-Type");
         return this;
     }
 }
