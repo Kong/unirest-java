@@ -1,3 +1,16 @@
+## 3.13.11
+* Content-Type should be overwritten rather than adding a second Content-Type
+* Forcing multipart overrides content-type headers
+
+## 3.13.9
+* Bypass silly NPE in Json Parsing
+
+## 3.13.8
+* Made HttpMethod::all static
+
+## 3.13.7
+* Dependency upgrades
+
 ## 3.13.6
 * issue #424 Cannot use response.mapError with ByteResponse
 
