@@ -124,7 +124,7 @@ public class RequestCapture {
                     buildUrlEncodedParamPart(p);
                 }
             }
-        } catch (ServletException e) {
+        } catch (ServletException | IOException e) {
             this.body = req.body();
             parseBodyToFormParams();
         } catch (Exception e) {

@@ -137,7 +137,7 @@ class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRe
 
 	@Override
 	public HttpRequestWithBody contentType(String type) {
-		headers.add("Content-Type", type);
+		headers.replace("Content-Type", type);
 		return this;
 	}
 

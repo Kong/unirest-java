@@ -39,6 +39,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class MultiPartFormPostingTest extends BddTest {
 
     @Test
+    void overridingContentType(){
+        Unirest.config().setDefaultHeader("Accept", "application/json")
+                .setDefaultHeader("Content-Type", "application/json")
+                .setDefaultHeader("Authorization", "Bearer xxx-abc-123");
+
+        Unirest.post(MockServer.POST)
+                .basicAuth("username", "password")
+                .contentType("multipart/form-data")
+                .field("username", "xxx")
+                .field("token", "abc")
+                .field("grant_type", "password")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeaderSize("Content-Type", 1)
+                .assertHeader("Content-Type", "multipart/form-data");
+    }
+
+    @Test
     void testMultipart() throws Exception {
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
