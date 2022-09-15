@@ -30,6 +30,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import kong.unirest.AsyncClient;
+import kong.unirest.Client;
+import kong.unirest.Unirest;
+import kong.unirest.Util;
 import kong.unirest.apache.ApacheAsyncClient;
 import kong.unirest.apache.ApacheClient;
 import org.apache.http.HttpHost;
@@ -40,8 +44,6 @@ import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyStore;
 import java.time.Instant;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -80,7 +82,6 @@ public class TestUtil {
     }
 
 
-
     public static Client getFailureClient() throws IOException {
         HttpClient client = mock(HttpClient.class);
         when(client.execute(any(HttpHost.class), any(HttpUriRequest.class))).thenThrow(new IOException("Something horrible happened"));
@@ -91,8 +92,8 @@ public class TestUtil {
     public static AsyncClient getFailureAsyncClient() {
         CloseableHttpAsyncClient client = HttpAsyncClientBuilder.create()
                 .addInterceptorFirst((HttpRequestInterceptor) (r, c) -> {
-            throw new IOException("Something horrible happened");
-        }).build();
+                    throw new IOException("Something horrible happened");
+                }).build();
         client.start();
         return new ApacheAsyncClient(client, Unirest.config());
     }

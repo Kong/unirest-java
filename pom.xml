@@ -22,6 +22,7 @@
         <module>object-mapper-gson</module>
         <module>object-mapper-jackson</module>
         <module>unirest-mocks</module>
+        <module>unirest-bdd-tests</module>
         <!--<module>bad-maven-test</module>-->
     </modules>
 
@@ -221,7 +222,7 @@
                                         <limit implementation="org.jacoco.report.check.Limit">
                                             <counter>COMPLEXITY</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.60</minimum>
+                                            <minimum>0.40</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
