@@ -192,7 +192,7 @@ class AsObjectTest extends BddTest {
         com.fasterxml.jackson.databind.ObjectMapper jack = new com.fasterxml.jackson.databind.ObjectMapper();
         jack.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
 
-        Unirest.config().setObjectMapper(new JacksonObjectMapper(jack));
+        Unirest.config().setObjectMapper(new TestObjectMapper(jack));
 
         MockServer.setStringResponse("{\"foo\": [1,2,3] }");
 
@@ -214,7 +214,7 @@ class AsObjectTest extends BddTest {
         @Override
         public <T> T readValue(String value, Class<T> valueType) {
             this.readWasCalled = true;
-            return new JacksonObjectMapper().readValue(value, valueType);
+            return new TestObjectMapper().readValue(value, valueType);
         }
 
         @Override

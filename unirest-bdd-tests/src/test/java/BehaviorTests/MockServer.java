@@ -56,7 +56,7 @@ public class MockServer {
     private static final List<Pair<String, String>> responseHeaders = new ArrayList<>();
     private static final List<Cookie> cookies = new ArrayList<>();
 
-    private static final JacksonObjectMapper om = new JacksonObjectMapper();
+    private static final TestObjectMapper om = new TestObjectMapper();
     private static String responseBody;
     public static final int PORT = 4567;
     public static final String HOST = "http://localhost:" + PORT;

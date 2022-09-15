@@ -39,15 +39,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class JacksonObjectMapper implements ObjectMapper {
+public class TestObjectMapper implements ObjectMapper {
 
 	public final com.fasterxml.jackson.databind.ObjectMapper om;
 
-	public JacksonObjectMapper(com.fasterxml.jackson.databind.ObjectMapper om){
+	public TestObjectMapper(com.fasterxml.jackson.databind.ObjectMapper om){
 		this.om = om;
 	}
 
-	public JacksonObjectMapper(){
+	public TestObjectMapper(){
 		this(new com.fasterxml.jackson.databind.ObjectMapper());
 		om.registerModule(new GuavaModule());
 		SimpleModule simpleModule = new SimpleModule();

@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AsBytesTest extends BddTest {
-    JacksonObjectMapper om = new JacksonObjectMapper();
+    TestObjectMapper om = new TestObjectMapper();
 
     @Test
     void getGetResultAsBytes() {

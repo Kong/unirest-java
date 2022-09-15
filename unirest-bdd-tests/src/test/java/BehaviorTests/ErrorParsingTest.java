@@ -94,7 +94,7 @@ class ErrorParsingTest extends BddTest {
 
     @Test
     void failsIfErrorResponseCantBeMapped() {
-        JacksonObjectMapper om = new JacksonObjectMapper();
+        TestObjectMapper om = new TestObjectMapper();
         om.om.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, false);
         om.om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
 

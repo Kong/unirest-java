@@ -31,9 +31,9 @@ import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-class JacksonObjectMapperTest {
+class TestObjectMapperTest {
 
-    private final JacksonObjectMapper om = new JacksonObjectMapper();
+    private final TestObjectMapper om = new TestObjectMapper();
 
     @Test
     void jsonPatch() throws JSONException {

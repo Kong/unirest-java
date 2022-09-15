@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class AsFileTest extends BddTest {
 
     private final Path test = Paths.get("results.json");
-    private final JacksonObjectMapper om = new JacksonObjectMapper();
+    private final TestObjectMapper om = new TestObjectMapper();
 
     @Override @AfterEach
     public void tearDown() {
