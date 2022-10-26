@@ -25,12 +25,54 @@
 
 package kong.unirest;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 public class ByteResponse extends BaseResponse<byte[]> {
     private final byte[] body;
 
-    public ByteResponse(RawResponse r) {
+    public ByteResponse(RawResponse r, ProgressMonitor downloadMonitor) {
         super(r);
-        this.body = r.getContentAsBytes();
+        if(downloadMonitor == null) {
+            this.body = r.getContentAsBytes();
+        } else {
+            MonitoringInputStream ip = new MonitoringInputStream(r.getContent(), downloadMonitor, (String)null, r);
+            try {
+                body = getBytes(ip);
+            } catch (IOException e){
+                throw new UnirestException(e);
+            }
+        }
+    }
+
+    public static byte[] getBytes(InputStream is) throws IOException {
+        try {
+            int len;
+            int size = 1024;
+            byte[] buf;
+
+            if (is instanceof ByteArrayInputStream) {
+                size = is.available();
+                buf = new byte[size];
+                len = is.read(buf, 0, size);
+            } else {
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                buf = new byte[size];
+                while ((len = is.read(buf, 0, size)) != -1) {
+                    bos.write(buf, 0, len);
+                }
+                buf = bos.toByteArray();
+            }
+            return buf;
+        } finally {
+            is.close();
+        }
+    }
+
+    public static boolean isGzipped(String value) {
+        return "gzip".equalsIgnoreCase(value.toLowerCase().trim());
     }
 
     @Override

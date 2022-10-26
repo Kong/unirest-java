@@ -226,17 +226,17 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     @Override
     public HttpResponse<byte[]> asBytes() {
-        return request(ByteResponse::new, byte[].class);
+        return request(r -> new ByteResponse(r, downloadMonitor), byte[].class);
     }
 
     @Override
     public CompletableFuture<HttpResponse<byte[]>> asBytesAsync() {
-        return config.getAsyncClient().request(this, ByteResponse::new, new CompletableFuture<>(), byte[].class);
+        return config.getAsyncClient().request(this, r -> new ByteResponse(r, downloadMonitor), new CompletableFuture<>(), byte[].class);
     }
 
     @Override
     public CompletableFuture<HttpResponse<byte[]>> asBytesAsync(Callback<byte[]> callback) {
-        return config.getAsyncClient().request(this, ByteResponse::new, wrap(callback), byte[].class);
+        return config.getAsyncClient().request(this, r -> new ByteResponse(r, downloadMonitor), wrap(callback), byte[].class);
     }
 
     @Override
