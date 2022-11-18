@@ -29,12 +29,14 @@ package BehaviorTests;
 import com.google.common.base.Strings;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-import io.javalin.websocket.WsHandler;
+
+import io.javalin.http.HttpStatus;
+import io.javalin.websocket.WsConfig;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.util.UrlEncoded;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.Cookie;
+import jakarta.servlet.ServletOutputStream;
+import io.javalin.http.Cookie;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -106,14 +108,14 @@ public class MockServer {
 
     static {
         app = Javalin.create(c -> {
-            c.addStaticFiles("public/");
+            c.staticFiles.add("public/");
 
         }).start(PORT);
         app.error(404, MockServer::notFound);
         app.before(c -> timesCalled++);
         app.ws("/websocket", ws);
         app.delete("/delete", MockServer::jsonResponse);
-        app.get("/sparkle/:spark/yippy", MockServer::sparkle);
+        app.get("/sparkle/{spark}/yippy", MockServer::sparkle);
         app.post("/post", MockServer::jsonResponse);
         app.get("/get", MockServer::jsonResponse);
         app.get("/gzip", MockServer::gzipResponse);
@@ -125,8 +127,8 @@ public class MockServer {
         app.get("/nobody", MockServer::nobody);
         app.head("/get", MockServer::jsonResponse);
         app.put("/post", MockServer::jsonResponse);
-        app.get("/get/:params/passed", MockServer::jsonResponse);
-        app.get("/get/:params/passed/:another", MockServer::jsonResponse);
+        app.get("/get/{params}/passed", MockServer::jsonResponse);
+        app.get("/get/{params}/passed/{another}", MockServer::jsonResponse);
         app.get("/proxy", MockServer::proxiedResponse);
         app.get("/binary", MockServer::file);
         app.get("/paged", MockServer::paged);
@@ -157,13 +159,13 @@ public class MockServer {
         sparks.put("contextPath()", request.contextPath());
         sparks.put("host()", request.host());
         sparks.put("ip()", request.ip());
-        sparks.put("pathInfo()", request.req.getPathInfo());
+        sparks.put("pathInfo()", request.req().getPathInfo());
         sparks.put("port()", String.valueOf(request.port()));
         sparks.put("protocol()", request.protocol());
         sparks.put("scheme()", request.scheme());
-        sparks.put("servletPath()", request.req.getServletPath());
-        sparks.put("requestMethod()", request.method());
-        sparks.put("uri()", request.req.getRequestURI());
+        sparks.put("servletPath()", request.req().getServletPath());
+        //sparks.put("requestMethod()", request.me());
+        sparks.put("uri()", request.req().getRequestURI());
         sparks.put("url()", request.url());
         sparks.put("userAgent()", request.userAgent());
         sparks.put("queryString()", request.queryString());
@@ -196,11 +198,11 @@ public class MockServer {
 
     private static Object file(Context context) throws Exception {
         File f = TestUtil.rezFile("/spidey.jpg");
-        context.res.setContentType("application/octet-stream");
-        context.res.setHeader("Content-Disposition", "attachment;filename=image.jpg");
-        context.res.setHeader("Content-Length", String.valueOf(f.length()));
+        context.contentType("application/octet-stream");
+        context.header("Content-Disposition", "attachment;filename=image.jpg");
+        context.header("Content-Length", String.valueOf(f.length()));
         context.status(200);
-        final ServletOutputStream out = context.res.getOutputStream();
+        final ServletOutputStream out = context.res().getOutputStream();
         final FileInputStream in = new FileInputStream(f);
         IOUtils.copy(in, out);
         out.close();
@@ -213,7 +215,7 @@ public class MockServer {
     }
 
     private static void redirect(Context request) {
-        request.redirect("/get", 301);
+        request.redirect("/get", HttpStatus.MOVED_PERMANENTLY);
     }
 
     private static void inValid(Context request) {
@@ -222,10 +224,10 @@ public class MockServer {
     }
 
     private static Object emptyGzipResponse(Context response) throws Exception {
-        response.res.setHeader("Content-Encoding", "gzip");
-        response.res.setContentType("application/json");
-        response.res.setStatus(200);
-        response.res.getOutputStream().close();
+        response.res().setHeader("Content-Encoding", "gzip");
+        response.res().setContentType("application/json");
+        response.res().setStatus(200);
+        response.res().getOutputStream().close();
         return null;
     }
 
@@ -244,8 +246,8 @@ public class MockServer {
     }
 
     private static Optional<String> simpleResponse(Context context) {
-        cookies.forEach(context::cookie);
-        responseHeaders.forEach(h -> context.res.addHeader(h.key, h.value));
+        cookies.forEach(c -> context.cookie(c));
+        responseHeaders.forEach(h -> context.res().addHeader(h.key, h.value));
 
         if (responseBody != null) {
             return Optional.of(responseBody);
@@ -274,7 +276,7 @@ public class MockServer {
          if(compress){
              c.result(zip(content));
          } else {
-             c.res.setCharacterEncoding(StandardCharsets.UTF_8.name());
+             c.res().setCharacterEncoding(StandardCharsets.UTF_8.name());
              c.result(content);
          }
     }
@@ -330,10 +332,10 @@ public class MockServer {
         responseHeaders.clear();
     }
 
-    public static class WebSocketHandler implements Consumer<WsHandler> {
+    public static class WebSocketHandler implements Consumer<WsConfig> {
 
         private static String onOpenMessage = "Open";
-        private WsHandler handler;
+        private WsConfig handler;
         public static Map<String, String> headers = new HashMap<>();
 
         public static void reset() {
@@ -346,7 +348,7 @@ public class MockServer {
         }
 
         @Override
-        public void accept(WsHandler wsHandler) {
+        public void accept(WsConfig wsHandler) {
             this.handler = wsHandler;
             this.handler.onMessage(c -> {
                 c.send("thank you");
@@ -356,7 +358,6 @@ public class MockServer {
                 c.send(onOpenMessage);
             });
         }
-
     }
 
     public static void retryTimes(int numberOfTimeToFail, int status, Double seconds){

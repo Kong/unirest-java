@@ -36,6 +36,7 @@ import java.util.concurrent.CompletionStage;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+
 public class WebsocketTest extends BddTest {
     @Test
     void makeAWebSocket() throws Exception {
@@ -47,7 +48,7 @@ public class WebsocketTest extends BddTest {
                 .socket()
                 .get()
                 .sendText("...", false);
-
+        Thread.sleep(50);
         assertTrue(listener.isOpen);
         assertEquals("Darkness Rises When Silence Dies", listener.messages.get(0));
 

@@ -105,7 +105,7 @@ class JacksonArray extends JacksonElement<ArrayNode> implements JsonEngine.Array
         if(o == null){
             element.set(index, NullNode.getInstance());
         } else {
-            element.set(index, o.getEngineElement());
+            element.set(index, (JsonNode)o.getEngineElement());
         }
     }
 

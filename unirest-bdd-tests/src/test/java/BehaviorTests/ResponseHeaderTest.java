@@ -47,7 +47,6 @@ class ResponseHeaderTest extends BddTest {
         Headers h = Unirest.get(MockServer.GET).asString().getHeaders();
 
         // assertHeader("Date", "Fri, 04 Jan 2019 01:46:34 GMT", h.all().get(0));
-        assertEquals("Javalin", h.getFirst("Server"));
         assertEquals("text/plain;charset=utf-8", h.getFirst("Content-Type"));
         assertEquals("JSESSIONID=ABC123; Path=/", h.getFirst("Set-Cookie"));
         assertEquals("Thu, 01 Jan 1970 00:00:00 GMT", h.getFirst("Expires"));

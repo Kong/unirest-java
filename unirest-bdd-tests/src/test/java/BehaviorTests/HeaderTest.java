@@ -43,15 +43,6 @@ class HeaderTest extends BddTest {
     private String value = "one";
 
     @Test
-    void unicodeHeaders() {
-        Unirest.get(MockServer.GET)
-                .header("foo", "こんにちは")
-                .asObject(RequestCapture.class)
-                .getBody()
-                .assertHeader("foo", "こんにちは");
-    }
-
-    @Test
     void contentLengthIsSetWithBodies() {
         Unirest.post(MockServer.POST)
                 .body("do do do do")

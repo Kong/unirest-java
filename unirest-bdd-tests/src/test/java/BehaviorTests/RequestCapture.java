@@ -34,9 +34,9 @@ import com.google.common.collect.ListMultimap;
 import io.javalin.http.Context;
 import kong.unirest.core.*;
 
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.ServletException;
-import javax.servlet.http.Part;
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,7 +74,7 @@ public class RequestCapture {
     public RequestCapture(Context req) {
         url = req.url();
         queryString = req.queryString();
-        method = HttpMethod.valueOf(req.method());
+        method = HttpMethod.valueOf(req.method().name());
         writeHeaders(req);
         writeQuery(req);
         populateParams(req);
@@ -114,10 +114,10 @@ public class RequestCapture {
     }
 
     public void writeMultipart(Context req) {
-        req.req.setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement(getProperty("java.io.tmpdir")));
+        req.req().setAttribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement(getProperty("java.io.tmpdir")));
 
         try {
-            for (Part p : req.req.getParts()) {
+            for (Part p : req.req().getParts()) {
                 if (!Strings.isNullOrEmpty(p.getSubmittedFileName())) {
                     buildFilePart(p);
                 } else {
@@ -170,8 +170,8 @@ public class RequestCapture {
     }
 
     private RequestCapture writeHeaders(Context req) {
-        Collections.list(req.req.getHeaderNames())
-                .forEach(name -> Collections.list(req.req.getHeaders(name))
+        Collections.list(req.req().getHeaderNames())
+                .forEach(name -> Collections.list(req.req().getHeaders(name))
                         .forEach(value -> headers.put(name, value)));
         return this;
     }

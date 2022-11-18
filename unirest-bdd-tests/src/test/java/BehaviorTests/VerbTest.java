@@ -87,7 +87,7 @@ class VerbTest extends BddTest {
         Unirest.request("CHEESE", MockServer.CHEESE)
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertMethod(HttpMethod.valueOf("CHEESE"))
+                .assertMethod(HttpMethod.valueOf("INVALID"))
                 .assertBody("");
     }
 }

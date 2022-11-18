@@ -25,7 +25,8 @@
 
 package BehaviorTests;
 
-import io.javalin.core.util.Header;
+
+import io.javalin.http.Header;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import kong.unirest.core.HttpResponse;

@@ -30,7 +30,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jackson.version>2.12.5</jackson.version>
+        <jackson.version>2.14.0</jackson.version>
         <main.dir>${project.basedir}</main.dir>
         <junit.version>5.7.2</junit.version>
         <mockito.version>3.12.4</mockito.version>
@@ -314,7 +314,10 @@
                             <rules>
                                 <banVulnerable implementation="org.sonatype.ossindex.maven.enforcer.BanVulnerableDependencies">
                                     <excludeVulnerabilityIds>
-
+                                        <!-- guava (test dependency)-->
+                                        <exclude>sonatype-2020-0926</exclude>
+                                        <!-- commons IO (test dependency) -->
+                                        <exclude>sonatype-2018-0705</exclude>
                                     </excludeVulnerabilityIds>
                                 </banVulnerable>
                             </rules>

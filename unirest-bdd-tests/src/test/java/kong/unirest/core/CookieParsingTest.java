@@ -25,8 +25,8 @@
 
 package kong.unirest.core;
 
-import kong.unirest.core.Cookie;
-import org.eclipse.jetty.server.CookieCutter;
+
+import org.eclipse.jetty.http.CookieCutter;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
@@ -83,9 +83,9 @@ class CookieParsingTest {
     @Test
     void matchJettyParsing() {
         String s = "_id=A528A0D64DA61CB01241EF6E18E4D675170DDB56CB430000AF58625E920CF940~pl1ZYwDDdoAnfY3RtqZ2Ti1MYOf7Q8jRrFQLneSGK7qQoUX1GHW/xDcqweGyclm5rm/g/YFCV3ohuHoz2oad5M0MX9Ru9V7bFr2s08d1lHxbn39gw71AI+ZVejq5FpMHKBzyjoBGG6NY6xYVTwP9NHo14SY0CXs60k2UTpJsOTNzAHIZaedg7o6R/8qyAQ8GF25K2o773pFLrYtjgKHohkk5ukz/yEGQitq8NgC5hiqX0=; expires=Fri, 06 Mar 2020 16:05:35 GMT; max-age=7200; path=/; domain=xxx.com; HttpOnly";
-        CookieCutter cutter = new CookieCutter();
+        var cutter = new org.eclipse.jetty.server.Cookies();
         cutter.addCookieField(s);
-        javax.servlet.http.Cookie jetty = cutter.getCookies()[0];
+        jakarta.servlet.http.Cookie jetty = cutter.getCookies()[0];
 
         Cookie unirest = new Cookie(s);
 
