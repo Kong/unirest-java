@@ -39,10 +39,10 @@ import java.util.stream.Stream;
 
 
 public class Util {
-    public static final DateTimeFormatter DEFAULT_PATTERN = DateTimeFormatter.ofPattern("EEE, dd-MMM-yyyy HH:mm:ss zzz");
+    public static final DateTimeFormatter DEFAULT_PATTERN = DateTimeFormatter.ofPattern("EEE, dd-MMM-yyyy HH:mm:ss zzz", Locale.US);
     static final List<DateTimeFormatter> FORMATS = Arrays.asList(
             DEFAULT_PATTERN,
-            DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz")
+            DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US)
     );
     private static Supplier<Instant> clock = Instant::now;
 
