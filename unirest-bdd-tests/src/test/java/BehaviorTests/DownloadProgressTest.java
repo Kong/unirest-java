@@ -64,4 +64,23 @@ class DownloadProgressTest extends BddTest {
         monitor.assertSpideyFileDownload("spidey.jpg");
     }
 
+    @Test
+    void canAddUploadProgressWithBytes() {
+        Unirest.get(MockServer.BINARYFILE)
+                .downloadMonitor(monitor)
+                .asBytes();
+
+        monitor.assertSpideyFileDownload("body");
+    }
+
+    @Test
+    void canAddUploadProgressWithBytesAsync() throws Exception {
+        Unirest.get(MockServer.BINARYFILE)
+                .downloadMonitor(monitor)
+                .asBytesAsync()
+                .get();
+
+        monitor.assertSpideyFileDownload("body");
+    }
+
 }

@@ -28,6 +28,7 @@ package kong.unirest.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.zip.GZIPInputStream;
 
 class MonitoringInputStream extends InputStream {
     private final InputStream content;
@@ -36,11 +37,27 @@ class MonitoringInputStream extends InputStream {
     private long byteCount = 0;
     private String fileName;
 
-    MonitoringInputStream(InputStream content, ProgressMonitor downloadMonitor, Path target, RawResponse contentSize) {
-        this.content = content;
+    MonitoringInputStream(InputStream content, ProgressMonitor downloadMonitor, Path target, RawResponse rawResponse) {
+        this(content, downloadMonitor, target.getFileName().toString(), rawResponse);
+    }
+
+    MonitoringInputStream(InputStream content, ProgressMonitor downloadMonitor, String fileName, RawResponse rawResponse) {
+        this.content = wrap(content, rawResponse);
         this.downloadMonitor = downloadMonitor;
-        this.fileName = target.getFileName().toString();
-        this.totalSize = getBodySize(contentSize);
+        this.fileName = fileName;
+        this.totalSize = getBodySize(rawResponse);
+    }
+
+    private InputStream wrap(InputStream is , RawResponse rawResponse) {
+        try {
+            if (is.available() > 0 && "gzip".equalsIgnoreCase(rawResponse.getContentType())) {
+                return new GZIPInputStream(is);
+            } else {
+                return is;
+            }
+        }catch (Exception e){
+            throw new UnirestException(e);
+        }
     }
 
     private Long getBodySize(RawResponse r) {
