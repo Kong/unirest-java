@@ -29,11 +29,13 @@ package BehaviorTests;
 import com.google.common.base.Strings;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import io.javalin.http.Cookie;
+import io.javalin.http.staticfiles.Location;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.util.UrlEncoded;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.Cookie;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -100,13 +102,13 @@ public class MockServer {
 
     static {
         app = Javalin.create(c -> {
-            c.addStaticFiles("public/");
+            c.addStaticFiles("public/", Location.CLASSPATH);
 
         }).start(PORT);
         app.error(404, MockServer::notFound);
         app.before(c -> timesCalled++);
         app.delete("/delete", MockServer::jsonResponse);
-        app.get("/sparkle/:spark/yippy", MockServer::sparkle);
+        app.get("/sparkle/{spark}/yippy", MockServer::sparkle);
         app.post("/post", MockServer::jsonResponse);
         app.get("/get", MockServer::jsonResponse);
         app.get("/gzip", MockServer::gzipResponse);
@@ -118,8 +120,8 @@ public class MockServer {
         app.get("/nobody", MockServer::nobody);
         app.head("/get", MockServer::jsonResponse);
         app.put("/post", MockServer::jsonResponse);
-        app.get("/get/:params/passed", MockServer::jsonResponse);
-        app.get("/get/:params/passed/:another", MockServer::jsonResponse);
+        app.get("/get/{params}/passed", MockServer::jsonResponse);
+        app.get("/get/{params}/passed/{another}", MockServer::jsonResponse);
         app.get("/proxy", MockServer::proxiedResponse);
         app.get("/binary", MockServer::file);
         app.get("/paged", MockServer::paged);

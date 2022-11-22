@@ -153,7 +153,7 @@ class CookieTest extends BddTest {
     }
 
     private void expectCoookie(int expiry) {
-        javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie("color", "blue");
+        io.javalin.http.Cookie cookie = new io.javalin.http.Cookie("color", "blue");
         cookie.setDomain("localhost");
         cookie.setPath("/get");
         cookie.setHttpOnly(true);
@@ -187,7 +187,7 @@ class CookieTest extends BddTest {
 
     @Test
     void doubleQuotedValues() {
-        MockServer.expectCookie(new javax.servlet.http.Cookie("foo", "\"bar\""));
+        MockServer.expectCookie(new io.javalin.http.Cookie("foo", "\"bar\""));
 
         HttpResponse<RequestCapture> res = Unirest.get(MockServer.GET)
                 .cookie("baz", "\"  wut  \"")
