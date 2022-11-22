@@ -1,4 +1,11 @@
-## 3.13.11
+## 3.13.13
+* Cookie dates always follow US Locale to avoid invalid unicode in headers
+
+## 3.13.12
+* Allow use of progress monitor for byte[] bodies
+* Dependency upgrades
+
+## 3.13.13
 * Content-Type should be overwritten rather than adding a second Content-Type
 * Forcing multipart overrides content-type headers
 
