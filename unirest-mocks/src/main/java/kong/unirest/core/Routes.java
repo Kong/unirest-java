@@ -99,20 +99,31 @@ class Routes implements Assert {
     }
 
     @Override
-    public void assertHeader(String key, String value) {
+    public Assert hadHeader(String key, String value) {
         if (invokes.stream().noneMatch(i -> i.hasExpectedHeader(key, value))) {
             throw new UnirestAssertion(
                     "No invocation found with header [%s: %s]\nFound:\n%s",
                     key, value, allHeaders());
         }
+        return this;
     }
 
     @Override
-    public void assertBody(String expected) {
+    public Assert hadBody(String expected) {
         if(invokes.stream().noneMatch(i -> i.hasBody(expected))){
             throw new UnirestAssertion(
                     "No invocation found with body");
         }
+        return this;
+    }
+
+    @Override
+    public Assert hadField(String name, String value) {
+        if(invokes.stream().noneMatch(i -> i.hasField(name, value))){
+            throw new UnirestAssertion(
+                    "No invocation found with body");
+        }
+        return this;
     }
 
     private Headers allHeaders() {
@@ -126,13 +137,14 @@ class Routes implements Assert {
     }
 
     @Override
-    public void assertInvokedTimes(int i) {
+    public Assert wasInvokedTimes(int i) {
         Integer sum = sumInvokes();
         if (sum != i) {
             throw new UnirestAssertion(
                     "Incorrect number of invocations. Expected %s got %s\n%s %s",
                     i, sum, method, path);
         }
+        return this;
     }
 
     private Integer sumInvokes() {
@@ -142,8 +154,9 @@ class Routes implements Assert {
     }
 
     @Override
-    public void verifyAll() {
+    public Assert verifyAll() {
         invokes.forEach(Invocation::verify);
+        return this;
     }
 
 

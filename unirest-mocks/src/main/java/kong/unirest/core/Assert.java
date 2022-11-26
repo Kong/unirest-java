@@ -34,27 +34,42 @@ public interface Assert {
      * Assert that any request to this method/path contained this header
      * @param key the expected header key
      * @param value the expected header value
+     * @return this Assert instance
      * @throws UnirestAssertion when header does not exist
      */
-    void assertHeader(String key, String value);
+    Assert hadHeader(String key, String value);
 
     /**
      * Assert that any the request sent this body. this only applies to non-multipart requests.
      * @param expected the expected body
+     * @return this Assert instance
      * @throws UnirestAssertion when body does not exist
      */
-    void assertBody(String expected);
+    Assert hadBody(String expected);
+
+    /**
+     * Assert that any the request sent a multipart field
+     * @param name the field name
+     * @param value the field value
+     * @return this Assert instance
+     * @throws UnirestAssertion when body does not exist
+     */
+    Assert hadField(String name, String value);
 
     /**
      * assert that this instance of method/path was invoked x times
      * @param i the number of times invoked.
+     * @return this Assert instance
      * @throws UnirestAssertion when the invocation count is not x
      */
-    void assertInvokedTimes(int i);
+    Assert wasInvokedTimes(int i);
 
     /**
      * verify that all Expectations were fulfilled at least once.
+     * @return this Assert instance
      * @throws UnirestAssertion when all expectations have not been fulfilled
      */
-    void verifyAll();
+    Assert verifyAll();
+
+
 }
