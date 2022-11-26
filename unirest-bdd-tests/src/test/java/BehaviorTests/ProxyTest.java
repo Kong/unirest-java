@@ -60,6 +60,21 @@ class ProxyTest extends BddTest {
     }
 
     @Test
+    void canUseNonAuthProxy_OnPerRequest() {
+        JankyProxy.runServer("localhost", 4567, 7777);
+
+        Unirest.config().proxy(new Proxy("localhost", 7777));
+
+        Unirest.get(MockServer.GET)
+                .proxy(new Proxy("localhost", 7777, "username", "password1!"))
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertStatus(200);
+
+        assertTrue(JankyProxy.wasUsed());
+    }
+
+    @Test
     void canUseNonAuthProxyWithEasyMethod() {
         JankyProxy.runServer("localhost", 4567, 7777);
 

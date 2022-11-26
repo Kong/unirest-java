@@ -178,6 +178,12 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
+    public R proxy(Proxy value) {
+        this.proxy = value;
+        return (R) this;
+    }
+
+    @Override
     public R withObjectMapper(ObjectMapper mapper) {
         Objects.requireNonNull(mapper, "ObjectMapper may not be null");
         this.objectMapper = Optional.of(mapper);
