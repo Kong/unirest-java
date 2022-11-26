@@ -2,6 +2,9 @@
 * issue #461 return HttpResponse<Empty> for asEmpty()
 * issue #450 add authenticated proxies to request
 * issue #451 pass original failure reason to new mapped response in ifFailure
+* issue #444, add ability to directly assert a body (only works with non-multipart bodies
+* issue #444, add ability to directly assert a body field in a multipart request
+* re-name some methods on the Assert interface to better express a fluent feel
 
 ## 3.13.13
 * Cookie dates always follow US Locale to avoid invalid unicode in headers

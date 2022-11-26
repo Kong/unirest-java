@@ -27,13 +27,11 @@ package kong.unirest;
 
 import kong.unirest.json.JSONElement;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.System.lineSeparator;
 
@@ -195,18 +193,35 @@ class Invocation implements Expectation, ExpectedResponse {
         return allH.containsKey(key) && allH.get(key).contains(value);
     }
 
-    public boolean hasBody(String body){
+    private Stream<Body> getBodyStream() {
         return requests.stream()
                 .filter(r -> r.getBody().isPresent())
-                .map(r -> (Body)r.getBody().get())
-                .anyMatch(b -> bodyMatches(body, b));
+                .map(r -> (Body) r.getBody().get());
     }
 
-    private boolean bodyMatches(String body, Body o) {
+    public boolean hasBody(String body){
+        return getBodyStream()
+                .anyMatch(b -> uniBodyMatches(body, b));
+    }
+
+    private boolean uniBodyMatches(String body, Body o) {
         return tryCast(o, HttpRequestUniBody.class)
                 .map(h -> h.uniPart())
                 .map(u -> u.getValue().equals(body))
                 .orElse(false);
+    }
+
+    public boolean hasField(String name, String value) {
+        return getBodyStream()
+                .anyMatch(b -> hasField(name, value, b));
+    }
+
+    private boolean hasField(String name, String value, Body b) {
+        return tryCast(b, HttpRequestMultiPart.class)
+                .map(h -> h.multiParts())
+                .orElse(Collections.emptyList())
+                .stream()
+                .anyMatch(part -> part.getName().equals(name) && part.getValue().equals(value));
     }
 
     public Integer requestSize() {
@@ -322,4 +337,5 @@ class Invocation implements Expectation, ExpectedResponse {
         }
         return Optional.empty();
     }
+
 }
