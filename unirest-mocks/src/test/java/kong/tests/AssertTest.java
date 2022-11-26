@@ -137,7 +137,7 @@ class AssertTest extends Base {
     }
 
     @Test
-    void assertBody() {
+    void expectBodyFailure() {
         client.expect(POST, path)
                 .body("foo")
                 .thenReturn("bar");
@@ -148,6 +148,15 @@ class AssertTest extends Base {
                 "A expectation was never invoked! POST http://basic\n" +
                         "Body:\n" +
                         "\tfoo");
+    }
+
+    @Test
+    void assertBody() {
+        client.expect(POST, path);
+
+        Unirest.post(path).body("hey buddy").asString();
+
+        client.assertThat(POST, path).assertBody("hey buddy");
     }
 
     @Test

@@ -39,6 +39,13 @@ public interface Assert {
     void assertHeader(String key, String value);
 
     /**
+     * Assert that any the request sent this body. this only applies to non-multipart requests.
+     * @param expected the expected body
+     * @throws UnirestAssertion when body does not exist
+     */
+    void assertBody(String expected);
+
+    /**
      * assert that this instance of method/path was invoked x times
      * @param i the number of times invoked.
      * @throws UnirestAssertion when the invocation count is not x

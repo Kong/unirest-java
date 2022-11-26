@@ -180,6 +180,20 @@ class Invocation implements Expectation, ExpectedResponse {
         return allH.containsKey(key) && allH.get(key).contains(value);
     }
 
+    public boolean hasBody(String body){
+        return requests.stream()
+                .filter(r -> r.getBody().isPresent())
+                .map(r -> (Body)r.getBody().get())
+                .anyMatch(b -> bodyMatches(body, b));
+    }
+
+    private boolean bodyMatches(String body, Body o) {
+        return tryCast(o, HttpRequestUniBody.class)
+                .map(h -> h.uniPart())
+                .map(u -> u.getValue().equals(body))
+                .orElse(false);
+    }
+
     public Integer requestSize() {
         return requests.size();
     }
