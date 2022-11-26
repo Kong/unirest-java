@@ -39,6 +39,22 @@ class ErrorParsingTest extends BddTest {
     private boolean errorCalled;
 
     @Test
+    void passParsingErrorsOnInFalure() {
+        MockServer.setStringResponse("not json");
+
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .ifFailure(String.class, r ->
+                        {
+                            assertTrue(r.getParsingError().isPresent());
+                            assertTrue(r.getParsingError().get().getMessage().contains("jackson"));
+                            assertEquals("not json", r.getParsingError().get().getOriginalBody());
+                        }
+                )
+                .ifSuccess(s -> fail("no"));
+    }
+
+    @Test
     void parsingAnAlternativeErrorObject() {
         MockServer.setJsonAsResponse(new ErrorThing("boom!"));
 
