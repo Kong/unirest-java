@@ -191,7 +191,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
-    public HttpResponse asEmpty() {
+    public HttpResponse<Empty> asEmpty() {
         return request(BasicResponse::new, Empty.class);
     }
 

@@ -1,3 +1,6 @@
+## 3.14.0
+* issue #461 return HttpResponse<Empty> for asEmpty()
+
 ## 3.13.13
 * Cookie dates always follow US Locale to avoid invalid unicode in headers
 

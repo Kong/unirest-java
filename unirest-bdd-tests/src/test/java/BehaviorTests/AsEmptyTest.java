@@ -25,6 +25,7 @@
 
 package BehaviorTests;
 
+import kong.unirest.Empty;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import kong.unirest.HttpResponse;
@@ -33,13 +34,23 @@ import kong.unirest.Unirest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@SuppressWarnings("rawtypes")
+
 class AsEmptyTest extends BddTest {
+
+    @Test
+    void asEmptyParams() {
+        Unirest.get(MockServer.ERROR_RESPONSE)
+                .asEmpty()
+                .ifFailure(response -> {
+                    assertEquals("Bad Request", response.getStatusText());
+                })
+                .ifSuccess(s -> {throw new RuntimeException("fail");});
+    }
 
     @Test
     void canDoAEmptyRequestThatDoesNotParseBodyAtAll() {
         MockServer.addResponseHeader("Content-Type", "json");
-        HttpResponse res = Unirest.get(MockServer.GET).asEmpty();
+        HttpResponse<Empty> res = Unirest.get(MockServer.GET).asEmpty();
 
         assertNull(res.getBody());
         Assertions.assertEquals(200, res.getStatus());
@@ -49,7 +60,7 @@ class AsEmptyTest extends BddTest {
     @Test
     void canDoEmptyAsync() throws Exception {
         MockServer.addResponseHeader("Content-Type", "json");
-        HttpResponse res = Unirest.get(MockServer.GET).asEmptyAsync().get();
+        HttpResponse<Empty> res = Unirest.get(MockServer.GET).asEmptyAsync().get();
 
         assertNull(res.getBody());
         Assertions.assertEquals(200, res.getStatus());
