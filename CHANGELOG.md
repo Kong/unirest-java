@@ -1,5 +1,7 @@
 ## 3.14.0
 * issue #461 return HttpResponse<Empty> for asEmpty()
+* issue #450 add authenticated proxies to request
+* issue #451 pass original failure reason to new mapped response in ifFailure
 
 ## 3.13.13
 * Cookie dates always follow US Locale to avoid invalid unicode in headers

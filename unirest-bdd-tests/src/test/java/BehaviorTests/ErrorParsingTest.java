@@ -30,6 +30,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import org.eclipse.jetty.server.Request;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +39,22 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ErrorParsingTest extends BddTest {
     private boolean errorCalled;
+
+    @Test
+    void passParsingErrorsOnInFalure() {
+        MockServer.setStringResponse("not json");
+
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .ifFailure(String.class, r ->
+                        {
+                            assertTrue(r.getParsingError().isPresent());
+                            assertTrue(r.getParsingError().get().getMessage().contains("jackson"));
+                            assertEquals("not json", r.getParsingError().get().getOriginalBody());
+                        }
+                )
+                .ifSuccess(s -> {throw new RuntimeException("no");});
+    }
 
     @Test
     void parsingAnAlternativeErrorObject() {

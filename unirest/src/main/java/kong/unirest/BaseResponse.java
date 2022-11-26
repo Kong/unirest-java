@@ -155,7 +155,9 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     public <E> HttpResponse<T> ifFailure(Class<? extends E> errorClass, Consumer<HttpResponse<E>> consumer) {
         if (!isSuccess()) {
             E error = mapError(errorClass);
-            consumer.accept(new BasicResponse(this, error));
+            BasicResponse br = new BasicResponse(this, error);
+            getParsingError().ifPresent(p -> br.setParsingException(p.getOriginalBody(), p));
+            consumer.accept(br);
         }
         return this;
     }
