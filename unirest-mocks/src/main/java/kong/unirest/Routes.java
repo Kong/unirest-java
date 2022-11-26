@@ -111,6 +111,14 @@ class Routes implements Assert {
         }
     }
 
+    @Override
+    public void assertBody(String expected) {
+        if(invokes.stream().noneMatch(i -> i.hasBody(expected))){
+            throw new UnirestAssertion(
+                    "No invocation found with body");
+        }
+    }
+
     private Headers allHeaders() {
         return invokes.stream()
                 .flatMap(i -> i.getRequests().stream())
@@ -141,6 +149,7 @@ class Routes implements Assert {
     public void verifyAll() {
         invokes.forEach(Invocation::verify);
     }
+
 
     HttpMethod getMethod() {
         return method;
