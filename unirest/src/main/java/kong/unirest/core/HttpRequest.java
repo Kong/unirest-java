@@ -354,7 +354,7 @@ public interface HttpRequest<R extends HttpRequest>  {
      * Executes the request and returns the response without parsing the body
      * @return the basic HttpResponse
      */
-    HttpResponse asEmpty();
+    HttpResponse<Empty> asEmpty();
 
     /**
      * Executes the request asynchronously and returns the response without parsing the body
