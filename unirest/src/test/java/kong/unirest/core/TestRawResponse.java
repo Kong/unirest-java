@@ -25,11 +25,6 @@
 
 package kong.unirest.core;
 
-import kong.unirest.core.Config;
-import kong.unirest.core.Headers;
-import kong.unirest.core.HttpResponseSummary;
-import kong.unirest.core.RawResponseBase;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -38,7 +33,7 @@ class TestRawResponse extends RawResponseBase {
     public String type;
 
     TestRawResponse(Config config) {
-        super(config);
+        super(config, null);
     }
 
     @Override

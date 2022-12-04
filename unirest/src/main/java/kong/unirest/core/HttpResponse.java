@@ -123,4 +123,9 @@ public interface HttpResponse<T> {
      * @return a Cookies collection
      */
     Cookies getCookies();
+
+    /**
+     * @return a Summary of the HttpRequest that created this response
+     */
+    HttpRequestSummary getRequestSummary();
 }

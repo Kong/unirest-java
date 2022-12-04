@@ -25,11 +25,6 @@
 
 package kong.unirest.core;
 
-import kong.unirest.core.Cookies;
-import kong.unirest.core.Headers;
-import kong.unirest.core.HttpResponse;
-import kong.unirest.core.UnirestParsingException;
-
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -97,6 +92,11 @@ class MockResponse<T> implements HttpResponse<T> {
 
     @Override
     public Cookies getCookies() {
+        return null;
+    }
+
+    @Override
+    public HttpRequestSummary getRequestSummary() {
         return null;
     }
 }

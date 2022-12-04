@@ -31,10 +31,12 @@ import java.util.regex.Pattern;
 public abstract class RawResponseBase implements RawResponse {
 
     private static final Pattern CHARSET_PATTERN = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
+    private final HttpRequestSummary reqSummary;
     protected Config config;
 
-    protected RawResponseBase(Config config){
+    protected RawResponseBase(Config config, HttpRequestSummary summary){
         this.config = config;
+        this.reqSummary = summary;
     }
 
     protected String getCharSet() {
@@ -72,5 +74,10 @@ public abstract class RawResponseBase implements RawResponse {
     @Override
     public HttpResponseSummary toSummary() {
         return new ResponseSummary(this);
+    }
+
+    @Override
+    public HttpRequestSummary getRequestSummary() {
+        return reqSummary;
     }
 }

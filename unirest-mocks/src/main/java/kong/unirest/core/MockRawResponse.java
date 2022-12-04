@@ -38,14 +38,16 @@ public class MockRawResponse implements RawResponse {
     private final int status;
     private final String statusMessage;
     private final Config config;
+    private final HttpRequestSummary summary;
 
     public MockRawResponse(String responseBody, Headers responseHeaders, int status,
-                           String statusMessage, Config config) {
+                           String statusMessage, Config config, HttpRequestSummary summary) {
         this.response = responseBody;
         this.responseHeaders = responseHeaders;
         this.status = status;
         this.statusMessage = statusMessage;
         this.config = config;
+        this.summary = summary;
     }
 
     @Override
@@ -121,5 +123,10 @@ public class MockRawResponse implements RawResponse {
     @Override
     public HttpResponseSummary toSummary() {
         return new ResponseSummary(this);
+    }
+
+    @Override
+    public HttpRequestSummary getRequestSummary() {
+        return summary;
     }
 }

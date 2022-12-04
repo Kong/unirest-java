@@ -68,7 +68,7 @@ public class JavaClient implements Client {
         try {
             java.net.http.HttpResponse<InputStream> execute = client.send(requestObj,
                     responseInfo -> java.net.http.HttpResponse.BodySubscribers.ofInputStream());
-            JavaResponse t = new JavaResponse(execute, config);
+            JavaResponse t = new JavaResponse(execute, config, reqSum);
             metric.complete(t.toSummary(), null);
             HttpResponse<T> httpResponse = transformBody(transformer, t);
             config.getUniInterceptor().onResponse(httpResponse, reqSum, config);
@@ -128,7 +128,7 @@ public class JavaClient implements Client {
                 java.net.http.HttpResponse.BodyHandlers.ofInputStream());
 
         return execute.thenApplyAsync(h -> {
-            JavaResponse t = new JavaResponse(h, config);
+            JavaResponse t = new JavaResponse(h, config, reqSum);
             metric.complete(t.toSummary(), null);
             HttpResponse<T> httpResponse = transformBody(transformer, t);
             config.getUniInterceptor().onResponse(httpResponse, reqSum, config);

@@ -95,7 +95,8 @@ class Invocation implements Expectation, ExpectedResponse {
     }
 
     RawResponse getResponse(Config config, HttpRequest request) {
-        return new MockRawResponse(response.apply(getObjectMapper(request, config)), responseHeaders, responseStatus, responseText, config);
+        return new MockRawResponse(response.apply(getObjectMapper(request, config)),
+                responseHeaders, responseStatus, responseText, config, request.toSummary());
     }
 
     private ObjectMapper getObjectMapper(HttpRequest request, Config config) {

@@ -36,8 +36,8 @@ import static kong.unirest.core.HeaderNames.CONTENT_TYPE;
 class JavaResponse extends RawResponseBase {
     private final HttpResponse<InputStream> response;
 
-    public JavaResponse(HttpResponse<InputStream> response, Config config) {
-        super(config);
+    public JavaResponse(HttpResponse<InputStream> response, Config config, HttpRequestSummary summary) {
+        super(config, summary);
         this.response = response;
     }
 
