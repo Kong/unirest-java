@@ -94,4 +94,9 @@ class MockResponse<T> implements HttpResponse<T> {
     public Cookies getCookies() {
         return null;
     }
+
+    @Override
+    public HttpRequestSummary getRequestSummary() {
+        return null;
+    }
 }

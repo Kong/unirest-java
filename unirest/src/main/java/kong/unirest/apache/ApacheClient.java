@@ -127,7 +127,7 @@ public class ApacheClient extends BaseApacheClient implements Client {
         try {
             HttpHost host = determineTarget(requestObj, request.getHeaders());
             org.apache.http.HttpResponse execute = client.execute(host, requestObj);
-            ApacheResponse t = new ApacheResponse(execute, config);
+            ApacheResponse t = new ApacheResponse(execute, config, reqSum);
             metric.complete(t.toSummary(), null);
             HttpResponse<T> httpResponse = transformBody(transformer, t);
             requestObj.releaseConnection();

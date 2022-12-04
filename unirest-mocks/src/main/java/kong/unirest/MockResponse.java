@@ -56,7 +56,7 @@ public class MockResponse<T> extends BaseResponse<T> {
      */
     public MockResponse(int status, String statusText, T body, MockConfig config){
         super(new MockRawResponse(
-                "", new Headers(), status, statusText, config
+                "", new Headers(), status, statusText, config, null
         ));
         this.mockConfig = config;
         this.body = body;

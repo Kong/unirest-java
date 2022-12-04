@@ -38,6 +38,7 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
     private Optional<UnirestParsingException> parsingerror = Optional.empty();
     private final Config config;
     private Cookies cookies;
+    private final HttpRequestSummary requestSummary;
 
 
     protected BaseResponse(RawResponse response) {
@@ -48,6 +49,7 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
         this.statusCode = response.getStatus();
         this.statusText = response.getStatusText();
         this.config = response.getConfig();
+        this.requestSummary = response.getRequestSummary();
     }
 
     protected BaseResponse(BaseResponse other) {
@@ -55,6 +57,7 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
         this.statusCode = other.statusCode;
         this.statusText = other.statusText;
         this.config = other.config;
+        this.requestSummary = other.requestSummary;
     }
 
     @Override
@@ -170,6 +173,11 @@ abstract class BaseResponse<T> implements HttpResponse<T> {
         return cookies;
     }
 
+
+    @Override
+    public HttpRequestSummary getRequestSummary() {
+        return requestSummary;
+    }
 
     protected abstract String getRawBody();
 }

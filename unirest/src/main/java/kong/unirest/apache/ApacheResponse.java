@@ -38,8 +38,8 @@ import java.util.zip.GZIPInputStream;
 class ApacheResponse extends RawResponseBase {
     private final HttpResponse r;
 
-    public ApacheResponse(HttpResponse r, Config config) {
-        super(config);
+    public ApacheResponse(HttpResponse r, Config config, HttpRequestSummary reqSum) {
+        super(config, reqSum);
         this.r = r;
     }
 

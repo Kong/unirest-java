@@ -33,7 +33,7 @@ class TestRawResponse extends RawResponseBase {
     public String type;
 
     TestRawResponse(Config config) {
-        super(config);
+        super(config, null);
     }
 
     @Override

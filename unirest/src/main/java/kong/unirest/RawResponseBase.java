@@ -32,9 +32,11 @@ public abstract class RawResponseBase implements RawResponse {
 
     private static final Pattern CHARSET_PATTERN = Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
     protected Config config;
+    private final HttpRequestSummary reqSum;
 
-    protected RawResponseBase(Config config){
+    protected RawResponseBase(Config config, HttpRequestSummary reqSum){
         this.config = config;
+        this.reqSum = reqSum;
     }
 
     protected String getCharSet() {
@@ -72,5 +74,10 @@ public abstract class RawResponseBase implements RawResponse {
     @Override
     public HttpResponseSummary toSummary() {
         return new ResponseSummary(this);
+    }
+
+    @Override
+    public HttpRequestSummary getRequestSummary() {
+        return reqSum;
     }
 }

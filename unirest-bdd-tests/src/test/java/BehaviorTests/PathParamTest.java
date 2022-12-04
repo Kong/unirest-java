@@ -26,6 +26,8 @@
 package BehaviorTests;
 
 import com.google.common.collect.ImmutableMap;
+import kong.unirest.HttpMethod;
+import kong.unirest.HttpRequestSummary;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
 import org.junit.jupiter.api.Assertions;
@@ -160,5 +162,32 @@ class PathParamTest extends BddTest {
                 .getBody()
                 .assertStatus(404)
                 .assertUrl("http://localhost:4567/get//passed");
+    }
+
+    @Test
+    void getRequestSummaryOnResponse() {
+        HttpRequestSummary sum = Unirest.get(MockServer.PASSED_PATH_PARAM)
+                .routeParam("params", "cheese")
+                .queryString("fruit", "apples")
+                .asEmpty()
+                .getRequestSummary();
+
+        assertEquals("http://localhost:4567/get/cheese/passed?fruit=apples", sum.getUrl());
+        assertEquals("http://localhost:4567/get/{params}/passed", sum.getRawPath());
+        assertEquals(HttpMethod.GET, sum.getHttpMethod());
+    }
+
+    @Test
+    void getRequestSummaryOnResponse_async() throws Exception {
+        HttpRequestSummary sum = Unirest.get(MockServer.PASSED_PATH_PARAM)
+                .routeParam("params", "cheese")
+                .queryString("fruit", "apples")
+                .asEmptyAsync()
+                .get()
+                .getRequestSummary();
+
+        assertEquals("http://localhost:4567/get/cheese/passed?fruit=apples", sum.getUrl());
+        assertEquals("http://localhost:4567/get/{params}/passed", sum.getRawPath());
+        assertEquals(HttpMethod.GET, sum.getHttpMethod());
     }
 }

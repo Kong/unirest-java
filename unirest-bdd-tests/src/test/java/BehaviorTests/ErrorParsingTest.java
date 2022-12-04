@@ -28,6 +28,8 @@ package BehaviorTests;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import kong.unirest.HttpMethod;
+import kong.unirest.HttpRequestSummary;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.eclipse.jetty.server.Request;
@@ -53,7 +55,9 @@ class ErrorParsingTest extends BddTest {
                             assertEquals("not json", r.getParsingError().get().getOriginalBody());
                         }
                 )
-                .ifSuccess(s -> {throw new RuntimeException("no");});
+                .ifSuccess(s -> {
+                    throw new RuntimeException("no");
+                });
     }
 
     @Test
@@ -138,7 +142,9 @@ class ErrorParsingTest extends BddTest {
                     assertEquals(400, e.getStatus());
                     assertErrorThing(e.getBody());
                     errorCalled = true;
-                }).ifSuccess(e -> {throw new AssertionError("No");});
+                }).ifSuccess(e -> {
+                    throw new AssertionError("No");
+                });
 
         assertTrue(errorCalled);
     }

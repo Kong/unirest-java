@@ -25,7 +25,6 @@
 
 package kong.tests;
 
-import com.google.common.collect.ImmutableMap;
 import kong.unirest.*;
 import kong.unirest.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -36,6 +35,23 @@ import static kong.unirest.HttpStatus.BAD_REQUEST;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ExpectedResponseTest extends Base {
+
+    @Test
+    void getRequestSummaryOnResponse() {
+        client.expect(GET, "http://localhost/get/cheese/passed")
+                .queryString("params", "cheese")
+                .thenReturn();
+        
+        HttpRequestSummary sum = Unirest.get("http://localhost/get/{params}/passed")
+                .routeParam("params", "cheese")
+                .queryString("fruit", "apples")
+                .asEmpty()
+                .getRequestSummary();
+
+        assertEquals("http://localhost/get/cheese/passed?fruit=apples", sum.getUrl());
+        assertEquals("http://localhost/get/{params}/passed", sum.getRawPath());
+        assertEquals(HttpMethod.GET, sum.getHttpMethod());
+    }
 
     @Test
     void canExpectErrors() {

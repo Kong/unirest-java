@@ -79,7 +79,7 @@ public class ApacheAsyncClient extends BaseApacheClient implements AsyncClient {
         apache.client.execute(new BasicAsyncRequestProducer(host, requestObj), new BasicAsyncResponseConsumer(), new FutureCallback<org.apache.http.HttpResponse>() {
             @Override
             public void completed(org.apache.http.HttpResponse httpResponse) {
-                ApacheResponse t = new ApacheResponse(httpResponse, apache.config);
+                ApacheResponse t = new ApacheResponse(httpResponse, apache.config, reqSum);
                 metric.complete(t.toSummary(), null);
                 HttpResponse<T> response = transformBody(transformer, t);
                 apache.config.getUniInterceptor().onResponse(response, reqSum, apache.config);
