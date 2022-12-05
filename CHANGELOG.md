@@ -1,3 +1,6 @@
+## 3.14.1
+* Add the RequestSummary to the HttpResponse
+
 ## 3.14.0
 * issue #461 return HttpResponse<Empty> for asEmpty()
 * issue #450 add authenticated proxies to request
@@ -13,7 +16,7 @@
 * Allow use of progress monitor for byte[] bodies
 * Dependency upgrades
 
-## 3.13.13
+## 3.13.11
 * Content-Type should be overwritten rather than adding a second Content-Type
 * Forcing multipart overrides content-type headers
 
