@@ -74,7 +74,7 @@ class AsJsonTest extends BddTest {
                 .queryString("foo", "bar")
                 .asJson();
 
-        assertJson(i);
+        assertJson(i.getBody());
     }
 
     @Test
@@ -83,7 +83,7 @@ class AsJsonTest extends BddTest {
                 .queryString("foo", "bar")
                 .asJsonAsync();
 
-        assertJson(r.get());
+        assertJson(r.get().getBody());
     }
 
     @Test
@@ -91,7 +91,7 @@ class AsJsonTest extends BddTest {
         Unirest.get(MockServer.GET)
                 .queryString("foo", "bar")
                 .asJsonAsync(r -> {
-                    assertJson(r);
+                    assertJson(r.getBody());
                     asyncSuccess();
                 });
 
@@ -139,7 +139,20 @@ class AsJsonTest extends BddTest {
         Assertions.assertEquals("{\"test\":\"it's a && b || c + 1!?\"}", test.toString());
     }
 
-    private void assertJson(HttpResponse<JsonNode> i) {
-        Assertions.assertEquals("bar", i.getBody().getObject().getJSONObject("params").getJSONArray("foo").get(0));
+    @Test
+    void mungeTheBodyFirst() {
+        JsonNode e = Unirest.get(MockServer.GET)
+                .queryString("foo", "bar")
+                .asString()
+                .mapBody(b -> {
+                    String newBody = b.split(" \\{")[0];
+                    return new JsonNode(newBody);
+                });
+
+        assertJson(e);
+    }
+
+    private void assertJson(JsonNode body) {
+        Assertions.assertEquals("bar", body.getObject().getJSONObject("params").getJSONArray("foo").get(0));
     }
 }

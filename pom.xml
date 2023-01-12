@@ -317,7 +317,8 @@
                                 <banVulnerable implementation="org.sonatype.ossindex.maven.enforcer.BanVulnerableDependencies">
                                     <scope>runtime</scope>
                                     <excludeVulnerabilityIds>
-
+                                        <!-- no fix yet: Jackson -->
+                                        <exclude>sonatype-2022-6438</exclude>
                                     </excludeVulnerabilityIds>
                                 </banVulnerable>
                             </rules>
