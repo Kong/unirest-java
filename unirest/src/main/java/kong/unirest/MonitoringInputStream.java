@@ -70,19 +70,23 @@ class MonitoringInputStream extends InputStream {
 
     @Override
     public int read() throws IOException {
-        return content.read();
+        int read = content.read();
+        if(read != -1){
+            monitor(1);
+        }
+        return read;
     }
 
     @Override
     public int read(byte[] b) throws IOException {
-        int read = super.read(b);
+        int read = content.read(b);
         monitor(read);
         return read;
     }
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        int read = super.read(b, off, len);
+        int read = content.read(b, off, len);
         monitor(read);
         return read;
     }
