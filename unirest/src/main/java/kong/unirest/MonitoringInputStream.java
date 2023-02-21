@@ -92,7 +92,9 @@ class MonitoringInputStream extends InputStream {
     }
 
     private void monitor(int bytesRead) {
-        byteCount = byteCount + bytesRead;
+        if(bytesRead > 0) {
+            byteCount = byteCount + bytesRead;
+        }
         downloadMonitor.accept("body", fileName, byteCount, totalSize);
     }
 

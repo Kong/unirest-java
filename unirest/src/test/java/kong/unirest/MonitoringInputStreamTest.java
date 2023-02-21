@@ -55,7 +55,7 @@ class MonitoringInputStreamTest {
 
         assertEquals("hello", result);
 
-        assertEquals(4, recorder.bytesWritten);
+        assertEquals(5, recorder.bytesWritten);
         assertEquals(5, recorder.totalBytes);
     }
 
@@ -71,7 +71,7 @@ class MonitoringInputStreamTest {
     void dontRecordTwice_directAccess_2() throws Exception {
         while(stream.read(new byte[5]) > -1){}
 
-        assertEquals(4, recorder.bytesWritten);
+        assertEquals(5, recorder.bytesWritten);
         assertEquals(5, recorder.totalBytes);
     }
 
@@ -79,7 +79,7 @@ class MonitoringInputStreamTest {
     void dontRecordTwice_directAccess_3() throws Exception {
         while(stream.read(new byte[5], 0, 5) > -1){}
 
-        assertEquals(4, recorder.bytesWritten);
+        assertEquals(5, recorder.bytesWritten);
         assertEquals(5, recorder.totalBytes);
     }
 

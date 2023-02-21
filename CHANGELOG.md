@@ -1,3 +1,6 @@
+## 3.14.2
+* issue #469, do not add bytes twice in MonitoringInputStream
+
 ## 3.14.1
 * Add the RequestSummary to the HttpResponse
 
