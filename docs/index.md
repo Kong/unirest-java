@@ -650,7 +650,7 @@ By providing more feature rich UniMetric instances you could easily calculate av
 Unirest starts a background event loop and your Java application won't be able to exit until you manually shutdown all the threads by invoking:
 
 ```java
-Unirest.shutdown();
+Unirest.shutDown();
 ```
 
 Once shutdown, using Unirest again will re-init the system
