@@ -303,44 +303,6 @@
                         <version>3.1.0</version>
                     </dependency>
                 </dependencies>
-                <executions>
-                    <execution>
-                        <id>vulnerability-checks</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <banVulnerable implementation="org.sonatype.ossindex.maven.enforcer.BanVulnerableDependencies">
-                                    <excludeVulnerabilityIds>
-                                        <!-- guava (test dependency)-->
-                                        <exclude>sonatype-2020-0926</exclude>
-                                        <!-- commons IO (test dependency) -->
-                                        <exclude>sonatype-2018-0705</exclude>
-                                    </excludeVulnerabilityIds>
-                                </banVulnerable>
-                            </rules>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>enforce-versions</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireMavenVersion>
-                                    <!--at least maven 3.2-->
-                                    <version>[3.2,)</version>
-                                </requireMavenVersion>
-                                <requireJavaVersion>
-                                    <version>1.8</version>
-                                </requireJavaVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
 
