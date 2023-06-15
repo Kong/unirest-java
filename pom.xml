@@ -33,7 +33,7 @@
         <main.dir>${project.basedir}</main.dir>
         <junit.version>5.9.0</junit.version>
         <mockito.version>4.8.0</mockito.version>
-        <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
+        <maven-checkstyle-plugin.version>3.3.0</maven-checkstyle-plugin.version>
     </properties>
 
     <scm>
@@ -94,7 +94,7 @@
             <plugin>
                 <groupId>com.mycila.maven-license-plugin</groupId>
                 <artifactId>maven-license-plugin</artifactId>
-                <version>1.8.0</version>
+                <version>1.9.0</version>
                 <configuration>
                     <!-- Template location -->
                     <header>${main.dir}/build/fileHeader.txt</header>
@@ -137,7 +137,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.3.0</version>
                 <configuration>
                     <archive>
                         <manifestEntries>
@@ -192,7 +192,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.8</version>
+                <version>0.8.10</version>
                 <executions>
                     <execution>
                         <id>default-prepare-agent</id>
@@ -255,7 +255,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.11.0</version>
                 <configuration>
                     <fork>true</fork>
                     <meminitial>128m</meminitial>
@@ -281,7 +281,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.5.0</version>
                 <configuration>
                     <source>8</source>
                 </configuration>
@@ -297,12 +297,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.4.1</version>
+                <version>3.3.0</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.sonatype.ossindex.maven</groupId>
                         <artifactId>ossindex-maven-enforcer-rules</artifactId>
-                        <version>3.1.0</version>
+                        <version>3.2.0</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -351,7 +351,7 @@
                     <!-- Configured in pluginManagement instead of plugins, because we do not want a shaded parent POM -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.2.4</version>
+                    <version>3.4.1</version>
                     <executions>
                         <execution>
                             <phase>package</phase>
