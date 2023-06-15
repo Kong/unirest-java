@@ -28,20 +28,26 @@ package kong.unirest.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.zip.GZIPInputStream;
 
-class MonitoringInputStream extends InputStream {
+public class MonitoringInputStream extends InputStream {
     private final InputStream content;
     private final ProgressMonitor downloadMonitor;
-    private long totalSize;
+    private final long totalSize;
+    private final String fileName;
     private long byteCount = 0;
-    private String fileName;
 
-    MonitoringInputStream(InputStream content, ProgressMonitor downloadMonitor, Path target, RawResponse rawResponse) {
+    public MonitoringInputStream(InputStream content, ProgressMonitor downloadMonitor, Path target, RawResponse rawResponse) {
         this(content, downloadMonitor, target.getFileName().toString(), rawResponse);
     }
 
-    MonitoringInputStream(InputStream content, ProgressMonitor downloadMonitor, String fileName, RawResponse rawResponse) {
+    public MonitoringInputStream(InputStream content, ProgressMonitor downloadMonitor, String fileName, RawResponse rawResponse) {
+        Objects.requireNonNull(content, "Original InputStream is required");
+        Objects.requireNonNull(content, "ProgressMonitor is required");
+        Objects.requireNonNull(content, "Valid path for file is required");
+        Objects.requireNonNull(content, "RawResponse is required");
+
         this.content = wrap(content, rawResponse);
         this.downloadMonitor = downloadMonitor;
         this.fileName = fileName;
