@@ -3,7 +3,7 @@
     <parent>
         <artifactId>unirest-java-parent</artifactId>
         <groupId>com.konghq</groupId>
-        <version>3.14.3-SNAPSHOT</version>
+        <version>3.14.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
