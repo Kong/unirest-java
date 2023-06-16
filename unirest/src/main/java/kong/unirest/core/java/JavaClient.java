@@ -159,6 +159,8 @@ public class JavaClient implements Client {
     protected <T> HttpResponse<T> transformBody(Function<RawResponse, HttpResponse<T>> transformer, RawResponse rr) {
         try {
             return transformer.apply(rr);
+        }catch (UnrecoverableException ue){
+            return new BasicResponse(rr, "", ue);
         }catch (RuntimeException e){
             String originalBody = recoverBody(rr);
             return new BasicResponse(rr, originalBody, e);

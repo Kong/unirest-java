@@ -25,42 +25,11 @@
 
 package kong.unirest.core;
 
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-public class FileResponse extends BaseResponse<File> {
-    private File body;
-
-    public FileResponse(RawResponse r, String path, ProgressMonitor downloadMonitor, CopyOption... copyOptions) {
-        super(r);
-        try {
-            Path target = Paths.get(path);
-            InputStream content = getContent(r, downloadMonitor, target);
-            Files.copy(content, target, copyOptions);
-            body = target.toFile();
-        } catch (Exception e) {
-            throw new UnrecoverableException(e);
-        }
-    }
-
-    private InputStream getContent(RawResponse r, ProgressMonitor downloadMonitor, Path target) {
-        if(downloadMonitor == null){
-            return r.getContent();
-        }
-        return new MonitoringInputStream(r.getContent(), downloadMonitor, target, r);
-    }
-
-    @Override
-    public File getBody() {
-        return body;
-    }
-
-    @Override
-    protected String getRawBody() {
-        return null;
+/**
+ * An exception which prevents Unirest from attempting to recover the body from a failed response / parsing error
+ */
+public class UnrecoverableException extends UnirestException {
+    public UnrecoverableException(Exception e) {
+        super(e);
     }
 }

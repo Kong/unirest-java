@@ -25,42 +25,23 @@
 
 package kong.unirest.core;
 
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import org.junit.jupiter.api.Test;
 
-public class FileResponse extends BaseResponse<File> {
-    private File body;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-    public FileResponse(RawResponse r, String path, ProgressMonitor downloadMonitor, CopyOption... copyOptions) {
-        super(r);
-        try {
-            Path target = Paths.get(path);
-            InputStream content = getContent(r, downloadMonitor, target);
-            Files.copy(content, target, copyOptions);
-            body = target.toFile();
-        } catch (Exception e) {
-            throw new UnrecoverableException(e);
-        }
+class ContentTypeTest {
+    @Test
+    void checkForBinaryTypes() {
+        assertTrue(ContentType.APPLICATION_OCTET_STREAM.isBinary());
+        assertFalse(ContentType.APPLICATION_JSON.isBinary());
     }
 
-    private InputStream getContent(RawResponse r, ProgressMonitor downloadMonitor, Path target) {
-        if(downloadMonitor == null){
-            return r.getContent();
-        }
-        return new MonitoringInputStream(r.getContent(), downloadMonitor, target, r);
-    }
-
-    @Override
-    public File getBody() {
-        return body;
-    }
-
-    @Override
-    protected String getRawBody() {
-        return null;
+    @Test
+    void checkForBinaryTypesByString() {
+        assertTrue(ContentType.isBinary(ContentType.APPLICATION_OCTET_STREAM.getMimeType()));
+        assertTrue(ContentType.isBinary(ContentType.APPLICATION_OCTET_STREAM.getMimeType().toUpperCase()));
+        assertFalse(ContentType.isBinary(ContentType.APPLICATION_JSON.getMimeType()));
+        assertFalse(ContentType.isBinary(null));
     }
 }

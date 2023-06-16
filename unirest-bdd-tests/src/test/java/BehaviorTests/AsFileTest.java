@@ -152,4 +152,16 @@ class AsFileTest extends BddTest {
 
         assertEquals(f1, f2);
     }
+
+
+    @Test
+    void dontReadFilesWhenInError() {
+        HttpResponse<File> f1 = Unirest.get(MockServer.BINARYFILE)
+                .downloadMonitor((field, fileName, bytesWritten, totalBytes) -> {
+                    throw new RuntimeException("hey hey hey");
+                })
+                .asFile(test.toString());
+
+        assertEquals("", f1.getParsingError().get().getOriginalBody());
+    }
 }

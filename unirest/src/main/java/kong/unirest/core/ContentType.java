@@ -27,46 +27,66 @@ package kong.unirest.core;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
 public class ContentType {
+    private static final Set<String> BINARY_TYPES = new HashSet<>();
+
     public static final ContentType APPLICATION_ATOM_XML = create("application/atom+xml", ISO_8859_1);
     public static final ContentType APPLICATION_FORM_URLENCODED = create("application/x-www-form-urlencoded", ISO_8859_1);
     public static final ContentType APPLICATION_JSON = create("application/json", StandardCharsets.UTF_8);
     public static final ContentType APPLICATION_JSON_PATCH = create("application/json-patch+json");
-    public static final ContentType APPLICATION_OCTET_STREAM = create("application/octet-stream");
+    public static final ContentType APPLICATION_OCTET_STREAM = create("application/octet-stream", true);
     public static final ContentType APPLICATION_SVG_XML = create("application/svg+xml", ISO_8859_1);
     public static final ContentType APPLICATION_XHTML_XML = create("application/xhtml+xml", ISO_8859_1);
     public static final ContentType APPLICATION_XML = create("application/xml", ISO_8859_1);
-    public static final ContentType IMAGE_BMP = create("image/bmp");
-    public static final ContentType IMAGE_GIF = create("image/gif");
-    public static final ContentType IMAGE_JPEG = create("image/jpeg");
-    public static final ContentType IMAGE_PNG = create("image/png");
+    public static final ContentType APPLICATION_PDF = create("application/pdf", true);
+    public static final ContentType IMAGE_BMP = create("image/bmp", true);
+    public static final ContentType IMAGE_GIF = create("image/gif", true);
+    public static final ContentType IMAGE_JPEG = create("image/jpeg", true);
+    public static final ContentType IMAGE_PNG = create("image/png", true);
     public static final ContentType IMAGE_SVG = create("image/svg+xml");
-    public static final ContentType IMAGE_TIFF = create("image/tiff");
-    public static final ContentType IMAGE_WEBP = create("image/webp");
+    public static final ContentType IMAGE_TIFF = create("image/tiff", true);
+    public static final ContentType IMAGE_WEBP = create("image/webp", true);
     public static final ContentType MULTIPART_FORM_DATA = create("multipart/form-data", ISO_8859_1);
     public static final ContentType TEXT_HTML = create("text/html", ISO_8859_1);
     public static final ContentType TEXT_PLAIN = create("text/plain", ISO_8859_1);
     public static final ContentType TEXT_XML = create("text/xml", ISO_8859_1);
     public static final ContentType WILDCARD = create("*/*");
+
     private final String mimeType;
-
     private final Charset encoding;
-
+    private final boolean isBinary;
 
     public static ContentType create(String mimeType) {
-        return new ContentType(mimeType, null);
+        return new ContentType(mimeType, null, false);
     }
 
     public static ContentType create(String mimeType, Charset charset) {
-        return new ContentType(mimeType, charset);
+        return new ContentType(mimeType, charset, false);
     }
 
-    ContentType(String mimeType, Charset encoding) {
+    public static ContentType create(String mimeType, boolean isBinary) {
+        return new ContentType(mimeType, null, isBinary);
+    }
+
+    ContentType(String mimeType, Charset encoding, boolean isBinary) {
         this.mimeType = mimeType;
         this.encoding = encoding;
+        this.isBinary = isBinary;
+        if(isBinary && !BINARY_TYPES.contains(mimeType)){
+            BINARY_TYPES.add(mimeType);
+        }
+    }
+
+    public static boolean isBinary(String mimeType) {
+        if(mimeType == null){
+            return false;
+        }
+        return BINARY_TYPES.contains(mimeType.toLowerCase());
     }
 
     @Override
@@ -83,6 +103,10 @@ public class ContentType {
     }
 
     public ContentType withCharset(Charset charset) {
-        return new ContentType(mimeType, charset);
+        return new ContentType(mimeType, charset, isBinary);
+    }
+
+    public boolean isBinary() {
+        return isBinary;
     }
 }
