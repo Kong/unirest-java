@@ -29,9 +29,23 @@ package kong.unirest.apache;
 import kong.unirest.ContentType;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ContentTypeTest {
+
+    @Test
+    void checkForBinaryTypes() {
+        assertTrue(ContentType.APPLICATION_OCTET_STREAM.isBinary());
+        assertFalse(ContentType.APPLICATION_JSON.isBinary());
+    }
+
+    @Test
+    void checkForBinaryTypesByString() {
+        assertTrue(ContentType.isBinary(ContentType.APPLICATION_OCTET_STREAM.getMimeType()));
+        assertTrue(ContentType.isBinary(ContentType.APPLICATION_OCTET_STREAM.getMimeType().toUpperCase()));
+        assertFalse(ContentType.isBinary(ContentType.APPLICATION_JSON.getMimeType()));
+        assertFalse(ContentType.isBinary(null));
+    }
 
     @Test
     void contentTypeWithEncoding() {
