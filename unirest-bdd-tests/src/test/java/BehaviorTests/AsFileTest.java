@@ -26,6 +26,7 @@
 package BehaviorTests;
 
 import kong.unirest.HttpResponse;
+import kong.unirest.ProgressMonitor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -38,8 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AsFileTest extends BddTest {
 
@@ -152,5 +152,16 @@ class AsFileTest extends BddTest {
                 .getBody();
 
         assertEquals(f1, f2);
+    }
+
+    @Test
+    void dontReadFilesWhenInError() {
+        HttpResponse<File> f1 = Unirest.get(MockServer.BINARYFILE)
+                .downloadMonitor((field, fileName, bytesWritten, totalBytes) -> {
+                    throw new RuntimeException("hey hey hey");
+                })
+                .asFile(test.toString());
+
+        assertEquals("", f1.getParsingError().get().getOriginalBody());
     }
 }
