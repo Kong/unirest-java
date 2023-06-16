@@ -39,6 +39,7 @@ public class ContentType {
     public static final ContentType APPLICATION_SVG_XML = create("application/svg+xml", ISO_8859_1);
     public static final ContentType APPLICATION_XHTML_XML = create("application/xhtml+xml", ISO_8859_1);
     public static final ContentType APPLICATION_XML = create("application/xml", ISO_8859_1);
+    public static final ContentType APPLICATION_PDF = create("application/pdf", ISO_8859_1);
     public static final ContentType IMAGE_BMP = create("image/bmp");
     public static final ContentType IMAGE_GIF = create("image/gif");
     public static final ContentType IMAGE_JPEG = create("image/jpeg");
