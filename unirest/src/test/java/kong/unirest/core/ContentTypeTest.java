@@ -33,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ContentTypeTest {
     @Test
     void checkForBinaryTypes() {
+        assertTrue(ContentType.BINARY_OCTET_STREAM.isBinary());
         assertTrue(ContentType.APPLICATION_OCTET_STREAM.isBinary());
         assertFalse(ContentType.APPLICATION_JSON.isBinary());
     }
@@ -43,5 +44,11 @@ class ContentTypeTest {
         assertTrue(ContentType.isBinary(ContentType.APPLICATION_OCTET_STREAM.getMimeType().toUpperCase()));
         assertFalse(ContentType.isBinary(ContentType.APPLICATION_JSON.getMimeType()));
         assertFalse(ContentType.isBinary(null));
+    }
+
+    @Test
+    void anyOldBinary() {
+        assertTrue(ContentType.isBinary("binary/thing"));
+        assertFalse(ContentType.isBinary("application/thing"));
     }
 }
