@@ -214,6 +214,15 @@ class AssertTest extends Base {
         assertEquals("Yeaaaah Buddy", Unirest.get(path).asString().getBody());
     }
 
+    @Test
+    void assertPostWithNoBody() {
+        client.expect(HttpMethod.POST, "myurl").body("test").thenReturn().withStatus(200);
+        UnirestAssertion ex = assertThrows(UnirestAssertion.class, () -> client.verifyAll());
+        assertEquals("A expectation was never invoked! POST myurl\n" +
+                "Body:\n" +
+                "\t null", ex.getMessage());
+    }
+
     private static class BodyBuddy implements Supplier<String>{
         String body;
         @Override

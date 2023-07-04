@@ -168,7 +168,11 @@ class Invocation implements Expectation, ExpectedResponse {
         }
         if(expectedBody != null){
             sb.append("Body:\n");
-            sb.append("\t" + expectedBodyStatus.getDescription());
+            if(expectedBodyStatus != null) {
+                sb.append("\t" + expectedBodyStatus.getDescription());
+            } else {
+                sb.append("\t null");
+            }
         }
         return sb.toString();
     }
