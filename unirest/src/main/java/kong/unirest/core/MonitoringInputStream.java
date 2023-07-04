@@ -44,9 +44,8 @@ public class MonitoringInputStream extends InputStream {
 
     public MonitoringInputStream(InputStream content, ProgressMonitor downloadMonitor, String fileName, RawResponse rawResponse) {
         Objects.requireNonNull(content, "Original InputStream is required");
-        Objects.requireNonNull(content, "ProgressMonitor is required");
-        Objects.requireNonNull(content, "Valid path for file is required");
-        Objects.requireNonNull(content, "RawResponse is required");
+        Objects.requireNonNull(downloadMonitor, "ProgressMonitor is required");
+        Objects.requireNonNull(rawResponse, "RawResponse is required");
 
         this.content = wrap(content, rawResponse);
         this.downloadMonitor = downloadMonitor;
