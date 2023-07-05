@@ -12,13 +12,13 @@ Due to engine changes there are some differences in behavior. Efforts have been 
 <dependency>
   <groupId>com.konghq</groupId>
   <artifactId>unirest-object-mappers-gson</artifactId>
-  <version>4.0.0-RC3</version>
+  <version>4.0.0-RC13</version>
 </dependency>
 <!-- or -->
 <dependency>
   <groupId>com.konghq</groupId>
-  <artifactId>unirest-object-mappers-jackson</artifactId>
-  <version>4.0.0-RC3</version>
+  <artifactId>unirest-objectmapper-jackson</artifactId>
+  <version>4.0.0-RC13</version>
 </dependency>
 ```
 * In order to assist with the various modules Unirest now includes a dependency management BOM. Include the BOM in your dependency management section and then just declare the modules you want without the version.
@@ -29,7 +29,7 @@ Due to engine changes there are some differences in behavior. Efforts have been 
       <dependency>
           <groupId>com.konghq</groupId>
           <artifactId>unirest-java-bom</artifactId>
-          <version>4.0.0-RC3</version>
+          <version>4.0.0-RC13</version>
           <type>pom</type>
           <scope>import</scope>
       </dependency>
