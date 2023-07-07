@@ -79,7 +79,7 @@ class JavaResponse extends RawResponseBase {
 
     @Override
     public byte[] getContentAsBytes() {
-        if (!hasContent() || isBinary()) {
+        if (!hasContent()) {
             return new byte[0];
         }
         try {
@@ -88,10 +88,6 @@ class JavaResponse extends RawResponseBase {
         } catch (IOException e2) {
             throw new UnirestException(e2);
         }
-    }
-
-    private boolean isBinary() {
-        return ContentType.isBinary(getContentType());
     }
 
     private static byte[] getBytes(InputStream is) throws IOException {
