@@ -76,7 +76,7 @@ class ApacheResponse extends RawResponseBase {
 
     @Override
     public byte[] getContentAsBytes() {
-        if (!hasContent() || ContentType.isBinary(getContentType())) {
+        if (!hasContent()) {
             return new byte[0];
         }
         try {

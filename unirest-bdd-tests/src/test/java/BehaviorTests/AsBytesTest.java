@@ -45,6 +45,15 @@ class AsBytesTest extends BddTest {
     }
 
     @Test
+    void getGetBinaryResultAsBytes() {
+        byte[] content = Unirest.get(MockServer.BINARYFILE)
+                .asBytes()
+                .getBody();
+
+        assertEquals(46246, content.length);
+    }
+
+    @Test
     void getGetResultAsBytesAsync() throws Exception {
         byte[] content = Unirest.get(MockServer.GET)
                 .asBytesAsync()
