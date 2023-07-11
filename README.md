@@ -21,7 +21,7 @@ You can use a maven bom to manage the modules:
       <dependency>
           <groupId>com.konghq</groupId>
           <artifactId>unirest-java-bom</artifactId>
-          <version>4.0.2</version>
+          <version>4.0.3</version>
           <type>pom</type>
           <scope>import</scope>
       </dependency>
@@ -34,10 +34,18 @@ You can use a maven bom to manage the modules:
         <groupId>com.konghq</groupId>
         <artifactId>unirest-java-core</artifactId>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/com.konghq/unirest-object-mappers-gson -->
+    
+    <!-- pick a JSON module if you want to parse JSON include one of these: -->
+    <!-- Google GSON -->
     <dependency>
         <groupId>com.konghq</groupId>
         <artifactId>unirest-object-mappers-gson</artifactId>
+    </dependency>
+
+    <!-- OR maybe you like Jackson better? -->
+    <dependency>
+        <groupId>com.konghq</groupId>
+        <artifactId>unirest-objectmapper-jackson</artifactId>
     </dependency>
 </dependencies>
 ```
