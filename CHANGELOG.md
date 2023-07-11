@@ -1,3 +1,7 @@
+## 4.0.3
+* Another tweek to the BOM
+* Update dependencies (Jackson, GSON, Junit/Mockito)
+
 ## 4.0.2
 * Fix BOM coordinates
 
