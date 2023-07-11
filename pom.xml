@@ -315,11 +315,6 @@
 
                                 <relocations>
                                     <relocation>
-                                        <!-- Apache HttpClients -->
-                                        <pattern>org.apache.</pattern>
-                                        <shadedPattern>unirest.shaded.org.apache.</shadedPattern>
-                                    </relocation>
-                                    <relocation>
                                         <!-- Jackson -->
                                         <pattern>com.fasterxml.jackson.</pattern>
                                         <shadedPattern>unirest.shaded.com.fasterxml.jackson.</shadedPattern>
