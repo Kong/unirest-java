@@ -29,7 +29,7 @@
             </dependency>
             <dependency>
                 <groupId>com.konghq</groupId>
-                <artifactId>unirest-objectmappers-gson</artifactId>
+                <artifactId>unirest-object-mappers-gson</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
