@@ -24,12 +24,12 @@
             </dependency>
             <dependency>
                 <groupId>com.konghq</groupId>
-                <artifactId>unirest-object-mappers-jackson</artifactId>
+                <artifactId>unirest-objectmapper-jackson</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.konghq</groupId>
-                <artifactId>unirest-object-mappers-gson</artifactId>
+                <artifactId>unirest-objectmappers-gson</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
