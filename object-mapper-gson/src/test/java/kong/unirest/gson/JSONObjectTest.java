@@ -49,8 +49,8 @@ class JSONObjectTest {
 
     @Test
     void canSimpleSerializeAnObject() {
-        TestMe test = new TestMe(true, "Wakk Wakka", 42, new TestMe());
-        JSONObject o = new JSONObject(test);
+        var test = new TestMe(true, "Wakk Wakka", 42, new TestMe());
+        var o = new JSONObject(test);
         assertEquals(true, o.optBoolean("aBoolean"));
         assertEquals("Wakk Wakka", o.optString("aSillyString"));
         assertEquals(42, o.optNumber("aNumber"));
@@ -59,7 +59,7 @@ class JSONObjectTest {
 
     @Test
     void isEmpty() {
-        JSONObject o = new JSONObject();
+        var o = new JSONObject();
         assertTrue(o.isEmpty());
         o.put("foo", "bar");
         assertFalse(o.isEmpty());
@@ -67,7 +67,7 @@ class JSONObjectTest {
 
     @Test
     void isNull() {
-        JSONObject o = new JSONObject();
+        var o = new JSONObject();
         assertTrue(o.isNull("foo"));
         o.put("foo", (Object)null);
         assertTrue(o.isNull("foo"));
@@ -273,7 +273,7 @@ class JSONObjectTest {
 
     @Test
     void jsonArrays() throws Exception {
-        JSONArray subObj = new JSONArray("[42]");
+        var subObj = new JSONArray("[42]");
         JSONObject obj = new JSONObject();
         obj.put("key", subObj);
         obj.put("not", 45);
@@ -511,7 +511,7 @@ class JSONObjectTest {
     @Test
     void names() {
         JSONObject obj = new JSONObject(of("foo", 1, "bar", 2, "baz", 3));
-        JSONArray names = obj.names();
+        var names = obj.names();
         assertEquals(
                 newHashSet("foo", "bar", "baz"),
                 newHashSet(names.toList())
@@ -520,7 +520,7 @@ class JSONObjectTest {
 
     @Test
     void toJSONArray() {
-        JSONObject o = new JSONObject(of("foo","bar","baz",42));
+        var o = new JSONObject(of("foo","bar","baz",42));
 
         assertNull(o.toJSONArray(new JSONArray()));
 
@@ -533,14 +533,14 @@ class JSONObjectTest {
 
     @Test
     void putCollection() {
-        JSONObject o = new JSONObject();
+        var o = new JSONObject();
         o.put("foo", asList(1,2,3));
         assertEquals("{\"foo\":[1,2,3]}", o.toString());
     }
 
     @Test
     void putObjectAsMap() {
-        JSONObject o = new JSONObject();
+        var o = new JSONObject();
         o.put("foo", of("baz", 42));
         assertEquals("{\"foo\":{\"baz\":42}}", o.toString());
     }

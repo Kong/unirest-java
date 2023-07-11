@@ -65,7 +65,7 @@ class JacksonObjectMapperTest {
 
     @Test
     void canWrite() throws JSONException {
-        TestMe test = new TestMe("foo", 42, new TestMe("bar", 666, null));
+        var test = new TestMe("foo", 42, new TestMe("bar", 666, null));
 
         String json = om.writeValue(test);
 
@@ -78,7 +78,7 @@ class JacksonObjectMapperTest {
 
     @Test
     void canRead(){
-        TestMe test = om.readValue("{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666,\"another\":null}}",
+        var test = om.readValue("{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666,\"another\":null}}",
                 TestMe.class);
 
         assertEquals("foo", test.text);
@@ -90,10 +90,10 @@ class JacksonObjectMapperTest {
 
     @Test
     void canReadGenerics(){
-        List<TestMe> testList = om.readValue("[{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666,\"another\":null}}]",
+        var testList = om.readValue("[{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666,\"another\":null}}]",
                 new GenericType<List<TestMe>>(){});
 
-        TestMe test = testList.get(0);
+        var test = testList.get(0);
 
         assertEquals("foo", test.text);
         assertEquals(42, test.nmbr);

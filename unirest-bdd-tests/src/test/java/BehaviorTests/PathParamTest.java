@@ -112,7 +112,7 @@ class PathParamTest extends BddTest {
 
     @Test
     void testMissingPathParameter() {
-        UnirestException ex = assertThrows(UnirestException.class, () ->
+        var ex = assertThrows(UnirestException.class, () ->
                         Unirest.get(MockServer.HOST + "/{method}")
                         .routeParam("method222", "get")
                         .queryString("name", "Mark")
@@ -122,7 +122,7 @@ class PathParamTest extends BddTest {
 
     @Test
     void testMissingPathParameterValue() {
-        UnirestException ex = assertThrows(UnirestException.class, () ->
+        var ex = assertThrows(UnirestException.class, () ->
                         Unirest.get(MockServer.HOST + "/{method}")
                                 .queryString("name", "Mark")
                                 .asEmpty());

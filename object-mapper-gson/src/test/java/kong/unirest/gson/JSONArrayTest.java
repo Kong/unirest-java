@@ -49,7 +49,7 @@ class JSONArrayTest {
 
     @Test
     void nullForSoManyReasonsWhenZipping() {
-        JSONArray array = new JSONArray();
+        var array = new JSONArray();
         assertNull(array.toJSONObject(new JSONArray(Collections.singletonList("foo"))));
         array.put(42L);
         assertNull(array.toJSONObject(null));
@@ -58,25 +58,25 @@ class JSONArrayTest {
 
     @Test
     void serializeNulls() {
-        JSONArray obj = new JSONArray("[1,null]");
+        var obj = new JSONArray("[1,null]");
         assertEquals("[1,null]", obj.toString());
     }
 
     @Test
     void exeptionWhileZippingForNull() {
-        JSONArray values = new JSONArray(Arrays.asList(1, "foo", false));
-        JSONArray names = new JSONArray();
+        var values = new JSONArray(Arrays.asList(1, "foo", false));
+        var names = new JSONArray();
         names.put((String)null);
 
-        JSONException ex = assertThrows(JSONException.class, () -> values.toJSONObject(names));
+        var ex = assertThrows(JSONException.class, () -> values.toJSONObject(names));
         assertEquals("JSONArray[0] not a string.", ex.getMessage());
     }
 
     @Test
     void zipAnArray() {
-        JSONArray values = new JSONArray(Arrays.asList(1, "foo", false));
-        JSONArray names = new JSONArray(Arrays.asList("one", "two", "three", "four"));
-        JSONObject zipped = values.toJSONObject(names);
+        var values = new JSONArray(Arrays.asList(1, "foo", false));
+        var names = new JSONArray(Arrays.asList("one", "two", "three", "four"));
+        var zipped = values.toJSONObject(names);
         assertEquals(1, zipped.get("one"));
         assertEquals("foo", zipped.get("two"));
         assertEquals(false, zipped.get("three"));
@@ -84,7 +84,7 @@ class JSONArrayTest {
 
     @Test
     void putObject() {
-        JSONArray array  = new JSONArray();
+        var array  = new JSONArray();
         array.put(new Foo("fooooo"));
         array.put((Object)"abc");
         array.put((Object)new JSONObject(of("foo", "bar")));
@@ -98,7 +98,7 @@ class JSONArrayTest {
     void simpleConvert() {
         String str = "[{\"foo\": \"bar\"}, {\"baz\": 42}]";
 
-        JSONArray array = new JSONArray(str);
+        var array  = new JSONArray(str);
 
         assertEquals(2, array.length());
         assertEquals("bar", array.getJSONObject(0).getString("foo"));
@@ -115,7 +115,7 @@ class JSONArrayTest {
         Object arr = new JSONArray(asList(1,2,3));
         Object obj = new JSONObject(of("f","b"));
 
-        JSONArray array = new JSONArray()
+        var array  = new JSONArray()
         .put(5, obj)
         .put(4, arr)
         .put(3, bool)
@@ -133,7 +133,7 @@ class JSONArrayTest {
 
     @Test
     void numbers() {
-        JSONArray obj = new JSONArray();
+        var obj = new JSONArray();
         assertSame(obj, obj.put((Number)33));
         obj.put("nan");
 
@@ -148,7 +148,7 @@ class JSONArrayTest {
 
     @Test
     void doubles() {
-        JSONArray obj = new JSONArray();
+        var obj = new JSONArray();
         assertSame(obj, obj.put(33.5d));
         obj.put("nan");
 
@@ -163,7 +163,7 @@ class JSONArrayTest {
 
     @Test
     void floats() {
-        JSONArray obj = new JSONArray();
+        var obj = new JSONArray();
         assertSame(obj, obj.put(33.5f));
         obj.put("nan");
 
@@ -178,7 +178,7 @@ class JSONArrayTest {
 
     @Test
     void longs() {
-        JSONArray obj = new JSONArray();
+        var obj = new JSONArray();
         assertSame(obj, obj.put(33L));
         obj.put("nan");
 
@@ -193,7 +193,7 @@ class JSONArrayTest {
 
     @Test
     void bools() {
-        JSONArray obj = new JSONArray();
+        var obj = new JSONArray();
         assertSame(obj, obj.put(true));
         obj.put("nan");
 
@@ -208,7 +208,7 @@ class JSONArrayTest {
 
     @Test
     void ints() {
-        JSONArray obj = new JSONArray();
+        var obj = new JSONArray();
         assertSame(obj, obj.put(33));
         obj.put("nan");
 
@@ -223,7 +223,7 @@ class JSONArrayTest {
 
     @Test
     void bigInts() {
-        JSONArray obj = new JSONArray();
+        var obj = new JSONArray();
         assertSame(obj, obj.put(BigInteger.valueOf(33)));
         obj.put("nan");
 
@@ -236,8 +236,8 @@ class JSONArrayTest {
 
     @Test
     void bigDecimal() {
-        BigDecimal value = BigDecimal.valueOf(33.5);
-        JSONArray obj = new JSONArray();
+        var value = BigDecimal.valueOf(33.5);
+        var obj = new JSONArray();
         assertSame(obj, obj.put(value));
         obj.put("nan");
 
@@ -250,7 +250,7 @@ class JSONArrayTest {
 
     @Test
     void strings() {
-        JSONArray obj = new JSONArray();
+        var obj = new JSONArray();
         assertSame(obj, obj.put("cheese"));
         obj.put(45);
 
@@ -264,8 +264,8 @@ class JSONArrayTest {
 
     @Test
     void jsonObjects() throws Exception {
-        JSONObject subObj = new JSONObject("{\"derp\": 42}");
-        JSONArray obj = new JSONArray();
+        var subObj = new JSONObject("{\"derp\": 42}");
+        var obj = new JSONArray();
         assertSame(obj, obj.put(subObj));
         obj.put(45);
 
@@ -278,8 +278,8 @@ class JSONArrayTest {
 
     @Test
     void jsonArrays() throws Exception {
-        JSONArray subObj = new JSONArray("[42]");
-        JSONArray obj = new JSONArray();
+        var subObj = new JSONArray("[42]");
+        var obj = new JSONArray();
         assertSame(obj, obj.put(subObj));
         obj.put(45);
 
@@ -292,7 +292,7 @@ class JSONArrayTest {
 
     @Test
     void enums() {
-        JSONArray obj = new JSONArray();
+        var obj = new JSONArray();
         assertSame(obj, obj.put(fruit.orange));
         obj.put("nan");
 
@@ -307,7 +307,7 @@ class JSONArrayTest {
     void joinArray() {
         String str = "[33.5, 42, \"foo\", true, apple]";
 
-        JSONArray array = new JSONArray(str);
+        var array  = new JSONArray(str);
 
         assertEquals("33.5, 42, \"foo\", true, \"apple\"", array.join(", "));
     }
@@ -316,7 +316,7 @@ class JSONArrayTest {
     void toStringIt() {
         String str = "[33.5, 42, \"foo\", true, apple]";
 
-        JSONArray array = new JSONArray(str);
+        var array  = new JSONArray(str);
 
         assertEquals("[33.5,42,\"foo\",true,\"apple\"]", array.toString());
     }
@@ -325,7 +325,7 @@ class JSONArrayTest {
     void toStringItIndent() {
         String str = "[33.5, 42, \"foo\", true, apple]";
 
-        JSONArray array = new JSONArray(str);
+        var array  = new JSONArray(str);
 
         assertEquals("[\n" +
                 "  33.5,\n" +
@@ -338,7 +338,7 @@ class JSONArrayTest {
 
     @Test
     void rawGet() {
-        JSONArray array = new JSONArray(asList(
+        var array  = new JSONArray(asList(
                 33.457848383,
                 1,
                 "cheese",
@@ -356,7 +356,7 @@ class JSONArrayTest {
     void arraysOfArrays() {
         String str = "[[1,2,3],[6,7,8]]";
 
-        JSONArray array = new JSONArray(str);
+        var array  = new JSONArray(str);
 
         assertEquals(2, array.getJSONArray(0).get(1));
         assertNull(array.optJSONArray(2));
@@ -366,7 +366,7 @@ class JSONArrayTest {
     void writer() {
         String str = "[1,2,3]";
 
-        JSONArray array = new JSONArray(str);
+        var array  = new JSONArray(str);
 
         StringWriter sw = new StringWriter();
 
@@ -379,9 +379,9 @@ class JSONArrayTest {
     void writerIndent() {
         String str = "[1,2,3]";
 
-        JSONArray array = new JSONArray(str);
+        var array  = new JSONArray(str);
 
-        StringWriter sw = new StringWriter();
+        var sw = new StringWriter();
 
         array.write(sw, 3, 3);
 
@@ -394,8 +394,8 @@ class JSONArrayTest {
 
     @Test
     void remove() {
-        JSONObject o = new JSONObject(of("foo","bar"));
-        JSONArray array = new JSONArray(asList(1, o));
+        var o = new JSONObject(of("foo","bar"));
+        var array = new JSONArray(asList(1, o));
 
         Object remove = array.remove(1);
         assertTrue(remove instanceof JSONObject);
@@ -406,13 +406,13 @@ class JSONArrayTest {
 
     @Test
     void removeMissingIndex() {
-        JSONArray array = new JSONArray("[1,2,3]");
+        var array  = new JSONArray("[1,2,3]");
         assertNull(array.remove(55));
     }
 
     @Test
     void putSimple() {
-        JSONArray array = new JSONArray();
+        var array  = new JSONArray();
         array.put(1);
         array.put(Long.MAX_VALUE);
         array.put(3.5d);
@@ -437,7 +437,7 @@ class JSONArrayTest {
 
     @Test
     void putByIndex() {
-        JSONArray array = new JSONArray();
+        var array  = new JSONArray();
         array.put(5, fruit.pear);
         array.put(0, 1);
         array.put(1, Long.MAX_VALUE);
@@ -462,14 +462,14 @@ class JSONArrayTest {
 
     @Test
     void query() {
-        JSONArray obj = new JSONArray("[{\"a\":{\"b\": 42}}]");
+        var obj = new JSONArray("[{\"a\":{\"b\": 42}}]");
         assertEquals(42, obj.query("/0/a/b"));
     }
 
     @Test
     void putCollection() {
-        List<Integer> ints = asList(1, 1, 2, 3);
-        JSONArray array = new JSONArray();
+        var ints = asList(1, 1, 2, 3);
+        var array  = new JSONArray();
         array.put(ints);
 
         assertEquals(1, array.length());
@@ -478,8 +478,8 @@ class JSONArrayTest {
 
     @Test
     void constructCollection() {
-        List<Integer> ints = asList(1, 1, 2, 3);
-        JSONArray array = new JSONArray(ints);
+        var ints = asList(1, 1, 2, 3);
+        var array  = new JSONArray(ints);
 
         assertEquals(4, array.length());
         assertEquals(ints, array.toList());
@@ -487,8 +487,8 @@ class JSONArrayTest {
 
     @Test
     void constructArray() {
-        List<Integer> ints = asList(1, 1, 2, 3);
-        JSONArray array = new JSONArray(ints.toArray());
+        var ints = asList(1, 1, 2, 3);
+        var array  = new JSONArray(ints.toArray());
 
         assertEquals(4, array.length());
         assertEquals(ints, array.toList());
@@ -496,13 +496,13 @@ class JSONArrayTest {
 
     @Test
     void constructArrayError() {
-        JSONException ex = assertThrows(JSONException.class, ()-> new JSONArray(new Object()));
+        var ex = assertThrows(JSONException.class, ()-> new JSONArray(new Object()));
         assertEquals("JSONArray initial value should be a string or collection or array.", ex.getMessage());
     }
 
     @Test
     void nullMembers() {
-        JSONArray array = new JSONArray();
+        var array  = new JSONArray();
         array.put("foo");
         array.put((Object) null);
 
@@ -514,7 +514,7 @@ class JSONArrayTest {
 
     @Test
     void puttingSomeRandoObjectWillResultInString() {
-        JSONArray array = new JSONArray();
+        var array  = new JSONArray();
         array.put(new Fudge());
 
         assertEquals("[\"Hello World\"]", array.toString());
@@ -523,15 +523,15 @@ class JSONArrayTest {
     @Test
     @SuppressWarnings("SuspiciousMethodCalls")
     void iterateOverArray() {
-        List<Integer> list = asList(1, 2, 3, 4);
-        JSONArray array = new JSONArray(list);
+        var list = asList(1, 2, 3, 4);
+        var array  = new JSONArray(list);
         for(Object i : array){
             assertTrue(list.contains(i));
         }
     }
 
     public static void assertNotType(Executable exRunnable, String message) {
-        JSONException ex = assertThrows(JSONException.class, exRunnable);
+        var ex = assertThrows(JSONException.class, exRunnable);
         assertEquals(message, ex.getMessage());
     }
 

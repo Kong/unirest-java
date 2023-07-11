@@ -50,38 +50,38 @@ class JSONPointerTest {
 
     @Test
     void nullQuery() {
-        NullPointerException ex = assertThrows(NullPointerException.class, () -> obj.query((String)null));
+        var ex = assertThrows(NullPointerException.class, () -> obj.query((String)null));
         assertEquals("pointer cannot be null", ex.getMessage());
     }
 
     @Test
     void invalidPathQuery() {
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> obj.query("foo"));
+        var ex = assertThrows(IllegalArgumentException.class, () -> obj.query("foo"));
         assertEquals("a JSON pointer should start with '/' or '#/'", ex.getMessage());
     }
 
     @Test
     void invalidPathQuery_downpath() {
-        JSONPointerException ex = assertThrows(JSONPointerException.class, () -> obj.query("/shwoop/dedoop"));
+        var ex = assertThrows(JSONPointerException.class, () -> obj.query("/shwoop/dedoop"));
         assertEquals("Path Segment Missing: shwoop", ex.getMessage());
     }
 
     @Test
     void arrayPartThatDoesNotExist() {
-        JSONPointerException ex = assertThrows(JSONPointerException.class, () -> obj.query("/foo/5"));
+        var ex = assertThrows(JSONPointerException.class, () -> obj.query("/foo/5"));
         assertEquals("index 5 is out of bounds - the array has 2 elements", ex.getMessage());
     }
 
     @Test
     void referenceAnArrayAsAThing() {
-        JSONPointerException ex = assertThrows(JSONPointerException.class, () -> obj.query("/foo/bar"));
+        var ex = assertThrows(JSONPointerException.class, () -> obj.query("/foo/bar"));
         assertEquals("bar is not an array index", ex.getMessage());
     }
 
     @Test
     @SuppressWarnings("RedundantCast")
     void constructorMayNotTakeNull() {
-        NullPointerException ex = assertThrows(NullPointerException.class, () -> new JSONPointer((String) null));
+        var ex = assertThrows(NullPointerException.class, () -> new JSONPointer((String) null));
         assertEquals("pointer cannot be null", ex.getMessage());
     }
 
@@ -168,7 +168,7 @@ class JSONPointerTest {
 
     @Test
     void builder(){
-        JSONPointer pointer = JSONPointer
+        var pointer = JSONPointer
                 .builder()
                 .append("foo")
                 .append(4)

@@ -49,7 +49,7 @@ class MockListenerTest {
 
     @Test
     void assertPing() {
-        ByteBuffer wrap = ByteBuffer.wrap("hi".getBytes());
+        var wrap = ByteBuffer.wrap("hi".getBytes());
 
         assertAssertionThrown(() -> listener.assertPing(wrap),
                 "Expected Ping Call with buffer java.nio.HeapByteBuffer[pos=0 lim=2 cap=2] but got null");
@@ -63,7 +63,7 @@ class MockListenerTest {
 
     @Test
     void assertPong() {
-        ByteBuffer wrap = ByteBuffer.wrap("hi".getBytes());
+        var wrap = ByteBuffer.wrap("hi".getBytes());
 
         assertAssertionThrown(() -> listener.assertPong(wrap),
                 "Expected Pong Message java.nio.HeapByteBuffer[pos=0 lim=2 cap=2] but got null");
@@ -103,7 +103,7 @@ class MockListenerTest {
 
     @Test
     void assertBinaryMessage() {
-        ByteBuffer buf = ByteBuffer.wrap("Hail Sithis!".getBytes());
+        var buf = ByteBuffer.wrap("Hail Sithis!".getBytes());
 
         assertAssertionThrown(() -> listener.assertReceivedMessage(buf, false),
                 "Did not receive any message: [java.nio.HeapByteBuffer[pos=0 lim=12 cap=12] : false] ");
@@ -126,7 +126,7 @@ class MockListenerTest {
     }
 
     private void assertAssertionThrown(Executable ex, String errorMessage) {
-        UnirestAssertion a = assertThrows(UnirestAssertion.class, ex);
+        var a = assertThrows(UnirestAssertion.class, ex);
         assertEquals(errorMessage, a.getMessage());
     }
 }

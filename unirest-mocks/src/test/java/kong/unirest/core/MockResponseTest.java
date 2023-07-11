@@ -33,14 +33,14 @@ class MockResponseTest {
 
     @Test
     void canCreateASuccessfulMockResponse() {
-        HttpResponse<String> response = MockResponse.ok("Hi Mom");
+        var response = MockResponse.ok("Hi Mom");
         assertEquals(200, response.getStatus());
         assertEquals("Hi Mom", response.getBody());
     }
 
     @Test
     void canAddHeaders() {
-        HttpResponse<String> response = MockResponse.ok("Hi Mom")
+        var response = MockResponse.ok("Hi Mom")
                 .withHeader("Accept", "application/xml");
 
         assertEquals("application/xml", response.getHeaders().getFirst("Accept"));
@@ -48,7 +48,7 @@ class MockResponseTest {
 
     @Test
     void badRequestWithParsingException() {
-        HttpResponse<String> response = MockResponse.bad("Hi Mom")
+        var response = MockResponse.bad("Hi Mom")
                 .failedToParse();
 
         assertEquals(400, response.getStatus());
@@ -57,7 +57,7 @@ class MockResponseTest {
 
     @Test
     void canSetConfigOptions() {
-        HttpResponse<String> response = MockResponse.bad("Hi Mom")
+        var response = MockResponse.bad("Hi Mom")
                 .withConfigOptions(c -> c.setObjectMapper(new ObjectMapper() {
                     @Override
                     public <T> T readValue(String value, Class<T> valueType) {

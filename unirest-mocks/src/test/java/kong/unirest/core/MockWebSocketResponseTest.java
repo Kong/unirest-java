@@ -58,7 +58,7 @@ class MockWebSocketResponseTest extends Base {
     void sendPingFromServer() {
         createConnection();
 
-        ByteBuffer buffer = ByteBuffer.wrap("ping".getBytes());
+        var buffer = ByteBuffer.wrap("ping".getBytes());
         client.serversSocket().getSocket().sendPing(buffer);
 
         client.serversSocket().getListener().assertPong(buffer);
@@ -67,7 +67,7 @@ class MockWebSocketResponseTest extends Base {
     @Test
     void serverSendsBinary(){
         createConnection();
-        ByteBuffer bytes = ByteBuffer.wrap("hi".getBytes());
+        var bytes = ByteBuffer.wrap("hi".getBytes());
         client.serversSocket().getSocket().sendBinary(bytes, false);
         listener.assertReceivedMessage(bytes, false);
     }
@@ -92,7 +92,7 @@ class MockWebSocketResponseTest extends Base {
 
     @Test
     void localSendsBinary() throws Exception {
-        ByteBuffer sithis = ByteBuffer.wrap("Hail Sithis!".getBytes());
+        var sithis = ByteBuffer.wrap("Hail Sithis!".getBytes());
         createConnection().socket().get().sendBinary(sithis, false);
 
         client.serversSocket()
@@ -111,7 +111,7 @@ class MockWebSocketResponseTest extends Base {
 
     @Test
     void localSendsPingPong() throws Exception  {
-        ByteBuffer buffer = ByteBuffer.wrap("ping".getBytes());
+        var buffer = ByteBuffer.wrap("ping".getBytes());
         createConnection().socket().get().sendPing(buffer);
 
         listener.assertPong(buffer);
@@ -119,7 +119,7 @@ class MockWebSocketResponseTest extends Base {
 
     @Test
     void onConnectFiresFromLocal() throws Exception {
-        MockListener listener = new MockListener(){
+        var listener = new MockListener(){
             @Override
             public void onOpen(WebSocket webSocket) {
                 webSocket.sendText("Hello Mother!", false);
@@ -136,6 +136,4 @@ class MockWebSocketResponseTest extends Base {
     private WebSocketResponse createConnection() {
         return Unirest.webSocket("ws://localhost").connect(listener);
     }
-
-
 }

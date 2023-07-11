@@ -52,14 +52,14 @@ class JsonObjectMapperTest {
 
     @Test
     void serializeEverythingNull() {
-        TestDates test = new TestDates();
+        var test = new TestDates();
         String actual = om.writeValue(test);
         assertEquals("{}", actual);
     }
 
     @Test
     void serializeDate_iso_with_time() {
-        TestDates date = getDate("1985-07-03T18:00:00.042Z");
+        var date = getDate("1985-07-03T18:00:00.042Z");
 
         String actual = om.writeValue(date);
 
@@ -68,7 +68,7 @@ class JsonObjectMapperTest {
 
     @Test
     void serializeDate_iso_no_time() {
-        TestDates date = getDate(new Date(489196800000L));
+        var date = getDate(new Date(489196800000L));
 
         String actual = om.writeValue(date);
 
@@ -77,55 +77,55 @@ class JsonObjectMapperTest {
 
     @Test
     void deserializeDate_null() {
-        TestDates back = getTestDate("date", null);
+        var back = getTestDate("date", null);
 
         assertNull(back.getDate());
     }
 
     @Test
     void deserializeDate_iso_with_time() {
-        TestDates back = getTestDate("date", "1985-07-03T18:30:00.042Z");
+        var back = getTestDate("date", "1985-07-03T18:30:00.042Z");
 
         assertEquals(489263400042L, back.getDate().getTime());
     }
 
     @Test
     void deserializeDate_iso_with_NoTime() {
-        TestDates back = getTestDate("date", "1985-07-03");
+        var back = getTestDate("date", "1985-07-03");
 
         assertEquals(489196800000L, back.getDate().getTime());
     }
 
     @Test
     void deserializeDate_iso_datetime_noMillies() {
-        TestDates back = getTestDate("date", "1985-07-03T18:30:00Z");
+        var back = getTestDate("date", "1985-07-03T18:30:00Z");
 
         assertEquals(489263400000L, back.getDate().getTime());
     }
 
     @Test
     void deserializeDate_iso_datetime_Errors() {
-        UnirestException ex = assertThrows(UnirestException.class, () -> getTestDate("date", "Leeeeeeeroy Jenkins!"));
+        var ex = assertThrows(UnirestException.class, () -> getTestDate("date", "Leeeeeeeroy Jenkins!"));
         assertEquals("Could Not Parse as java.util.Date: Leeeeeeeroy Jenkins!", ex.getMessage());
     }
 
     @Test
     void deserializeDate_iso_datetime_noSeconds() {
-        TestDates back = getTestDate("date", "1985-07-03T18:30Z");
+        var back = getTestDate("date", "1985-07-03T18:30Z");
 
         assertEquals(489263400000L, back.getDate().getTime());
     }
 
     @Test
     void getDatesFromNumbers() {
-        TestDates back = getTestDate("date", 42);
+        var back = getTestDate("date", 42);
 
         assertEquals(new Date(42), back.getDate());
     }
 
     @Test
     void canSerializeCalendar() {
-        TestDates test = getCalendar("1985-07-03T18:00:00.042Z");
+        var test = getCalendar("1985-07-03T18:00:00.042Z");
 
         String actual = om.writeValue(test);
         assertEquals("{\"calendar\":\"1985-07-03T18:00:00.042Z\"}", actual);
@@ -134,10 +134,10 @@ class JsonObjectMapperTest {
     @Test
     @SuppressWarnings("MagicConstant")
     void canSerializeCalendar_no_time() {
-        Calendar cal = GregorianCalendar.getInstance();
+        var cal = GregorianCalendar.getInstance();
         cal.set(1985, 6, 3, 0, 0, 0);
         cal.set(Calendar.MILLISECOND, 0);
-        TestDates test = getCalendar(cal);
+        var test = getCalendar(cal);
 
         String actual = om.writeValue(test);
         assertEquals("{\"calendar\":\"1985-07-03T00:00:00Z\"}", actual);
@@ -145,42 +145,42 @@ class JsonObjectMapperTest {
 
     @Test
     void deserializeCalendar_iso_datetime() {
-        TestDates back = getTestDate("calendar", "1985-07-03T18:30:00.042Z");
+        var back = getTestDate("calendar", "1985-07-03T18:30:00.042Z");
 
         assertEquals(489263400042L, back.getCalendar().getTimeInMillis());
     }
 
     @Test
     void deserializeCalendar_iso_datetime_noMillies() {
-        TestDates back = getTestDate("calendar", "1985-07-03T18:30:00Z");
+        var back = getTestDate("calendar", "1985-07-03T18:30:00Z");
 
         assertEquals(489263400000L, back.getCalendar().getTimeInMillis());
     }
 
     @Test
     void deserializeCalendar_iso_datetime_noSeconds() {
-        TestDates back = getTestDate("calendar", "1985-07-03T18:30Z");
+        var back = getTestDate("calendar", "1985-07-03T18:30Z");
 
         assertEquals(489263400000L, back.getCalendar().getTimeInMillis());
     }
 
     @Test
     void deserializeCalendar_iso_date() {
-        TestDates back = getTestDate("calendar", "1985-07-03");
+        var back = getTestDate("calendar", "1985-07-03");
 
         assertEquals(489196800000L, back.getCalendar().getTimeInMillis());
     }
 
     @Test
     void deserializeCalendar_iso_datetime_Errors() {
-        UnirestException ex = assertThrows(UnirestException.class, () -> getTestDate("calendar", "Leeeeeeeroy Jenkins!"));
+        var ex = assertThrows(UnirestException.class, () -> getTestDate("calendar", "Leeeeeeeroy Jenkins!"));
         assertEquals("Could Not Parse as java.util.Calendar: Leeeeeeeroy Jenkins!", ex.getMessage());
     }
 
     @Test
     void canSerializeZonedDateTimes() {
-        ZonedDateTime zonedDt = ZonedDateTime.parse("1985-07-03T18:00:00.042Z").withFixedOffsetZone();
-        TestDates test = new TestDates();
+        var zonedDt = ZonedDateTime.parse("1985-07-03T18:00:00.042Z").withFixedOffsetZone();
+        var test = new TestDates();
         test.setZonedDateTime(zonedDt);
 
         String actual = om.writeValue(test);
@@ -189,22 +189,22 @@ class JsonObjectMapperTest {
 
     @Test
     void deserializeZonedDateTime_iso_datetime() {
-        TestDates back = getTestDate("zonedDateTime", "1985-07-03T18:30:00.042Z");
+        var back = getTestDate("zonedDateTime", "1985-07-03T18:30:00.042Z");
 
         assertEquals(ZonedDateTime.parse("1985-07-03T18:30:00.042Z"), back.getZonedDateTime());
     }
 
     @Test
     void deserializeZonedDateTime_iso_with_offset() {
-        TestDates back = getTestDate("zonedDateTime", "1985-07-03T18:30:00.042+02:00");
+        var back = getTestDate("zonedDateTime", "1985-07-03T18:30:00.042+02:00");
 
         assertEquals(ZonedDateTime.parse("1985-07-03T18:30:00.042+02:00"), back.getZonedDateTime());
     }
 
     @Test
     void canSerializeLocalDateTimes() {
-        LocalDateTime zonedDt = LocalDateTime.parse("1985-07-03T18:00:00.042");
-        TestDates test = new TestDates();
+        var zonedDt = LocalDateTime.parse("1985-07-03T18:00:00.042");
+        var test = new TestDates();
         test.setLocalDateTime(zonedDt);
 
         String actual = om.writeValue(test);
@@ -213,22 +213,22 @@ class JsonObjectMapperTest {
 
     @Test
     void deserializeLocalDateTime_iso_datetime() {
-        TestDates back = getTestDate("localDateTime", "1985-07-03T18:00:00.042");
+        var back = getTestDate("localDateTime", "1985-07-03T18:00:00.042");
 
         assertEquals(LocalDateTime.parse("1985-07-03T18:00:00.042"), back.getLocalDateTime());
     }
 
     @Test
     void deserializeLocalDateTime_iso_datetime_noTime() {
-        TestDates back = getTestDate("localDateTime", "1985-07-03");
+        var back = getTestDate("localDateTime", "1985-07-03");
 
         assertEquals(LocalDateTime.parse("1985-07-03T00:00"), back.getLocalDateTime());
     }
 
     @Test
     void canSerializeLocalDate() {
-        LocalDate zonedDt = LocalDate.parse("1985-07-03");
-        TestDates test = new TestDates();
+        var zonedDt = LocalDate.parse("1985-07-03");
+        var test = new TestDates();
         test.setLocalDate(zonedDt);
 
         String actual = om.writeValue(test);
@@ -237,21 +237,21 @@ class JsonObjectMapperTest {
 
     @Test
     void deserializeLocalDate_iso_datetime() {
-        TestDates back = getTestDate("localDate", "1985-07-03T18:00:00.042");
+        var back = getTestDate("localDate", "1985-07-03T18:00:00.042");
 
         assertEquals(LocalDate.parse("1985-07-03"), back.getLocalDate());
     }
 
     @Test
     void deserializeLocalDate_iso_datetime_noTime() {
-        TestDates back = getTestDate("localDate", "1985-07-03");
+        var back = getTestDate("localDate", "1985-07-03");
 
         assertEquals(LocalDate.parse("1985-07-03"), back.getLocalDate());
     }
 
     @Test
     void doNotEscapeHTML() {
-        TestString s = new TestString();
+        var s = new TestString();
         s.test = "it's a && b || c + 1!?";
 
         String res = om.writeValue(s);
@@ -262,6 +262,7 @@ class JsonObjectMapperTest {
     private static class TestString {
         private String test;
     }
+
     private TestDates getTestDate(String key, Object date) {
         return om.readValue(getJson(key, date), TestDates.class);
     }
@@ -279,7 +280,7 @@ class JsonObjectMapperTest {
     }
 
     private TestDates getDate(Date from) {
-        TestDates test = new TestDates();
+        var test = new TestDates();
         test.setDate(from);
         return test;
     }
@@ -291,7 +292,7 @@ class JsonObjectMapperTest {
     }
 
     private TestDates getCalendar(Calendar from) {
-        TestDates test = new TestDates();
+        var test = new TestDates();
         test.setCalendar(from);
         return test;
     }

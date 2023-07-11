@@ -83,7 +83,7 @@ class InterceptorTest extends BddTest {
     void totalFailure() throws Exception {
         Unirest.config().httpClient(TestUtil.getFailureClient()).interceptor(interceptor);
 
-        UnirestException ex = assertThrows(UnirestException.class, () -> Unirest.get(MockServer.GET).asEmpty());
+        var ex = assertThrows(UnirestException.class, () -> Unirest.get(MockServer.GET).asEmpty());
         assertEquals("java.io.IOException: " + "Something horrible happened", ex.getMessage());
     }
 
