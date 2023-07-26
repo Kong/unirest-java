@@ -3,17 +3,6 @@
 ### About
 A series of mocks for use with Unirest for unit testing. The mock clients will not make any real web requests.
 
-### Installation
-Maven
-```xml
-<dependency>
-    <groupId>com.konghq</groupId>
-    <artifactId>unirest-mocks</artifactId>
-    <version>3.11.09</version>
-    <scope>test</scope>
-</dependency>
-```
-
 ### Usage
 ```java
 class MyTest {
