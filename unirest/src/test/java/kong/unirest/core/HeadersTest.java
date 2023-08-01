@@ -26,14 +26,13 @@
 package kong.unirest.core;
 
 
-
-import kong.unirest.core.Header;
-import kong.unirest.core.Headers;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class HeadersTest {
 
@@ -105,5 +104,20 @@ class HeadersTest {
 
         assertEquals("application/json", h.getFirst("Accepts"));
         assertEquals("application/xml", h.getFirst("Content-Type"));
+    }
+
+    @Test
+    void headersCanBeNull() {
+        var h = new Headers();
+        h.add("foo", (String) null);
+        assertEquals(List.of(""), h.get("foo"));
+    }
+
+    @Test
+    void headersCanBeNull2() {
+        var headers = new Headers();
+        headers.add("header1", "value");
+        headers.add("header2", (String) null);
+        assertEquals(2, headers.size());
     }
 }
