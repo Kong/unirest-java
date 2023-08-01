@@ -25,10 +25,7 @@
 
 package BehaviorTests;
 
-import kong.unirest.GetRequest;
-import kong.unirest.HttpResponse;
-import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
+import kong.unirest.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -358,5 +355,13 @@ class HeaderTest extends BddTest {
                 .getBody()
                 .assertHeader("foo","replace")
                 .assertHeader("two","bar");
+    }
+
+    @Test
+    void headersCanBeNull2() {
+        Headers headers = new Headers();
+        headers.add("header1", "value");
+        headers.add("header2", (String) null);
+        assertEquals(2, headers.size());
     }
 }
