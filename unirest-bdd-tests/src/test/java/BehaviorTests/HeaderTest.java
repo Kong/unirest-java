@@ -146,6 +146,16 @@ class HeaderTest extends BddTest {
     }
 
     @Test
+    void contentTypeHeadersOnMultipart() {
+        Unirest.post(MockServer.POST)
+                .field("one","a")
+                .contentType("application/x-www-form-urlencoded")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeaderSize("Content-Type", 1);
+    }
+
+    @Test
     void canPassHeadersAsMap() {
         Unirest.post(MockServer.POST)
                 .headers(mapOf("one", "foo", "two", "bar", "three", null))
