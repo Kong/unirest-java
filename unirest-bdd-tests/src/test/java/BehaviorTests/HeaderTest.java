@@ -367,6 +367,37 @@ class HeaderTest extends BddTest {
     }
 
     @Test
+    void multipleContentHeaders() {
+        Unirest.post(MockServer.GET)
+                .contentType("application/json")
+                .header("Content-Type", "xml")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeaderSize("Content-Type", 2);
+    }
+
+    @Test
+    void contentTypeHeadersCanBeOverwritten() {
+        Unirest.post(MockServer.POST)
+                .field("one","a")
+                .contentType("application/json")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeaderSize("Content-Type", 1)
+                .assertContentType("application/json");
+    }
+
+    @Test
+    void defaultContentTypes() {
+        Unirest.post(MockServer.POST)
+                .field("one","a")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeaderSize("Content-Type", 1)
+                .assertContentType("application/x-www-form-urlencoded; charset=UTF-8");
+    }
+
+    @Test
     void headersCanBeNull2() {
         Headers headers = new Headers();
         headers.add("header1", "value");
