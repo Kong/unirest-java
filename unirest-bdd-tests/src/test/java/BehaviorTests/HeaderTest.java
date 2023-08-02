@@ -338,6 +338,15 @@ class HeaderTest extends BddTest {
     }
 
     @Test
+    void nullValueTests() {
+        Unirest.get(MockServer.GET)
+                .header("foo", null)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("foo","");
+    }
+
+    @Test
     void nullTests() {
         Unirest.get(MockServer.GET)
                 .header("foo","bar")
