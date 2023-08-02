@@ -146,7 +146,7 @@ class HeaderTest extends BddTest {
     }
 
     @Test
-    void contentTypeHeadersOnMultipart() {
+    void contentTypeHeaders() {
         Unirest.post(MockServer.POST)
                 .field("one","a")
                 .contentType("application/x-www-form-urlencoded")
