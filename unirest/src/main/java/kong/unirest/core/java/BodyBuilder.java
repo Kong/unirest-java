@@ -92,7 +92,14 @@ class BodyBuilder {
         if(o.getCharset() != null){
             content = content + "; charset="+o.getCharset().toString();
         }
-        request.header(HeaderNames.CONTENT_TYPE, content);
+        if(!alreadyHasMultiPartHeader()){
+            request.header(HeaderNames.CONTENT_TYPE, content);
+        }
+    }
+
+    private boolean alreadyHasMultiPartHeader() {
+        return request.getHeaders()
+                .containsKey(HeaderNames.CONTENT_TYPE);
     }
 
     private String toFormParams(Body o) {

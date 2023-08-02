@@ -369,6 +369,16 @@ class HeaderTest extends BddTest {
     }
 
     @Test
+    void contentTypeHeaders() {
+        Unirest.post(MockServer.POST)
+                .field("one","a")
+                .contentType("application/x-www-form-urlencoded")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeaderSize("Content-Type", 1);
+    }
+
+    @Test
     void nullHeaderValues() {
         Unirest.get(MockServer.GET)
                 .header("foo", null)
