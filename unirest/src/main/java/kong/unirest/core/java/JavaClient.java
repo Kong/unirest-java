@@ -86,7 +86,7 @@ public class JavaClient implements Client {
                     .version(HttpClient.Version.HTTP_2)
                     .method(
                             request.getHttpMethod().name(),
-                            new BodyBuilder(config, request).getBody()
+                            new BodyBuilder(request).getBody()
                     ).timeout(Duration.ofMillis(request.getConnectTimeout()));
             
             setHeaders(request, jreq);

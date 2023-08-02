@@ -40,11 +40,9 @@ import java.util.stream.Collectors;
 
 class BodyBuilder {
     public static final Charset ASCII = Charset.forName("US-ASCII");
-    private final Config config;
     private final kong.unirest.core.HttpRequest request;
 
-    BodyBuilder(Config config, kong.unirest.core.HttpRequest request) {
-        this.config = config;
+    BodyBuilder(kong.unirest.core.HttpRequest request) {
         this.request = request;
     }
 
