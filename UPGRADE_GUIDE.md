@@ -17,7 +17,7 @@ Due to engine changes there are some differences in behavior. Efforts have been 
 <!-- or -->
 <dependency>
   <groupId>com.konghq</groupId>
-  <artifactId>unirest-object-mappers-jackson</artifactId>
+  <artifactId>unirest-objectmapper-jackson</artifactId>
   <version>4.0.0</version>
 </dependency>
 ```
