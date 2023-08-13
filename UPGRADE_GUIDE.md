@@ -39,7 +39,7 @@ Due to engine changes there are some differences in behavior. Efforts have been 
 <dependencies>
   <dependency>
     <groupId>com.konghq</groupId>
-    <artifactId>unirest-java</artifactId>
+    <artifactId>unirest-core</artifactId>
   </dependency>
   <dependency>
     <groupId>com.konghq</groupId>
