@@ -28,9 +28,36 @@ package kong.unirest.core;
 import kong.unirest.core.json.JSONElement;
 
 public interface ExpectedResponse {
+    /**
+     * adds a header to the expected response
+     * @param key the header key
+     * @param key the header value
+     * @return this ExpectedResponse
+     */
     ExpectedResponse withHeader(String key, String value);
+
+    /**
+     * adds a collection of headers to the expected response
+     * @param headers the headers
+     * @return This ExpectedResponse
+     */
+    ExpectedResponse withHeaders(Headers headers);
+
+    /**
+     * sets the status of the expected response
+     * @param httpStatus the http status code
+     * @return this ExpectedResponse
+     */
     ExpectedResponse withStatus(int httpStatus);
+
+    /**
+     * sets the status of the expected response
+     * @param httpStatus the http status code
+     * @param statusMessage the status message
+     * @return this ExpectedResponse
+     */
     ExpectedResponse withStatus(int httpStatus, String statusMessage);
+
     /**
      * expect a string response
      * @param body the expected response body

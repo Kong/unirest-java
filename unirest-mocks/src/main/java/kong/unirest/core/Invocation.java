@@ -84,8 +84,18 @@ class Invocation implements Expectation, ExpectedResponse {
 
     @Override
     public ExpectedResponse thenReturn(Object pojo) {
-        this.response = o -> o.writeValue(pojo);
+        if(pojo instanceof MockResponse){
+            var res = (MockResponse)pojo;
+            return thenReturn(res);
+        } else {
+            this.response = o -> o.writeValue(pojo);
+        }
         return this;
+    }
+
+    private ExpectedResponse thenReturn(MockResponse res) {
+        this.response = o -> res.getBody() == null ? null : String.valueOf(res.getBody());
+        return withStatus(res.getStatus()).withHeaders(res.getHeaders());
     }
 
     @Override
@@ -225,6 +235,12 @@ class Invocation implements Expectation, ExpectedResponse {
     @Override
     public ExpectedResponse withHeader(String key, String value) {
         this.responseHeaders.add(key, value);
+        return this;
+    }
+
+    @Override
+    public ExpectedResponse withHeaders(Headers value) {
+        value.all().forEach(h -> withHeader(h.getName(), h.getValue()));
         return this;
     }
 

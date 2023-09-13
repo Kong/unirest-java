@@ -28,6 +28,7 @@ package kong.tests;
 import kong.unirest.core.*;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import static kong.unirest.core.HttpMethod.GET;
@@ -221,6 +222,31 @@ class AssertTest extends Base {
         assertEquals("A expectation was never invoked! POST myurl\n" +
                 "Body:\n" +
                 "\t null", ex.getMessage());
+    }
+
+    @Test
+    void returnAMockResponseObject() {
+        client.expect(HttpMethod.POST, path)
+                .thenReturn(MockResponse.of(500, "error")
+                        .withHeader("cool", "beans"));
+
+        HttpResponse<String> response = Unirest.post(path).asString();
+
+        assertEquals(500, response.getStatus());
+        assertEquals("error", response.getBody());
+        assertEquals(List.of("beans"), response.getHeaders().get("cool"));
+    }
+
+    @Test
+    void returnAMockResponseObjectWithoutStuff() {
+        client.expect(HttpMethod.POST, path)
+                .thenReturn(MockResponse.of(500, null));
+
+        HttpResponse<String> response = Unirest.post(path).asString();
+
+        assertEquals(500, response.getStatus());
+        assertEquals(null, response.getBody());
+        assertEquals(List.of(), response.getHeaders().get("cool"));
     }
 
     private static class BodyBuddy implements Supplier<String>{
