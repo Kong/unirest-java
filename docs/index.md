@@ -535,7 +535,6 @@ All configuration is now done through ```Unirest.config()```
     Unirest.config()
            .socketTimeout(500)
            .connectTimeout(1000)
-           .concurrency(10, 5)
            .proxy(new Proxy("https://proxy"))
            .setDefaultHeader("Accept", "application/json")
            .followRedirects(false)
@@ -552,7 +551,6 @@ Changing Unirest's config should ideally be done once, or rarely. There are seve
 | Builder Method  | Impact | Default |
 | ------------- | ------------- | ------------- |
 | ```connectTimeout(int)``` | Sets the connection timeout for all requests in millis  | 10000 |
-| ```concurrency(int, int)``` | Sets concurrency rates; max total, max per route  | 200, 20 |
 | ```proxy(proxy)``` | Sets a proxy object for negotiating proxy servers. Can include auth credentials  |  |
 | ```setDefaultHeader(String, String)``` | Sets  a default header. Will overwrite if it exists  |  |
 | ```setDefaultHeader(String, Supplier<String>)``` | Sets a default header by supplier. Good for setting trace tokens for microservice architectures. Will overwrite if it exists  |  |

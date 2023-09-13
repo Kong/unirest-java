@@ -59,6 +59,7 @@ Due to engine changes there are some differences in behavior. Efforts have been 
 * Socket timeout is no longer set independent of connection timeout and has been removed
 * There are no longer any monitoring threads to shut down, as such, all close methods and the registering of shutdown hooks have been removed.
 * Using system props for proxy settings is false by default (was true in previous versions)
+* max concurrent routes is no longer supported as this was a feature of Apache. concurrency(int, int) has been removed.
 
 ## Upgrading to Unirest 3.0
 The primary difference in Unirest 3 is that the org.json dependency has been replaced by a clean-room implementation of org.json's interface using Google Gson as the engine. 
@@ -107,7 +108,6 @@ Previous versions of unirest had configuration split across several different pl
 ```java
    // Sometimes it was on Unirest
     Unirest.setTimeouts(5000, 10000);
-    Unirest.setConcurrency(25, 10);
 
    //Sometimes it was on Options
    Options.setOption(HTTPCLIENT, client);
@@ -122,7 +122,6 @@ Unirest config allows easy access to build a configuration just like you would b
     Unirest.config()
            .socketTimeout(500)
            .connectTimeout(1000)
-           .concurrency(10, 5)
            .proxy(new Proxy("https://proxy"))
            .setDefaultHeader("Accept", "application/json")
            .followRedirects(false)
