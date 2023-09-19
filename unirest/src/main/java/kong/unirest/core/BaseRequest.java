@@ -341,12 +341,15 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     private <E> HttpResponse<E> request(Function<RawResponse, HttpResponse<E>> transformer, Class<?> resultType){
         HttpResponse<E> response = config.getClient().request(this, transformer, resultType);
+
         callCount++;
-        if(config.isAutomaticRetryAfter() && RetryAfter.isRetriable(response) && callCount < config.maxRetries()){
-            RetryAfter retryAfter = RetryAfter.from(response);
-            if(retryAfter.canWait()) {
-                retryAfter.waitForIt();
-                return request(transformer, resultType);
+        if(config.isAutomaticRetryAfter()){
+            var retryAfter = RetryAfter.from(response);
+            if(retryAfter.isRetriable(response) && callCount < config.maxRetries()) {
+                if (retryAfter.canWait()) {
+                    retryAfter.waitForIt();
+                    return request(transformer, resultType);
+                }
             }
         }
         return response;

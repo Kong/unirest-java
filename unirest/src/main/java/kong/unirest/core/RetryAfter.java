@@ -46,14 +46,14 @@ class RetryAfter {
         return from(response.getHeaders());
     }
 
-    static boolean isRetriable(HttpResponse response) {
-        return RETRY_CODES.contains(response.getStatus()) && response.getHeaders().containsKey(RETRY_AFTER);
-    }
-
     static RetryAfter from(Headers response) {
         String value = response.getFirst(RETRY_AFTER);
         return tryAsDouble(value)
                 .orElseGet(() -> tryAsDateTime(value));
+    }
+
+    boolean isRetriable(HttpResponse response) {
+        return RETRY_CODES.contains(response.getStatus()) && response.getHeaders().containsKey(RETRY_AFTER);
     }
 
     private static RetryAfter tryAsDateTime(String value) {
