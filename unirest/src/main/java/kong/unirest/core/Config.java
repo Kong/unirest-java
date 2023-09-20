@@ -42,6 +42,7 @@ import java.util.function.Supplier;
 
 public class Config {
     public static final int DEFAULT_CONNECT_TIMEOUT = 10000;
+    public static final String JDK_HTTPCLIENT_KEEPALIVE_TIMEOUT = "jdk.httpclient.keepalive.timeout";
 
     private Optional<Client> client = Optional.empty();
     private Supplier<ObjectMapper> objectMapper;
@@ -62,7 +63,6 @@ public class Config {
     private Supplier<String> keystorePassword = () -> null;
     private String cookieSpec;
     private UniMetric metrics = new NoopMetric();
-    private long ttl = -1;
     private SSLContext sslContext;
     private String[] ciphers;
     private String[] protocols;
@@ -501,16 +501,35 @@ public class Config {
     }
 
     /**
-     * Total time to live (TTL)  defines maximum life span of persistent connections regardless of their expiration setting.
-     * No persistent connection will be re-used past its TTL value.
+     * Sets the jdk.httpclient.keepalive.timeout setting
+     *      https://docs.oracle.com/en/java/javase/20/docs/api/java.net.http/module-summary.html
+     * The number of seconds to keep idle HTTP connections alive in the keep alive cache.
+     * This property applies to both HTTP/1.1 and HTTP/2.
      *
      * @param duration of ttl.
      * @param unit the time unit of the ttl
      * @return this config object
      */
     public Config connectionTTL(long duration, TimeUnit unit) {
-        this.ttl = unit.toMillis(duration);
+        Objects.requireNonNull(unit, "TimeUnit required");
+        var ttl = unit.toMillis(duration);
+        if(ttl > -1){
+            System.setProperty(JDK_HTTPCLIENT_KEEPALIVE_TIMEOUT, String.valueOf(ttl));
+        }
         return this;
+    }
+
+    /**
+     * Sets the jdk.httpclient.keepalive.timeout setting
+     *      https://docs.oracle.com/en/java/javase/20/docs/api/java.net.http/module-summary.html
+     * The number of seconds to keep idle HTTP connections alive in the keep alive cache.
+     * This property applies to both HTTP/1.1 and HTTP/2.
+     *
+     * @param duration of ttl.
+     * @return this config object
+     */
+    public Config connectionTTL(Duration duration){
+        return connectionTTL(duration.toMillis(), TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -535,19 +554,6 @@ public class Config {
     public Config retryAfter(boolean value, int maxRetryAttempts) {
         this.retry = value;
         this.maxRetries = maxRetryAttempts;
-        return this;
-    }
-
-    /**
-     * Sugar!
-     * Total time to live (TTL)  defines maximum life span of persistent connections regardless of their expiration setting.
-     * No persistent connection will be re-used past its TTL value.
-     *
-     * @param duration of ttl.
-     * @return this config object
-     */
-    public Config connectionTTL(Duration duration){
-        this.ttl = duration.toMillis();
         return this;
     }
 
@@ -784,13 +790,6 @@ public class Config {
     }
 
     /**
-     * @return the maximum life span of persistent connections regardless of their expiration setting.
-     */
-    public long getTTL() {
-        return ttl;
-    }
-
-    /**
      * @return the currently configured Interceptor
      */
     public Interceptor getUniInterceptor() {
@@ -848,4 +847,16 @@ public class Config {
     public int maxRetries() {
         return maxRetries;
     }
+
+    /**
+     * @return the maximum life span of persistent connections regardless of their expiration setting.
+     */
+    public long getTTL() {
+        try {
+            return Long.parseLong(System.getProperty(JDK_HTTPCLIENT_KEEPALIVE_TIMEOUT));
+        }catch (NumberFormatException e){
+            return -1;
+        }
+    }
+
 }
