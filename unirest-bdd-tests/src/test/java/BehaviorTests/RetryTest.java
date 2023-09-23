@@ -26,6 +26,7 @@
 package BehaviorTests;
 
 import kong.unirest.core.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -43,8 +44,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RetryTest extends BddTest {
 
+    @Override @BeforeEach
+    public void setUp() {
+        super.setUp();
+        Unirest.config().retryAfter(true);
+    }
+
     @Test
     void whenSettingIsOff() {
+        Unirest.config().retryAfter(false);
+
         MockServer.retryTimes(100, 429, 1d);
         assertEquals(429, Unirest.get(MockServer.GET).asEmpty().getStatus());
         assertEquals(429, Unirest.get(MockServer.GET).asString().getStatus());
@@ -162,8 +171,6 @@ public class RetryTest extends BddTest {
     private <R> R doWithRetry(int status, Function<HttpRequest, HttpResponse<R>> bodyExtractor) {
         MockServer.retryTimes(1, status, 0.01);
 
-        Unirest.config().retryAfter(true);
-
         HttpRequest request = Unirest.get(MockServer.GET);
 
         HttpResponse<R> response = bodyExtractor.apply(request);
@@ -172,4 +179,5 @@ public class RetryTest extends BddTest {
 
         return response.getBody();
     }
+
 }
