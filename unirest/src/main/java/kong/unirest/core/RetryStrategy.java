@@ -94,6 +94,10 @@ public interface RetryStrategy {
         @Override
         public long getWaitTime(HttpResponse response) {
             String value = response.getHeaders().getFirst(RETRY_AFTER);
+            return parseToMillies(value);
+        }
+
+        protected Long parseToMillies(String value) {
             return trySeconds(value)
                     .orElseGet(() -> tryAsDateTime(value));
         }
