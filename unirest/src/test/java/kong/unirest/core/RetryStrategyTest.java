@@ -25,9 +25,6 @@
 
 package kong.unirest.core;
 
-import kong.unirest.core.Headers;
-import kong.unirest.core.RetryAfter;
-import kong.unirest.core.Util;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +33,7 @@ import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class RetryAfterTest {
+class RetryStrategyTest {
 
     @AfterEach
     void tearDown() {
@@ -65,8 +62,7 @@ class RetryAfterTest {
     private long parseToMillies(String s) {
         Headers h = new Headers();
         h.add("Retry-After", s);
-        Headers headers = h;
-        return RetryAfter.from(headers).millies();
+        return new RetryStrategy.Standard(1).getWaitTime(new MockResponse(h));
     }
 
 }

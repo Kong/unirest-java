@@ -343,11 +343,12 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         HttpResponse<E> response = config.getClient().request(this, transformer, resultType);
 
         callCount++;
-        if(config.isAutomaticRetryAfter()){
-            var retryAfter = RetryAfter.from(response);
-            if(retryAfter.isRetriable(response) && callCount < config.maxRetries()) {
-                if (retryAfter.canWait()) {
-                    retryAfter.waitForIt();
+        if(config.isAutomaticRetryAfter()) {
+            var retryAfter = config.getRetryStrategy();
+            if(retryAfter.isRetryable(response) && callCount < config.maxRetries()) {
+                long waitTime = retryAfter.getWaitTime(response);
+                if (waitTime > 0) {
+                    retryAfter.waitFor(waitTime);
                     return request(transformer, resultType);
                 }
             }

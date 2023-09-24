@@ -70,8 +70,7 @@ public class Config {
     private String defaultBaseUrl;
     private CacheManager cache;
     private HttpClient.Version version;
-    private boolean retry = false;
-    private int maxRetries;
+    private RetryStrategy retry;
 
     public Config() {
         setDefaults();
@@ -96,8 +95,7 @@ public class Config {
         protocols = null;
         defaultBaseUrl = null;
         interceptor = new CompoundInterceptor();
-        retry = false;
-        maxRetries = 10;
+        retry = null;
         objectMapper = () -> CoreFactory.getCore().getObjectMapper();
 
         try {
@@ -552,8 +550,23 @@ public class Config {
      * @return this config object
      */
     public Config retryAfter(boolean value, int maxRetryAttempts) {
-        this.retry = value;
-        this.maxRetries = maxRetryAttempts;
+        if(value) {
+            this.retry = new RetryStrategy.Standard(maxRetryAttempts);
+        } else {
+            this.retry = null;
+        }
+        return this;
+    }
+
+    /**
+     * Automatically retry synchronous requests on 429/529 responses with the Retry-After response header
+     * Default is false
+     *
+     * @param strategy a RetryStrategy
+     * @return this config object
+     */
+    public Config retryAfter(RetryStrategy strategy) {
+        this.retry = strategy;
         return this;
     }
 
@@ -838,14 +851,14 @@ public class Config {
      * @return if unirest will retry requests on 429/529
      */
     public boolean isAutomaticRetryAfter(){
-        return retry;
+        return retry != null;
     }
 
     /**
      * @return the max number of times to attempt to do a 429/529 retry-after
      */
     public int maxRetries() {
-        return maxRetries;
+        return retry.getMaxAttempts();
     }
 
     /**
@@ -859,4 +872,7 @@ public class Config {
         }
     }
 
+    public RetryStrategy getRetryStrategy() {
+        return retry;
+    }
 }

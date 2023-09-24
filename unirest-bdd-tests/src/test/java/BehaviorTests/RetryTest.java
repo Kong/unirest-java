@@ -156,6 +156,16 @@ public class RetryTest extends BddTest {
         MockServer.assertRequestCount(3);
     }
 
+    @Test
+    void canCustomizeRetrySignal() {
+        MockServer.retryTimes(10, 429, .01);
+        Unirest.config().retryAfter(true, 3);
+
+        HttpResponse resp = Unirest.get(MockServer.GET).asEmpty();
+        assertEquals(429, resp.getStatus());
+        MockServer.assertRequestCount(3);
+    }
+
     private void clearFile(Path path) {
         try {
             Files.delete(path);

@@ -30,6 +30,13 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 class MockResponse<T> implements HttpResponse<T> {
+    private Headers headers;
+
+    public MockResponse(){}
+
+    public MockResponse(Headers headers){
+        this.headers = headers;
+    }
     @Override
     public int getStatus() {
         return 0;
@@ -42,7 +49,7 @@ class MockResponse<T> implements HttpResponse<T> {
 
     @Override
     public Headers getHeaders() {
-        return null;
+        return headers;
     }
 
     @Override
