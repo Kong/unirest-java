@@ -42,7 +42,7 @@ public interface RetryStrategy {
      * @param response the last response
      * @return a bool indicating if the request should be retried
      */
-    boolean isRetryable(HttpResponse response);
+    boolean isRetryable(HttpResponse<?> response);
 
     /**
      * Get the number of milliseconds the system should wait before retrying.
@@ -50,7 +50,7 @@ public interface RetryStrategy {
      * @param response the last response
      * @return millies
      */
-    long getWaitTime(HttpResponse response);
+    long getWaitTime(HttpResponse<?> response);
 
     /**
      * Get the max number of times the Unirest should retry responses before giving up and allowing a final return
