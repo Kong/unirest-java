@@ -510,7 +510,7 @@ public class Config {
      */
     public Config connectionTTL(long duration, TimeUnit unit) {
         Objects.requireNonNull(unit, "TimeUnit required");
-        var ttl = unit.toMillis(duration);
+        var ttl = unit.toSeconds(duration);
         if(ttl > -1){
             System.setProperty(JDK_HTTPCLIENT_KEEPALIVE_TIMEOUT, String.valueOf(ttl));
         }

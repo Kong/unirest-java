@@ -63,11 +63,11 @@ class ConfigTest {
     void settingTTl() {
         assertEquals(-1, config.getTTL());
 
-        assertEquals(42, config.connectionTTL(42, TimeUnit.MILLISECONDS).getTTL());
-        assertEquals(2520000, config.connectionTTL(42, TimeUnit.MINUTES).getTTL());
+        assertEquals(4, config.connectionTTL(4200, TimeUnit.MILLISECONDS).getTTL());
+        assertEquals(252000, config.connectionTTL(4200, TimeUnit.MINUTES).getTTL());
 
-        assertEquals(43, config.connectionTTL(Duration.ofMillis(43)).getTTL());
-        assertEquals(2580000, config.connectionTTL(Duration.ofMinutes(43)).getTTL());
+        assertEquals(4, config.connectionTTL(Duration.ofMillis(4300)).getTTL());
+        assertEquals(258000, config.connectionTTL(Duration.ofMinutes(4300)).getTTL());
     }
 
     @Test
