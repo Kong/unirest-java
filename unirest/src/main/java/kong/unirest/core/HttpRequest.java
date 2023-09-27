@@ -43,7 +43,7 @@ public interface HttpRequest<R extends HttpRequest>  {
     /**
      * add a route param that replaces the matching {name}
      * For example routeParam("name", "fred") will replace {name} in
-     * https://localhost/users/{user}
+     * https://localhost/users/{name}
      * to
      * https://localhost/users/fred
      *
@@ -56,7 +56,7 @@ public interface HttpRequest<R extends HttpRequest>  {
     /**
      * add a route param map that replaces the matching {name}
      * For example routeParam(Map.of("name", "fred")) will replace {name} in
-     * https://localhost/users/{user}
+     * https://localhost/users/{name}
      * to
      * https://localhost/users/fred
      *
