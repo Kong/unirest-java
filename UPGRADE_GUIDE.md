@@ -3,7 +3,7 @@
 ## Upgrading to Unirest 4.0
  🚨 **Unirest 4 drops the Apache Http Client dependency in favor of the pure Java client** 🚨. This means that unirest 4 has a dependency on Java-11. Unirest 3 will continue to be supported for bugs and minor features. If you still haven't upgraded from Java 8 now is the time!  
 
-Due to engine changes there are some differences in behavior. Efforts have been made to limit these changes. The others are documented here.
+Due to engine changes there are some differences in behaviour. Efforts have been made to limit these changes. The others are documented here.
 
 ### How to upgrade
 * The core Unirest package has been moved from ```kong.unirest``` to ```kong.unirest.core```, this prevents classloader issues where Unirest 4 may conflict with previous versions which may also be on the classpath.
