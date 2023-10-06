@@ -27,15 +27,15 @@ package kong.unirest.core.java;
 
 import kong.unirest.core.*;
 
-import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
-import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+import static java.net.http.HttpRequest.newBuilder;
+import static java.net.http.HttpResponse.BodySubscribers.ofInputStream;
 import static kong.unirest.core.HeaderNames.*;
 
 
@@ -61,16 +61,15 @@ public class JavaClient implements Client {
 
     @Override
     public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, Class<?> resultType) {
-        HttpRequestSummary reqSum = request.toSummary();
+        var reqSum = request.toSummary();
         config.getUniInterceptor().onRequest(request, config);
-        java.net.http.HttpRequest requestObj = getRequest(request);
-        MetricContext metric = config.getMetric().begin(reqSum);
+        var requestObj = getRequest(request);
+        var metric = config.getMetric().begin(reqSum);
         try {
-            java.net.http.HttpResponse<InputStream> execute = client.send(requestObj,
-                    responseInfo -> java.net.http.HttpResponse.BodySubscribers.ofInputStream());
-            JavaResponse t = new JavaResponse(execute, config, reqSum);
-            metric.complete(t.toSummary(), null);
-            HttpResponse<T> httpResponse = transformBody(transformer, t);
+            var execute = client.send(requestObj, r -> ofInputStream());
+            var javaResponse = new JavaResponse(execute, config, reqSum);
+            metric.complete(javaResponse.toSummary(), null);
+            var httpResponse = transformBody(transformer, javaResponse);
             config.getUniInterceptor().onResponse(httpResponse, reqSum, config);
             return httpResponse;
         } catch (Exception e) {
@@ -81,8 +80,8 @@ public class JavaClient implements Client {
 
     private java.net.http.HttpRequest getRequest(HttpRequest<?> request) {
         try {
-            URI url = URI.create(request.getUrl());
-            java.net.http.HttpRequest.Builder jreq = java.net.http.HttpRequest.newBuilder(url)
+            var url = URI.create(request.getUrl());
+            var jreq = newBuilder(url)
                     .version(HttpClient.Version.HTTP_2)
                     .method(
                             request.getHttpMethod().name(),
@@ -104,8 +103,8 @@ public class JavaClient implements Client {
     private void setHeaders(HttpRequest<?> request, java.net.http.HttpRequest.Builder jreq) {
         request.getHeaders().all().forEach(h -> jreq.header(h.getName(), h.getValue()));
         if (request.getBody().isPresent() && !request.getHeaders().containsKey(CONTENT_TYPE)) {
-            String value = "text/plain";
-            Charset charset = request.getBody().get().getCharset();
+            var value = "text/plain";
+            var charset = request.getBody().get().getCharset();
             if (charset != null) {
                 value = value + "; charset=" + charset.toString();
             }
@@ -119,23 +118,23 @@ public class JavaClient implements Client {
 
     @Override
     public <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, CompletableFuture<HttpResponse<T>> callback, Class<?> resultType) {
-        HttpRequestSummary reqSum = request.toSummary();
+        var reqSum = request.toSummary();
         config.getUniInterceptor().onRequest(request, config);
-        java.net.http.HttpRequest requestObj = getRequest(request);
-        MetricContext metric = config.getMetric().begin(reqSum);
+        var requestObj = getRequest(request);
+        var metric = config.getMetric().begin(reqSum);
 
-        CompletableFuture<java.net.http.HttpResponse<InputStream>> execute = client.sendAsync(requestObj,
+        var execute = client.sendAsync(requestObj,
                 java.net.http.HttpResponse.BodyHandlers.ofInputStream());
 
         return execute.thenApplyAsync(h -> {
-            JavaResponse t = new JavaResponse(h, config, reqSum);
+            var t = new JavaResponse(h, config, reqSum);
             metric.complete(t.toSummary(), null);
-            HttpResponse<T> httpResponse = transformBody(transformer, t);
+            var httpResponse = transformBody(transformer, t);
             config.getUniInterceptor().onResponse(httpResponse, reqSum, config);
             callback.complete(httpResponse);
             return httpResponse;
         }).exceptionally(e -> {
-            UnirestException ex = new UnirestException(e);
+            var ex = new UnirestException(e);
             metric.complete(null, ex);
             try {
                 HttpResponse r = config.getUniInterceptor().onFail(ex, reqSum, config);
@@ -151,7 +150,7 @@ public class JavaClient implements Client {
 
     @Override
     public WebSocketResponse websocket(WebSocketRequest request, WebSocket.Listener listener) {
-        WebSocket.Builder b = client.newWebSocketBuilder();
+        var b = client.newWebSocketBuilder();
         request.getHeaders().all().forEach(h -> b.header(h.getName(), h.getValue()));
         return new WebSocketResponse(b.buildAsync(URI.create(request.getUrl()), listener), listener);
     }
@@ -162,7 +161,7 @@ public class JavaClient implements Client {
         }catch (UnrecoverableException ue){
             return new BasicResponse(rr, "", ue);
         }catch (RuntimeException e){
-            String originalBody = recoverBody(rr);
+            var originalBody = recoverBody(rr);
             return new BasicResponse(rr, originalBody, e);
         }
     }
