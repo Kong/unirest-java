@@ -29,6 +29,9 @@ import java.net.http.WebSocket;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+/**
+ * The client that does the work.
+ */
 public interface Client {
     /**
      * @param <T> the underlying client
@@ -60,5 +63,11 @@ public interface Client {
                                                    CompletableFuture<HttpResponse<T>> callback,
                                                    Class<?> resultType);
 
+    /**
+     * Create a websocket connection
+     * @param request the connection
+     * @param listener (in the voice of Cicero) the listener
+     * @return a WebSocketResponse
+     */
     WebSocketResponse websocket(WebSocketRequest request, WebSocket.Listener listener);
 }
