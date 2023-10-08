@@ -337,8 +337,8 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     private <E> HttpResponse<E> request(Function<RawResponse, HttpResponse<E>> transformer, Class<?> resultType){
         HttpResponse<E> response = config.getClient().request(this, transformer, resultType);
 
-        callCount++;
         if(config.isAutomaticRetryAfter()) {
+            callCount++;
             var retryAfter = config.getRetryStrategy();
             if(retryAfter.isRetryable(response) && callCount < config.maxRetries()) {
                 long waitTime = retryAfter.getWaitTime(response);
