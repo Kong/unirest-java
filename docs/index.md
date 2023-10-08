@@ -578,7 +578,7 @@ This can be useful for logging or injecting common attributes.
 See [Interceptor.java](https://github.com/Kong/unirest-java/blob/master/unirest/src/main/java/kong/unirest/Interceptor.java) for details.
 
 ## Custom Apache Clients
-Unirest leverages Apache Http Client under the hood, this is not considered to be a permemant requirement and future versions of Unirest may replace Apache with something else.
+Unirest leverages Apache Http Client under the hood, this is not considered to be a permanent requirement and future versions of Unirest may replace Apache with something else.
 
 You can set your own custom Apache HttpClient and HttpAsyncClient. 
 Note that Unirest settings like timeouts or interceptors are not applied to custom clients.
