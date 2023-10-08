@@ -28,7 +28,10 @@ package kong.unirest.core;
 import java.io.File;
 import java.nio.file.CopyOption;
 import java.time.Instant;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -337,8 +340,8 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     private <E> HttpResponse<E> request(Function<RawResponse, HttpResponse<E>> transformer, Class<?> resultType){
         HttpResponse<E> response = config.getClient().request(this, transformer, resultType);
 
-        callCount++;
         if(config.isAutomaticRetryAfter()) {
+            callCount++;
             var retryAfter = config.getRetryStrategy();
             if(retryAfter.isRetryable(response) && callCount < config.maxRetries()) {
                 long waitTime = retryAfter.getWaitTime(response);
@@ -355,7 +358,26 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
                                                            Function<RawResponse, HttpResponse<T>> transformer,
                                                            CompletableFuture<HttpResponse<T>> callback,
                                                            Class<?> resultType){
-        return config.getClient().request(request, transformer, callback, resultType);
+        var asyncR = config.getClient().request(request, transformer, callback, resultType);
+        if(config.isAutomaticRetryAfter()){
+            return asyncR.thenApplyAsync(response -> {
+                callCount++;
+                var retryAfter = config.getRetryStrategy();
+                if(retryAfter.isRetryable(response) && callCount < config.maxRetries()) {
+                    long waitTime = retryAfter.getWaitTime(response);
+                    if (waitTime > 0) {
+                        retryAfter.waitFor(waitTime);
+                        try {
+                            return requestAsync(this, transformer, callback, resultType).get();
+                        } catch (Exception e) {
+                            throw new UnirestException(e);
+                        }
+                    }
+                }
+                return response;
+            });
+        }
+        return asyncR;
     }
 
 

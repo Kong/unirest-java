@@ -28,19 +28,33 @@ package kong.unirest.core;
 import java.net.http.WebSocket;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Just a silly little class that holds on to the socket and listener
+ */
 public class WebSocketResponse {
     private final CompletableFuture<WebSocket> webSocketFuture;
     private final WebSocket.Listener listener;
 
+    /**
+     * ctor
+     * @param webSocketFuture the ws future
+     * @param listener the listener
+     */
     public WebSocketResponse(CompletableFuture<WebSocket> webSocketFuture, WebSocket.Listener listener) {
         this.webSocketFuture = webSocketFuture;
         this.listener = listener;
     }
 
+    /**
+     * @return the ws future
+     */
     public CompletableFuture<WebSocket> socket(){
         return webSocketFuture;
     }
 
+    /**
+     * @return the listener
+     */
     public WebSocket.Listener listener(){
         return listener;
     }
