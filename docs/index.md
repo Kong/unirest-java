@@ -45,21 +45,39 @@ rightmenu: true
 
 ### Install With [Maven](https://mvnrepository.com/artifact/com.konghq/unirest-java)[:](https://repo.maven.apache.org/maven2/com/konghq/unirest-java/)
 ```xml
-<!-- Pull in as a traditional dependency -->
+<dependencyManagement>
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/com.konghq/unirest-java-bom -->
+        <dependency>
+            <groupId>com.konghq</groupId>
+            <artifactId>unirest-java-bom</artifactId>
+            <version>4.0.12</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+
+<dependencies>
+<!-- https://mvnrepository.com/artifact/com.konghq/unirest-java-core -->
 <dependency>
     <groupId>com.konghq</groupId>
-    <artifactId>unirest-java</artifactId>
-    <version>3.11.09</version>
+    <artifactId>unirest-java-core</artifactId>
 </dependency>
 
-<!-- OR as a snazzy new standalone jar with shaded dependencies -->
+<!-- pick a JSON module if you want to parse JSON include one of these: -->
+<!-- Google GSON -->
 <dependency>
     <groupId>com.konghq</groupId>
-    <artifactId>unirest-java</artifactId>
-    <version>3.11.09</version>
-    <classifier>standalone</classifier>
+    <artifactId>unirest-object-mappers-gson</artifactId>
 </dependency>
 
+<!-- OR maybe you like Jackson better? -->
+<dependency>
+    <groupId>com.konghq</groupId>
+    <artifactId>unirest-objectmapper-jackson</artifactId>
+</dependency>
+</dependencies>
 ```
 
 ### Upgrading from Previous Versions

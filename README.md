@@ -21,7 +21,7 @@ You can use a maven bom to manage the modules:
       <dependency>
           <groupId>com.konghq</groupId>
           <artifactId>unirest-java-bom</artifactId>
-          <version>4.0.3</version>
+          <version>4.0.12</version>
           <type>pom</type>
           <scope>import</scope>
       </dependency>
