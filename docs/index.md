@@ -34,7 +34,6 @@ rightmenu: true
   - [Caching](#caching)
 - [Configuration](#configuration)
   - [Config Options](#config-options)
-  - [Custom Apache Clients](#custom-apache-clients)
   - [Multiple Configurations](#multiple-configurations)
   - [Object Mappers](#object-mappers)
   - [Metrics](#metrics)
@@ -560,7 +559,7 @@ All configuration is now done through ```Unirest.config()```
            .addInterceptor(new MyCustomInterceptor());
 ```
 
-Changing Unirest's config should ideally be done once, or rarely. There are several background threads spawned by both Unirest itself and Apache HttpAsyncClient. Once Unirest has been activated configuration options that are involved in creating the client cannot be changed without an explicit shutdown or reset.
+Changing Unirest's config should ideally be done once, or rarely. Once Unirest has been activated configuration options that are involved in creating the client cannot be changed without an explicit shutdown or reset.
 
 
 
@@ -594,27 +593,6 @@ You can set a global interceptor for your configuration. This is invoked before 
 This can be useful for logging or injecting common attributes.
 
 See [Interceptor.java](https://github.com/Kong/unirest-java/blob/master/unirest/src/main/java/kong/unirest/Interceptor.java) for details.
-
-## Custom Apache Clients
-Unirest leverages Apache Http Client under the hood, this is not considered to be a permemant requirement and future versions of Unirest may replace Apache with something else.
-
-You can set your own custom Apache HttpClient and HttpAsyncClient. 
-Note that Unirest settings like timeouts or interceptors are not applied to custom clients.
-
-```java
-     Unirest.config()
-            .httpClient(ApacheClient.builder(myClient))
-            .asyncClient(ApacheAsyncClient.builder(myAsyncClient));
-```
-
-You can also override Unirest's implementation of the Apache request config
-
-```java
-     Unirest.config()
-            .httpClient(ApacheClient.builder(client)
-                .withRequestConfig((c,r) -> RequestConfig.custom().build()
-                );
-```
 
 
 ## Multiple Configurations
