@@ -25,6 +25,8 @@
 
 package kong.unirest.core;
 
+import java.util.Collection;
+
 /**
  * A summary of a request about to be performed
  */
@@ -48,4 +50,10 @@ public interface HttpRequestSummary {
      * @return a string summary of the request suitable for logging
      */
     String asString();
+
+
+    /**
+     * @return an immutable collection of the headers for the request
+     */
+    Collection<Header> getHeaders();
 }

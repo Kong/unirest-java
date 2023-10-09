@@ -25,18 +25,15 @@
 
 package BehaviorTests;
 
-import kong.unirest.core.GetRequest;
-import kong.unirest.core.HttpResponse;
-import kong.unirest.core.JsonNode;
-import kong.unirest.core.Unirest;
+import kong.unirest.core.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
+import java.util.Collection;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static BehaviorTests.TestUtil.mapOf;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class HeaderTest extends BddTest {
 
@@ -406,5 +403,27 @@ class HeaderTest extends BddTest {
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertHeader("foo", "");
+    }
+
+    @Test
+    void getHeadersInSummary() {
+        Unirest.config().setDefaultHeader("cheese", "wiz");
+
+        var headers = Unirest.get(MockServer.GET)
+                .header("foo", "bar")
+                .header("baz", "qux")
+                .toSummary()
+                .getHeaders();
+
+        assertEquals(3, headers.size());
+        assertContains(headers, "cheese", "wiz");
+        assertContains(headers, "foo", "bar");
+        assertContains(headers, "baz", "qux");
+
+    }
+
+    private void assertContains(Collection<Header> headers, String key, String value) {
+        assertTrue(headers.stream().anyMatch(h -> key.equalsIgnoreCase(key) && value.equalsIgnoreCase(value)),
+                "Missing header " + key + " with value " + value);
     }
 }
