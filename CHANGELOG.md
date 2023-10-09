@@ -1,3 +1,32 @@
+## 4.0.12
+* Expose headers on RequestSummary
+
+## 4.0.11
+* Support retry on async requests
+
+## 4.0.10
+* Java TTL is in seconds not millies
+
+## 4.0.9
+* Expose a RetryStrategy to allow more advanced overrides of retry-behavior
+  * Allow client to determine IF the request should be retries
+  * Allow clients to determine the wait time
+
+
+## 4.0.8
+* Add 503 to the list of default retryable codes
+* Sets the Java TTL when configured
+
+## 4.0.6 - 4.0.7 (RIP)
+* Eaten by maven central
+
+## 4.0.5
+* Issue #493 Make MockClient take a MockResponse properly
+* Documentation and upgrade guide fixes
+
+## 4.0.4
+* Issue #484 Support headers with null values
+
 ## 4.0.3
 * Another tweek to the BOM
 * Update dependencies (Jackson, GSON, Junit/Mockito)
