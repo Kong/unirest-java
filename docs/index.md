@@ -405,7 +405,7 @@ Sometimes with REST API's the service will return a error object that can be par
 ```
 
 ### Mapping one body type to another without an object mapper
-If you don't want to provide a full ObjectMapper implimentation you may  use  a simple function to map the response
+If you don't want to provide a full ObjectMapper implementation you may  use  a simple function to map the response
 
 ```java
     int body = Unirest.get("http://httpbin/count")
