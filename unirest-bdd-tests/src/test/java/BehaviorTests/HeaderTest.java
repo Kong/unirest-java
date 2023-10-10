@@ -407,19 +407,27 @@ class HeaderTest extends BddTest {
 
     @Test
     void getHeadersInSummary() {
-        Unirest.config().setDefaultHeader("cheese", "wiz");
+        Unirest.config()
+                .setDefaultHeader("cheese", "wiz")
+                .interceptor(new Interceptor() {
+                    @Override
+                    public void onRequest(HttpRequest<?> request, Config config) {
+                        request.header("beatles", "Ringo");
+                    }
+                });
 
         var headers = Unirest.get(MockServer.GET)
                 .header("foo", "bar")
                 .header("baz", "qux")
-                .toSummary()
+                .asEmpty()
+                .getRequestSummary()
                 .getHeaders();
 
-        assertEquals(3, headers.size());
+        assertEquals(4, headers.size());
         assertContains(headers, "cheese", "wiz");
         assertContains(headers, "foo", "bar");
         assertContains(headers, "baz", "qux");
-
+        assertContains(headers, "beatles", "ringo");
     }
 
     private void assertContains(Collection<Header> headers, String key, String value) {

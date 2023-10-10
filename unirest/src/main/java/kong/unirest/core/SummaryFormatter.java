@@ -73,13 +73,4 @@ class SummaryFormatter implements Function<HttpRequest<?>, String> {
         });
         return sj.toString();
     }
-
-    //--4-yp9f7bDX_Brgpd7oOwkUyZJPCHfBV_X
-    //Content-Disposition: form-data; name="album"
-    //
-    //77
-    //--4-yp9f7bDX_Brgpd7oOwkUyZJPCHfBV_X
-    //Content-Disposition: form-data; name="band"
-    //
-    //Talking Heads
 }

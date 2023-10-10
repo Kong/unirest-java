@@ -30,33 +30,26 @@ import java.util.List;
 
 class RequestSummary implements HttpRequestSummary {
     private static final SummaryFormatter FORMATTER = new SummaryFormatter();
-    private final String rawPath;
     private final BaseRequest request;
-    private final String url;
-    private final HttpMethod method;
-    private Collection<Header> headers;
+
 
     RequestSummary(BaseRequest request) {
-        this.url = request.getUrl();
-        this.method = request.getHttpMethod();
-        this.rawPath = request.getPath().rawPath();
         this.request = request;
-        this.headers = List.copyOf(request.getHeaders().all());
     }
 
     @Override
     public HttpMethod getHttpMethod() {
-        return method;
+        return request.getHttpMethod();
     }
 
     @Override
     public String getUrl() {
-        return url;
+        return request.getUrl();
     }
 
     @Override
     public String getRawPath() {
-        return rawPath;
+        return request.getPath().rawPath();
     }
 
     @Override
@@ -66,6 +59,6 @@ class RequestSummary implements HttpRequestSummary {
 
     @Override
     public Collection<Header> getHeaders() {
-        return headers;
+        return List.copyOf(request.getHeaders().all());
     }
 }
