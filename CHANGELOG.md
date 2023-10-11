@@ -1,3 +1,6 @@
+## 4.1.0
+* No longer supporting shaded jars. Core Unirest no longer has any dependencies at all, and the modular framework of the library no longer jives with the shade-plugin causing other issues.
+
 ## 4.0.12
 * Expose headers on RequestSummary
 

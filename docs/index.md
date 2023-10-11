@@ -613,13 +613,12 @@ As usual, Unirest maintains a primary single instance. Sometimes you might want 
 **WARNING!** If you get a new instance of unirest YOU are responsible for shutting it down when the JVM shuts down. It is not tracked or shut down by ```Unirest.shutDown();```
 
 ## Object Mappers
-Unirest offers a few different Object Mapper's based on popular JSON libraries (Jackson and GSON). These can be included either as traditional or shaded jars:
+Unirest offers a few different Object Mapper's based on popular JSON libraries (Jackson and GSON).
 ```xml
 <!-- https://mvnrepository.com/artifact/com.konghq/unirest-objectmapper-jackson -->
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-objectmapper-jackson</artifactId>
-    <version>3.11.09</version>
 </dependency>
 
 
@@ -627,7 +626,6 @@ Unirest offers a few different Object Mapper's based on popular JSON libraries (
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-object-mappers-gson</artifactId>
-    <version>3.11.09</version>
 </dependency>
 ```
 
