@@ -210,6 +210,6 @@ public class MockClient implements Client {
      */
     public ExpectedResponse defaultResponse() {
         this.defaultResponse = new Invocation();
-        return this.defaultResponse;
+        return this.defaultResponse.thenReturn();
     }
 }
