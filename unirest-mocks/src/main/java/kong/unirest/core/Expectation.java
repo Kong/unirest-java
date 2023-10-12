@@ -27,6 +27,7 @@ package kong.unirest.core;
 
 import kong.unirest.core.json.JSONElement;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -96,4 +97,6 @@ public interface Expectation {
      * @return The ExpectedResponse
      */
     ExpectedResponse thenReturn(Supplier<String> supplier);
+
+    void thenReturn(Function<HttpRequest<?>, ExpectedResponse> fun);
 }

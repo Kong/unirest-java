@@ -28,6 +28,7 @@ package kong.unirest.core;
 import kong.unirest.core.json.JSONElement;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,7 +43,8 @@ class Invocation implements Expectation {
     private Boolean expected = false;
     private BodyMatcher expectedBody;
     private MatchStatus expectedBodyStatus;
-    private ExpectedResponseRecord responseRecord = new ExpectedResponseRecord();
+    private ExpectedResponseRecord expectedResponse = new ExpectedResponseRecord();
+    private Function<HttpRequest<?>, ExpectedResponse> functionalResponse = r -> expectedResponse;
 
     public Invocation(Routes routes){
         this.routes = routes;
@@ -56,7 +58,7 @@ class Invocation implements Expectation {
 
     Invocation(Routes routes, Invocation other) {
         this.routes = routes;
-        this.responseRecord = other.responseRecord;
+        this.expectedResponse = other.expectedResponse;
     }
 
     Invocation() {
@@ -65,27 +67,33 @@ class Invocation implements Expectation {
 
     @Override
     public ExpectedResponse thenReturn(String body) {
-        return responseRecord.thenReturn(body);
+        return expectedResponse.thenReturn(body);
     }
 
     @Override
     public ExpectedResponse thenReturn(JSONElement jsonObject) {
-        return responseRecord.thenReturn(jsonObject);
+        return expectedResponse.thenReturn(jsonObject);
     }
 
     @Override
     public ExpectedResponse thenReturn(Object pojo) {
-        return responseRecord.thenReturn(pojo);
+        return expectedResponse.thenReturn(pojo);
     }
 
     @Override
     public ExpectedResponse thenReturn(Supplier<String> supplier) {
-        return responseRecord.thenReturn(supplier);
+        return expectedResponse.thenReturn(supplier);
+    }
 
+    @Override
+    public void thenReturn(Function<HttpRequest<?>, ExpectedResponse> fun) {
+        this.functionalResponse = fun;
     }
 
     RawResponse getResponse(Config config, HttpRequest request) {
-        return responseRecord.toRawResponse(config, request);
+        return tryCast(functionalResponse.apply(request), ExpectedResponseRecord.class)
+                .map(e -> e.toRawResponse(config, request))
+                .orElseThrow(() -> new UnirestException("No Result Configured For Response"));
     }
 
     private Headers allHeaders() {
@@ -128,7 +136,7 @@ class Invocation implements Expectation {
 
     @Override
     public ExpectedResponse thenReturn() {
-        return responseRecord;
+        return expectedResponse;
     }
 
     public void verify() {
@@ -204,7 +212,6 @@ class Invocation implements Expectation {
     public List<HttpRequest> getRequests() {
         return requests;
     }
-
 
     public Boolean isExpected() {
         return expected;

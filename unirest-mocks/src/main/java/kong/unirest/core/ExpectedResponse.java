@@ -30,6 +30,10 @@ import kong.unirest.core.json.JSONElement;
 import java.util.function.Supplier;
 
 public interface ExpectedResponse {
+    static ExpectedResponse of(int status) {
+        return new ExpectedResponseRecord().withStatus(status);
+    }
+
     /**
      * adds a header to the expected response
      * @param key the header key

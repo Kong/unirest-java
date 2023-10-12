@@ -30,7 +30,7 @@ import kong.unirest.core.json.JSONElement;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-class ExpectedResponseRecord implements ExpectedResponse {
+class ExpectedResponseRecord implements ExpectedResponse, ResponseBuilder {
     private Function<ObjectMapper, String> response = o -> null;
     private Headers responseHeaders = new Headers();
     private int responseStatus = 200;
