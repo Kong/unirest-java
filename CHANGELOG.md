@@ -1,3 +1,8 @@
+## 4.1.1
+* issue #493: Copy status text from MockResponse
+* MockClient not properly evaluating verb in matching invokes
+* Expose a way in MockClient to supply a handler supplier for responses based dynamically on the request. Great for creating TestDouble services.
+
 ## 4.1.0
 * No longer supporting shaded jars. Core Unirest no longer has any dependencies at all, and the modular framework of the library no longer jives with the shade-plugin causing other issues.
 
