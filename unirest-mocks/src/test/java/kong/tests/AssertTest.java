@@ -250,6 +250,12 @@ class AssertTest extends Base {
         assertEquals(List.of(), response.getHeaders().get("cool"));
     }
 
+    @Test
+    void verbsAreImportant() {
+        client.expect(GET, path).thenReturn("hi");
+        assertNotEquals("hi", Unirest.post(path).asString().getBody());
+    }
+
     private static class BodyBuddy implements Supplier<String>{
         String body;
         @Override

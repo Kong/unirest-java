@@ -54,7 +54,7 @@ class Routes implements Assert {
     boolean matches(HttpRequest request) {
         Path p = new Path(request.getUrl());
         return this.method.equals(request.getHttpMethod())
-                && this.path == null || this.path.equalsIgnoreCase(p.baseUrl());
+                && (this.path == null || this.path.equalsIgnoreCase(p.baseUrl()));
     }
 
     RawResponse exchange(HttpRequest request, Config config) {
