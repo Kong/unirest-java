@@ -91,7 +91,8 @@ class ExpectedResponseRecord implements ExpectedResponse, ResponseBuilder {
 
     private ExpectedResponse thenReturn(MockResponse res) {
         this.response = o -> res.getBody() == null ? null : String.valueOf(res.getBody());
-        return withStatus(res.getStatus()).withHeaders(res.getHeaders());
+        return withStatus(res.getStatus(), res.getStatusText())
+                .withHeaders(res.getHeaders());
     }
 
     public RawResponse toRawResponse(Config config, HttpRequest request) {

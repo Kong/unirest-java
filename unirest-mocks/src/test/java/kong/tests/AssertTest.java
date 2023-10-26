@@ -227,12 +227,13 @@ class AssertTest extends Base {
     @Test
     void returnAMockResponseObject() {
         client.expect(HttpMethod.POST, path)
-                .thenReturn(MockResponse.of(500, "error")
+                .thenReturn(MockResponse.of(500, "a 500 brah", "error")
                         .withHeader("cool", "beans"));
 
         HttpResponse<String> response = Unirest.post(path).asString();
 
         assertEquals(500, response.getStatus());
+        assertEquals("a 500 brah", response.getStatusText());
         assertEquals("error", response.getBody());
         assertEquals(List.of("beans"), response.getHeaders().get("cool"));
     }
