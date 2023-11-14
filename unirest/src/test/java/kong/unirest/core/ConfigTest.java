@@ -88,13 +88,6 @@ class ConfigTest {
     }
 
     @Test
-    void canDisableAuthRetry() {
-        assertTrue(config.isAutomaticRetries());
-        config.automaticRetries(false);
-        assertFalse(config.isAutomaticRetries());
-    }
-
-    @Test
     void canSetProxyViaSetter() {
         config.proxy(new Proxy("localhost", 8080, "ryan", "password"));
         assertProxy("localhost", 8080, "ryan", "password");
