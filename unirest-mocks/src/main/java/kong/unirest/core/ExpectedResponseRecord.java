@@ -31,10 +31,15 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 class ExpectedResponseRecord implements ExpectedResponse, ResponseBuilder {
+    private Expectation expectation;
     private Function<ObjectMapper, String> response = o -> null;
     private Headers responseHeaders = new Headers();
     private int responseStatus = 200;
     private String responseText = "Ok";
+
+    ExpectedResponseRecord(Expectation expectation){
+        this.expectation = expectation;
+    }
 
     @Override
     public ExpectedResponse withHeader(String key, String value) {
@@ -79,6 +84,14 @@ class ExpectedResponseRecord implements ExpectedResponse, ResponseBuilder {
     }
 
     @Override
+    public void verify() {
+        if(expectation == null){
+            throw new UnirestAssertion("A expectation was never invoked!");
+        }
+        expectation.verify();
+    }
+
+    @Override
     public ExpectedResponse thenReturn(Object pojo) {
         if(pojo instanceof MockResponse){
             var res = (MockResponse)pojo;
@@ -104,5 +117,9 @@ class ExpectedResponseRecord implements ExpectedResponse, ResponseBuilder {
         return Util.tryCast(request, BaseRequest.class)
                 .map(BaseRequest::getObjectMapper)
                 .orElseGet(() -> config.getObjectMapper());
+    }
+
+    void setExpectation(Expectation invocation) {
+        this.expectation = invocation;
     }
 }

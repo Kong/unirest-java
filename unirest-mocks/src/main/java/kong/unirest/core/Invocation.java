@@ -43,7 +43,7 @@ class Invocation implements Expectation {
     private Boolean expected = false;
     private BodyMatcher expectedBody;
     private MatchStatus expectedBodyStatus;
-    private ExpectedResponseRecord expectedResponse = new ExpectedResponseRecord();
+    private ExpectedResponseRecord expectedResponse = new ExpectedResponseRecord(this);
     private Function<HttpRequest<?>, ExpectedResponse> functionalResponse = r -> expectedResponse;
 
     public Invocation(Routes routes){
@@ -92,7 +92,10 @@ class Invocation implements Expectation {
 
     RawResponse getResponse(Config config, HttpRequest request) {
         return tryCast(functionalResponse.apply(request), ExpectedResponseRecord.class)
-                .map(e -> e.toRawResponse(config, request))
+                .map(e -> {
+                    e.setExpectation(this);
+                    return e.toRawResponse(config, request);
+                })
                 .orElseThrow(() -> new UnirestException("No Result Configured For Response"));
     }
 
@@ -139,6 +142,7 @@ class Invocation implements Expectation {
         return expectedResponse;
     }
 
+    @Override
     public void verify() {
         if (requests.isEmpty()) {
             throw new UnirestAssertion("A expectation was never invoked! %s", details());

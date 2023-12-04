@@ -246,7 +246,7 @@ class AssertTest extends Base {
         HttpResponse<String> response = Unirest.post(path).asString();
 
         assertEquals(500, response.getStatus());
-        assertEquals(null, response.getBody());
+        assertNull(response.getBody());
         assertEquals(List.of(), response.getHeaders().get("cool"));
     }
 
@@ -254,6 +254,46 @@ class AssertTest extends Base {
     void verbsAreImportant() {
         client.expect(GET, path).thenReturn("hi");
         assertNotEquals("hi", Unirest.post(path).asString().getBody());
+    }
+
+    @Test
+    void assertJustOne() {
+        var response = client.expect(HttpMethod.POST, path)
+                .thenReturn(MockResponse.of(500, null));
+
+        assertThrows(UnirestAssertion.class, response::verify);
+
+        Unirest.post(path).asEmpty();
+
+        assertDoesNotThrow(response::verify);
+    }
+
+    @Test
+    void assertFromTheExpect() {
+        var expect = client.expect(POST, path);
+        expect.thenReturn(MockResponse.of(500, null));
+
+        assertThrows(UnirestAssertion.class, expect::verify);
+
+        Unirest.post(path).asEmpty();
+
+        assertDoesNotThrow(expect::verify);
+    }
+
+    @Test
+    void assertJustOneWithFunctionalInterface() {
+        var response = ExpectedResponse.of(200)
+                .thenReturn("Hello Jane")
+                .withHeader("foo", "bar");
+
+        client.expect(HttpMethod.POST, path)
+                .thenReturn(r -> response);
+
+        assertThrows(UnirestAssertion.class, response::verify);
+
+        Unirest.post(path).asEmpty();
+
+        assertDoesNotThrow(response::verify);
     }
 
     private static class BodyBuddy implements Supplier<String>{

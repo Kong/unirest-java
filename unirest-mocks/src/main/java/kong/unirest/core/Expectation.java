@@ -98,5 +98,16 @@ public interface Expectation {
      */
     ExpectedResponse thenReturn(Supplier<String> supplier);
 
+    /**
+     * Allows for a full override of the way a expected response is built.
+     * useful in building more complicated test-doubles of services that implement logic
+     * @param fun the function to convert a request to a response
+     */
     void thenReturn(Function<HttpRequest<?>, ExpectedResponse> fun);
+
+    /**
+     * verify that all Expectations was fulfilled at least once.
+     * @throws UnirestAssertion when all expectations have not been fulfilled
+     */
+    void verify();
 }

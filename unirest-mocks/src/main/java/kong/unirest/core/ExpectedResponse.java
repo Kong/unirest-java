@@ -31,7 +31,7 @@ import java.util.function.Supplier;
 
 public interface ExpectedResponse {
     static ExpectedResponse of(int status) {
-        return new ExpectedResponseRecord().withStatus(status);
+        return new ExpectedResponseRecord(null).withStatus(status);
     }
 
     /**
@@ -91,4 +91,10 @@ public interface ExpectedResponse {
      * @return The ExpectedResponse
      */
     ExpectedResponse thenReturn(Supplier<String> supplier);
+
+    /**
+     * verify that all Expectations was fulfilled at least once.
+     * @throws UnirestAssertion when all expectations have not been fulfilled
+     */
+    void verify();
 }
