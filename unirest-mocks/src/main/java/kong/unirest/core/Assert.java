@@ -70,6 +70,4 @@ public interface Assert {
      * @throws UnirestAssertion when all expectations have not been fulfilled
      */
     Assert verifyAll();
-
-
 }

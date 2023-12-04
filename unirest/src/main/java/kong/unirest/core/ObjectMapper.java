@@ -25,10 +25,39 @@
 
 package kong.unirest.core;
 
+/**
+ * Interface for object mappers that can transform response bodies to other structures.
+ */
 public interface ObjectMapper {
+
+	/**
+	 * reads the content from the request as a string and transforms to a type passed by the
+	 * asObject method on the Unirest builder.
+	 * @param value the content as a string.
+	 * @param valueType the type to map to
+	 * @return the object mapped into the class type
+	 * @param <T> the type
+	 */
 	<T> T readValue(String value, Class<T> valueType);
+
+	/**
+	 * reads the content from the request as a string and transforms to a type passed by the
+	 * asObject method on the Unirest builder.
+	 * This method takes a GenericType which retains Generics information for types lke List&lt;Foo&gt;
+	 * @param value the content as a string.
+	 * @param genericType the generic type
+	 * @return the object mapped into the class type
+	 * @param <T> the type
+	 */
 	default <T> T readValue(String value, GenericType<T> genericType){
 		throw new UnirestException("Please implement me");
 	}
+
+	/**
+	 * Takes a object and serialize it as a string.
+	 * This is used to map objects to bodies to pass to requests
+	 * @param value the object to serialize to a string
+	 * @return the serialized string of the object
+	 */
 	String writeValue(Object value);
 }

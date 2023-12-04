@@ -31,7 +31,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 /**
- *  A Mock of a websocket that sends messages directly to a single listener on the other side/
+ *  A Mock of a websocket that sends messages directly to a single listener on the other side
  */
 public class MockWebSocket implements WebSocket {
     private SocketSet remoteSocketSet;

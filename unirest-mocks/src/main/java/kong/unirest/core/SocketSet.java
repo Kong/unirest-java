@@ -29,7 +29,7 @@ import java.net.http.WebSocket;
 
 /**
  * A socket set represents a websocket and the listener for a target.
- * Each side of a websocket communcation would be represented by a set
+ * Each side of a websocket communication would be represented by a set
  */
 public class SocketSet<S extends WebSocket, L extends WebSocket.Listener> {
 

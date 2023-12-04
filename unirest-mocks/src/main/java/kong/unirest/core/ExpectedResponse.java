@@ -29,7 +29,17 @@ import kong.unirest.core.json.JSONElement;
 
 import java.util.function.Supplier;
 
+/**
+ * The expected response of a assertion.
+ * Contains things like response status, body and headers.
+ */
 public interface ExpectedResponse {
+    /**
+     * Create a independent expected response. useful for
+     * systems creating test-doubles rather than strict mocking
+     * @param status the response status.
+     * @return a new expected response with this status.
+     */
     static ExpectedResponse of(int status) {
         return new ExpectedResponseRecord(null).withStatus(status);
     }
