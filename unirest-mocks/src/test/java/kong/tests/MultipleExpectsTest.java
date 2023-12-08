@@ -41,7 +41,8 @@ class MultipleExpectsTest extends Base {
         Unirest.get(path).header("monster", "oscar").asEmpty();
 
         assertException(() -> client.verifyAll(),
-                "A expectation was never invoked! GET http://basic\n" +
+                "Expected at least 1 invocations but got 0\n" +
+                        "GET http://basic\n" +
                         "Headers:\n" +
                         "monster: oscar\n" +
                         "fruit: apple");
@@ -62,7 +63,8 @@ class MultipleExpectsTest extends Base {
                 .asEmpty();
 
         assertException(() -> client.verifyAll(),
-                "A expectation was never invoked! GET http://basic\n" +
+                "Expected at least 1 invocations but got 0\n" +
+                        "GET http://basic\n" +
                         "Headers:\n" +
                         "monster: grover");
     }
@@ -85,7 +87,8 @@ class MultipleExpectsTest extends Base {
                 .asEmpty();
 
         assertException(() -> client.verifyAll(),
-                "A expectation was never invoked! GET http://basic\n" +
+                "Expected at least 1 invocations but got 0\n" +
+                        "GET http://basic\n" +
                         "Params:\n" +
                         "monster: grover");
     }
@@ -108,7 +111,8 @@ class MultipleExpectsTest extends Base {
         assertEquals("two", result);
 
         assertException(() -> client.verifyAll(),
-                "A expectation was never invoked! GET http://basic\n" +
+                "Expected at least 1 invocations but got 0\n" +
+                        "GET http://basic\n" +
                         "Params:\n" +
                         "monster: grover");
     }

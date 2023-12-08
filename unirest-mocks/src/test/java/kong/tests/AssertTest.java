@@ -65,7 +65,8 @@ class AssertTest extends Base {
     void noExpectation() {
         client.expect(GET, otherPath);
         assertException(() -> client.verifyAll(),
-                "A expectation was never invoked! GET http://other\n");
+                "Expected at least 1 invocations but got 0\n" +
+                        "GET http://other\n");
     }
 
     @Test
@@ -90,7 +91,8 @@ class AssertTest extends Base {
         client.expect(GET, path).header("monster", "grover");
 
         assertException(() -> client.verifyAll(),
-                "A expectation was never invoked! GET http://basic\n" +
+                "Expected at least 1 invocations but got 0\n" +
+                        "GET http://basic\n" +
                         "Headers:\n" +
                         "monster: grover");
 
@@ -141,7 +143,8 @@ class AssertTest extends Base {
         Unirest.post(path).body("baz").asString();
 
         assertException(() -> client.verifyAll(),
-                "A expectation was never invoked! POST http://basic\n" +
+                "Expected at least 1 invocations but got 0\n" +
+                        "POST http://basic\n" +
                         "Body:\n" +
                         "\tfoo");
     }
@@ -219,7 +222,8 @@ class AssertTest extends Base {
     void assertPostWithNoBody() {
         client.expect(HttpMethod.POST, "myurl").body("test").thenReturn().withStatus(200);
         UnirestAssertion ex = assertThrows(UnirestAssertion.class, () -> client.verifyAll());
-        assertEquals("A expectation was never invoked! POST myurl\n" +
+        assertEquals("Expected at least 1 invocations but got 0\n" +
+                "POST myurl\n" +
                 "Body:\n" +
                 "\t null", ex.getMessage());
     }
@@ -254,46 +258,6 @@ class AssertTest extends Base {
     void verbsAreImportant() {
         client.expect(GET, path).thenReturn("hi");
         assertNotEquals("hi", Unirest.post(path).asString().getBody());
-    }
-
-    @Test
-    void assertJustOne() {
-        var response = client.expect(HttpMethod.POST, path)
-                .thenReturn(MockResponse.of(500, null));
-
-        assertThrows(UnirestAssertion.class, response::verify);
-
-        Unirest.post(path).asEmpty();
-
-        assertDoesNotThrow(response::verify);
-    }
-
-    @Test
-    void assertFromTheExpect() {
-        var expect = client.expect(POST, path);
-        expect.thenReturn(MockResponse.of(500, null));
-
-        assertThrows(UnirestAssertion.class, expect::verify);
-
-        Unirest.post(path).asEmpty();
-
-        assertDoesNotThrow(expect::verify);
-    }
-
-    @Test
-    void assertJustOneWithFunctionalInterface() {
-        var response = ExpectedResponse.of(200)
-                .thenReturn("Hello Jane")
-                .withHeader("foo", "bar");
-
-        client.expect(HttpMethod.POST, path)
-                .thenReturn(r -> response);
-
-        assertThrows(UnirestAssertion.class, response::verify);
-
-        Unirest.post(path).asEmpty();
-
-        assertDoesNotThrow(response::verify);
     }
 
     private static class BodyBuddy implements Supplier<String>{

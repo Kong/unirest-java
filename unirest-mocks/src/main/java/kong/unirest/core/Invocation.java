@@ -144,8 +144,14 @@ class Invocation implements Expectation {
 
     @Override
     public void verify() {
-        if (requests.isEmpty()) {
-            throw new UnirestAssertion("A expectation was never invoked! %s", details());
+        verify(Times.atLeastOnce());
+    }
+
+    @Override
+    public void verify(Times times) {
+        Times.EvaluationResult match = times.matches(requests.size());
+        if(!match.isSuccess()){
+            throw new UnirestAssertion("%s\n%s", match.getMessage(), details());
         }
     }
 

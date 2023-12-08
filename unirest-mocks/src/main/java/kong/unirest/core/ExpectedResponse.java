@@ -107,4 +107,6 @@ public interface ExpectedResponse {
      * @throws UnirestAssertion when all expectations have not been fulfilled
      */
     void verify();
+
+    void verify(Times times);
 }

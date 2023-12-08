@@ -61,7 +61,8 @@ class BodyMatchingTest extends Base {
                 .asEmpty();
 
         assertException(() -> client.verifyAll(),
-                "A expectation was never invoked! POST http://basic\n" +
+                "Expected at least 1 invocations but got 0\n" +
+                        "POST http://basic\n" +
                         "Body:\n" +
                         "\tnumber=42");
     }

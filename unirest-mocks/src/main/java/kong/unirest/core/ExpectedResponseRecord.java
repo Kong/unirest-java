@@ -85,10 +85,15 @@ class ExpectedResponseRecord implements ExpectedResponse, ResponseBuilder {
 
     @Override
     public void verify() {
+        verify(Times.atLeastOnce());
+    }
+
+    @Override
+    public void verify(Times times) {
         if(expectation == null){
             throw new UnirestAssertion("A expectation was never invoked!");
         }
-        expectation.verify();
+        expectation.verify(times);
     }
 
     @Override
