@@ -85,7 +85,7 @@ class ExpectedResponseRecord implements ExpectedResponse, ResponseBuilder {
 
     @Override
     public void verify() {
-        verify(Times.atLeastOnce());
+        verify(null);
     }
 
     @Override

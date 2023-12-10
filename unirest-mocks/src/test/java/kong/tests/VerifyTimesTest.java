@@ -134,4 +134,17 @@ public class VerifyTimesTest extends Base {
 
         Unirest.get(path).asEmpty();
     }
+
+    @Test
+    void buildExpectationTimesIntoChain() {
+        var expect = client.expect(GET, path).times(Times.never()).thenReturn("hi");
+
+        assertDoesNotThrow(() -> expect.verify());
+
+        Unirest.get(path).asEmpty();
+
+        var ex = assertThrows(UnirestAssertion.class, () -> expect.verify());
+        assertEquals("Expected exactly 0 invocations but got 1\n" +
+                "GET http://basic\n", ex.getMessage());
+    }
 }

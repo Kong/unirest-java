@@ -45,6 +45,7 @@ class Invocation implements Expectation {
     private MatchStatus expectedBodyStatus;
     private ExpectedResponseRecord expectedResponse = new ExpectedResponseRecord(this);
     private Function<HttpRequest<?>, ExpectedResponse> functionalResponse = r -> expectedResponse;
+    private Times expectedTimes = Times.atLeastOnce();
 
     public Invocation(Routes routes){
         this.routes = routes;
@@ -144,19 +145,26 @@ class Invocation implements Expectation {
 
     @Override
     public void verify() {
-        verify(Times.atLeastOnce());
+        verify(null);
     }
 
     @Override
     public void verify(Times times) {
-        Times.EvaluationResult match = times.matches(requests.size());
+        var thisTime = times == null ? expectedTimes : times;
+        var match = thisTime.matches(requests.size());
         if(!match.isSuccess()){
             throw new UnirestAssertion("%s\n%s", match.getMessage(), details());
         }
     }
 
+    @Override
+    public Expectation times(Times times) {
+        this.expectedTimes = times;
+        return this;
+    }
+
     private String details() {
-        StringBuilder sb  = new StringBuilder(routes.getMethod().name())
+        var sb  = new StringBuilder(routes.getMethod().name())
                 .append(" ")
                 .append(routes.getPath()).append(lineSeparator());
         if(expectedHeaders.size() > 0){

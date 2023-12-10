@@ -112,4 +112,6 @@ public interface Expectation {
     void verify();
 
     void verify(Times times);
+
+    Expectation times(Times never);
 }
