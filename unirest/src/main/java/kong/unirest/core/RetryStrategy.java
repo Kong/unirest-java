@@ -87,12 +87,16 @@ public interface RetryStrategy {
 
         @Override
         public boolean isRetryable(HttpResponse response) {
-            return RETRY_CODES.contains(response.getStatus())
+            return response != null &&
+                    RETRY_CODES.contains(response.getStatus())
                     && response.getHeaders().containsKey(RETRY_AFTER);
         }
 
         @Override
         public long getWaitTime(HttpResponse response) {
+            if(response == null){
+                return 0;
+            }
             String value = response.getHeaders().getFirst(RETRY_AFTER);
             return parseToMillies(value);
         }

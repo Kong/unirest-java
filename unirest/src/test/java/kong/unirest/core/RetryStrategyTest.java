@@ -59,6 +59,21 @@ class RetryStrategyTest {
         assertEquals(1000, parseToMillies("Wed, 21 Oct 2015 07:28:01 GMT"));
     }
 
+    @Test
+    void nullRespoinseIsAFalse() {
+        assertFalse(new RetryStrategy.Standard(1).isRetryable(null));
+    }
+
+    @Test
+    void nullRespoinseIsZeroSeconds() {
+        assertEquals(0, new RetryStrategy.Standard(1).getWaitTime(null));
+    }
+
+    @Test
+    void unparseableRetruIsZeroSeconds() {
+        assertEquals(0, parseToMillies("Love Shack Baby"));
+    }
+
     private long parseToMillies(String s) {
         Headers h = new Headers();
         h.add("Retry-After", s);
