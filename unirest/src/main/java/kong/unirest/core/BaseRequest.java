@@ -384,7 +384,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     private Function<RawResponse, HttpResponse<Object>> getConsumer(Consumer<RawResponse> consumer) {
         return r -> {
             consumer.accept(r);
-            return null;
+            return new BasicResponse<>(r);
         };
     }
 

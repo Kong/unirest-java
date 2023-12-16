@@ -37,6 +37,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -167,6 +168,18 @@ public class RetryTest extends BddTest {
         MockServer.assertRequestCount(3);
     }
 
+    @Test
+    void whenBodyIsConsumed() {
+        MockServer.retryTimes(10, 429, .01);
+
+        var consumer = new ConsumingCounter();
+
+        Unirest.get(MockServer.GET)
+                .thenConsume(consumer);
+
+        assertEquals(10, consumer.callCount);
+    }
+
     private void clearFile(Path path) {
         try {
             Files.delete(path);
@@ -191,4 +204,11 @@ public class RetryTest extends BddTest {
         return response.getBody();
     }
 
+    private class ConsumingCounter implements Consumer<RawResponse> {
+        int callCount = 0;
+        @Override
+        public void accept(RawResponse rawResponse) {
+            callCount++;
+        }
+    }
 }

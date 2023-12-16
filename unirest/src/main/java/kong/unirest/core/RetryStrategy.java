@@ -87,8 +87,7 @@ public interface RetryStrategy {
 
         @Override
         public boolean isRetryable(HttpResponse response) {
-            return response != null &&
-                    RETRY_CODES.contains(response.getStatus())
+            return response != null && RETRY_CODES.contains(response.getStatus())
                     && response.getHeaders().containsKey(RETRY_AFTER);
         }
 
