@@ -90,4 +90,13 @@ class VerbTest extends BddTest {
                 .assertMethod(HttpMethod.valueOf("INVALID"))
                 .assertBody("");
     }
+
+    @Test
+    void sendBodyToGet() {
+        Unirest.request("GET", MockServer.GET)
+                .body("Hi mom")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertBody("Hi mom");
+    }
 }
