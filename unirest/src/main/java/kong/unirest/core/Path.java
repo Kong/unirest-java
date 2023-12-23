@@ -58,14 +58,10 @@ class Path {
 
     public void param(String name, String value) {
         Matcher matcher = Pattern.compile("\\{" + name + "\\}").matcher(url);
-        int count = 0;
-        while (matcher.find()) {
-            count++;
-        }
-        if (count == 0) {
+        if (!matcher.find()) {
             throw new UnirestException("Can't find route parameter name \"" + name + "\"");
         }
-        this.url = url.replaceAll("\\{" + name + "\\}", encodePath(value));
+        this.url = matcher.replaceAll(encodePath(value));
     }
 
     private String encodePath(String value) {
