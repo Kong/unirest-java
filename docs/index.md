@@ -592,7 +592,7 @@ Changing Unirest's config should ideally be done once, or rarely. Once Unirest h
 You can set a global interceptor for your configuration. This is invoked before and after each request.
 This can be useful for logging or injecting common attributes.
 
-See [Interceptor.java](https://github.com/Kong/unirest-java/blob/master/unirest/src/main/java/kong/unirest/Interceptor.java) for details.
+See [Interceptor.java](https://github.com/Kong/unirest-java/blob/main/unirest/src/main/java/kong/unirest/core/Interceptor.java) for details.
 
 
 ## Multiple Configurations
