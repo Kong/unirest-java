@@ -95,6 +95,7 @@ public class Config {
         interceptor = new CompoundInterceptor();
         retry = null;
         objectMapper = () -> CoreFactory.getCore().getObjectMapper();
+        version = HttpClient.Version.HTTP_2;
 
         try {
             clientBuilder = JavaClient::new;
@@ -579,6 +580,7 @@ public class Config {
      * @return this config
      */
     public Config version(HttpClient.Version value) {
+        Objects.requireNonNull(value);
         version = value;
         return this;
     }
