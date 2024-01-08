@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.http.HttpClient;
 
-public class Http2Test {
+public class Http2Test extends BddTest  {
     @Test @Disabled
     void canMakeHttp2Requests() {
         Unirest.config().version(HttpClient.Version.HTTP_2);
@@ -44,5 +44,29 @@ public class Http2Test {
                 .asJson();
 
         System.out.println("httpResponse = " + httpResponse);
+    }
+
+    @Test
+    void sendsHeadersForHttp2() {
+        Unirest.config().version(HttpClient.Version.HTTP_2);
+
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("Connection", "Upgrade, HTTP2-Settings")
+                .assertHeader("Upgrade", "h2c")
+                .assertHeader("HTTP2-Settings", "AAEAAEAAAAIAAAABAAMAAABkAAQBAAAAAAUAAEAA");
+    }
+
+    @Test
+    void dontSendHttp2HeadersForHttp1() {
+        Unirest.config().version(HttpClient.Version.HTTP_1_1);
+
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertNoHeader("Connection")
+                .assertNoHeader("Upgrade")
+                .assertNoHeader("HTTP2-Settings");
     }
 }

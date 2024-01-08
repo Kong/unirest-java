@@ -48,6 +48,7 @@ import java.util.stream.Stream;
 
 import static java.lang.System.getProperty;
 import static kong.unirest.core.JsonPatchRequest.CONTENT_TYPE;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RequestCapture {
@@ -176,9 +177,9 @@ public class RequestCapture {
         return this;
     }
 
-    public RequestCapture assertHeader(String key, String value) {
-        assertTrue(headers.containsKey(key), String.format("Expect header of '%s' but none was present", key));
-        assertTrue(headers.get(key).contains(value), "Expected Header Value Failed: " + value);
+    public RequestCapture assertHeader(String key, String... value) {
+        assertThat(headers.asMap()).containsKey(key);
+        assertThat(headers.get(key)).contains(value);
         return this;
     }
 
