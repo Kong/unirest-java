@@ -68,7 +68,7 @@ public class Config {
     private CompoundInterceptor interceptor = new CompoundInterceptor();
     private String defaultBaseUrl;
     private CacheManager cache;
-    private HttpClient.Version version;
+    private HttpClient.Version version = HttpClient.Version.HTTP_2;
     private RetryStrategy retry;
 
     public Config() {
