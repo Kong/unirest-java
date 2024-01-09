@@ -26,6 +26,7 @@
 package kong.unirest.core;
 
 import java.io.File;
+import java.net.http.HttpClient;
 import java.nio.file.CopyOption;
 import java.time.Instant;
 import java.util.Collection;
@@ -51,6 +52,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     protected Path url;
     private Integer connectTimeout;
     private ProgressMonitor downloadMonitor;
+    private HttpClient.Version version;
 
     BaseRequest(BaseRequest httpRequest) {
         this.config = httpRequest.config;
@@ -59,6 +61,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         this.headers.putAll(httpRequest.headers);
         this.connectTimeout = httpRequest.connectTimeout;
         this.objectMapper = httpRequest.objectMapper;
+        this.version = httpRequest.version;
     }
 
     BaseRequest(Config config, HttpMethod method, String url) {
@@ -174,6 +177,12 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public R downloadMonitor(ProgressMonitor monitor) {
         this.downloadMonitor = monitor;
+        return (R) this;
+    }
+
+    @Override
+    public R version(HttpClient.Version value) {
+        this.version = value;
         return (R) this;
     }
 
@@ -422,6 +431,11 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public Instant getCreationTime() {
         return creation;
+    }
+
+    @Override
+    public HttpClient.Version getVersion() {
+        return version;
     }
 
     private <T> T valueOr(T x, Supplier<T> o) {

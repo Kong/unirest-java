@@ -82,7 +82,7 @@ public class JavaClient implements Client {
         try {
             var url = URI.create(request.getUrl());
             var jreq = newBuilder(url)
-                    .version(config.getVersion())
+                    .version(request.getVersion() != null ? request.getVersion() : config.getVersion())
                     .method(
                             request.getHttpMethod().name(),
                             new BodyBuilder(request).getBody()

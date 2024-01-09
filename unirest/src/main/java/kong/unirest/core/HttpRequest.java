@@ -26,6 +26,7 @@
 package kong.unirest.core;
 
 import java.io.File;
+import java.net.http.HttpClient;
 import java.nio.file.CopyOption;
 import java.time.Instant;
 import java.util.Collection;
@@ -185,6 +186,14 @@ public interface HttpRequest<R extends HttpRequest>  {
      * @return this request builder
      */
     R downloadMonitor(ProgressMonitor monitor);
+
+
+    /**
+     * sets the HTTP version for the request. This will override any global config
+     * @param version the version
+     * @return this request builder
+     */
+    R version(HttpClient.Version version);
 
     /**
      * Executes the request and returns the response with the body mapped into a String
@@ -422,4 +431,10 @@ public interface HttpRequest<R extends HttpRequest>  {
      * @return the instant the request object was created in UTC (not when it was sent).
      */
     Instant getCreationTime();
+
+    /**
+     * gets the version for the request, or null if not set.
+     * @return the version
+     */
+    HttpClient.Version getVersion();
 }
