@@ -146,21 +146,23 @@ public class CoreFactory {
     }
 
     private static UnirestConfigException getException() {
-        return new UnirestConfigException("No Json Parsing Implementation Provided\n" +
-                "Please add a dependency for a Unirest JSON Engine. This can be one of:" +
-                "\n" +
-                "<!-- Google Gson (the previous core impl) -->\n" +
-                "<dependency>\n" +
-                "  <groupId>com.konghq</groupId>\n" +
-                "  <artifactId>unirest-object-mappers-gson</artifactId>\n" +
-                "  <version>${latest-version}</version>\n" +
-                "</dependency>\n" +
-                "\n" +
-                "<!-- Jackson -->\n" +
-                "<dependency>\n" +
-                "  <groupId>com.konghq</groupId>\n" +
-                "  <artifactId>unirest-object-mappers-jackson</artifactId>\n" +
-                "  <version>${latest-version}</version>\n" +
-                "</dependency>)");
+        return new UnirestConfigException(String.format("No Json Parsing Implementation Provided%n" +
+                "Please add a dependency for a Unirest JSON Engine. " +
+                "This can be one of:" +
+                "%n" +
+                "<!-- Google Gson (the previous core impl) -->%n" +
+                "<dependency>%n" +
+                "  <groupId>com.konghq</groupId>%n" +
+                "  <artifactId>unirest-object-mappers-gson</artifactId>%n" +
+                "  <version>${latest-version}</version>%n" +
+                "</dependency>%n" +
+                "%n" +
+                "<!-- Jackson -->%n" +
+                "<dependency>%n" +
+                "  <groupId>com.konghq</groupId>%n" +
+                "  <artifactId>unirest-object-mappers-jackson</artifactId>%n" +
+                "  <version>${latest-version}</version>%n" +
+                "</dependency>)%n%n" +
+                "Alternatively you may register your own JsonEngine directly with CoreFactory.setEngine(JsonEngine jsonEngine)"));
     }
 }
