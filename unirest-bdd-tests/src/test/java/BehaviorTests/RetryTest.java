@@ -26,7 +26,6 @@
 package BehaviorTests;
 
 import kong.unirest.core.*;
-import net.bytebuddy.implementation.bind.annotation.IgnoreForBinding;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

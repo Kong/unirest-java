@@ -1,3 +1,6 @@
+## 4.2.2
+* Unirest-Mocks: add some options for doing verify by adding a 'Times' param for things like never() and exactly(number)
+
 ## 4.2.1
 * #503 Remove old retry setting that no longer works with the Java client
 * #504 allow asserting just one expectation verification on mock asserts
