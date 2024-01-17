@@ -27,40 +27,84 @@ package kong.unirest.core.json;
 
 import kong.unirest.core.UnirestConfigException;
 
-import java.util.Objects;
+import java.util.List;
 import java.util.ServiceLoader;
+import java.util.function.Supplier;
 
 public class CoreFactory {
-    private static JsonEngine ENGINE;
+    private static final List<Supplier<JsonEngine>> SERVICE_LOCATORS = List.of(
+            CoreFactory::findEngineWithServiceLocator,
+            CoreFactory::findEngineWithClassLoader
+    );
+
+    private static final List<String> KNOWN_IMPLEMENTATIONS = List.of(
+            "kong.unirest.jackson.JacksonEngine",
+            "kong.unirest.gson.GsonEngine"
+    );
+
+    private static JsonEngine engine;
+
     static {
-        ENGINE = ServiceLoader.load(JsonEngine.class)
+        autoConfig();
+    }
+
+    public static void autoConfig() {
+        engine = findEngine();
+    }
+
+    public static JsonEngine getCore() {
+        if(engine == null){
+            throw getException();
+        }
+        return engine;
+    }
+
+    public static void setEngine(JsonEngine jsonEngine){
+        engine = jsonEngine;
+    }
+
+    public static JsonEngine findEngine() {
+        for(Supplier<JsonEngine> engineSupplier : SERVICE_LOCATORS){
+            var foundEngine = engineSupplier.get();
+            if(foundEngine != null){
+                return foundEngine;
+            }
+        }
+        return null;
+    }
+
+    public static JsonEngine findEngineWithServiceLocator() {
+        return ServiceLoader.load(JsonEngine.class)
                 .findFirst()
                 .orElse(null);
     }
-    public static JsonEngine getCore() {
-        if(ENGINE == null){
-            throw new UnirestConfigException("No Json Parsing Implementation Provided\n" +
-                    "Please add a dependency for a Unirest JSON Engine. This can be one of:" +
-                    "\n" +
-                    "<!-- Google Gson (the previous core impl) -->\n" +
-                    "<dependency>\n" +
-                    "  <groupId>com.konghq</groupId>\n" +
-                    "  <artifactId>unirest-object-mappers-gson</artifactId>\n" +
-                    "  <version>${latest-version}</version>\n" +
-                    "</dependency>\n" +
-                    "\n" +
-                    "<!-- Jackson -->\n" +
-                    "<dependency>\n" +
-                    "  <groupId>com.konghq</groupId>\n" +
-                    "  <artifactId>unirest-object-mappers-jackson</artifactId>\n" +
-                    "  <version>${latest-version}</version>\n" +
-                    "</dependency>)");
+
+    public static JsonEngine findEngineWithClassLoader() {
+        for(String className : KNOWN_IMPLEMENTATIONS) {
+            try {
+                Class<?> engineClass = Class.forName(className);
+                return (JsonEngine) engineClass.getDeclaredConstructor().newInstance();
+            } catch (Exception ignored) {}
         }
-        return ENGINE;
+        return null;
     }
 
-    public static void setEngine(JsonEngine engine){
-        Objects.requireNonNull(engine, "JsonEngine may not be null");
-        ENGINE = engine;
+    private static UnirestConfigException getException() {
+        return new UnirestConfigException("No Json Parsing Implementation Provided\n" +
+                "Please add a dependency for a Unirest JSON Engine. This can be one of:" +
+                "\n" +
+                "<!-- Google Gson (the previous core impl) -->\n" +
+                "<dependency>\n" +
+                "  <groupId>com.konghq</groupId>\n" +
+                "  <artifactId>unirest-object-mappers-gson</artifactId>\n" +
+                "  <version>${latest-version}</version>\n" +
+                "</dependency>\n" +
+                "\n" +
+                "<!-- Jackson -->\n" +
+                "<dependency>\n" +
+                "  <groupId>com.konghq</groupId>\n" +
+                "  <artifactId>unirest-object-mappers-jackson</artifactId>\n" +
+                "  <version>${latest-version}</version>\n" +
+                "</dependency>)");
     }
 }

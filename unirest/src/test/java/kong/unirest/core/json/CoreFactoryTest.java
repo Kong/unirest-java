@@ -26,14 +26,26 @@
 package kong.unirest.core.json;
 
 import kong.unirest.core.UnirestConfigException;
+import kong.unirest.core.UnirestException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class CoreFactoryTest {
 
+    @AfterEach
+    void tearDown() {
+        try {
+            CoreFactory.autoConfig();
+        } catch (Exception e){}
+    }
+
     @Test
     void whenThereIsNoImpl() {
+        CoreFactory.setEngine(null);
         var ex = assertThrows(UnirestConfigException.class,
                 () -> CoreFactory.getCore());
         assertEquals("No Json Parsing Implementation Provided\n" +
@@ -51,5 +63,12 @@ class CoreFactoryTest {
                 "  <artifactId>unirest-object-mappers-jackson</artifactId>\n" +
                 "  <version>${latest-version}</version>\n" +
                 "</dependency>)", ex.getMessage());
+    }
+
+    @Test
+    void canSetItManually() {
+        var mock = mock(JsonEngine.class);
+        CoreFactory.setEngine(mock);
+        assertThat(CoreFactory.getCore()).isSameAs(mock);
     }
 }
