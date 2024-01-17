@@ -27,10 +27,11 @@ package kong.unirest.core.json;
 
 import kong.unirest.core.UnirestConfigException;
 
+import java.util.Objects;
 import java.util.ServiceLoader;
 
 public class CoreFactory {
-    private static final JsonEngine ENGINE;
+    private static JsonEngine ENGINE;
     static {
         ENGINE = ServiceLoader.load(JsonEngine.class)
                 .findFirst()
@@ -56,5 +57,10 @@ public class CoreFactory {
                     "</dependency>)");
         }
         return ENGINE;
+    }
+
+    public static void setEngine(JsonEngine engine){
+        Objects.requireNonNull(engine, "JsonEngine may not be null");
+        ENGINE = engine;
     }
 }
