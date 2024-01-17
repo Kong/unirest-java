@@ -1,5 +1,20 @@
+## 4.2.7
+* Changes to the json CoreFactory to allow for multiple different strategies for finding the JsonEngine in the classpath.
+* Allow setting a custom JsonFactory directly
+
+## 4.2.6
+* Allow for per-request config of http version
+
+## 4.2.5
+* Minor optimizations and doc updates
+* Issue #511: pass the HTTP version from the config to the request
+
+## 4.2.3
+* issue #506 have thenConsume pass on a basic response with no body so that other things like retry logic and interceptors can function properly
+
 ## 4.2.2
 * Unirest-Mocks: add some options for doing verify by adding a 'Times' param for things like never() and exactly(number)
+* In 429/503 retry logic skip retry when response is null
 
 ## 4.2.1
 * #503 Remove old retry setting that no longer works with the Java client
