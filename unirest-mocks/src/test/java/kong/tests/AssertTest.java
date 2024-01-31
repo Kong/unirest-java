@@ -260,6 +260,19 @@ class AssertTest extends Base {
         assertNotEquals("hi", Unirest.post(path).asString().getBody());
     }
 
+    @Test
+    public void samePathDifferentMethodTest() {
+        client.expect(HttpMethod.GET, path);
+        client.expect(HttpMethod.POST, path);
+
+        Unirest.get(path).asJson();
+        client.assertThat(HttpMethod.GET, path).wasInvokedTimes(1);
+
+        Unirest.post(path).asJson();
+        client.assertThat(HttpMethod.GET, path).wasInvokedTimes(1);
+        client.assertThat(HttpMethod.POST, path).wasInvokedTimes(1);
+    }
+
     private static class BodyBuddy implements Supplier<String>{
         String body;
         @Override
