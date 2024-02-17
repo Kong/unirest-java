@@ -434,10 +434,12 @@ class MultiPartFormPostingTest extends BddTest {
                         "{\"foo\": 1}",
                         ContentType.APPLICATION_JSON)
                 .asObject(RequestCapture.class)
+                .ifSuccess(e -> System.out.println(e.getRequestSummary().asString()))
                 .getBody()
-                .assertHeader("Content-Type", h -> {
-                    h.assertMainValue("multipart/form-data")
-                    .assertHasParam("boundary");
+                .assertHeader("Content-Type", h ->   h.assertMainValue("multipart/form-data")
+                                                      .assertHasParam("boundary")
+                ).assertBodyPart("content", p -> {
+                    p.assertFileName("spiderman").asserContentType("application/pdf");
                 });
 
     }

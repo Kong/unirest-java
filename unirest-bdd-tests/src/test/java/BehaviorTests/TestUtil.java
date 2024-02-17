@@ -28,10 +28,12 @@ package BehaviorTests;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Charsets;
+import com.google.common.collect.Multimap;
 import com.google.common.io.Resources;
 import kong.unirest.core.Client;
 import kong.unirest.core.Unirest;
 import kong.unirest.core.java.JavaClient;
+import org.assertj.guava.api.MultimapAssert;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -150,5 +152,9 @@ class TestUtil {
                     }
                 }).build();
         return new JavaClient(Unirest.config(), client);
+    }
+
+    public static <K, V> MultimapAssert<K, V> assertMultiMap(final Multimap<K, V> actual) {
+        return org.assertj.guava.api.Assertions.assertThat(actual);
     }
 }

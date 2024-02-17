@@ -36,6 +36,8 @@ import kong.unirest.core.*;
 import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Part;
+import org.assertj.core.data.MapEntry;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,7 +56,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RequestCapture {
     public String requestId = UUID.randomUUID().toString();
     public HeaderAsserts headers = new HeaderAsserts();
-    public List<FormPart> files = new ArrayList<>();
+    public List<FormPart> multiformparts = new ArrayList<>();
     public ArrayListMultimap<String, String> params = ArrayListMultimap.create();
     public String body;
     public String url;
@@ -150,7 +152,7 @@ public class RequestCapture {
         file.body = toString(part.getInputStream());
         file.headers = extractHeaders(part);
 
-        files.add(file);
+        multiformparts.add(file);
     }
 
     private ListMultimap<String, String> extractHeaders(Part part) {
@@ -190,7 +192,7 @@ public class RequestCapture {
     }
 
     private Stream<FormPart> getFileStream() {
-        return files.stream()
+        return multiformparts.stream()
                 .filter(f -> f.isFile());
     }
 
@@ -320,8 +322,18 @@ public class RequestCapture {
         return this;
     }
 
+    public void assertBodyPart(String name, Consumer<FormPart> validator) {
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(validator);
+        validator.accept(
+                multiformparts.stream()
+                        .filter(f -> name.equalsIgnoreCase(name))
+                        .findFirst()
+                        .orElseThrow(() -> new AssertionError("No Form Body Part Found Named: " + name))
+        );
+    }
+
     public static class FormPart {
-        public String contentType;
         public ListMultimap<String, String> headers = LinkedListMultimap.create();
         public String content;
         public String fileName;
@@ -356,12 +368,18 @@ public class RequestCapture {
             return this;
         }
 
-        public void assertSize(long expected) {
+        public FormPart assertSize(long expected) {
             assertEquals(expected, this.size);
+            return this;
         }
 
-        public void exists() {
+        public FormPart exists() {
             assertTrue(this.size > 0);
+            return this;
+        }
+
+        public void asserContentType(String contentType) {
+            TestUtil.assertMultiMap(headers).contains(MapEntry.entry("content-type", contentType));
         }
     }
 

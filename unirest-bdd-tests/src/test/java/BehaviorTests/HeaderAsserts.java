@@ -31,7 +31,6 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.*;
 import io.javalin.http.Context;
 import org.assertj.core.data.MapEntry;
-import org.assertj.guava.api.MultimapAssert;
 
 import java.util.Base64;
 import java.util.Collections;
@@ -62,7 +61,7 @@ public class HeaderAsserts {
     }
 
     public void assertHeader(String key, String... value) {
-        assertMultiMap(headers).containsKeys(key);
+        TestUtil.assertMultiMap(headers).containsKeys(key);
         assertThat(headers.get(key))
                 .extracting(HeaderValue::getValue)
                 .contains(value);
@@ -70,7 +69,7 @@ public class HeaderAsserts {
     }
 
     public void assertBasicAuth(String username, String password) {
-        assertMultiMap(headers).containsKeys("Authorization");
+        TestUtil.assertMultiMap(headers).containsKeys("Authorization");
         var value = headers.get("Authorization").get(0);
         assertThat(value.getValue()).as("Missing value scope of Basic").contains("Basic ");
         String decoded = new String(Base64.getDecoder().decode(value.getValue().replace("Basic ", "")));
@@ -91,7 +90,7 @@ public class HeaderAsserts {
     }
 
     public void assertHeaderWithParam(String headerKey, String headerValue, String paramKey, String paramValue) {
-        assertMultiMap(headers).containsKeys(headerKey);
+        TestUtil.assertMultiMap(headers).containsKeys(headerKey);
         var value = headers.get(headerKey).get(0);
         value.assertMainValue(headerValue);
         value.assertParam(paramKey, paramValue);
@@ -105,7 +104,7 @@ public class HeaderAsserts {
     }
 
     public HeaderValue getFirst(String name) {
-        assertMultiMap(headers).containsKeys(name);
+        TestUtil.assertMultiMap(headers).containsKeys(name);
         return headers.get(name)
                 .stream()
                 .findFirst()
@@ -147,7 +146,7 @@ public class HeaderAsserts {
         }
 
         public HeaderValue assertHasParam(String name) {
-            assertMultiMap(params)
+            TestUtil.assertMultiMap(params)
                     .as("Header Param")
                     .containsKeys(name);
             return this;
@@ -159,7 +158,7 @@ public class HeaderAsserts {
         }
 
         public HeaderValue assertParam(String name, String value) {
-            assertMultiMap(params)
+            TestUtil.assertMultiMap(params)
                     .as("Header Param")
                     .contains(MapEntry.entry(name, value));
             return this;
@@ -170,7 +169,4 @@ public class HeaderAsserts {
         }
     }
 
-    private static <K, V> MultimapAssert<K, V> assertMultiMap(final Multimap<K, V> actual) {
-        return org.assertj.guava.api.Assertions.assertThat(actual);
-    }
 }
