@@ -26,7 +26,6 @@
 package BehaviorTests;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedListMultimap;
@@ -53,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class RequestCapture {
     public String requestId = UUID.randomUUID().toString();
-    public ListMultimap<String, String> headers = LinkedListMultimap.create();
+    public HeaderAsserts headers = new HeaderAsserts();
     public List<FormPart> files = new ArrayList<>();
     public ArrayListMultimap<String, String> params = ArrayListMultimap.create();
     public String body;
@@ -76,7 +75,7 @@ public class RequestCapture {
         url = req.url();
         queryString = req.queryString();
         method = HttpMethod.valueOf(req.method().name());
-        writeHeaders(req);
+        headers = new HeaderAsserts(req);
         writeQuery(req);
         populateParams(req);
         cookies.putAll(req.cookieMap());
@@ -166,20 +165,12 @@ public class RequestCapture {
     }
 
     public RequestCapture assertNoHeader(String s) {
-        assertFalse(headers.containsKey(s), "Should Have No Header " + s);
-        return this;
-    }
-
-    private RequestCapture writeHeaders(Context req) {
-        Collections.list(req.req().getHeaderNames())
-                .forEach(name -> Collections.list(req.req().getHeaders(name))
-                        .forEach(value -> headers.put(name, value)));
+        headers.assertNoHeader(s);
         return this;
     }
 
     public RequestCapture assertHeader(String key, String... value) {
-        assertThat(headers.asMap()).containsKey(key);
-        assertThat(headers.get(key)).contains(value);
+        headers.assertHeader(key, value);
         return this;
     }
 
@@ -221,10 +212,7 @@ public class RequestCapture {
     }
 
     public RequestCapture assertBasicAuth(String username, String password) {
-        String raw = headers.get("Authorization").get(0);
-        assertNotNull(raw, "Authorization Header Missing");
-        String credentials = raw.replace("Basic ","");
-        assertEquals(username + ":" + password, new String(Base64.getDecoder().decode(credentials)));
+        headers.assertBasicAuth(username, password);
         return this;
     }
 
@@ -276,8 +264,8 @@ public class RequestCapture {
         return this;
     }
 
-    public RequestCapture assertHeaderSize(String foo, int size) {
-        assertEquals(size, headers.get(foo).size());
+    public RequestCapture assertHeaderSize(String name, int size) {
+        headers.assertHeaderSize(name, size);
         return this;
     }
 
@@ -294,18 +282,19 @@ public class RequestCapture {
         return assertHeader("Content-Type", content);
     }
 
+    public RequestCapture assertContentType(String content, String paramKey, String paramValue) {
+        headers.assertHeaderWithParam("Content-Type", content, paramKey, paramValue);
+        return this;
+    }
+
+
     public RequestCapture assertMultiPartContentType() {
-        List<String> h = headers.get("Content-Type");
-        assertEquals(1, h.size(), "Expected exactly 1 Content-Type header");
-        List<String> parts = Splitter.on(";").trimResults().splitToList(h.get(0));
-        assertEquals("multipart/form-data", parts.get(0));
-        assertTrue(parts.get(1).startsWith("boundary="));
-        assertEquals("charset=UTF-8", parts.get(2));
+        headers.assertMultiPartContentType();
         return this;
     }
 
     public RequestCapture assertUrlEncodedContent() {
-        return assertContentType("application/x-www-form-urlencoded; charset=UTF-8");
+        return assertRawContentType("application/x-www-form-urlencoded; charset=UTF-8");
     }
 
     public RequestCapture assertCookie(String name, String value) {
@@ -315,8 +304,14 @@ public class RequestCapture {
         return this;
     }
 
-    public void assertNoCookie(String name) {
+    public RequestCapture assertNoCookie(String name) {
         assertNull(cookies.get(name), "Cookie should not have been passed but it was! ");
+        return this;
+    }
+
+    public RequestCapture assertRawContentType(String value) {
+        headers.assertRawValue("Content-Type", value);
+        return this;
     }
 
     public static class FormPart {

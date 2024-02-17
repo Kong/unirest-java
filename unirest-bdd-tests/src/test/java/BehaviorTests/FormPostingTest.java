@@ -144,7 +144,7 @@ class FormPostingTest extends BddTest {
                 .field("foo", "bar")
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertContentType("application/x-www-form-urlencoded; charset=US-ASCII")
+                .assertRawContentType("application/x-www-form-urlencoded; charset=US-ASCII")
                 .assertParam("foo", "bar")
                 .assertCharset(StandardCharsets.US_ASCII);
     }
@@ -166,7 +166,7 @@ class FormPostingTest extends BddTest {
                 .charset(StandardCharsets.US_ASCII)
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertContentType("application/x-www-form-urlencoded; charset=US-ASCII")
+                .assertContentType("application/x-www-form-urlencoded", "charset", "US-ASCII")
                 .assertParam("foo", "bar")
                 .assertCharset(StandardCharsets.US_ASCII);
     }

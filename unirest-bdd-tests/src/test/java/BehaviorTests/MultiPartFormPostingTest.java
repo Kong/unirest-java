@@ -26,6 +26,7 @@
 package BehaviorTests;
 
 import kong.unirest.core.ContentType;
+import kong.unirest.core.HttpResponse;
 import kong.unirest.core.MultipartMode;
 import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
@@ -33,9 +34,8 @@ import org.junit.jupiter.api.Test;
 import java.io.*;
 import java.net.URISyntaxException;
 
+import static BehaviorTests.TestUtil.*;
 import static java.util.Arrays.asList;
-import static BehaviorTests.TestUtil.getFileBytes;
-import static BehaviorTests.TestUtil.rezFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MultiPartFormPostingTest extends BddTest {
@@ -119,7 +119,7 @@ class MultiPartFormPostingTest extends BddTest {
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertMultiPartContentType()
-                .assertHeader("Accept", ContentType.MULTIPART_FORM_DATA.toString())
+                .assertHeader("Accept", "multipart/form-data")
                 .assertParam("name", "Mark")
                 .getFile("image.jpg")
                 .assertFileType("application/octet-stream");
@@ -423,4 +423,19 @@ class MultiPartFormPostingTest extends BddTest {
         assertEquals(expected, body);
     }
 
+    @Test
+    void mediaTypesForParts() {
+        Unirest.post(MockServer.POST)
+                .field("content",
+                        rezInput("/spidey.pdf"),
+                        ContentType.APPLICATION_PDF,
+                        "spiderman")
+                .field("metadata",
+                        "{\"foo\": 1}",
+                        ContentType.APPLICATION_JSON.getMimeType())
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertContentType("multipart/form-data");
+
+    }
 }

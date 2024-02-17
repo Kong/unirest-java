@@ -35,6 +35,7 @@
         <junit.version>5.10.0</junit.version>
         <mockito.version>5.6.0</mockito.version>
         <maven-checkstyle-plugin.version>3.3.0</maven-checkstyle-plugin.version>
+        <assertj.version>3.25.3</assertj.version>
     </properties>
 
     <scm>
@@ -313,7 +314,14 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.25.1</version>
+            <version>${assertj.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.assertj/assertj-guava -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-guava</artifactId>
+            <version>${assertj.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

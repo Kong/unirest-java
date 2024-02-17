@@ -66,7 +66,7 @@ class UniBodyPostingTest extends BddTest {
                 .body("foo")
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertContentType("text/plain; charset=UTF-8");
+                .assertRawContentType("text/plain; charset=UTF-8");
     }
 
     @Test
@@ -76,7 +76,7 @@ class UniBodyPostingTest extends BddTest {
                 .body("foo")
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertContentType("text/plain; charset=US-ASCII")
+                .assertContentType("text/plain", "charset", "US-ASCII")
                 .assertBody("foo")
                 .assertCharset(StandardCharsets.US_ASCII);
     }
@@ -88,7 +88,7 @@ class UniBodyPostingTest extends BddTest {
                 .charset(StandardCharsets.US_ASCII)
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertContentType("text/plain; charset=US-ASCII")
+                .assertRawContentType("text/plain; charset=US-ASCII")
                 .assertBody("foo")
                 .assertCharset(StandardCharsets.US_ASCII);
     }

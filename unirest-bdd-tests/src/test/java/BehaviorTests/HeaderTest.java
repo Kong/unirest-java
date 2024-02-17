@@ -393,7 +393,7 @@ class HeaderTest extends BddTest {
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertHeaderSize("Content-Type", 1)
-                .assertContentType("application/x-www-form-urlencoded; charset=UTF-8");
+                .assertRawContentType("application/x-www-form-urlencoded; charset=UTF-8");
     }
 
     @Test

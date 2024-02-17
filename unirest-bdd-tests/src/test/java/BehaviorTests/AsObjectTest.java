@@ -137,7 +137,7 @@ class AsObjectTest extends BddTest {
                 .charset(StandardCharsets.US_ASCII)
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertContentType("text/plain; charset=US-ASCII");
+                .assertContentType("text/plain", "charset", "US-ASCII");
     }
 
     @Test

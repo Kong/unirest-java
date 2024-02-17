@@ -76,6 +76,14 @@ class TestUtil {
         }
     }
 
+    public static InputStream rezInput(String name) {
+        try {
+            return MockServer.class.getResourceAsStream(name);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static byte[] getFileBytes(String s) {
         try {
             final InputStream stream = new FileInputStream(rezFile(s));
