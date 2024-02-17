@@ -104,7 +104,15 @@ public class HeaderAsserts {
                 .contains(value);
     }
 
-    private static class HeaderValue {
+    public HeaderValue getFirst(String name) {
+        assertMultiMap(headers).containsKeys(name);
+        return headers.get(name)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Missing any values for header " + name));
+    }
+
+    public static class HeaderValue {
         @JsonIgnore private static final Splitter partSplitter = Splitter.on(";").trimResults().omitEmptyStrings();
         @JsonIgnore private static final Splitter paramSplitter = Splitter.on("=").trimResults().omitEmptyStrings();
         @JsonProperty("rawValue")
@@ -138,20 +146,23 @@ public class HeaderAsserts {
             return value;
         }
 
-        public void assertHasParam(String name) {
+        public HeaderValue assertHasParam(String name) {
             assertMultiMap(params)
                     .as("Header Param")
                     .containsKeys(name);
+            return this;
         }
 
-        public void assertMainValue(String expectedValue) {
+        public HeaderValue assertMainValue(String expectedValue) {
             assertEquals(expectedValue, value);
+            return this;
         }
 
-        public void assertParam(String name, String value) {
+        public HeaderValue assertParam(String name, String value) {
             assertMultiMap(params)
                     .as("Header Param")
                     .contains(MapEntry.entry(name, value));
+            return this;
         }
 
         public String rawValue() {
@@ -159,7 +170,7 @@ public class HeaderAsserts {
         }
     }
 
-    public static <K, V> MultimapAssert<K, V> assertMultiMap(final Multimap<K, V> actual) {
+    private static <K, V> MultimapAssert<K, V> assertMultiMap(final Multimap<K, V> actual) {
         return org.assertj.guava.api.Assertions.assertThat(actual);
     }
 }

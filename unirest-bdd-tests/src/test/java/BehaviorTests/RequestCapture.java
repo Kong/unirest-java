@@ -42,6 +42,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -311,6 +312,11 @@ public class RequestCapture {
 
     public RequestCapture assertRawContentType(String value) {
         headers.assertRawValue("Content-Type", value);
+        return this;
+    }
+
+    public RequestCapture assertHeader(String name, Consumer<HeaderAsserts.HeaderValue> validator) {
+        validator.accept(headers.getFirst(name));
         return this;
     }
 

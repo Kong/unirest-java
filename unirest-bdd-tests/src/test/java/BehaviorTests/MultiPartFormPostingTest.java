@@ -435,7 +435,10 @@ class MultiPartFormPostingTest extends BddTest {
                         ContentType.APPLICATION_JSON)
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertContentType("multipart/form-data");
+                .assertHeader("Content-Type", h -> {
+                    h.assertMainValue("multipart/form-data")
+                    .assertHasParam("boundary");
+                });
 
     }
 }
