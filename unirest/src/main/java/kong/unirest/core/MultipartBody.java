@@ -54,6 +54,15 @@ public interface MultipartBody extends HttpRequest<MultipartBody>, Body {
     /**
      * add a simple field with a name and value
      * @param name: the Name of the form field
+     * @param value: The string value for the field
+     * @param contentType: the content type of the value
+     * @return The same MultipartBody
+     */
+    MultipartBody field(String name, String value, ContentType contentType);
+
+    /**
+     * add a simple field with a name and value
+     * @param name: the Name of the form field
      * @param values: A collection of values for the same name.
      * @return The same MultipartBody
      */

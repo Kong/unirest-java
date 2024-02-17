@@ -432,7 +432,7 @@ class MultiPartFormPostingTest extends BddTest {
                         "spiderman")
                 .field("metadata",
                         "{\"foo\": 1}",
-                        ContentType.APPLICATION_JSON.getMimeType())
+                        ContentType.APPLICATION_JSON)
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertContentType("multipart/form-data");

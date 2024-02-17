@@ -56,6 +56,12 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
     }
 
     @Override
+    public MultipartBody field(String name, String value, ContentType contentType) {
+        addPart(name, value, contentType.getMimeType());
+        return this;
+    }
+
+    @Override
     public MultipartBody field(String name, Collection<?> collection) {
         for (Object current: collection) {
             addPart(name, current, null);
