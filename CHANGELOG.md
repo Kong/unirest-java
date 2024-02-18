@@ -1,3 +1,10 @@
+## 4.2.9
+* re-work request summary to be closer in reality to the actual request for multipart requests.
+
+## 4.2.8
+* populate the content type for non-binary multiparts
+* added method to accept a form part with a ContentType type in addition to string
+
 ## 4.2.7
 * Changes to the json CoreFactory to allow for multiple different strategies for finding the JsonEngine in the classpath.
 * Allow setting a custom JsonFactory directly
