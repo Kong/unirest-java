@@ -37,6 +37,7 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
     private Charset charSet;
     private boolean forceMulti = false;
     private ProgressMonitor monitor;
+    private String boundary;
 
     HttpRequestMultiPart(HttpRequestBody httpRequest) {
         super(httpRequest);
@@ -134,6 +135,20 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
     public MultipartBody uploadMonitor(ProgressMonitor uploadMonitor) {
         this.monitor  = uploadMonitor;
         return this;
+    }
+
+    @Override
+    public MultipartBody boundary(String boundaryIdentifier) {
+        this.boundary = boundaryIdentifier;
+        return this;
+    }
+
+    @Override
+    public String getBoundary() {
+        if(boundary == null){
+            boundary = UUID.randomUUID().toString();
+        }
+        return boundary;
     }
 
     @Override

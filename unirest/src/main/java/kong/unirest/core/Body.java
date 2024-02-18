@@ -56,6 +56,10 @@ public interface Body {
         return null;
     }
 
+    default String getBoundary() {
+        return null;
+    }
+
     default BodyPart getField(String name){
         return multiParts()
                 .stream()

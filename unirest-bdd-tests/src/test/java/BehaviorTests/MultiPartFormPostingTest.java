@@ -476,4 +476,20 @@ class MultiPartFormPostingTest extends BddTest {
                 });
 
     }
+
+    @Test
+    void settingTheBoundary() {
+        String boundary = "ABC-123-BOUNDARY";
+
+        Unirest.post(MockServer.POST)
+                .field("spidey", rezFile("/spidey.pdf"))
+                .field("something", "else")
+                .boundary(boundary)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("Content-Type", h -> {
+                   h.assertParam("boundary", boundary);
+                });
+
+    }
 }

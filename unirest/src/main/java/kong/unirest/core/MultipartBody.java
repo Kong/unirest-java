@@ -160,4 +160,12 @@ public interface MultipartBody extends HttpRequest<MultipartBody>, Body {
      * @return The same MultipartBody
      * */
     MultipartBody uploadMonitor(ProgressMonitor monitor);
+
+    /**
+     * Sets the value to use as the boundary identifier.
+     * see https://datatracker.ietf.org/doc/html/rfc2046
+     * @param boundaryIdentifier the value
+     * @return The same MultipartBody
+     */
+    MultipartBody boundary(String boundaryIdentifier);
 }

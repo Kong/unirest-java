@@ -74,7 +74,7 @@ class BodyBuilder {
                 );
             }
 
-            MultipartBodyPublisher.Builder builder = MultipartBodyPublisher.newBuilder();
+            var builder = MultipartBodyPublisher.newBuilder(o.getBoundary());
             o.multiParts().forEach(part -> {
                 setMultiPart(o, builder, part);
             });

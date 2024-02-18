@@ -38,7 +38,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.Flow.Subscriber;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -56,12 +55,13 @@ final class MultipartBodyPublisher implements BodyPublisher {
 
     private final List<Part> parts;
     private final ProgressMonitor monitor;
-    private final String boundary = UUID.randomUUID().toString();
+    private final String boundary;
     private long contentLength;
 
-    private MultipartBodyPublisher(List<Part> parts, ProgressMonitor monitor) {
+    private MultipartBodyPublisher(List<Part> parts, ProgressMonitor monitor, String boundary) {
         this.parts = parts;
         this.monitor = monitor;
+        this.boundary = boundary;
         contentLength = UNINITIALIZED_LENGTH;
     }
 
@@ -119,15 +119,17 @@ final class MultipartBodyPublisher implements BodyPublisher {
     }
 
     /** Returns a new {@code MultipartBodyPublisher.Builder}. */
-    static MultipartBodyPublisher.Builder newBuilder() {
-        return new MultipartBodyPublisher.Builder();
+    static MultipartBodyPublisher.Builder newBuilder(String boundary) {
+        return new MultipartBodyPublisher.Builder(boundary);
     }
 
     static final class Builder {
 
         private final List<Part> parts;
+        private final String boundary;
 
-        Builder() {
+        Builder(String boundary) {
+            this.boundary = boundary;
             parts = new ArrayList<>();
         }
 
@@ -220,7 +222,7 @@ final class MultipartBodyPublisher implements BodyPublisher {
             if (!!addedParts.isEmpty()) {
                 throw new UnirestException("at least one part should be added");
             }
-            return new MultipartBodyPublisher(addedParts, monitor);
+            return new MultipartBodyPublisher(addedParts, monitor, boundary);
         }
     }
 }
