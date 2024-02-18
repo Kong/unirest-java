@@ -5,10 +5,12 @@ Content-Type: application/octet-stream
 This is a test file
 --IDENTIFIER
 Content-Disposition: form-data; name="funky"
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
 
 bunch
 --IDENTIFIER
 Content-Disposition: form-data; name="marky"
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
 
 mark
 --IDENTIFIER--

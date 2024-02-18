@@ -441,6 +441,8 @@ class MultiPartFormPostingTest extends BddTest {
                 })
                 .assertBodyPart("metadata", p -> {
                     p.assertBody("{\"foo\": 1}");
+                    p.assertContentType("application/json");
+                    p.assertContentDisposition("form-data; name=\"metadata\"");
                 });
 
     }

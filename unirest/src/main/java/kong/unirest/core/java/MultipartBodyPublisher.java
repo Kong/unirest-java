@@ -112,10 +112,6 @@ final class MultipartBodyPublisher implements BodyPublisher {
 
     static void appendPartHeaders(StringBuilder target, Part part) {
         part.headers().all().forEach(h -> appendHeader(target, h.getName(), h.getValue()));
-        BodyPublisher publisher = part.bodyPublisher();
-        if (publisher instanceof PartPublisher) {
-            appendHeader(target, "Content-Type", ((PartPublisher) publisher).mediaType().toString());
-        }
     }
 
     private static void appendHeader(StringBuilder target, String name, String value) {
@@ -138,13 +134,14 @@ final class MultipartBodyPublisher implements BodyPublisher {
         /**
          * Adds a form field with the given name and body.
          *
-         * @param name the field's name
+         * @param name          the field's name
          * @param bodyPublisher the field's body publisher
+         * @param contentType   the content type for the part
          */
-        MultipartBodyPublisher.Builder formPart(String name, BodyPublisher bodyPublisher) {
+        MultipartBodyPublisher.Builder formPart(String name, BodyPublisher bodyPublisher, String contentType) {
             requireNonNull(name, "name");
             requireNonNull(bodyPublisher, "body");
-            parts.add(new Part(name, null, bodyPublisher));
+            parts.add(new Part(name, null, bodyPublisher, contentType));
             return this;
         }
 
@@ -155,11 +152,11 @@ final class MultipartBodyPublisher implements BodyPublisher {
          * @param filename the field's filename
          * @param body the field's body publisher
          */
-        MultipartBodyPublisher.Builder formPart(String name, String filename, BodyPublisher body) {
+        MultipartBodyPublisher.Builder formPart(String name, String filename, BodyPublisher body,  String contentType) {
             requireNonNull(name, "name");
             requireNonNull(filename, "filename");
             requireNonNull(body, "body");
-            parts.add(new Part(name, filename, body));
+            parts.add(new Part(name, filename, body, contentType));
             return this;
         }
 
@@ -170,8 +167,8 @@ final class MultipartBodyPublisher implements BodyPublisher {
          * @param name the field's name
          * @param value an object whose string representation is used as the value
          */
-        MultipartBodyPublisher.Builder textPart(String name, Object value) {
-            return textPart(name, value, UTF_8);
+        MultipartBodyPublisher.Builder textPart(String name, Object value, String contentType) {
+            return textPart(name, value, UTF_8, contentType);
         }
 
         /**
@@ -182,11 +179,11 @@ final class MultipartBodyPublisher implements BodyPublisher {
          * @param value an object whose string representation is used as the value
          * @param charset the charset for encoding the field's body
          */
-        MultipartBodyPublisher.Builder textPart(String name, Object value, Charset charset) {
+        MultipartBodyPublisher.Builder textPart(String name, Object value, Charset charset, String contentType) {
             requireNonNull(name, "name");
             requireNonNull(value, "value");
             requireNonNull(charset, "charset");
-            return formPart(name, BodyPublishers.ofString(value.toString(), charset));
+            return formPart(name, BodyPublishers.ofString(value.toString(), charset), contentType);
         }
 
 
@@ -209,7 +206,7 @@ final class MultipartBodyPublisher implements BodyPublisher {
             String filename = filenameComponent != null ? filenameComponent.toString() : "";
             PartPublisher publisher =
                     new PartPublisher(BodyPublishers.ofFile(file), mediaType);
-            return formPart(name, filename, publisher);
+            return formPart(name, filename, publisher, mediaType);
         }
 
         /**
