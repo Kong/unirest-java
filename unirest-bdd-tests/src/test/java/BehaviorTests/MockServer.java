@@ -29,14 +29,12 @@ package BehaviorTests;
 import com.google.common.base.Strings;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-
+import io.javalin.http.Cookie;
 import io.javalin.http.HttpStatus;
 import io.javalin.websocket.WsConfig;
-import org.apache.commons.io.IOUtils;
+import jakarta.servlet.ServletOutputStream;
 import org.eclipse.jetty.util.UrlEncoded;
 
-import jakarta.servlet.ServletOutputStream;
-import io.javalin.http.Cookie;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,7 +42,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
 import java.util.function.Consumer;
 import java.util.zip.GZIPOutputStream;
 
@@ -204,7 +201,7 @@ public class MockServer {
         context.status(200);
         final ServletOutputStream out = context.res().getOutputStream();
         final FileInputStream in = new FileInputStream(f);
-        IOUtils.copy(in, out);
+        in.transferTo(out);
         out.close();
         in.close();
         return null;
