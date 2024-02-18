@@ -26,7 +26,6 @@
 package kong.unirest.core;
 
 import java.util.StringJoiner;
-import java.util.UUID;
 import java.util.function.Function;
 
 class SummaryFormatter implements Function<HttpRequest<?>, String> {
@@ -35,7 +34,13 @@ class SummaryFormatter implements Function<HttpRequest<?>, String> {
     public String apply(HttpRequest<?> req) {
         StringJoiner sb = new StringJoiner(System.lineSeparator());
         sb.add(req.getHttpMethod().name() + " " + req.getUrl());
-        req.getHeaders().all().forEach(h -> sb.add(h.getName() + "=" + h.getValue()));
+        req.getHeaders().all().forEach(h -> sb.add(h.getName() + ": " + h.getValue()));
+        req.getBody().ifPresent(body -> {
+            if(!req.getHeaders().containsKey("content-type") && body.isMultiPart()){
+                sb.add(String.format("Content-Type: multipart/form-data; boundary=%s;charset=%s\"", body.getBoundary(), body.getCharset()));
+            }
+        });
+
         sb.add("===================================");
         addBody(req, sb);
         return sb.toString();
@@ -59,14 +64,14 @@ class SummaryFormatter implements Function<HttpRequest<?>, String> {
 
     private String toMultiPartAproximation(Body b, StringJoiner sj) {
         b.multiParts().forEach(p -> {
-            String partid = UUID.randomUUID().toString();
-            sj.add("--"+partid);
+            sj.add("--"+b.getBoundary());
             if(p.isFile()){
                 sj.add(String.format("Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"", p.getName(), p.getFileName()));
-                sj.add("Content-Type: application/octet-stream");
+                sj.add("Content-Type: " + p.getContentType());
                 sj.add("<BINARY DATA>");
             } else {
                 sj.add("Content-Disposition: form-data; name:\""+p.getName()+"\"");
+                sj.add("Content-Type: " + p.getContentType());
                 sj.add(String.valueOf(p.getValue()));
             }
             sj.add("");

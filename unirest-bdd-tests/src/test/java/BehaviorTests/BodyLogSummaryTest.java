@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static BehaviorTests.TestUtil.rezFile;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BodyLogSummaryTest extends BddTest {
@@ -45,7 +46,7 @@ class BodyLogSummaryTest extends BddTest {
                 .asString();
 
         assertEquals("GET http://somewhere/beans?fruit=apple\n" +
-                "Accept=image/raw\n" +
+                "Accept: image/raw\n" +
                 "===================================", log);
     }
 
@@ -60,7 +61,7 @@ class BodyLogSummaryTest extends BddTest {
                 .asString();
 
         assertEquals("POST http://somewhere/beans?fruit=apple\n" +
-                "Accept=image/raw\n" +
+                "Accept: image/raw\n" +
                 "===================================\n" +
                 "this is the body", log);
     }
@@ -76,7 +77,7 @@ class BodyLogSummaryTest extends BddTest {
                 .asString();
 
         assertEquals("POST http://somewhere/beans?fruit=apple\n" +
-                "Accept=image/raw\n" +
+                "Accept: image/raw\n" +
                 "===================================\n" +
                 "{\"muppet\":\"Gonzo\"}", log);
     }
@@ -92,7 +93,7 @@ class BodyLogSummaryTest extends BddTest {
                 .asString();
 
         assertEquals("POST http://somewhere/beans?fruit=apple\n" +
-                "Accept=image/raw\n" +
+                "Accept: image/raw\n" +
                 "===================================\n" +
                 "{\"bar\":\"zip\"}", log);
     }
@@ -109,36 +110,44 @@ class BodyLogSummaryTest extends BddTest {
                 .asString();
 
         assertEquals("POST http://somewhere/beans?fruit=apple\n" +
-                "Accept=image/raw\n" +
+                "Accept: image/raw\n" +
                 "===================================\n" +
                 "album=77&band=Talking+Heads", log);
     }
 
-    @Test @Disabled
+    @Test
     void multiPart() {
+        String boundary = "ABC-123-BOUNDARY";
         String body = Unirest.post(MockServer.ECHO_RAW)
                 .header("Accept", "image/raw")
                 .field("band", "Talking Heads")
                 .field("album", "77")
                 .field("file", rezFile("/test.txt"))
+                .boundary(boundary)
                 .toSummary()
                 .asString();
 
-        assertEquals("POST http://localhost:4567/raw\n" +
-                "Accept=image/raw\n" +
-                "===================================\n" +
-                "--5798a3ff-ed92-4e9e-a9fe-bd7853cea758\n" +
-                "Content-Disposition: form-data; name:\"album\"\n" +
-                "77\n" +
-                "\n" +
-                "--0ad6dbf7-c5b6-453e-a28c-4a3a8fab7017\n" +
-                "Content-Disposition: form-data; name:\"band\"\n" +
-                "Talking Heads\n" +
-                "\n" +
-                "--453a52b3-2811-4bf6-8950-6395efe72ef7\n" +
-                "Content-Disposition: form-data; name=\"file\"; filename=\"null\"\n" +
-                "Content-Type: application/octet-stream\n" +
-                "<BINARY DATA>\n", body);
+        assertThat(body).isEqualTo(
+                "POST http://localhost:4567/raw\n" +
+                        "Accept: image/raw\n" +
+                        "Content-Type: multipart/form-data; boundary=ABC-123-BOUNDARY;charset=UTF-8\"\n" +
+                        "===================================\n" +
+                        "--ABC-123-BOUNDARY\n" +
+                        "Content-Disposition: form-data; name:\"album\"\n" +
+                        "Content-Type: application/x-www-form-urlencoded; charset=UTF-8\n" +
+                        "77\n" +
+                        "\n" +
+                        "--ABC-123-BOUNDARY\n" +
+                        "Content-Disposition: form-data; name:\"band\"\n" +
+                        "Content-Type: application/x-www-form-urlencoded; charset=UTF-8\n" +
+                        "Talking Heads\n" +
+                        "\n" +
+                        "--ABC-123-BOUNDARY\n" +
+                        "Content-Disposition: form-data; name=\"file\"; filename=\"test.txt\"\n" +
+                        "Content-Type: application/octet-stream\n" +
+                        "<BINARY DATA>\n"
+        );
+
     }
 
 
