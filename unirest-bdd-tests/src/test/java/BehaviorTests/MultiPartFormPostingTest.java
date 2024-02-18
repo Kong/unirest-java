@@ -26,7 +26,6 @@
 package BehaviorTests;
 
 import kong.unirest.core.ContentType;
-import kong.unirest.core.HttpResponse;
 import kong.unirest.core.MultipartMode;
 import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
@@ -437,8 +436,8 @@ class MultiPartFormPostingTest extends BddTest {
                         .assertHasParam("boundary"))
                 .assertBodyPart("content", p -> {
                     p.assertFileName("spiderman");
-                    p.asserContentType("application/pdf");
-                    p.asserContentDisposition("form-data; name=\"content\"; filename=\"spiderman\"");
+                    p.assertContentType("application/pdf");
+                    p.assertContentDisposition("form-data; name=\"content\"; filename=\"spiderman\"");
                 })
                 .assertBodyPart("metadata", p -> {
                     p.assertBody("{\"foo\": 1}");

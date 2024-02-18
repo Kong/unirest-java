@@ -374,12 +374,12 @@ public class RequestCapture {
             return this;
         }
 
-        public MultiPart asserContentType(String contentType) {
+        public MultiPart assertContentType(String contentType) {
             TestUtil.assertMultiMap(headers).contains(MapEntry.entry("content-type", contentType));
             return this;
         }
 
-        public MultiPart asserContentDisposition(String disposition) {
+        public MultiPart assertContentDisposition(String disposition) {
             TestUtil.assertMultiMap(headers).contains(MapEntry.entry("content-disposition", disposition));
             return this;
         }
