@@ -167,6 +167,10 @@ public class HeaderAsserts {
         public String rawValue() {
             return rawValue;
         }
+
+        public void assertRawValue(String value) {
+            assertThat(rawValue).isEqualTo(value);
+        }
     }
 
 }

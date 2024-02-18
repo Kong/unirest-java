@@ -429,11 +429,14 @@ class MultiPartFormPostingTest extends BddTest {
                 .field("content", rezInput("/spidey.pdf"), APPLICATION_PDF, "spiderman")
                 .field("metadata", "{\"foo\": 1}", APPLICATION_JSON)
                 .asObject(RequestCapture.class)
-                .ifSuccess(e -> System.out.println(e.getRequestSummary().asString()))
                 .getBody()
-                .assertHeader("Content-Type", h ->
-                        h.assertMainValue("multipart/form-data")
-                        .assertHasParam("boundary"))
+                .assertHeader("Content-Type", h -> {
+                        h.assertMainValue("multipart/form-data");
+                        h.assertHasParam("boundary");
+                        h.assertParam("charset", "UTF-8");
+                        // Lets create a way to tell unirest what the boundary should be so we can test it easier.
+                        //h.assertRawValue("multipart/form-data; boundary=4ebf68bc-70f8-462b-b3a5-48dadb236af3;charset=UTF-8");
+                })
                 .assertBodyPart("content", p -> {
                     p.assertFileName("spiderman");
                     p.assertContentType("application/pdf");
