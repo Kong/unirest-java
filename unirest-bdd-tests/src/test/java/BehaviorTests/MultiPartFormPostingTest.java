@@ -449,4 +449,31 @@ class MultiPartFormPostingTest extends BddTest {
                 });
 
     }
+
+    @Test
+    void defaultMediaTypes() {
+        Unirest.post(MockServer.POST)
+                .field("content", rezInput("/spidey.pdf"), "spiderman")
+                .field("metadata", "{\"foo\": 1}")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("Content-Type", h -> {
+                    h.assertMainValue("multipart/form-data");
+                    h.assertHasParam("boundary");
+                    h.assertParam("charset", "UTF-8");
+                    // Lets create a way to tell unirest what the boundary should be so we can test it easier.
+                    //h.assertRawValue("multipart/form-data; boundary=4ebf68bc-70f8-462b-b3a5-48dadb236af3;charset=UTF-8");
+                })
+                .assertBodyPart("content", p -> {
+                    p.assertFileName("spiderman");
+                    p.assertContentType("application/octet-stream");
+                    p.assertContentDisposition("form-data; name=\"content\"; filename=\"spiderman\"");
+                })
+                .assertBodyPart("metadata", p -> {
+                    p.assertBody("{\"foo\": 1}");
+                    p.assertContentType("application/x-www-form-urlencoded; charset=UTF-8");
+                    p.assertContentDisposition("form-data; name=\"metadata\"");
+                });
+
+    }
 }
