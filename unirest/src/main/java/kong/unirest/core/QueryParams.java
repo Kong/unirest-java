@@ -26,6 +26,8 @@
 package kong.unirest.core;
 
 import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -91,6 +93,14 @@ public class QueryParams {
 
         public String getValue() {
             return value;
+        }
+
+        @Override
+        public String toString() {
+            return (URLEncoder.encode(getName(), StandardCharsets.UTF_8)
+                    + "="
+                    + URLEncoder.encode(getValue(), StandardCharsets.UTF_8))
+                    .replace("+","%20");
         }
     }
 }
