@@ -120,7 +120,6 @@ Unirest config allows easy access to build a configuration just like you would b
 
 ```java
     Unirest.config()
-           .socketTimeout(500)
            .connectTimeout(1000)
            .proxy(new Proxy("https://proxy"))
            .setDefaultHeader("Accept", "application/json")

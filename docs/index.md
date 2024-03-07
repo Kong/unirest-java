@@ -550,7 +550,6 @@ All configuration is now done through ```Unirest.config()```
 
 ```java
     Unirest.config()
-           .socketTimeout(500)
            .connectTimeout(1000)
            .proxy(new Proxy("https://proxy"))
            .setDefaultHeader("Accept", "application/json")
