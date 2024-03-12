@@ -23,7 +23,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.gson;
+package kong.unirest.mappers.gson;
 
 import com.google.gson.*;
 import com.google.gson.internal.LinkedTreeMap;

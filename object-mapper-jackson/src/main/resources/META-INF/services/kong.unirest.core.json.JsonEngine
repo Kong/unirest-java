@@ -1,1 +1,1 @@
-kong.unirest.jackson.JacksonEngine
+kong.unirest.mappers.jackson.JacksonEngine

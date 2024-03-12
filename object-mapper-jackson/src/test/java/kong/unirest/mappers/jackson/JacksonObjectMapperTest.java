@@ -47,30 +47,30 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-package kong.unirest.gson;
+package kong.unirest.mappers.jackson;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kong.unirest.core.GenericType;
+import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
-
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class GsonObjectMapperTest {
-    private GsonObjectMapper om = new GsonObjectMapper();
+class JacksonObjectMapperTest {
+    private JacksonObjectMapper om = new JacksonObjectMapper();
 
     @Test
-    void canWrite() throws Exception {
+    void canWrite() throws JSONException {
         var test = new TestMe("foo", 42, new TestMe("bar", 666, null));
 
         String json = om.writeValue(test);
 
         JSONAssert.assertEquals(
-                "{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666}}"
+                "{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666,\"another\":null}}"
                 , json
                 , true
         );
@@ -78,13 +78,13 @@ class GsonObjectMapperTest {
 
     @Test
     void canRead(){
-        var test = om.readValue("{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666}}",
+        var test = om.readValue("{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666,\"another\":null}}",
                 TestMe.class);
 
         assertEquals("foo", test.text);
-        assertEquals(42, test.nmbr.intValue());
+        assertEquals(42, test.nmbr);
         assertEquals("bar", test.another.text);
-        assertEquals(666, test.another.nmbr.intValue());
+        assertEquals(666, test.another.nmbr);
         assertEquals(null, test.another.another);
     }
 
@@ -96,28 +96,31 @@ class GsonObjectMapperTest {
         var test = testList.get(0);
 
         assertEquals("foo", test.text);
-        assertEquals(42, test.nmbr.intValue());
+        assertEquals(42, test.nmbr);
         assertEquals("bar", test.another.text);
-        assertEquals(666, test.another.nmbr.intValue());
+        assertEquals(666, test.another.nmbr);
         assertEquals(null, test.another.another);
     }
 
     @Test
-    void serializeNulls() {
-        var gson = new GsonBuilder()
-                .serializeNulls()
-                .create();
+    void configSoItFails() {
+        ObjectMapper jom = new ObjectMapper();
+        jom.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+        JacksonObjectMapper j = new JacksonObjectMapper(jom);
 
-        om = new GsonObjectMapper(gson);
-
-        TestMe testMe = new TestMe(null, null, null);
-
-        assertEquals("{\"text\":null,\"nmbr\":null,\"another\":null}", om.writeValue(testMe));
+        try {
+            j.readValue("{\"something\": [1,2,3] }", TestMe.class);
+            fail("Should have thrown");
+        }catch (Exception e) {
+            assertEquals("com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field \"something\" (class kong.unirest.mappers.jackson.JacksonObjectMapperTest$TestMe), not marked as ignorable (3 known properties: \"another\", \"text\", \"nmbr\"])\n" +
+                            " at [Source: (String)\"{\"something\": [1,2,3] }\"; line: 1, column: 16] (through reference chain: kong.unirest.mappers.jackson.JacksonObjectMapperTest$TestMe[\"something\"])",
+                    e.getMessage());
+        }
     }
 
     public static class TestMe {
         public String text;
-        public Integer nmbr;
+        public int nmbr;
         public TestMe another;
 
         public TestMe(){}

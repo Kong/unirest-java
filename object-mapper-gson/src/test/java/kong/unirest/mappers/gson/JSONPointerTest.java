@@ -23,7 +23,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.jackson;
+package kong.unirest.mappers.gson;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
@@ -168,7 +168,7 @@ class JSONPointerTest {
 
     @Test
     void builder(){
-        JSONPointer pointer = JSONPointer
+        var pointer = JSONPointer
                 .builder()
                 .append("foo")
                 .append(4)

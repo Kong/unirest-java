@@ -23,23 +23,29 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.jackson;
+package kong.unirest.mappers.gson;
 
-import com.fasterxml.jackson.databind.node.ValueNode;
-import kong.unirest.core.json.JsonEngine;
+import kong.unirest.core.json.CoreFactory;
+import org.junit.jupiter.api.Test;
 
-class JacksonPrimitive extends JacksonElement<ValueNode> implements JsonEngine.Primitive {
-    public JacksonPrimitive(ValueNode element) {
-        super(element);
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class GsonCoreFactoryTest {
+    @Test
+    void canLoadByServiceLocator() {
+        assertThat(CoreFactory.findEngineWithServiceLocator())
+                .isInstanceOf(GsonEngine.class);
     }
 
-    @Override
-    public boolean isBoolean() {
-        return element.isBoolean();
+    @Test
+    void canLoadByKnownClassNames() {
+        assertThat(CoreFactory.findEngineWithClassLoader())
+                .isInstanceOf(GsonEngine.class);
     }
 
-    @Override
-    public boolean isNumber() {
-        return element.isNumber();
+    @Test
+    void willLoadOneWaOrAnother() {
+        assertThat(CoreFactory.findEngine())
+                .isInstanceOf(GsonEngine.class);
     }
 }

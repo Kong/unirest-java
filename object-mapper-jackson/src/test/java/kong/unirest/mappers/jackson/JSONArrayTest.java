@@ -23,7 +23,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.gson;
+package kong.unirest.mappers.jackson;
 
 
 import kong.unirest.core.json.Foo;
@@ -38,18 +38,18 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static java.util.Arrays.asList;
-import static kong.unirest.gson.JSONObjectTest.assertEqualJson;
+
+import static kong.unirest.mappers.jackson.JSONObjectTest.assertEqualJson;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JSONArrayTest {
 
     @Test
     void nullForSoManyReasonsWhenZipping() {
-        var array = new JSONArray();
+        var array  = new JSONArray();
         assertNull(array.toJSONObject(new JSONArray(Collections.singletonList("foo"))));
         array.put(42L);
         assertNull(array.toJSONObject(null));
@@ -68,7 +68,7 @@ class JSONArrayTest {
         var names = new JSONArray();
         names.put((String)null);
 
-        var ex = assertThrows(JSONException.class, () -> values.toJSONObject(names));
+        JSONException ex = assertThrows(JSONException.class, () -> values.toJSONObject(names));
         assertEquals("JSONArray[0] not a string.", ex.getMessage());
     }
 
@@ -76,7 +76,7 @@ class JSONArrayTest {
     void zipAnArray() {
         var values = new JSONArray(Arrays.asList(1, "foo", false));
         var names = new JSONArray(Arrays.asList("one", "two", "three", "four"));
-        var zipped = values.toJSONObject(names);
+        JSONObject zipped = values.toJSONObject(names);
         assertEquals(1, zipped.get("one"));
         assertEquals("foo", zipped.get("two"));
         assertEquals(false, zipped.get("three"));
@@ -236,7 +236,7 @@ class JSONArrayTest {
 
     @Test
     void bigDecimal() {
-        var value = BigDecimal.valueOf(33.5);
+        BigDecimal value = BigDecimal.valueOf(33.5);
         var obj = new JSONArray();
         assertSame(obj, obj.put(value));
         obj.put("nan");
@@ -264,7 +264,7 @@ class JSONArrayTest {
 
     @Test
     void jsonObjects() throws Exception {
-        var subObj = new JSONObject("{\"derp\": 42}");
+        JSONObject subObj = new JSONObject("{\"derp\": 42}");
         var obj = new JSONArray();
         assertSame(obj, obj.put(subObj));
         obj.put(45);
@@ -305,7 +305,7 @@ class JSONArrayTest {
 
     @Test
     void joinArray() {
-        String str = "[33.5, 42, \"foo\", true, apple]";
+        String str = "[33.5, 42, \"foo\", true, \"apple\"]";
 
         var array  = new JSONArray(str);
 
@@ -314,7 +314,7 @@ class JSONArrayTest {
 
     @Test
     void toStringIt() {
-        String str = "[33.5, 42, \"foo\", true, apple]";
+        String str = "[33.5, 42, \"foo\", true, \"apple\"]";
 
         var array  = new JSONArray(str);
 
@@ -323,17 +323,11 @@ class JSONArrayTest {
 
     @Test
     void toStringItIndent() {
-        String str = "[33.5, 42, \"foo\", true, apple]";
+        String str = "[33.5, 42, \"foo\", true, \"apple\"]";
 
         var array  = new JSONArray(str);
 
-        assertEquals("[\n" +
-                "  33.5,\n" +
-                "  42,\n" +
-                "  \"foo\",\n" +
-                "  true,\n" +
-                "  \"apple\"\n" +
-                "]", array.toString(3));
+        assertEquals("[ 33.5, 42, \"foo\", true, \"apple\" ]", array.toString(3));
     }
 
     @Test
@@ -381,21 +375,17 @@ class JSONArrayTest {
 
         var array  = new JSONArray(str);
 
-        var sw = new StringWriter();
+        StringWriter sw = new StringWriter();
 
         array.write(sw, 3, 3);
 
-        assertEquals("[\n" +
-                "  1,\n" +
-                "  2,\n" +
-                "  3\n" +
-                "]", sw.toString());
+        assertEquals("[ 1, 2, 3 ]", sw.toString());
     }
 
     @Test
     void remove() {
         var o = new JSONObject(of("foo","bar"));
-        var array = new JSONArray(asList(1, o));
+        var array  = new JSONArray(asList(1, o));
 
         Object remove = array.remove(1);
         assertTrue(remove instanceof JSONObject);
@@ -496,7 +486,7 @@ class JSONArrayTest {
 
     @Test
     void constructArrayError() {
-        var ex = assertThrows(JSONException.class, ()-> new JSONArray(new Object()));
+        JSONException ex = assertThrows(JSONException.class, ()-> new JSONArray(new Object()));
         assertEquals("JSONArray initial value should be a string or collection or array.", ex.getMessage());
     }
 
@@ -531,7 +521,7 @@ class JSONArrayTest {
     }
 
     public static void assertNotType(Executable exRunnable, String message) {
-        var ex = assertThrows(JSONException.class, exRunnable);
+        JSONException ex = assertThrows(JSONException.class, exRunnable);
         assertEquals(message, ex.getMessage());
     }
 
