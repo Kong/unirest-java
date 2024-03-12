@@ -23,7 +23,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.mappers.jackson;
+package kong.unirest.modules.jackson;
 
 
 import kong.unirest.core.UnirestException;

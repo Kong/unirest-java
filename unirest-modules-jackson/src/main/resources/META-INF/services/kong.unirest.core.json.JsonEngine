@@ -1,1 +1,1 @@
-kong.unirest.mappers.jackson.JacksonEngine
+kong.unirest.modules.jackson.JacksonEngine

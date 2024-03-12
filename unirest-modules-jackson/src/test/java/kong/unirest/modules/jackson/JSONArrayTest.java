@@ -23,7 +23,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.mappers.jackson;
+package kong.unirest.modules.jackson;
 
 
 import kong.unirest.core.json.Foo;
@@ -42,7 +42,6 @@ import java.util.Collections;
 import static com.google.common.collect.ImmutableMap.of;
 import static java.util.Arrays.asList;
 
-import static kong.unirest.mappers.jackson.JSONObjectTest.assertEqualJson;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JSONArrayTest {
@@ -269,10 +268,10 @@ class JSONArrayTest {
         assertSame(obj, obj.put(subObj));
         obj.put(45);
 
-        assertEqualJson(subObj, obj.getJSONObject(0));
+        JSONObjectTest.assertEqualJson(subObj, obj.getJSONObject(0));
         assertNotFound(() -> obj.getJSONObject(5));
         assertNotType(() -> obj.getJSONObject(1), "JSONArray[1] is not a JSONObject.");
-        assertEqualJson(subObj, obj.optJSONObject(0));
+        JSONObjectTest.assertEqualJson(subObj, obj.optJSONObject(0));
         assertNull(obj.optJSONObject(5));
     }
 
@@ -283,10 +282,10 @@ class JSONArrayTest {
         assertSame(obj, obj.put(subObj));
         obj.put(45);
 
-        assertEqualJson(subObj, obj.getJSONArray(0));
+        JSONObjectTest.assertEqualJson(subObj, obj.getJSONArray(0));
         assertNotFound(() -> obj.getJSONArray(5));
         assertNotType(() -> obj.getJSONArray(1), "JSONArray[1] is not a JSONArray.");
-        assertEqualJson(subObj, obj.optJSONArray(0));
+        JSONObjectTest.assertEqualJson(subObj, obj.optJSONArray(0));
         assertNull(obj.optJSONArray(5));
     }
 
