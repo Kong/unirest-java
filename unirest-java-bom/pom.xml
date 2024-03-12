@@ -34,7 +34,7 @@
             </dependency>
             <dependency>
                 <groupId>com.konghq</groupId>
-                <artifactId>unirest-mocks</artifactId>
+                <artifactId>unirest-modules-mocks</artifactId>
                 <version>${project.version}</version>
                 <scope>test</scope>
             </dependency>

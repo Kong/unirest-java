@@ -8,7 +8,8 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>unirest-mocks</artifactId>
+    <artifactId>unirest-modules-mocks</artifactId>
+    <name>unirest-modules-mocks</name>
 
     <properties>
         <main.dir>${project.parent.basedir}</main.dir>
