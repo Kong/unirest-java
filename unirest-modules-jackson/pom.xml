@@ -8,8 +8,8 @@
         <version>4.2.10-SNAPSHOT</version>
     </parent>
 
-    <artifactId>unirest-objectmapper-jackson</artifactId>
-    <name>unirest-objectmapper-jackson</name>
+    <artifactId>unirest-modules-jackson</artifactId>
+    <name>unirest-modules-jackson</name>
     <description>Jackson based object mapper for Unirest</description>
 
     <properties>
