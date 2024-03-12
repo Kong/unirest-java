@@ -50,7 +50,7 @@ rightmenu: true
         <dependency>
             <groupId>com.konghq</groupId>
             <artifactId>unirest-java-bom</artifactId>
-            <version>4.0.12</version>
+            <version>4.3.0</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -68,13 +68,13 @@ rightmenu: true
 <!-- Google GSON -->
 <dependency>
     <groupId>com.konghq</groupId>
-    <artifactId>unirest-object-mappers-gson</artifactId>
+    <artifactId>unirest-modules-gson</artifactId>
 </dependency>
 
 <!-- OR maybe you like Jackson better? -->
 <dependency>
     <groupId>com.konghq</groupId>
-    <artifactId>unirest-objectmapper-jackson</artifactId>
+    <artifactId>unirest-modules-jackson</artifactId>
 </dependency>
 </dependencies>
 ```
@@ -614,17 +614,14 @@ As usual, Unirest maintains a primary single instance. Sometimes you might want 
 ## Object Mappers
 Unirest offers a few different Object Mapper's based on popular JSON libraries (Jackson and GSON).
 ```xml
-<!-- https://mvnrepository.com/artifact/com.konghq/unirest-objectmapper-jackson -->
 <dependency>
     <groupId>com.konghq</groupId>
-    <artifactId>unirest-objectmapper-jackson</artifactId>
+    <artifactId>unirest-modules-jackson</artifactId>
 </dependency>
 
-
-<!-- https://mvnrepository.com/artifact/com.konghq/unirest-object-mappers-gson -->
 <dependency>
     <groupId>com.konghq</groupId>
-    <artifactId>unirest-object-mappers-gson</artifactId>
+    <artifactId>unirest-modules-gson</artifactId>
 </dependency>
 ```
 

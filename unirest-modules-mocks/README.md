@@ -26,5 +26,4 @@ class MyTest {
 
 
 ### Future Enhancements
-   * Mocks currently only work with the regular client and not the async engine.
    * Body expectations are limited and do not include forms or files.
