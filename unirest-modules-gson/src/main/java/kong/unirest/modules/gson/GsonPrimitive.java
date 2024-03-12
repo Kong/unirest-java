@@ -23,23 +23,24 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.mappers.gson;
+package kong.unirest.modules.gson;
 
-import com.google.gson.JsonNull;
+import com.google.gson.JsonPrimitive;
 import kong.unirest.core.json.JsonEngine;
 
-public class GsonNull extends GsonElement<JsonNull> implements JsonEngine.Primitive {
-    GsonNull() {
-        super(JsonNull.INSTANCE);
+class GsonPrimitive extends GsonElement<JsonPrimitive> implements JsonEngine.Primitive {
+
+    GsonPrimitive(JsonPrimitive valueType) {
+        super(valueType);
     }
 
     @Override
     public boolean isBoolean() {
-        return false;
+        return element.isBoolean();
     }
 
     @Override
     public boolean isNumber() {
-        return false;
+        return element.isNumber();
     }
 }

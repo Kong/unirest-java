@@ -23,7 +23,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.mappers.gson;
+package kong.unirest.modules.gson;
 
 
 import kong.unirest.core.json.Foo;
@@ -41,7 +41,7 @@ import java.util.Collections;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static java.util.Arrays.asList;
-import static kong.unirest.mappers.gson.JSONObjectTest.assertEqualJson;
+import static kong.unirest.modules.gson.JSONObjectTest.assertEqualJson;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JSONArrayTest {

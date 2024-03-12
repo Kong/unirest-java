@@ -28,7 +28,7 @@ package BehaviorTests;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.gson.Gson;
 import kong.unirest.core.*;
-import kong.unirest.mappers.gson.GsonObjectMapper;
+import kong.unirest.modules.gson.GsonObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;

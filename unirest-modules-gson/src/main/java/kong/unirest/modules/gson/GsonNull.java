@@ -23,29 +23,23 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.mappers.gson;
+package kong.unirest.modules.gson;
 
-import kong.unirest.core.json.CoreFactory;
-import org.junit.jupiter.api.Test;
+import com.google.gson.JsonNull;
+import kong.unirest.core.json.JsonEngine;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class GsonCoreFactoryTest {
-    @Test
-    void canLoadByServiceLocator() {
-        assertThat(CoreFactory.findEngineWithServiceLocator())
-                .isInstanceOf(GsonEngine.class);
+public class GsonNull extends GsonElement<JsonNull> implements JsonEngine.Primitive {
+    GsonNull() {
+        super(JsonNull.INSTANCE);
     }
 
-    @Test
-    void canLoadByKnownClassNames() {
-        assertThat(CoreFactory.findEngineWithClassLoader())
-                .isInstanceOf(GsonEngine.class);
+    @Override
+    public boolean isBoolean() {
+        return false;
     }
 
-    @Test
-    void willLoadOneWaOrAnother() {
-        assertThat(CoreFactory.findEngine())
-                .isInstanceOf(GsonEngine.class);
+    @Override
+    public boolean isNumber() {
+        return false;
     }
 }

@@ -28,7 +28,7 @@ package kong.tests;
 import kong.unirest.core.MockClient;
 import kong.unirest.core.Unirest;
 import kong.unirest.core.UnirestAssertion;
-import kong.unirest.mappers.gson.GsonObjectMapper;
+import kong.unirest.modules.gson.GsonObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 

@@ -26,7 +26,7 @@
 package BehaviorTests;
 
 import kong.unirest.core.json.CoreFactory;
-import kong.unirest.mappers.gson.GsonEngine;
+import kong.unirest.modules.gson.GsonEngine;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,1 +1,1 @@
-kong.unirest.mappers.gson.GsonEngine
+kong.unirest.modules.gson.GsonEngine
