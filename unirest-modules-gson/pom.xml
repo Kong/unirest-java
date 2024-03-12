@@ -8,8 +8,8 @@
         <version>4.2.10-SNAPSHOT</version>
     </parent>
 
-    <artifactId>unirest-object-mappers-gson</artifactId>
-    <name>unirest-objectmappers-gson</name>
+    <artifactId>unirest-modules-gson</artifactId>
+    <name>unirest-modules-gson</name>
     <description>Gson based object mapper for Unirest</description>
     <packaging>jar</packaging>
 
