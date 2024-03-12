@@ -1,3 +1,14 @@
+## 4.3.0
+The modules have been repackaged and put into new maven coordinates in order to avoid conflicts with the 3.x line of unirest.
+The mock module has had its maven artifact ID changed only.
+
+| Old Maven Artifact ID | New Maven Artifact ID   | Old Class Package    | New Class Package            |
+|----|-------------------------|----------------------|------------------------------|
+|unirest-object-mappers-gson | unirest-modules-gson    | kong.unirest.gson    | kong.unirest.modules.gson    |
+|unirest-objectmapper-jackson | unirest-modules-jackson | kong.unirest.jackson | kong.unirest.modules.jackson |
+|unirest-mocks | unirest-modules-mocks   | kong.unirest.core    | kong.unirest.core    |
+
+
 ## 4.2.9
 * re-work request summary to be closer in reality to the actual request for multipart requests.
 

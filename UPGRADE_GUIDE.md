@@ -1,5 +1,16 @@
 # Upgrade Guide
 
+## Upgrading to Unirest 4.3
+The modules have been repackaged and put into new maven coordinates in order to avoid conflicts with the 3.x line of unirest.
+The mock module has had its maven artifact ID changed only.
+
+| Old Maven Artifact ID | New Maven Artifact ID   | Old Class Package    | New Class Package            |
+|----|-------------------------|----------------------|------------------------------|
+|unirest-object-mappers-gson | unirest-modules-gson    | kong.unirest.gson    | kong.unirest.modules.gson    |
+|unirest-objectmapper-jackson | unirest-modules-jackson | kong.unirest.jackson | kong.unirest.modules.jackson |
+|unirest-mocks | unirest-modules-mocks   | kong.unirest.core    | kong.unirest.core    |
+
+
 ## Upgrading to Unirest 4.0
  🚨 **Unirest 4 drops the Apache Http Client dependency in favor of the pure Java client** 🚨. This means that unirest 4 has a dependency on Java-11. Unirest 3 will continue to be supported for bugs and minor features. If you still haven't upgraded from Java 8 now is the time!  
 
