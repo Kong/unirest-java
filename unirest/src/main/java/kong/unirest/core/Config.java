@@ -31,6 +31,9 @@ import kong.unirest.core.json.CoreFactory;
 import javax.net.ssl.SSLContext;
 import java.io.InputStream;
 import java.net.http.HttpClient;
+import java.net.http.HttpConnectTimeoutException;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.time.Duration;
@@ -263,10 +266,21 @@ public class Config {
     }
 
     /**
-     * Set the connection timeout
+     * Sets the connect timeout duration for this client.
      *
-     * @param inMillies The timeout until a connection with the server is established (in milliseconds). Default is 10000. Set to zero to disable the timeout.
-     * @return this config object
+     * <p> In the case where a new connection needs to be established, if
+     * the connection cannot be established within the given {@code
+     * duration}, then {@link HttpClient#send(java.net.http.HttpRequest, HttpResponse.BodyHandler)
+     * HttpClient::send} throws an {@link HttpConnectTimeoutException}, or
+     * {@link HttpClient#sendAsync(HttpRequest, HttpResponse.BodyHandler)
+     * HttpClient::sendAsync} completes exceptionally with an
+     * {@code HttpConnectTimeoutException}. If a new connection does not
+     * need to be established, for example if a connection can be reused
+     * from a previous request, then this timeout duration has no effect.
+     *
+     * @param inMillies the duration to allow the underlying connection to be
+     *                 established
+     * @return this builder
      */
     public Config connectTimeout(int inMillies) {
         validateClientsNotRunning();
