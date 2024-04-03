@@ -1,7 +1,6 @@
 # Unirest for Java 
 
 [![Actions Status](https://github.com/kong/unirest-java/workflows/Verify/badge.svg)](https://github.com/kong/unirest-java/actions)
-[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.konghq/unirest-java-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kong/unirest-java)
 [![Javadocs](http://www.javadoc.io/badge/com.konghq/unirest-java-core.svg)](http://www.javadoc.io/doc/com.konghq/unirest-java)
 
