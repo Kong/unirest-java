@@ -31,6 +31,7 @@ import java.nio.file.CopyOption;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -75,7 +76,17 @@ public interface HttpRequest<R extends HttpRequest>  {
     R basicAuth(String username, String password);
 
     /**
-     * The Accept header to send (e.g. application/json
+     * The Accept header to send (e.g. application/json)
+     * @param value a valid mime type for the Accept header
+     * @return this request builder
+     */
+    default R accept(ContentType value){
+        Objects.requireNonNull(value);
+        return accept(value.toString());
+    }
+
+    /**
+     * The Accept header to send (e.g. application/json)
      * @param value a valid mime type for the Accept header
      * @return this request builder
      */

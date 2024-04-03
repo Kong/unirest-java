@@ -276,6 +276,10 @@ public class RequestCapture {
         this.status = i;
     }
 
+    public RequestCapture assertContentType(ContentType content) {
+        return assertContentType(content.getMimeType());
+    }
+
     public RequestCapture assertContentType(String content) {
         return assertHeader("Content-Type", content);
     }
@@ -327,6 +331,10 @@ public class RequestCapture {
                         .orElseThrow(() -> new AssertionError("No Form Body Part Found Named: " + name))
         );
         return this;
+    }
+
+    public RequestCapture assertAccepts(ContentType type) {
+        return assertHeader("Accept", type.toString());
     }
 
     public static class MultiPart {

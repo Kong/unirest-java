@@ -111,4 +111,8 @@ public class ContentType {
     public boolean isBinary() {
         return isBinary;
     }
+
+    public Charset getCharset() {
+        return encoding;
+    }
 }

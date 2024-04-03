@@ -430,6 +430,17 @@ class HeaderTest extends BddTest {
         assertContains(headers, "beatles", "ringo");
     }
 
+    @Test
+    void passInMediaTypeAsAcceptsAndContentType() {
+        Unirest.post(MockServer.POST)
+                .accept(ContentType.IMAGE_JPEG)
+                .contentType(ContentType.APPLICATION_JSON)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertAccepts(ContentType.IMAGE_JPEG)
+                .assertContentType(ContentType.APPLICATION_JSON);
+    }
+
     private void assertContains(Collection<Header> headers, String key, String value) {
         assertTrue(headers.stream().anyMatch(h -> key.equalsIgnoreCase(key) && value.equalsIgnoreCase(value)),
                 "Missing header " + key + " with value " + value);
