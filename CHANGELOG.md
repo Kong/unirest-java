@@ -1,3 +1,6 @@
+## 4.3.1
+* Added convenience methods for using ContentType with accepts and contentType methods
+
 ## 4.3.0
 The modules have been repackaged and put into new maven coordinates in order to avoid conflicts with the 3.x line of unirest.
 The mock module has had its maven artifact ID changed only.
