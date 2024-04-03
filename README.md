@@ -2,9 +2,9 @@
 
 [![Actions Status](https://github.com/kong/unirest-java/workflows/Verify/badge.svg)](https://github.com/kong/unirest-java/actions)
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.konghq/unirest-java/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kong/unirest-java)
-[![Javadocs](http://www.javadoc.io/badge/com.konghq/unirest-java.svg)](http://www.javadoc.io/doc/com.konghq/unirest-java)
-[![Twitter Follow](https://img.shields.io/twitter/follow/UnirestJava.svg?style=social)](https://twitter.com/UnirestJava) 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.konghq/unirest-java-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.kong/unirest-java)
+[![Javadocs](http://www.javadoc.io/badge/com.konghq/unirest-java-core.svg)](http://www.javadoc.io/doc/com.konghq/unirest-java)
+
 
 ## Unirest 4
 Unirest 4 is build on modern Java standards, and as such requires at least Java 11.
