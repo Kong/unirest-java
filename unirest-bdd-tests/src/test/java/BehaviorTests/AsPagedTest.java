@@ -25,13 +25,17 @@
 
 package BehaviorTests;
 
+import kong.unirest.core.HttpRequest;
 import org.junit.jupiter.api.Test;
 import kong.unirest.core.PagedList;
 import kong.unirest.core.Unirest;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class PagingTest extends BddTest {
+class AsPagedTest extends BddTest {
 
     @Test
     void canFollowPaging() {
@@ -69,5 +73,19 @@ class PagingTest extends BddTest {
                 );
 
         assertEquals(1, result.size());
+    }
+
+    @Test
+    void asPagedWithRedirects() {
+        Unirest.config().followRedirects(false);
+
+        var responses = Unirest.get(MockServer.REDIRECT)
+                .asPaged(HttpRequest::asString,
+                        response -> List.of(301, 302).contains(response.getStatus())
+                        ? "http://localhost:4567/" + response.getHeaders().getFirst("Location")
+                        : null);
+
+
+        assertThat(responses).hasSize(2);
     }
 }

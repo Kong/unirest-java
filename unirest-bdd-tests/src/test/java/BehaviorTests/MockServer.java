@@ -118,6 +118,7 @@ public class MockServer {
         app.get("/gzip", MockServer::gzipResponse);
         app.post("/empty-gzip", MockServer::emptyGzipResponse);
         app.get("/redirect", MockServer::redirect);
+        app.post("/redirect", MockServer::redirect);
         app.patch("/patch", MockServer::jsonResponse);
         app.get("/invalid", MockServer::inValid);
         app.options("/get", MockServer::jsonResponse);
@@ -212,7 +213,7 @@ public class MockServer {
     }
 
     private static void redirect(Context request) {
-        request.redirect("/get", HttpStatus.MOVED_PERMANENTLY);
+        request.redirect(GET, HttpStatus.MOVED_PERMANENTLY);
     }
 
     private static void inValid(Context request) {
