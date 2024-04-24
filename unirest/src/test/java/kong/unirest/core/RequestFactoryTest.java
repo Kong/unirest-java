@@ -1,6 +1,5 @@
 package kong.unirest.core;
 
-import kong.unirest.core.json.JSONObject;
 import org.assertj.core.api.AbstractAssert;
 import org.junit.jupiter.api.Test;
 
@@ -42,6 +41,26 @@ class RequestFactoryTest {
                 .isInstanceOf(HttpRequestNoBody.class)
                 .hasHeader(headerKey, headerValue)
                 .hasRoute(HttpMethod.GET, urlWithQuery)
+                .downloadMonitorIs(downloadMonitor)
+                .objectMapperIs(om)
+                .hasTimeout(timeout);
+    }
+
+    @Test
+    void copy_options() {
+        var req = Unirest.options(url)
+                .header(headerKey, headerValue)
+                .queryString(queryKey, queryValue)
+                .downloadMonitor(downloadMonitor)
+                .withObjectMapper(om)
+                .connectTimeout(timeout);
+
+        var copy = RequestFactory.copy(req);
+
+        assertRequest(copy)
+                .isInstanceOf(HttpRequestNoBody.class)
+                .hasHeader(headerKey, headerValue)
+                .hasRoute(HttpMethod.OPTIONS, urlWithQuery)
                 .downloadMonitorIs(downloadMonitor)
                 .objectMapperIs(om)
                 .hasTimeout(timeout);
