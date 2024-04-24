@@ -61,7 +61,7 @@ public class JsonPatchItem {
         JsonPatchItem that = (JsonPatchItem) o;
         return op == that.op &&
                 Objects.equals(path, that.path) &&
-                Objects.equals(toString(), that.toString());
+                Objects.equals(value, that.value);
     }
 
     @Override

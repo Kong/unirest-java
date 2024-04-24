@@ -14,6 +14,9 @@ class RequestFactory {
         if(baseRequest instanceof HttpRequestMultiPart) {
             return (R) new HttpRequestMultiPart((HttpRequestMultiPart)baseRequest);
         }
+        if(baseRequest instanceof HttpRequestJsonPatch) {
+            return (R)new HttpRequestJsonPatch((HttpRequestJsonPatch)baseRequest);
+        }
 
         throw new UnirestException("Cannot find matching type: " + baseRequest.getClass());
     }

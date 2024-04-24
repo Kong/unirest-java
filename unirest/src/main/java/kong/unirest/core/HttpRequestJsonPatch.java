@@ -36,6 +36,11 @@ class HttpRequestJsonPatch extends BaseRequest<JsonPatchRequest> implements Json
         header("Content-Type", CONTENT_TYPE);
     }
 
+    public HttpRequestJsonPatch(HttpRequestJsonPatch baseRequest) {
+        super(baseRequest);
+        this.items = baseRequest.items;
+    }
+
     @Override
     public JsonPatchRequest add(String path, Object value) {
         items.add(path, value);
@@ -91,5 +96,9 @@ class HttpRequestJsonPatch extends BaseRequest<JsonPatchRequest> implements Json
     @Override
     public boolean isEntityBody() {
         return true;
+    }
+
+    public JsonPatch getPatch() {
+        return items;
     }
 }
