@@ -44,6 +44,15 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
         this.charSet = httpRequest.getCharset();
     }
 
+    HttpRequestMultiPart(HttpRequestMultiPart httpRequest) {
+        super(httpRequest);
+        this.charSet = httpRequest.getCharset();
+        this.parameters = httpRequest.parameters;
+        this.forceMulti = httpRequest.forceMulti;
+        this.monitor = httpRequest.monitor;
+        this.boundary = httpRequest.boundary;
+    }
+
     @Override
     public MultipartBody field(String name, String value) {
         addPart(new ParamPart(name, value));

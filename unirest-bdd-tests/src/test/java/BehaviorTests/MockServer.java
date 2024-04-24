@@ -130,6 +130,7 @@ public class MockServer {
         app.get("/proxy", MockServer::proxiedResponse);
         app.get("/binary", MockServer::file);
         app.get("/paged", MockServer::paged);
+        app.post("/paged", MockServer::paged);
         app.post("/raw", MockServer::echo);
         app.get("/error", MockServer::error);
         app.get("/hello", MockServer::helloWOrld);

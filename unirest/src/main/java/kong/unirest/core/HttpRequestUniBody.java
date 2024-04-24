@@ -42,6 +42,13 @@ class HttpRequestUniBody extends BaseRequest<RequestBodyEntity> implements Reque
 		this.charSet = httpRequest.getCharset();
 	}
 
+	HttpRequestUniBody(HttpRequestUniBody httpRequest) {
+		super(httpRequest);
+		this.charSet = httpRequest.getCharset();
+		this.body = httpRequest.body;
+		this.monitor = httpRequest.monitor;
+	}
+
 	@Override
 	public RequestBodyEntity body(JsonNode jsonBody) {
 		return body(jsonBody.toString());

@@ -43,6 +43,11 @@ class HttpRequestBody extends BaseRequest<HttpRequestWithBody> implements HttpRe
 		super(config, method, url);
 	}
 
+	public HttpRequestBody(HttpRequestBody baseRequest) {
+		super(baseRequest);
+		this.charSet = baseRequest.getCharset();
+	}
+
 	@Override
 	public MultipartBody field(String name, Collection<?> value) {
 		return new HttpRequestMultiPart(this).field(name, value);

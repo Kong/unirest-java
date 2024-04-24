@@ -32,6 +32,10 @@ class HttpRequestNoBody extends BaseRequest<GetRequest> implements GetRequest {
 		super(config, method, url);
 	}
 
+	HttpRequestNoBody(HttpRequestNoBody baseRequest) {
+		super(baseRequest);
+	}
+
 	@Override
 	public Optional<Body> getBody() {
 		return Optional.empty();

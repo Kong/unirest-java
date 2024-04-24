@@ -62,6 +62,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         this.connectTimeout = httpRequest.connectTimeout;
         this.objectMapper = httpRequest.objectMapper;
         this.version = httpRequest.version;
+        this.downloadMonitor = httpRequest.downloadMonitor;
     }
 
     BaseRequest(Config config, HttpMethod method, String url) {
@@ -178,6 +179,10 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     public R downloadMonitor(ProgressMonitor monitor) {
         this.downloadMonitor = monitor;
         return (R) this;
+    }
+
+    public ProgressMonitor getDownloadMonitor(){
+        return this.downloadMonitor;
     }
 
     @Override
@@ -339,12 +344,14 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         String nextLink = this.getUrl();
         do {
             this.url = new Path(nextLink, config.getDefaultBaseUrl());
-            HttpResponse<T> next = mappingFunction.apply(this);
+            BaseRequest<R> t = RequestFactory.copy(this);
+            HttpResponse<T> next = mappingFunction.apply(t);
             all.add(next);
             nextLink = linkExtractor.apply(next);
         } while (!Util.isNullOrEmpty(nextLink));
         return all;
     }
+
 
     private <E> HttpResponse<E> request(Function<RawResponse, HttpResponse<E>> transformer, Class<?> resultType){
         HttpResponse<E> response = config.getClient().request(this, transformer, resultType);
