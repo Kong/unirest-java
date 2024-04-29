@@ -235,7 +235,7 @@ public class RequestCapture {
     }
 
     public void assertCharset(Charset charset) {
-        assertTrue(contentType.endsWith(charset.toString()), "Expected Content Type With Charset: " + charset.toString());
+        assertTrue(contentType.endsWith(charset.toString()), "Expected Content Type With Charset: " + charset);
     }
 
     public RequestCapture assertJsonPatch(JsonPatchOperation op, String path, Object value) {

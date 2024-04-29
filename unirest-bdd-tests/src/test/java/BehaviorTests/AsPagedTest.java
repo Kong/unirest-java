@@ -1,8 +1,8 @@
 /**
  * The MIT License
- * <p>
+ *
  * Copyright for portions of unirest-java are held by Kong Inc (c) 2013.
- * <p>
+ *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -10,10 +10,10 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- * <p>
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * <p>
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -26,14 +26,15 @@
 package BehaviorTests;
 
 import kong.unirest.core.HttpRequest;
-import org.junit.jupiter.api.Test;
+import kong.unirest.core.HttpResponse;
 import kong.unirest.core.PagedList;
 import kong.unirest.core.Unirest;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AsPagedTest extends BddTest {
 
@@ -54,6 +55,34 @@ class AsPagedTest extends BddTest {
                     r.getBody().assertHeader("x-header", "h-value");
                     return true;
                 });
+    }
+
+    @Test
+    void pagedRequestsAreUnique() {
+        MockServer.expectedPages(5);
+
+        var result = Unirest.get(MockServer.PAGED)
+                .header("x-header", "h-value")
+                .asPaged(
+                        r -> r.asObject(RequestCapture.class),
+                        r -> r.getHeaders().getFirst("nextPage")
+                );
+
+        var sums = result.stream()
+                .map(HttpResponse::getRequestSummary)
+                .collect(Collectors.toList());
+
+        assertThat(sums)
+                .hasSize(5)
+                .extracting(e -> e.getUrl())
+                .containsExactly(
+                        "http://localhost:4567/paged",
+                        "http://localhost:4567/paged?page=2",
+                        "http://localhost:4567/paged?page=3",
+                        "http://localhost:4567/paged?page=4",
+                        "http://localhost:4567/paged?page=5"
+                );
+
     }
 
     @Test
@@ -86,7 +115,6 @@ class AsPagedTest extends BddTest {
                 );
 
         assertThat(result).hasSize(10);
-
     }
 
     @Test
