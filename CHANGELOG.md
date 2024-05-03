@@ -1,3 +1,8 @@
+## 4.3.2
+* Issue #523 when paging create a new copy of the request for each page rather than reusing the original
+* Issue #524 support the Partitioned flag on cookies for CHIPs (Cookies Having Independent Partitioned State) 
+* Make Path public. Because its handy
+
 ## 4.3.1
 * Added convenience methods for using ContentType with accepts and contentType methods
 
