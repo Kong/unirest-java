@@ -25,8 +25,6 @@
 
 package kong.unirest.core;
 
-
-import org.eclipse.jetty.http.CookieCutter;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
@@ -58,6 +56,12 @@ class CookieParsingTest {
     }
 
     @Test
+    void partitionFlag() {
+        assertFalse(new Cookie("").isPartitioned());
+        assertTrue(new Cookie("color=blue;Partitioned;").isPartitioned());
+    }
+
+    @Test
     void parseBackOutToString() {
         String v = "color=blue;Path=/get;Domain=localhost;Expires=Sun, 05-Jan-2020 15:00:20 GMT;Max-Age=42;HttpOnly";
         Cookie c = new Cookie(v);
@@ -78,7 +82,6 @@ class CookieParsingTest {
         assertTrue(c.isSecure());
         assertEquals("color=blue;Secure", c.toString());
     }
-
 
     @Test
     void matchJettyParsing() {

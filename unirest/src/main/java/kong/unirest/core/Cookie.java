@@ -48,6 +48,7 @@ public class Cookie {
     private ZonedDateTime expires;
     private boolean secure;
     private SameSite sameSite;
+    private boolean partitioned;
 
     public Cookie(String name, String value){
         this.name = name;
@@ -118,6 +119,9 @@ public class Cookie {
                 httpOnly = true;
                 break;
             }
+            case "partitioned":
+                partitioned = true;
+                break;
             case "secure": {
                 secure = true;
                 break;
@@ -167,6 +171,10 @@ public class Cookie {
 
     public void setHttpOnly(boolean httpOnly) {
         this.httpOnly = httpOnly;
+    }
+
+    public boolean isPartitioned() {
+        return this.partitioned;
     }
 
     private static class Pair {
