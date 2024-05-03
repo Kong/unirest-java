@@ -33,10 +33,26 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class Path {
+/**
+ * Class for building a URI with query params
+ */
+public class Path {
     private String url;
     private String rawPath;
 
+    /**
+     * construct a path
+     * @param url the URL
+     */
+    public Path(String url) {
+        this(url, null);
+    }
+
+    /**
+     * Construct a path with a URL that could be relative and a default base for it
+     * @param url the url
+     * @param defaultBasePath the default base
+     */
     Path(String url, String defaultBasePath) {
         if(defaultBasePath != null && url != null && !url.toLowerCase().startsWith("http")){
             String full = defaultBasePath + url;
@@ -48,14 +64,19 @@ class Path {
         }
     }
 
-    public Path(String url) {
-        this(url, null);
-    }
-
+    /**
+     * replace path params designated with curley braces with a value
+     * @param params a map of param names and values
+     */
     public void param(Map<String, Object> params) {
         params.forEach((key, value) -> param(key, String.valueOf(value)));
     }
 
+    /**
+     * replace a single path param by name
+     * @param name the name of the path param
+     * @param value the value to replace it with
+     */
     public void param(String name, String value) {
         Matcher matcher = Pattern.compile("\\{" + name + "\\}").matcher(url);
         if (!matcher.find()) {
@@ -71,12 +92,22 @@ class Path {
         return Util.encode(value).replaceAll("\\+", "%20");
     }
 
+    /**
+     * Add a query param. This will result in a query param per value
+     * @param name the name
+     * @param value a collection of values
+     */
     public void queryString(String name, Collection<?> value){
         for (Object cur : value) {
             queryString(name, cur);
         }
     }
 
+    /**
+     * Add a query param
+     * @param name the name
+     * @param value the value
+     */
     public void queryString(String name, Object value) {
         StringBuilder queryString = new StringBuilder();
         if (url.contains("?")) {
@@ -95,6 +126,10 @@ class Path {
         url += queryString.toString();
     }
 
+    /**
+     * Add query params as a map of key/values
+     * @param parameters the params to add
+     */
     public void queryString(Map<String, Object> parameters) {
         if (parameters != null) {
             for (Map.Entry<String, Object> param : parameters.entrySet()) {
@@ -112,10 +147,16 @@ class Path {
         return string.replaceAll(" ", "%20").replaceAll("\t", "%09");
     }
 
+    /**
+     * @return the full raw path
+     */
     public String rawPath() {
         return rawPath;
     }
 
+    /**
+     * @return the URL without the query string
+     */
     public String baseUrl() {
         if(url != null && url.contains("?")){
             return url.substring(0, url.indexOf("?"));
@@ -123,6 +164,9 @@ class Path {
         return url;
     }
 
+    /**
+     * @return just the query string
+     */
     public String getQueryString(){
         return url.substring(url.indexOf("?")+1);
     }
