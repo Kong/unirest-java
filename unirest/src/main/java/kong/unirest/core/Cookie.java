@@ -158,6 +158,9 @@ public class Cookie {
         if(secure){
             pairs.add(new Pair("Secure", null));
         }
+        if(partitioned){
+            pairs.add(new Pair("Partitioned", null));
+        }
         return pairs.stream().map(Pair::toString).collect(Collectors.joining(";"));
     }
 
@@ -175,6 +178,14 @@ public class Cookie {
 
     public boolean isPartitioned() {
         return this.partitioned;
+    }
+
+    public void setPartitioned(boolean value) {
+        this.partitioned = value;
+    }
+
+    public void setSecured(boolean value) {
+        this.secure = value;
     }
 
     private static class Pair {

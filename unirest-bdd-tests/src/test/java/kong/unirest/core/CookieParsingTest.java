@@ -62,6 +62,20 @@ class CookieParsingTest {
     }
 
     @Test
+    void canSetPartition() {
+        var cookie = new Cookie("cookie", "snickerdoodle");
+        cookie.setPartitioned(true);
+        assertEquals("cookie=snickerdoodle;Partitioned", cookie.toString());
+    }
+
+    @Test
+    void canSetSecured() {
+        var cookie = new Cookie("cookie", "snickerdoodle");
+        cookie.setSecured(true);
+        assertEquals("cookie=snickerdoodle;Secure", cookie.toString());
+    }
+
+    @Test
     void parseBackOutToString() {
         String v = "color=blue;Path=/get;Domain=localhost;Expires=Sun, 05-Jan-2020 15:00:20 GMT;Max-Age=42;HttpOnly";
         Cookie c = new Cookie(v);
