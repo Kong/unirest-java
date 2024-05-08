@@ -1,3 +1,6 @@
+## 4.4.0
+* Issue #526 split connection timeout from request timeout. The request no longer has a connection timeout setting, and instead has a request timeout setting as a replacement. Previously these two settings had been conflated. The overall config also has a default request timeout that will be applied to all requests if the request setting is not set. The default setting is null which indicates a infinite timeout. 
+
 ## 4.3.2
 * Issue #523 when paging create a new copy of the request for each page rather than reusing the original
 * Issue #524 support the Partitioned flag on cookies for CHIPs (Cookies Having Independent Partitioned State) 
