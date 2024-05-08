@@ -31,6 +31,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -86,7 +87,11 @@ public class JavaClient implements Client {
                     .method(
                             request.getHttpMethod().name(),
                             new BodyBuilder(request).getBody()
-                    ).timeout(Duration.ofMillis(request.getConnectTimeout()));
+                    );
+
+            if(!Objects.isNull(request.getRequestTimeout())){
+                jreq.timeout(Duration.ofMillis(request.getRequestTimeout()));
+            }
             
             setHeaders(request, jreq);
 
@@ -106,7 +111,7 @@ public class JavaClient implements Client {
             var value = "text/plain";
             var charset = request.getBody().get().getCharset();
             if (charset != null) {
-                value = value + "; charset=" + charset.toString();
+                value = value + "; charset=" + charset;
             }
             jreq.header(CONTENT_TYPE, value);
         }

@@ -426,8 +426,8 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
-    public int getConnectTimeout() {
-        return valueOr(connectTimeout, config::getConnectionTimeout);
+    public Integer getRequestTimeout() {
+        return valueOr(connectTimeout, config::getRequestTimeout);
     }
 
     @Override

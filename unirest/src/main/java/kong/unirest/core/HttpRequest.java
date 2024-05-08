@@ -431,7 +431,7 @@ public interface HttpRequest<R extends HttpRequest>  {
     /**
      * @return the connect timeout for this request
      */
-    int getConnectTimeout();
+    Integer getRequestTimeout();
 
     /**
      * @return a summary for the response, used in metrics

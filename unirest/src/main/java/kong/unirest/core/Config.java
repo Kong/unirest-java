@@ -30,8 +30,7 @@ import kong.unirest.core.json.CoreFactory;
 
 import javax.net.ssl.SSLContext;
 import java.io.InputStream;
-import java.net.http.HttpClient;
-import java.net.http.HttpConnectTimeoutException;
+import java.net.http.*;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
@@ -54,6 +53,7 @@ public class Config {
     private Headers headers;
     private Proxy proxy;
     private int connectionTimeout;
+    private Integer requestTimeout;
     private boolean followRedirects;
     private boolean cookieManagement;
     private boolean useSystemProperties;
@@ -84,6 +84,7 @@ public class Config {
         customExecutor =  null;
         headers = new Headers();
         connectionTimeout = DEFAULT_CONNECT_TIMEOUT;
+        requestTimeout = null;
         followRedirects = true;
         useSystemProperties = false;
         cookieManagement = true;
@@ -285,6 +286,26 @@ public class Config {
     public Config connectTimeout(int inMillies) {
         validateClientsNotRunning();
         this.connectionTimeout = inMillies;
+        return this;
+    }
+
+    /**
+     * Sets a default timeout for all requests. If the response is not received
+     * within the specified timeout then an {@link HttpTimeoutException} is
+     * thrown.
+     * completes exceptionally with an {@code HttpTimeoutException}. The effect
+     * of not setting a timeout is the same as setting an infinite Duration, ie.
+     * block forever.
+     *
+     * @param inMillies the timeout duration in millies
+     * @return this builder
+     * @throws IllegalArgumentException if the duration is non-positive
+     */
+    public Config requestTimeout(int inMillies){
+        if(inMillies < 1){
+            throw new IllegalArgumentException("request timeout must be a positive integer");
+        }
+        this.requestTimeout = inMillies;
         return this;
     }
 
@@ -707,6 +728,14 @@ public class Config {
      */
     public int getConnectionTimeout() {
         return connectionTimeout;
+    }
+
+    /**
+     * @return the connection timeout in milliseconds
+     *         default: null (infinite)
+     */
+    public Integer getRequestTimeout() {
+        return requestTimeout;
     }
 
     /**

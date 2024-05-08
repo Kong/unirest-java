@@ -349,7 +349,7 @@ class RequestFactoryTest {
         }
 
         public RequestAsserts hasTimeout(int timeout) {
-            assertEquals(timeout, actual.getConnectTimeout());
+            assertEquals(timeout, actual.getRequestTimeout());
             return this;
         }
 

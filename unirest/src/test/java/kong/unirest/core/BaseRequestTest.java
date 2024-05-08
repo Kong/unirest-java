@@ -25,7 +25,6 @@
 
 package kong.unirest.core;
 
-import kong.unirest.core.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,13 +53,13 @@ class BaseRequestTest {
 
     @Test
     void connectTimeoutCanOverrrideConfig() {
-        testConfig.connectTimeout(42);
+        testConfig.requestTimeout(42);
 
-        HttpRequest request = new TestRequest(testConfig);
+        var request = new TestRequest(testConfig);
 
-        assertEquals(42, request.getConnectTimeout());
+        assertEquals(42, request.getRequestTimeout());
         request.connectTimeout(111);
-        assertEquals(111, request.getConnectTimeout());
+        assertEquals(111, request.getRequestTimeout());
     }
 
     @Test
