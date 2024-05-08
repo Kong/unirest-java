@@ -180,12 +180,12 @@ public class Cookie {
         return this.partitioned;
     }
 
-    public void setPartitioned(boolean value) {
-        this.partitioned = value;
+    public void setPartitioned(boolean partitionedFlag) {
+        this.partitioned = partitionedFlag;
     }
 
-    public void setSecured(boolean value) {
-        this.secure = value;
+    public void setSecured(boolean secureFlag) {
+        this.secure = secureFlag;
     }
 
     private static class Pair {
