@@ -189,7 +189,7 @@ public interface HttpRequest<R extends HttpRequest>  {
      * @param millies the time in millies
      * @return this request builder
      */
-    R connectTimeout(int millies);
+    R requestTimeout(int millies);
 
     /**
      * sets a download monitor for monitoring the response. this could be used for drawing a progress bar

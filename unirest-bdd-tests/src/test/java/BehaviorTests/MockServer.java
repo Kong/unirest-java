@@ -50,6 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MockServer {
 
+
     public static int timesCalled;
     private static int pages = 1;
     private static int onPage = 1;
@@ -83,6 +84,7 @@ public class MockServer {
     public static final String CHEESE = HOST + "/cheese";
     public static final String ALTGET = "http://127.0.0.1:" + PORT + "/get";
     public static final String ECHO_RAW = HOST + "/raw";
+    public static final String TIMEOUT = HOST + "/timeout";
     private static Javalin app;
     private static int errorCode = 400;
 
@@ -134,12 +136,22 @@ public class MockServer {
         app.post("/raw", MockServer::echo);
         app.get("/error", MockServer::error);
         app.get("/hello", MockServer::helloWOrld);
+        app.get("/timeout", MockServer::timeout);
         Runtime.getRuntime().addShutdownHook(new Thread(app::stop));
         try {
             new CountDownLatch(1).await(2, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void timeout(Context context) {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+
+        }
+        context.result("Hello World");
     }
 
 

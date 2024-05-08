@@ -58,7 +58,7 @@ class RequestFactoryTest {
                 .queryString(queryKey, queryValue)
                 .downloadMonitor(downloadMonitor)
                 .withObjectMapper(om)
-                .connectTimeout(timeout);
+                .requestTimeout(timeout);
 
         var copy = RequestFactory.copy(req);
 
@@ -78,7 +78,7 @@ class RequestFactoryTest {
                 .queryString(queryKey, queryValue)
                 .downloadMonitor(downloadMonitor)
                 .withObjectMapper(om)
-                .connectTimeout(timeout);
+                .requestTimeout(timeout);
 
         var copy = RequestFactory.copy(req);
 
@@ -98,7 +98,7 @@ class RequestFactoryTest {
                 .queryString(queryKey, queryValue)
                 .downloadMonitor(downloadMonitor)
                 .withObjectMapper(om)
-                .connectTimeout(timeout);
+                .requestTimeout(timeout);
 
         var copy = RequestFactory.copy(req);
 
@@ -119,7 +119,7 @@ class RequestFactoryTest {
                 .charset(StandardCharsets.ISO_8859_1)
                 .downloadMonitor(downloadMonitor)
                 .withObjectMapper(om)
-                .connectTimeout(timeout);
+                .requestTimeout(timeout);
 
         var copy = RequestFactory.copy(req);
 
@@ -142,7 +142,7 @@ class RequestFactoryTest {
                 .downloadMonitor(downloadMonitor)
                 .uploadMonitor(uploadMonitor)
                 .withObjectMapper(om)
-                .connectTimeout(timeout);
+                .requestTimeout(timeout);
 
         var copy = RequestFactory.copy(req);
 
@@ -168,7 +168,7 @@ class RequestFactoryTest {
                 .downloadMonitor(downloadMonitor)
                 .uploadMonitor(uploadMonitor)
                 .withObjectMapper(om)
-                .connectTimeout(timeout);
+                .requestTimeout(timeout);
 
         var copy = RequestFactory.copy(req);
 
@@ -192,7 +192,7 @@ class RequestFactoryTest {
                 .add("/foo/bar", "one")
                 .downloadMonitor(downloadMonitor)
                 .withObjectMapper(om)
-                .connectTimeout(timeout);
+                .requestTimeout(timeout);
 
         var copy = RequestFactory.copy(req);
 
@@ -216,7 +216,7 @@ class RequestFactoryTest {
                 .body("hi mom")
                 .downloadMonitor(downloadMonitor)
                 .withObjectMapper(om)
-                .connectTimeout(timeout);
+                .requestTimeout(timeout);
 
         var copy = RequestFactory.copy(req);
 
@@ -242,7 +242,7 @@ class RequestFactoryTest {
                 .downloadMonitor(downloadMonitor)
                 .uploadMonitor(uploadMonitor)
                 .withObjectMapper(om)
-                .connectTimeout(timeout);
+                .requestTimeout(timeout);
 
         var copy = RequestFactory.copy(req);
 

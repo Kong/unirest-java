@@ -58,7 +58,7 @@ class BaseRequestTest {
         var request = new TestRequest(testConfig);
 
         assertEquals(42, request.getRequestTimeout());
-        request.connectTimeout(111);
+        request.requestTimeout(111);
         assertEquals(111, request.getRequestTimeout());
     }
 

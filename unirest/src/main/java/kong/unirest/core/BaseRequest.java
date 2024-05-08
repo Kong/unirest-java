@@ -163,7 +163,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     @Override
-    public R connectTimeout(int millies) {
+    public R requestTimeout(int millies) {
         this.connectTimeout = millies;
         return (R) this;
     }
