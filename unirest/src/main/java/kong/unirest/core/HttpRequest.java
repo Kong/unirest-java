@@ -185,7 +185,7 @@ public interface HttpRequest<R extends HttpRequest>  {
     R withObjectMapper(ObjectMapper mapper);
 
     /**
-     * Set a connect timeout for this request
+     * Set a timeout for this request
      * @param millies the time in millies
      * @return this request builder
      */
