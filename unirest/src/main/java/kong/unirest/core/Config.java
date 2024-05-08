@@ -301,8 +301,8 @@ public class Config {
      * @return this builder
      * @throws IllegalArgumentException if the duration is non-positive
      */
-    public Config requestTimeout(int inMillies){
-        if(inMillies < 1){
+    public Config requestTimeout(Integer inMillies){
+        if(inMillies != null && inMillies < 1){
             throw new IllegalArgumentException("request timeout must be a positive integer");
         }
         this.requestTimeout = inMillies;

@@ -25,10 +25,6 @@
 
 package kong.unirest.core;
 
-import kong.unirest.core.Client;
-import kong.unirest.core.Config;
-import kong.unirest.core.Proxy;
-import kong.unirest.core.UnirestConfigException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,8 +36,7 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class ConfigTest {
@@ -136,6 +131,15 @@ class ConfigTest {
         assertFalse(config.isRunning());
         config.getClient();
         assertTrue(config.isRunning());
+    }
+
+    @Test
+    void requestTimeoutCannotBeNegative() {
+        config.requestTimeout(null);
+        config.requestTimeout(42);
+
+        assertThrows(IllegalArgumentException.class, () -> config.requestTimeout(0));
+        assertThrows(IllegalArgumentException.class, () -> config.requestTimeout(-5));
     }
 
     private void assertProxy(String host, Integer port, String username, String password) {
