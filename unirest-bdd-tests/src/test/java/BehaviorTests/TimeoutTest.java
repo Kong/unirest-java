@@ -42,14 +42,31 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
+
 class TimeoutTest extends BddTest {
 
     @Test
     void requestTmeouts() {
+        // prime the server
+        Unirest.get(MockServer.GET).asEmpty();
+
         var ex = assertThrows(UnirestException.class, () -> {
             Unirest.get(MockServer.TIMEOUT)
                     .requestTimeout(5)
+                    .asString();
+        });
+        assertEquals(HttpTimeoutException.class, ex.getCause().getClass());
+    }
+
+    @Test
+    void requestTmeoutsViaGlobalConfig() {
+        // prime the server
+        Unirest.get(MockServer.GET).asEmpty();
+
+        Unirest.config().requestTimeout(5);
+
+        var ex = assertThrows(UnirestException.class, () -> {
+            Unirest.get(MockServer.TIMEOUT)
                     .asString();
         });
         assertEquals(HttpTimeoutException.class, ex.getCause().getClass());
