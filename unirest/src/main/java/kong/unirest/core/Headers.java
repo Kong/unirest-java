@@ -73,7 +73,11 @@ public class Headers {
         add(name, value);
     }
 
-    private void remove(String name) {
+    /**
+     * Remove a header by name
+     * @param name the name of the header
+     */
+    public void remove(String name) {
         headers.removeIf(h -> isName(h, name));
     }
 
