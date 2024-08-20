@@ -207,6 +207,34 @@ class AsObjectTest extends BddTest {
         assertEquals(Arrays.asList(1,2,3), error.foo);
     }
 
+    @Test
+    void parsingExceptions() {
+        MockServer.setStringResponse("hi im not json");
+
+        var ex = Unirest.get(MockServer.ERROR_RESPONSE)
+                .asObject(SomeTestClass.class)
+                .getParsingError()
+                .get();
+
+        assertThat(ex)
+                .isInstanceOf(UnirestParsingException.class)
+                .hasMessage("kong.unirest.core.UnirestException: com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'hi': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n" +
+                        " at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 3]");
+
+        var ex2 = Unirest.get(MockServer.ERROR_RESPONSE)
+                .asObject(new GenericType<SomeTestClass>() {})
+                .getParsingError()
+                .get();
+
+        assertThat(ex2)
+                .isInstanceOf(UnirestParsingException.class)
+                .hasMessage("kong.unirest.core.UnirestException: com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'hi': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n" +
+                        " at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 3]");
+
+    }
+
+    static class SomeTestClass {}
+
     public static class Error {
         public List<Integer> foo;
     }
