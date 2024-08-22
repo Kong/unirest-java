@@ -41,7 +41,7 @@ class PathParamTest extends BddTest {
 
     @Test
     void canAddRouteParamsAsMap() {
-        String param = "Hamberders";
+        var param = "Hamberders";
 
         Unirest.get(MockServer.PASSED_PATH_PARAM_MULTI)
                 .routeParam(ImmutableMap.of("params", param, "another", 42))
@@ -68,7 +68,7 @@ class PathParamTest extends BddTest {
 
     @Test
     void properlyDealsWithPlusInPAth() {
-        String param = "jack+4@email.com";
+        var param = "jack+4@email.com";
 
         Unirest.get(MockServer.PASSED_PATH_PARAM)
                 .routeParam("params", param)
@@ -131,7 +131,7 @@ class PathParamTest extends BddTest {
 
     @Test
     void illigalPathParams() {
-        String value = "/?ЊЯЯ";
+        var value = "/?ЊЯЯ";
 
         Unirest.get(MockServer.PASSED_PATH_PARAM)
                 .routeParam("params", value)
@@ -143,7 +143,7 @@ class PathParamTest extends BddTest {
 
     @Test
     void spacesAndPluses() {
-        String value = "Hunky Dory+Cheese Wiz";
+        var value = "Hunky Dory+Cheese Wiz";
 
         Unirest.get(MockServer.PASSED_PATH_PARAM)
                 .routeParam("params", value)
@@ -165,7 +165,7 @@ class PathParamTest extends BddTest {
 
     @Test
     void getRequestSummaryOnResponse() {
-        HttpRequestSummary sum = Unirest.get(MockServer.PASSED_PATH_PARAM)
+        var sum = Unirest.get(MockServer.PASSED_PATH_PARAM)
                 .routeParam("params", "cheese")
                 .queryString("fruit", "apples")
                 .asEmpty()
@@ -178,7 +178,7 @@ class PathParamTest extends BddTest {
 
     @Test
     void getRequestSummaryOnResponse_async() throws Exception {
-        HttpRequestSummary sum = Unirest.get(MockServer.PASSED_PATH_PARAM)
+        var sum = Unirest.get(MockServer.PASSED_PATH_PARAM)
                 .routeParam("params", "cheese")
                 .queryString("fruit", "apples")
                 .asEmptyAsync()

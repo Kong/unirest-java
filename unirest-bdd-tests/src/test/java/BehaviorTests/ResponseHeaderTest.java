@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ResponseHeaderTest extends BddTest {
@@ -60,10 +61,10 @@ class ResponseHeaderTest extends BddTest {
         MockServer.addResponseHeader("fruit", "apples");
         MockServer.addResponseHeader("fruit", "grapes");
 
-        Headers h = Unirest.get(MockServer.GET).asString().getHeaders();
+        var h = Unirest.get(MockServer.GET).asString().getHeaders();
 
-        List<String> headers = h.get("fruit");
-        assertEquals(3, headers.size());
-        assertEquals(Arrays.asList("oranges","apples","grapes"), headers);
+        assertThat(h.get("fruit"))
+                .hasSize(3)
+                .containsExactlyInAnyOrder("oranges","apples","grapes");
     }
 }

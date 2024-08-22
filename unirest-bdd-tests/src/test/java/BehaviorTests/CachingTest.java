@@ -54,8 +54,8 @@ class CachingTest extends BddTest {
     void canCacheResponsesForEqualRequests() {
         Unirest.config().cacheResponses(true);
 
-        String r1 = Unirest.get(MockServer.GET).asObject(RequestCapture.class).getBody().requestId;
-        String r2 = Unirest.get(MockServer.GET).asObject(RequestCapture.class).getBody().requestId;
+        var r1 = Unirest.get(MockServer.GET).asObject(RequestCapture.class).getBody().requestId;
+        var r2 = Unirest.get(MockServer.GET).asObject(RequestCapture.class).getBody().requestId;
 
         assertEquals(1,  MockServer.timesCalled);
         assertEquals(r1, r2);
@@ -65,8 +65,8 @@ class CachingTest extends BddTest {
     void canCacheResponsesForEqualRequests_async() throws Exception {
         Unirest.config().cacheResponses(true);
 
-        String r1 = Unirest.get(MockServer.GET).asObjectAsync(RequestCapture.class).get().getBody().requestId;
-        String r2 = Unirest.get(MockServer.GET).asObjectAsync(RequestCapture.class).get().getBody().requestId;
+        var r1 = Unirest.get(MockServer.GET).asObjectAsync(RequestCapture.class).get().getBody().requestId;
+        var r2 = Unirest.get(MockServer.GET).asObjectAsync(RequestCapture.class).get().getBody().requestId;
 
         assertEquals(1,  MockServer.timesCalled);
         assertEquals(r1, r2);
@@ -162,8 +162,8 @@ class CachingTest extends BddTest {
     @Test
     void willCacheIfEnabled_json() {
         Unirest.config().cacheResponses(true);
-        HttpResponse<JsonNode> response1 = Unirest.get(MockServer.GET).queryString(of("a",1)).asJson();
-        HttpResponse<JsonNode> response2 = Unirest.get(MockServer.GET).queryString(of("a",1)).asJson();
+        var response1 = Unirest.get(MockServer.GET).queryString(of("a",1)).asJson();
+        var response2 = Unirest.get(MockServer.GET).queryString(of("a",1)).asJson();
 
         assertEquals(
                 response1.getBody().getObject().getString("requestId"),

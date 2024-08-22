@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -95,8 +96,8 @@ class UniBodyPostingTest extends BddTest {
 
     @Test
     void testPostRawBody() {
-        String sourceString = "'\"@こんにちは-test-123-" + Math.random();
-        byte[] sentBytes = sourceString.getBytes();
+        var sourceString = "'\"@こんにちは-test-123-" + Math.random();
+        var sentBytes = sourceString.getBytes();
 
         Unirest.post(MockServer.POST)
                 .body(sentBytes)
@@ -122,7 +123,7 @@ class UniBodyPostingTest extends BddTest {
 
     @Test
     void postAPojoObjectUsingTheMapper() {
-        GetResponse postResponseMock = new GetResponse();
+        var postResponseMock = new GetResponse();
         postResponseMock.setUrl(MockServer.POST);
 
         Unirest.post(postResponseMock.getUrl())
@@ -136,7 +137,7 @@ class UniBodyPostingTest extends BddTest {
 
     @Test
     void testDeleteBody() {
-        String body = "{\"jsonString\":{\"members\":\"members1\"}}";
+        var body = "{\"jsonString\":{\"members\":\"members1\"}}";
         Unirest.delete(MockServer.DELETE)
                 .body(body)
                 .asObject(RequestCapture.class)
@@ -146,7 +147,7 @@ class UniBodyPostingTest extends BddTest {
 
     @Test
     void postBodyAsJson() {
-        JSONObject body = new JSONObject();
+        var body = new JSONObject();
         body.put("krusty","krab");
 
         Unirest.post(MockServer.POST)
@@ -158,7 +159,7 @@ class UniBodyPostingTest extends BddTest {
 
     @Test
     void postBodyAsJsonArray() {
-        JSONArray body = new JSONArray();
+        var body = new JSONArray();
         body.put(0, "krusty");
         body.put(1, "krab");
 
@@ -171,7 +172,7 @@ class UniBodyPostingTest extends BddTest {
 
     @Test
     void postBodyAsJsonNode() {
-        JsonNode body = new JsonNode("{\"krusty\":\"krab\"}");
+        var body = new JsonNode("{\"krusty\":\"krab\"}");
 
         Unirest.post(MockServer.POST)
                 .body(body)
@@ -184,19 +185,20 @@ class UniBodyPostingTest extends BddTest {
     void cantPostObjectWithoutObjectMapper(){
         Unirest.config().setObjectMapper(null);
 
-        UnirestConfigException ex = assertThrows(UnirestConfigException.class, () -> Unirest.post(MockServer.POST).body(new Foo("die")));
-        assertEquals("No Object Mapper Configured. Please config one with Unirest.config().setObjectMapper", ex.getMessage());
+        assertThatThrownBy(() -> Unirest.post(MockServer.POST).body(new Foo("die")))
+                .isInstanceOf(UnirestConfigException.class)
+                .hasMessage("No Object Mapper Configured. Please config one with Unirest.config().setObjectMapper");
     }
 
     @Test
     void theRequestBodyIsAString() {
-        RequestBodyEntity request = Unirest.post(MockServer.POST)
+        var request = Unirest.post(MockServer.POST)
                 .basicAuth("foo", "bar")
                 .header("Content-Type", "application/json")
                 .queryString("foo", "bar")
                 .body("{\"body\": \"sample\"}");
 
-        Object value = request.getBody().get().uniPart().getValue();
+        var value = request.getBody().get().uniPart().getValue();
         assertEquals("{\"body\": \"sample\"}", value);
     }
 
@@ -209,7 +211,7 @@ class UniBodyPostingTest extends BddTest {
                 .queryString("foo", "bar")
                 .body(body);
 
-        Object value = request.getBody().get().uniPart().getValue();
+        var value = request.getBody().get().uniPart().getValue();
         assertEquals("{\"body\": \"sample\"}", value);
     }
 
@@ -222,7 +224,7 @@ class UniBodyPostingTest extends BddTest {
                 .queryString("foo", "bar")
                 .body(body);
 
-        Object value = request.getBody().get().uniPart().getValue();
+        var value = request.getBody().get().uniPart().getValue();
         assertEquals("{\"body\":\"sample\"}", value);
     }
 
@@ -235,7 +237,7 @@ class UniBodyPostingTest extends BddTest {
                 .queryString("foo", "bar")
                 .body(body);
 
-        Object value = request.getBody().get().uniPart().getValue();
+        var value = request.getBody().get().uniPart().getValue();
         assertEquals("{\"body\":\"sample\"}", value);
     }
 
@@ -248,7 +250,7 @@ class UniBodyPostingTest extends BddTest {
                 .queryString("foo", "bar")
                 .body(body);
 
-        Object value = request.getBody().get().uniPart().getValue();
+        var value = request.getBody().get().uniPart().getValue();
         assertEquals("[\"body\",\"sample\"]", value);
     }
 

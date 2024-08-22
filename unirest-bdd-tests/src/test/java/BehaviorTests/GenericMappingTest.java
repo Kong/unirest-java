@@ -47,7 +47,7 @@ class GenericMappingTest extends BddTest {
         MockServer.setStringResponse("123456");
         MockServer.addResponseHeader("cheese","cheddar");
 
-        HttpResponse<Integer> response = Unirest.get(MockServer.GET)
+        var response = Unirest.get(MockServer.GET)
                 .asString()
                 .map(Integer::valueOf);
 

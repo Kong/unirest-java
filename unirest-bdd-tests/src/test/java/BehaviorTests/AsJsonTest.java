@@ -38,7 +38,7 @@ class AsJsonTest extends BddTest {
 
     @Test
     void whenNoBodyIsReturned() {
-        HttpResponse<JsonNode> i = Unirest.get(MockServer.NOBODY).asJson();
+        var i = Unirest.get(MockServer.NOBODY).asJson();
 
         assertEquals(HttpStatus.OK, i.getStatus());
         assertEquals("{}", i.getBody().toString());
@@ -47,7 +47,7 @@ class AsJsonTest extends BddTest {
     @Test
     void toStringAObject() {
         MockServer.setStringResponse(new JSONObject().put("f", 1).put("a", Arrays.asList(2, 3, 4)).toString());
-        HttpResponse<JsonNode> i = Unirest.get(MockServer.GET).asJson();
+        var i = Unirest.get(MockServer.GET).asJson();
 
         assertEquals("{\"f\":1,\"a\":[2,3,4]}", i.getBody().toString());
     }
@@ -55,7 +55,7 @@ class AsJsonTest extends BddTest {
     @Test
     void toPrettyStringAObject() {
         MockServer.setStringResponse(new JSONObject().put("f", 1).put("a", Arrays.asList(2, 3, 4)).toString());
-        HttpResponse<JsonNode> i = Unirest.get(MockServer.GET).asJson();
+        var i = Unirest.get(MockServer.GET).asJson();
 
         assertEquals("{\n" +
                 "  \"f\": 1,\n" +
@@ -69,7 +69,7 @@ class AsJsonTest extends BddTest {
 
     @Test
     void canGetBinaryResponse() {
-        HttpResponse<JsonNode> i = Unirest.get(MockServer.GET)
+        var i = Unirest.get(MockServer.GET)
                 .queryString("foo", "bar")
                 .asJson();
 
@@ -78,7 +78,7 @@ class AsJsonTest extends BddTest {
 
     @Test
     void canGetBinaryResponseAsync() throws Exception {
-        CompletableFuture<HttpResponse<JsonNode>> r = Unirest.get(MockServer.GET)
+        var r = Unirest.get(MockServer.GET)
                 .queryString("foo", "bar")
                 .asJsonAsync();
 
@@ -99,12 +99,13 @@ class AsJsonTest extends BddTest {
 
     @Test
     void failureToReturnValidJsonWillResultInAnEmptyNode() {
-        HttpResponse<JsonNode> response = Unirest.get(MockServer.INVALID_REQUEST).asJson();
+        var response = Unirest.get(MockServer.INVALID_REQUEST).asJson();
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatus());
         assertNull(response.getBody());
         assertTrue(response.getParsingError().isPresent());
-        UnirestParsingException ex = response.getParsingError().get();
+
+        var ex = response.getParsingError().get();
         assertEquals("You did something bad", ex.getOriginalBody());
         assertEquals("kong.unirest.core.json.JSONException: Invalid JSON",
                 response.getParsingError().get().getMessage());
@@ -130,7 +131,7 @@ class AsJsonTest extends BddTest {
     void doNotEscapeHTML() {
         MockServer.setStringResponse("{\"test\":\"it's a && b || c + 1!?\"}");
 
-        JSONObject test = Unirest.get(MockServer.GET)
+        var test = Unirest.get(MockServer.GET)
                 .asJson()
                 .getBody()
                 .getObject();

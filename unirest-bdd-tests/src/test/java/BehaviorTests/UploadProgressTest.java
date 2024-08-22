@@ -98,7 +98,7 @@ public class UploadProgressTest extends BddTest {
     }
 
     private void assertOtherFileUpload() {
-        TestMonitor.Stats stat = monitor.get("test.txt");
+        var stat = monitor.get("test.txt");
         assertEquals(1, stat.timesCalled);
         assertEquals(asList(19L), stat.progress);
         assertEquals(19L, stat.total);

@@ -38,7 +38,7 @@ class BodyLogSummaryTest extends BddTest {
 
     @Test
     void forSimpleGets() {
-        String log = Unirest.get("http://somewhere/{magic}")
+        var log = Unirest.get("http://somewhere/{magic}")
                 .routeParam("magic", "beans")
                 .queryString("fruit", "apple")
                 .header("Accept", "image/raw")
@@ -52,7 +52,7 @@ class BodyLogSummaryTest extends BddTest {
 
     @Test
     void forSimpleBodies() {
-        String log = Unirest.post("http://somewhere/{magic}")
+        var log = Unirest.post("http://somewhere/{magic}")
                 .routeParam("magic", "beans")
                 .queryString("fruit", "apple")
                 .header("Accept", "image/raw")
@@ -68,7 +68,7 @@ class BodyLogSummaryTest extends BddTest {
 
     @Test
     void forJsonBodies() {
-        String log = Unirest.post("http://somewhere/{magic}")
+        var log = Unirest.post("http://somewhere/{magic}")
                 .routeParam("magic", "beans")
                 .queryString("fruit", "apple")
                 .header("Accept", "image/raw")
@@ -84,7 +84,7 @@ class BodyLogSummaryTest extends BddTest {
 
     @Test
     void forObjectBodies() {
-        String log = Unirest.post("http://somewhere/{magic}")
+        var log = Unirest.post("http://somewhere/{magic}")
                 .routeParam("magic", "beans")
                 .queryString("fruit", "apple")
                 .header("Accept", "image/raw")
@@ -100,7 +100,7 @@ class BodyLogSummaryTest extends BddTest {
 
     @Test
     void simpleFormBody() {
-        String log = Unirest.post("http://somewhere/{magic}")
+        var log = Unirest.post("http://somewhere/{magic}")
                 .routeParam("magic", "beans")
                 .queryString("fruit", "apple")
                 .header("Accept", "image/raw")
@@ -117,8 +117,8 @@ class BodyLogSummaryTest extends BddTest {
 
     @Test
     void multiPart() {
-        String boundary = "ABC-123-BOUNDARY";
-        String body = Unirest.post(MockServer.ECHO_RAW)
+        var boundary = "ABC-123-BOUNDARY";
+        var body = Unirest.post(MockServer.ECHO_RAW)
                 .header("Accept", "image/raw")
                 .field("band", "Talking Heads")
                 .field("album", "77")

@@ -42,7 +42,7 @@ class CachingAlternativeTest extends BddTest {
 
     @Test
     void canSupplyCustomCache() {
-        GuavaCache cache = new GuavaCache();
+        var cache = new GuavaCache();
         Unirest.config().cacheResponses(Cache.builder().backingCache(cache));
 
         assertSame(
@@ -79,7 +79,7 @@ class CachingAlternativeTest extends BddTest {
         assertEquals(1, MockServer.timesCalled);
     }
 
-    public static class GuavaCache implements Cache{
+    public static class GuavaCache implements Cache {
         com.google.common.cache.Cache<Key, HttpResponse> regular = CacheBuilder.newBuilder().build();
         com.google.common.cache.Cache<Key, CompletableFuture> async = CacheBuilder.newBuilder().build();
         @Override

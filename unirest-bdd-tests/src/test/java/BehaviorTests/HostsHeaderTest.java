@@ -31,6 +31,7 @@ import kong.unirest.core.UnirestException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -67,15 +68,14 @@ class HostsHeaderTest extends BddTest {
 
     @Test
     void cannotNormallyOverrideHost() {
-        Exception ex = assertThrows(UnirestException.class,
-                () -> Unirest.get(MockServer.ALTGET)
-                        .header("Host", "localhost").asEmpty());
-        assertEquals("restricted header name: \"Host\"", ex.getCause().getMessage());
+        assertThatThrownBy(() -> Unirest.get(MockServer.ALTGET).header("Host", "localhost").asEmpty())
+                .isInstanceOf(UnirestException.class)
+                .hasRootCauseMessage("restricted header name: \"Host\"");
     }
 
     @Test @Disabled
     void canBuildCustomHost() {
-        HttpResponse<String> s = Unirest.get("https://104.154.89.105/")
+        var s = Unirest.get("https://104.154.89.105/")
                 .header("Host", "sha512.badssl.com")
                 .asString();
 

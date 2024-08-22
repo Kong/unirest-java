@@ -92,7 +92,7 @@ class InterceptorTest extends BddTest {
         Unirest.config().httpClient(TestUtil.getFailureClient()).interceptor(interceptor);
         interceptor.failResponse = true;
 
-        HttpResponse<String> response = Unirest.get(MockServer.GET).asString();
+        var response = Unirest.get(MockServer.GET).asString();
 
         assertEquals(542, response.getStatus());
         assertEquals("Something horrible happened", response.getStatusText());
@@ -105,14 +105,14 @@ class InterceptorTest extends BddTest {
                 .httpClient(TestUtil.getFailureAsyncClient())
                 .interceptor(interceptor);
 
-        HttpResponse<String> response = Unirest.get(MockServer.GET).asStringAsync().get();
+        var response = Unirest.get(MockServer.GET).asStringAsync().get();
 
         assertEquals(542, response.getStatus());
     }
 
     @Test
     void loggingBodyPartsExample() {
-        final Set<String> values = new HashSet<>();
+        var values = new HashSet<>();
         Unirest.config().interceptor(new Interceptor() {
             @Override
             public void onRequest(HttpRequest<?> request, Config config) {

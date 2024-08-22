@@ -41,13 +41,13 @@ class AsStringTest extends BddTest {
     @Test
     void simpleExample() {
         MockServer.setStringResponse("Hi Mom");
-        String body = Unirest.get(MockServer.GET).asString().getBody();
+        var body = Unirest.get(MockServer.GET).asString().getBody();
         assertEquals("Hi Mom", body);
     }
 
     @Test
     void whenNoBodyIsReturned() {
-        HttpResponse<String> i = Unirest.get(MockServer.NOBODY).asString();
+        var i = Unirest.get(MockServer.NOBODY).asString();
 
         assertEquals(200, i.getStatus());
         assertEquals("", i.getBody());
@@ -55,24 +55,26 @@ class AsStringTest extends BddTest {
 
     @Test
     void canParseGzippedStringResponse() {
-        HttpResponse<String> i = Unirest.get(MockServer.GZIP)
+        var i = Unirest.get(MockServer.GZIP)
                 .queryString("foo", "bar")
                 .header(Header.ACCEPT_ENCODING, "gzip")
                 .asString();
 
-        RequestCapture cap = TestUtil.readValue(i.getBody(), RequestCapture.class);
         assertEquals(200, i.getStatus());
+
+        var cap = TestUtil.readValue(i.getBody(), RequestCapture.class);
         cap.assertParam("foo", "bar");
     }
 
     @Test
     void canParseGzippedResponseAsync() throws Exception {
-        HttpResponse<String> i = Unirest.get(MockServer.GZIP)
+        var i = Unirest.get(MockServer.GZIP)
                 .queryString("foo", "bar")
                 .asStringAsync().get();
 
-        RequestCapture cap = TestUtil.readValue(i.getBody(), RequestCapture.class);
         assertEquals(200, i.getStatus());
+
+        var cap = TestUtil.readValue(i.getBody(), RequestCapture.class);
         cap.assertParam("foo", "bar");
     }
 
@@ -82,17 +84,17 @@ class AsStringTest extends BddTest {
                 .queryString("foo", "bar")
                 .asString();
 
-        RequestCapture cap = TestUtil.readValue(i.getBody(), RequestCapture.class);
+        var cap = TestUtil.readValue(i.getBody(), RequestCapture.class);
         cap.assertParam("foo", "bar");
     }
 
     @Test
     void canGetBinaryResponseAsync() throws Exception {
-        CompletableFuture<HttpResponse<String>> r = Unirest.get(MockServer.GET)
+        var r = Unirest.get(MockServer.GET)
                 .queryString("foo", "bar")
                 .asStringAsync();
 
-        RequestCapture cap = TestUtil.readValue(r.get().getBody(), RequestCapture.class);
+        var cap = TestUtil.readValue(r.get().getBody(), RequestCapture.class);
         cap.assertParam("foo", "bar");
     }
 
@@ -131,7 +133,7 @@ class AsStringTest extends BddTest {
 
     @Test @Disabled
     void canSetExpectedCharsetOfResponse() {
-        HttpResponse<String> response = Unirest.get(MockServer.WINDOWS_LATIN_1_FILE)
+        var response = Unirest.get(MockServer.WINDOWS_LATIN_1_FILE)
                 .responseEncoding("windows-1250")
                 .asString();
 
@@ -143,7 +145,7 @@ class AsStringTest extends BddTest {
     void canSetDefaultCharsetOfResponse() {
         Unirest.config().setDefaultResponseEncoding("windows-1250");
 
-        HttpResponse<String> response = Unirest.get(MockServer.WINDOWS_LATIN_1_FILE)
+        var response = Unirest.get(MockServer.WINDOWS_LATIN_1_FILE)
                 .asString();
 
         assertEquals(200, response.getStatus());

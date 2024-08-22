@@ -84,34 +84,34 @@ public class RetryAsyncTest extends BddTest {
 
     @Test
     void willRetryAfterSeconds_AsObjectGenerics() {
-        List<Foo> o = Arrays.asList(
+        var o = Arrays.asList(
                 new Foo("foo"),
                 new Foo("bar"),
                 new Foo("baz")
         );
         MockServer.setJsonAsResponse(o);
-        List<Foo> cap = (List<Foo>)this.<RequestCapture>doWithRetry(r -> r.asObjectAsync(new GenericType<List<Foo>>(){}));
+        var cap = (List<Foo>)this.<RequestCapture>doWithRetry(r -> r.asObjectAsync(new GenericType<List<Foo>>(){}));
         assertEquals(o, cap);
     }
 
     @Test
     void willRetryAfterSeconds_AsString() {
         MockServer.setStringResponse("Hi Mom");
-        String cap = this.<String>doWithRetry(r -> r.asStringAsync());
+        var cap = this.<String>doWithRetry(r -> r.asStringAsync());
         assertEquals("Hi Mom", cap);
     }
 
     @Test
     void willRetryAfterSeconds_AsJson() {
         MockServer.setStringResponse("{\"message\": \"Hi Mom\"}");
-        JsonNode cap = this.<JsonNode>doWithRetry(r -> r.asJsonAsync());
+        var cap = this.<JsonNode>doWithRetry(r -> r.asJsonAsync());
         assertEquals("Hi Mom", cap.getObject().getString("message"));
     }
 
     @Test
     void willRetryAfterSeconds_AsBytes() {
         MockServer.setStringResponse("Hi Mom");
-        byte[] cap = this.<byte[]>doWithRetry(r -> r.asBytesAsync());
+        var cap = this.<byte[]>doWithRetry(r -> r.asBytesAsync());
         assertEquals("Hi Mom", new String(cap));
     }
 
@@ -122,11 +122,11 @@ public class RetryAsyncTest extends BddTest {
 
     @Test
     void willRetryAfterSeconds_AsFile() {
-        Path path = Paths.get("results.json");
+        var path = Paths.get("results.json");
         clearFile(path);
 
         MockServer.setStringResponse("Hi Mom");
-        File cap = (File)this.doWithRetry(r -> r.asFileAsync(path.toString(), StandardCopyOption.REPLACE_EXISTING));
+        var cap = (File)this.doWithRetry(r -> r.asFileAsync(path.toString(), StandardCopyOption.REPLACE_EXISTING));
         assertTrue(cap.exists());
 
         clearFile(path);
@@ -137,7 +137,7 @@ public class RetryAsyncTest extends BddTest {
         MockServer.retryTimes(10, 429, .01);
         Unirest.config().retryAfter(true, 3);
 
-        HttpResponse resp = Unirest.get(MockServer.GET).asEmpty();
+        var resp = Unirest.get(MockServer.GET).asEmpty();
         assertEquals(429, resp.getStatus());
         MockServer.assertRequestCount(3);
     }
@@ -160,9 +160,9 @@ public class RetryAsyncTest extends BddTest {
 
            Unirest.config().retryAfter(true);
 
-           HttpRequest request = Unirest.get(MockServer.GET);
+           var request = Unirest.get(MockServer.GET);
 
-           HttpResponse<R> response = bodyExtractor.apply(request).get();
+           var response = bodyExtractor.apply(request).get();
            assertEquals(200, response.getStatus());
            MockServer.assertRequestCount(2);
 

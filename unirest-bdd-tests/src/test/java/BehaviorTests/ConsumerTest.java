@@ -37,8 +37,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ConsumerTest extends BddTest {
 
@@ -84,7 +83,7 @@ class ConsumerTest extends BddTest {
         while (!asyncDone){
             System.out.print(".");
         }
-        assertEquals(null, error);
+        assertNull(error);
         assertEquals(200, status);
         assertTrue(test.toFile().exists());
     }
@@ -102,7 +101,7 @@ class ConsumerTest extends BddTest {
                     }
                 });
 
-        assertEquals(null, error);
+        assertNull(error);
         assertEquals(200, status);
         assertTrue(test.toFile().exists());
     }

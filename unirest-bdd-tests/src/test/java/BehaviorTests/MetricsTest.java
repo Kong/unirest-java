@@ -35,12 +35,13 @@ import java.util.HashMap;
 import java.util.function.Function;
 
 import static BehaviorTests.MockServer.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MetricsTest extends BddTest {
     @Test
     void canSetAMetricObjectToInstramentUnirest() {
-        MyMetric metric = configureMetric();
+        var metric = configureMetric();
 
         Unirest.get(GET).asEmpty();
         Unirest.get(GET).asEmpty();
@@ -55,7 +56,7 @@ class MetricsTest extends BddTest {
 
     @Test
     void canGetParamedUrlInSummary() {
-        MyMetric metric = configureMetric(HttpRequestSummary::getRawPath);
+        var metric = configureMetric(HttpRequestSummary::getRawPath);
 
         Unirest.get(PASSED_PATH_PARAM)
                 .routeParam("params", "foo")
@@ -67,7 +68,7 @@ class MetricsTest extends BddTest {
 
     @Test
     void canGetToMethod() {
-        MyMetric metric = configureMetric(s -> s.getHttpMethod().name());
+        var metric = configureMetric(s -> s.getHttpMethod().name());
 
         Unirest.get(GET).asEmpty();
         Unirest.get(GET).asEmpty();
@@ -80,7 +81,7 @@ class MetricsTest extends BddTest {
 
     @Test
     void amountOfTimeBetweenRequestAndResponseDoesNotIncludeDeserialization() {
-        MyMetric metric = configureMetric();
+        var metric = configureMetric();
 
         Unirest.get(GET).asObject(r -> {
             assertEquals(1, metric.routes.get(GET).size());
@@ -90,7 +91,7 @@ class MetricsTest extends BddTest {
 
     @Test
     void canGetInformationOnStatus() {
-        MyMetric metric = configureMetric(HttpRequestSummary::getUrl);
+        var metric = configureMetric(HttpRequestSummary::getUrl);
 
         Unirest.get(GET).asEmpty();
         Unirest.get(REDIRECT).asEmpty();
@@ -104,7 +105,7 @@ class MetricsTest extends BddTest {
 
     @Test
     void metricsOnAsyncRequests() throws Exception {
-        MyMetric metric = configureMetric();
+        var metric = configureMetric();
 
         Unirest.get(GET).asEmptyAsync().get();
 
@@ -113,7 +114,7 @@ class MetricsTest extends BddTest {
 
     @Test
     void metricsOnAsyncMethodsWithCallbacks() {
-        MyMetric metric = configureMetric();
+        var metric = configureMetric();
 
         Unirest.get(GET).asEmptyAsync(r -> asyncSuccess());
 
@@ -123,14 +124,10 @@ class MetricsTest extends BddTest {
 
     @Test
     void errorHandling() throws Exception {
-        MyMetric metric = new MyMetric(HttpRequestSummary::getUrl);
+        var metric = new MyMetric(HttpRequestSummary::getUrl);
         Unirest.config().reset().httpClient(TestUtil.getFailureClient()).instrumentWith(metric);
 
-        try {
-            Unirest.get(GET).asEmpty();
-        }catch (Exception e){
-
-        }
+        assertThatThrownBy(() -> Unirest.get(GET).asEmpty());
 
         assertEquals("Something horrible happened", metric.routes.get(GET).get(0).e.getMessage());
     }
@@ -138,6 +135,7 @@ class MetricsTest extends BddTest {
     @Test @Disabled
     void errorHandling_async() throws Exception {
         MyMetric metric = configureMetric();
+
 
         try {
             Unirest.get("http://localhost:0000").asEmptyAsync().get();
@@ -166,7 +164,7 @@ class MetricsTest extends BddTest {
 
     @Test
     void showWhatJavalinDoes() {
-        HashMap map = Unirest.get(JAVALIN)
+        var map = Unirest.get(JAVALIN)
                 .routeParam("spark", "joy")
                 .queryString("food", "hamberders")
                 .queryString("colour", "red")
@@ -186,7 +184,7 @@ class MetricsTest extends BddTest {
     }
 
     private MyMetric configureMetric(Function<HttpRequestSummary, String> keyFunction) {
-        MyMetric metric = new MyMetric(keyFunction);
+        var metric = new MyMetric(keyFunction);
         Unirest.config().followRedirects(false).instrumentWith(metric);
         return metric;
     }

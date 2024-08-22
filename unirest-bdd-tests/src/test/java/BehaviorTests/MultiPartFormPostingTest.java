@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class MultiPartFormPostingTest extends BddTest {
 
     @Test
-    void testMultipart() throws Exception {
+    void testMultipart() {
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
                 .field("funky", "bunch")
@@ -58,8 +58,8 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void fileSizeDoesntChange() throws Exception {
-        File file = rezFile("/image.jpg");
-        long size = file.length();
+        var file = rezFile("/image.jpg");
+        var size = file.length();
 
         RequestCapture capture = Unirest.post(MockServer.POST)
                 .field("file", file)
@@ -87,7 +87,7 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void canSendRawInputStreamsWithoutAFileName() throws Exception {
-        FileInputStream stream = new FileInputStream(rezFile("/test.txt"));
+        var stream = new FileInputStream(rezFile("/test.txt"));
 
         Unirest.post(MockServer.POST)
                 .field("file", stream)
@@ -98,7 +98,7 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void multipleFiles_sameField() {
-        RequestCapture body = Unirest.post(MockServer.POST)
+        var body = Unirest.post(MockServer.POST)
                 .field("file", rezFile("/image.jpg"))
                 .field("file", rezFile("/spidey.jpg"))
                 .asObject(RequestCapture.class)
@@ -143,7 +143,7 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void testMultipartByteContentType() throws Exception {
-        final byte[] bytes = getFileBytes("/image.jpg");
+        var bytes = getFileBytes("/image.jpg");
 
         Unirest.post(MockServer.POST)
                 .field("boot", "boot")
@@ -157,7 +157,7 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void testMultipartByteContentTypeAsync() throws Exception {
-        final byte[] bytes = getFileBytes("/test.txt");
+        var bytes = getFileBytes("/test.txt");
 
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
@@ -175,7 +175,7 @@ class MultiPartFormPostingTest extends BddTest {
 
 
     @Test
-    void testMultipartAsync() throws Exception {
+    void testMultipartAsync() {
         Unirest.post(MockServer.POST)
                 .field("name", "Mark")
                 .field("file", rezFile("/test.txt"))
@@ -193,8 +193,8 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void utf8FileNames() {
-        InputStream fileData = new ByteArrayInputStream(new byte[]{'t', 'e', 's', 't'});
-        final String filename = "fileäöü.pöf";
+        var fileData = new ByteArrayInputStream(new byte[]{'t', 'e', 's', 't'});
+        var filename = "fileäöü.pöf";
 
         Unirest.post(MockServer.POST)
                 .field("file", fileData, filename)
@@ -217,8 +217,8 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void canSetModeToStrictForLegacySupport() {
-        InputStream fileData = new ByteArrayInputStream(new byte[]{'t', 'e', 's', 't'});
-        final String filename = "fileäöü.pöf";
+        var fileData = new ByteArrayInputStream(new byte[]{'t', 'e', 's', 't'});
+        var filename = "fileäöü.pöf";
 
         Unirest.post(MockServer.POST)
                 .field("file", fileData, filename)
@@ -232,7 +232,7 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void canPostInputStreamWithContentType() throws Exception {
-        File file = TestUtil.getImageFile();
+        var file = TestUtil.getImageFile();
         Unirest.post(MockServer.POST)
                 .field("testfile", new FileInputStream(file), ContentType.IMAGE_JPEG, "image.jpg")
                 .asObject(RequestCapture.class)
@@ -245,7 +245,7 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void canPostInputStream() throws Exception {
-        File file = TestUtil.getImageFile();
+        var file = TestUtil.getImageFile();
         Unirest.post(MockServer.POST)
                 .field("testfile", new FileInputStream(file), "image.jpg")
                 .asObject(RequestCapture.class)
@@ -258,7 +258,7 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void postFieldsAsMap() throws URISyntaxException {
-        File file = TestUtil.getImageFile();
+        var file = TestUtil.getImageFile();
 
         Unirest.post(MockServer.POST)
                 .fields(TestUtil.mapOf("big", "bird", "charlie", 42, "testfile", file, "gonzo", null))
@@ -274,7 +274,7 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void postFileWithoutContentType() {
-        File file = TestUtil.getImageFile();
+        var file = TestUtil.getImageFile();
         Unirest.post(MockServer.POST)
                 .field("testfile", file)
                 .asObject(RequestCapture.class)
@@ -286,7 +286,7 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void postFileWithContentType() {
-        File file = TestUtil.getImageFile();
+        var file = TestUtil.getImageFile();
         Unirest.post(MockServer.POST)
                 .field("testfile", file, ContentType.IMAGE_JPEG.getMimeType())
                 .asObject(RequestCapture.class)
@@ -312,7 +312,7 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void testPostMulipleFIles() {
-        RequestCapture cap = Unirest.post(MockServer.POST)
+        var cap = Unirest.post(MockServer.POST)
                 .field("name", asList(rezFile("/test.txt"), rezFile("/test2.txt")))
                 .asObject(RequestCapture.class)
                 .getBody()
@@ -408,16 +408,16 @@ class MultiPartFormPostingTest extends BddTest {
 
     @Test
     void rawInspection() {
-        String body = Unirest.post(MockServer.ECHO_RAW)
+        var body = Unirest.post(MockServer.ECHO_RAW)
                 .field("marky", "mark")
                 .field("funky", "bunch")
                 .field("file", rezFile("/test.txt"))
                 .asString()
                 .getBody();
 
-        String expected = TestUtil.getResource("rawPost.txt").replaceAll("\r", "").trim();
+        var expected = TestUtil.getResource("rawPost.txt").replaceAll("\r", "").trim();
 
-        String id = body.substring(2, body.indexOf("\n") - 1);
+        var id = body.substring(2, body.indexOf("\n") - 1);
         body = body.replaceAll(id, "IDENTIFIER").replaceAll("\r", "").trim();
 
         assertEquals(expected, body);

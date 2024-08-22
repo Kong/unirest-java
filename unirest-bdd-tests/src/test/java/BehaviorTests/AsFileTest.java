@@ -37,6 +37,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -54,7 +55,7 @@ class AsFileTest extends BddTest {
 
     @Test
     void canSaveContentsIntoFile() {
-        File result = Unirest.get(MockServer.GET)
+        var result = Unirest.get(MockServer.GET)
                 .queryString("talking","heads")
                 .queryString("param3", "こんにちは")
                 .asFile(test.toString())
@@ -70,7 +71,7 @@ class AsFileTest extends BddTest {
 
     @Test
     void canSaveContentsIntoFileAsync() throws Exception {
-        File result = Unirest.get(MockServer.GET)
+        var result = Unirest.get(MockServer.GET)
                 .queryString("talking","heads")
                 .queryString("param3", "こんにちは")
                 .asFileAsync(test.toString())
@@ -104,9 +105,9 @@ class AsFileTest extends BddTest {
 
     @Test
     void canDownloadABinaryFile() throws Exception {
-        File f1 = TestUtil.rezFile("/spidey.jpg");
+        var f1 = TestUtil.rezFile("/spidey.jpg");
 
-        File f2 = Unirest.get(MockServer.BINARYFILE)
+        var f2 = Unirest.get(MockServer.BINARYFILE)
                 .asFile(test.toString())
                 .getBody();
 
@@ -118,20 +119,21 @@ class AsFileTest extends BddTest {
         Unirest.get(MockServer.BINARYFILE)
                 .asFile(test.toString());
 
-        HttpResponse<File> f2 = Unirest.get(MockServer.BINARYFILE)
+        var f2 = Unirest.get(MockServer.BINARYFILE)
                 .asFile(test.toString());
 
         assertTrue(f2.getParsingError().isPresent());
-        assertTrue(f2.getParsingError().get().getCause().getCause() instanceof FileAlreadyExistsException);
+        assertThat(f2.getParsingError().get().getCause().getCause())
+                .isInstanceOf(FileAlreadyExistsException.class);
     }
 
     @Test
     void canOverrideExistingFiles() {
-        File f1 = Unirest.get(MockServer.BINARYFILE)
+        var f1 = Unirest.get(MockServer.BINARYFILE)
                 .asFile(test.toString())
                 .getBody();
 
-        File f2 = Unirest.get(MockServer.BINARYFILE)
+        var f2 = Unirest.get(MockServer.BINARYFILE)
                 .asFile(test.toString(), StandardCopyOption.REPLACE_EXISTING)
                 .getBody();
 
@@ -140,12 +142,12 @@ class AsFileTest extends BddTest {
 
     @Test
     void canOverrideExistingFiles_Async() throws Exception {
-        File f1 = Unirest.get(MockServer.BINARYFILE)
+        var f1 = Unirest.get(MockServer.BINARYFILE)
                 .asFileAsync(test.toString())
                 .get()
                 .getBody();
 
-        File f2 = Unirest.get(MockServer.BINARYFILE)
+        var f2 = Unirest.get(MockServer.BINARYFILE)
                 .asFileAsync(test.toString(), StandardCopyOption.REPLACE_EXISTING)
                 .get()
                 .getBody();
@@ -153,10 +155,9 @@ class AsFileTest extends BddTest {
         assertEquals(f1, f2);
     }
 
-
     @Test
     void dontReadFilesWhenInError() {
-        HttpResponse<File> f1 = Unirest.get(MockServer.BINARYFILE)
+        var f1 = Unirest.get(MockServer.BINARYFILE)
                 .downloadMonitor((field, fileName, bytesWritten, totalBytes) -> {
                     throw new RuntimeException("hey hey hey");
                 })

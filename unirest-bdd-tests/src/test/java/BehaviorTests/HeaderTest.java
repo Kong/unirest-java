@@ -84,7 +84,7 @@ class HeaderTest extends BddTest {
         Unirest.config().setDefaultHeader("X-Custom-Header", "hello");
         Unirest.config().setDefaultHeader("user-agent", "foobar");
 
-        HttpResponse<JsonNode> jsonResponse = Unirest.get(MockServer.GET).asJson();
+        var jsonResponse = Unirest.get(MockServer.GET).asJson();
 
         parse(jsonResponse)
                 .assertHeader("X-Custom-Header", "hello")
@@ -104,7 +104,7 @@ class HeaderTest extends BddTest {
 
     @Test
     void testCaseInsensitiveHeaders() {
-        GetRequest request = Unirest.get(MockServer.GET)
+        var request = Unirest.get(MockServer.GET)
                 .header("Name", "Marco");
 
         assertEquals(1, request.getHeaders().size());
@@ -256,7 +256,7 @@ class HeaderTest extends BddTest {
                 .getBody()
                 .assertBasicAuth("user1","pass1");
 
-        JsonNode bin = Unirest.post("http://httpbin.org/post")
+        var bin = Unirest.post("http://httpbin.org/post")
                 .basicAuth("user2", "pass2")
                 .asJson()
                 .getBody();

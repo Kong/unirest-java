@@ -60,47 +60,53 @@ public class HeaderAsserts {
         assertFalse(headers.containsKey(s), "Should Have No Header " + s);
     }
 
-    public void assertHeader(String key, String... value) {
+    public HeaderAsserts assertHeader(String key, String... value) {
         TestUtil.assertMultiMap(headers).containsKeys(key);
         assertThat(headers.get(key))
                 .extracting(HeaderValue::getValue)
                 .contains(value);
+        return this;
 
     }
 
-    public void assertBasicAuth(String username, String password) {
+    public HeaderAsserts assertBasicAuth(String username, String password) {
         TestUtil.assertMultiMap(headers).containsKeys("Authorization");
         var value = headers.get("Authorization").get(0);
         assertThat(value.getValue()).as("Missing value scope of Basic").contains("Basic ");
         String decoded = new String(Base64.getDecoder().decode(value.getValue().replace("Basic ", "")));
         assertThat(decoded).isEqualTo(username + ":" + password);
+        return this;
     }
 
-    public void assertHeaderSize(String name, int size) {
+    public HeaderAsserts assertHeaderSize(String name, int size) {
         assertEquals(size, headers.get(name).size());
+        return this;
     }
 
-    public void assertMultiPartContentType() {
-        List<HeaderValue> h = headers.get("Content-Type");
+    public HeaderAsserts assertMultiPartContentType() {
+        var h = headers.get("Content-Type");
         assertEquals(1, h.size(), "Expected exactly 1 Content-Type header");
-        HeaderValue value = h.get(0);
+        var value = h.get(0);
         value.assertMainValue("multipart/form-data");
         value.assertHasParam("boundary");
         value.assertParam("charset", "UTF-8");
+        return this;
     }
 
-    public void assertHeaderWithParam(String headerKey, String headerValue, String paramKey, String paramValue) {
+    public HeaderAsserts assertHeaderWithParam(String headerKey, String headerValue, String paramKey, String paramValue) {
         TestUtil.assertMultiMap(headers).containsKeys(headerKey);
         var value = headers.get(headerKey).get(0);
         value.assertMainValue(headerValue);
         value.assertParam(paramKey, paramValue);
+        return this;
     }
 
-    public void assertRawValue(String key, String value) {
+    public HeaderAsserts assertRawValue(String key, String value) {
         assertThat(headers.get(key))
                 .isNotEmpty()
                 .extracting(HeaderValue::rawValue)
                 .contains(value);
+        return this;
     }
 
     public HeaderValue getFirst(String name) {

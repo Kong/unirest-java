@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class WebsocketTest extends BddTest {
     @Test
     void makeAWebSocket() throws Exception {
-        TheListener listener = new TheListener();
+        var listener = new TheListener();
         MockServer.WebSocketHandler.expectOpeningMessage("Darkness Rises When Silence Dies");
         assertEquals("ws://localhost:4567/websocket", MockServer.WEBSOCKET);
         Unirest.webSocket(MockServer.WEBSOCKET)

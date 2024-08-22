@@ -33,8 +33,8 @@ class HeaderAssertsTest {
 
     @Test
     void canAssertHeaderWithParts() {
-        HeaderAsserts a = new HeaderAsserts(Map.of("foo", "bar; baz=qux; zip=zap;;"));
-        a.assertHeader("foo", "bar");
-        a.assertHeaderWithParam("foo", "bar", "baz", "qux");
+        new HeaderAsserts(Map.of("foo", "bar; baz=qux; zip=zap;;"))
+                .assertHeader("foo", "bar")
+                .assertHeaderWithParam("foo", "bar", "baz", "qux");
     }
 }

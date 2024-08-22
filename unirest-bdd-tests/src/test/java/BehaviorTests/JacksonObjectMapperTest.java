@@ -37,7 +37,7 @@ class JacksonObjectMapperTest {
 
     @Test
     void jsonPatch() throws JSONException {
-        JsonPatch patch = new JsonPatch();
+        var patch = new JsonPatch();
         patch.add("/foo", "bar");
         patch.add("/baz", "qux");
 
@@ -51,11 +51,11 @@ class JacksonObjectMapperTest {
 
     @Test
     void jsonPatchInRequestCapture() throws JSONException {
-        JsonPatch patch = new JsonPatch();
+        var patch = new JsonPatch();
         patch.add("/foo", "bar");
         patch.add("/baz", "qux");
 
-        RequestCapture rc = new RequestCapture();
+        var rc = new RequestCapture();
         rc.setPatch(patch);
 
         String actualStr = om.writeValue(rc);

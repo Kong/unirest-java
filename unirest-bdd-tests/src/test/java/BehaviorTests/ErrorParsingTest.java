@@ -58,7 +58,7 @@ class ErrorParsingTest extends BddTest {
     void parsingAnAlternativeErrorObject() {
         MockServer.setJsonAsResponse(new ErrorThing("boom!"));
 
-        ErrorThing e = Unirest.get(MockServer.ERROR_RESPONSE)
+        var e = Unirest.get(MockServer.ERROR_RESPONSE)
                 .asObject(RequestCapture.class)
                 .mapError(ErrorThing.class);
 
@@ -69,7 +69,7 @@ class ErrorParsingTest extends BddTest {
     void mapTheErrorToAString() {
         MockServer.setJsonAsResponse(new ErrorThing("boom!"));
 
-        String e = Unirest.get(MockServer.ERROR_RESPONSE)
+        var e = Unirest.get(MockServer.ERROR_RESPONSE)
                 .asObject(RequestCapture.class)
                 .mapError(String.class);
 
@@ -80,7 +80,7 @@ class ErrorParsingTest extends BddTest {
     void parsingAnAlternativeErrorObject_StringBody() {
         MockServer.setJsonAsResponse(new ErrorThing("boom!"));
 
-        ErrorThing e = Unirest.get(MockServer.ERROR_RESPONSE)
+        var e = Unirest.get(MockServer.ERROR_RESPONSE)
                 .asString()
                 .mapError(ErrorThing.class);
 
@@ -91,7 +91,7 @@ class ErrorParsingTest extends BddTest {
     void parsingAnAlternativeErrorObject_JsonBody() {
         MockServer.setJsonAsResponse(new ErrorThing("boom!"));
 
-        ErrorThing e = Unirest.get(MockServer.ERROR_RESPONSE)
+        var e = Unirest.get(MockServer.ERROR_RESPONSE)
                 .asJson()
                 .mapError(ErrorThing.class);
 
@@ -100,7 +100,7 @@ class ErrorParsingTest extends BddTest {
 
     @Test
     void ifNoErrorThenGetTheRegularBody() {
-        ErrorThing error = Unirest.get(MockServer.GET)
+        var error = Unirest.get(MockServer.GET)
                 .asObject(RequestCapture.class)
                 .mapError(ErrorThing.class);
 
@@ -109,17 +109,17 @@ class ErrorParsingTest extends BddTest {
 
     @Test
     void failsIfErrorResponseCantBeMapped() {
-        JacksonObjectMapper om = new JacksonObjectMapper();
+        var om = new JacksonObjectMapper();
         om.om.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, false);
         om.om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
 
         MockServer.setJsonAsResponse(new ErrorThing("boom!"));
 
-        HttpResponse<RequestCapture> request = Unirest.get(MockServer.ERROR_RESPONSE)
+        var request = Unirest.get(MockServer.ERROR_RESPONSE)
                 .withObjectMapper(om)
                 .asObject(RequestCapture.class);
 
-        NotTheError error = request.mapError(NotTheError.class);
+        var error = request.mapError(NotTheError.class);
 
         assertNull(error.merp);
         assertEquals("{\"message\":\"boom!\"}", request.getParsingError().get().getOriginalBody());

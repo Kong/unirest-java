@@ -48,7 +48,7 @@ class AsGenericTypeTest extends BddTest {
     void canGetAListOfObjects() {
         MockServer.setJsonAsResponse(foos);
 
-        List<Foo> foos = Unirest.get(MockServer.GET)
+        var foos = Unirest.get(MockServer.GET)
                                 .asObject(new GenericType<List<Foo>>(){})
                                 .getBody();
 
@@ -59,7 +59,7 @@ class AsGenericTypeTest extends BddTest {
     void canGetAListOfObjectsAsync() throws ExecutionException, InterruptedException {
         MockServer.setJsonAsResponse(foos);
 
-        List<Foo> foos = Unirest.get(MockServer.GET)
+        var foos = Unirest.get(MockServer.GET)
                 .asObjectAsync(new GenericType<List<Foo>>(){})
                 .get()
                 .getBody();
@@ -86,11 +86,11 @@ class AsGenericTypeTest extends BddTest {
     void soManyLayersOfGenerics() {
         MockServer.setJsonAsResponse(new WeirdType<>(foos, "hey"));
 
-        WeirdType<List<Foo>> foos = Unirest.get(MockServer.GET)
+        var foos = Unirest.get(MockServer.GET)
                 .asObject(new GenericType<WeirdType<List<Foo>>>(){})
                 .getBody();
 
-        List<Foo> someTees = foos.getSomeTees();
+        var someTees = foos.getSomeTees();
         assertTheFoos(someTees);
     }
 
@@ -100,11 +100,11 @@ class AsGenericTypeTest extends BddTest {
 
         MockServer.setJsonAsResponse(new WeirdType<>(foos, "hey"));
 
-        WeirdType<List<Foo>> foos = Unirest.get(MockServer.GET)
+        var foos = Unirest.get(MockServer.GET)
                 .asObject(new GenericType<WeirdType<List<Foo>>>(){})
                 .getBody();
 
-        List<Foo> someTees = foos.getSomeTees();
+        var someTees = foos.getSomeTees();
         assertTheFoos(someTees);
     }
 

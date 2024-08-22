@@ -92,15 +92,15 @@ class QueryStringTest extends BddTest {
     @Test
     void testGetMultiple() {
         for (int i = 1; i <= 20; i++) {
-            HttpResponse<JsonNode> response = Unirest.get(MockServer.GET + "?try=" + i).asJson();
+            var response = Unirest.get(MockServer.GET + "?try=" + i).asJson();
             parse(response).assertParam("try", String.valueOf(i));
         }
     }
 
     @Test
     void testQueryStringEncoding() {
-        String testKey = "email2=someKey&email";
-        String testValue = "hello@hello.com";
+        var testKey = "email2=someKey&email";
+        var testValue = "hello@hello.com";
 
         Unirest.get(MockServer.GET)
                 .queryString(testKey, testValue)

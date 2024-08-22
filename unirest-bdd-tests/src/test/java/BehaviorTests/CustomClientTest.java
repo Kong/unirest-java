@@ -25,7 +25,6 @@
 
 package BehaviorTests;
 
-
 import kong.unirest.core.Client;
 import kong.unirest.core.HttpRequest;
 import kong.unirest.core.HttpResponse;
@@ -43,9 +42,9 @@ class CustomClientTest extends BddTest {
 
     @Test
     void settingACustomClient() {
-        Client client = mock(Client.class);;
+        var client = mock(Client.class);;
 
-        HttpResponse mock = mock(HttpResponse.class);
+        var mock = mock(HttpResponse.class);
         when(client.request(any(HttpRequest.class),
                 any(Function.class),
                 any(Class.class))).thenReturn(mock);
@@ -53,6 +52,4 @@ class CustomClientTest extends BddTest {
 
         assertEquals(mock, Unirest.get("http://localhost/getme").asEmpty());
     }
-
-
 }

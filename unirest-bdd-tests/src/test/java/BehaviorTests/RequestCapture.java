@@ -289,7 +289,6 @@ public class RequestCapture {
         return this;
     }
 
-
     public RequestCapture assertMultiPartContentType() {
         headers.assertMultiPartContentType();
         return this;

@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ExecutorTests extends BddTest {
     @Test
     void canSetCustomExecutor() {
-        CustomExecutor executor = new CustomExecutor();
+        var executor = new CustomExecutor();
         Unirest.config().executor(executor);
         Unirest.get(MockServer.GET).asEmpty();
         assertTrue(executor.wasUsed);

@@ -93,7 +93,7 @@ class CookieTest extends BddTest {
         MockServer.expectCookie("JSESSIONID", "ABC123");
         MockServer.expectCookie("color", "ruby");
 
-        HttpResponse response = Unirest.get(MockServer.GET).asEmpty();
+        var response = Unirest.get(MockServer.GET).asEmpty();
 
         assertEquals("ABC123", response.getCookies().getNamed("JSESSIONID").getValue());
         assertEquals("ruby", response.getCookies().getNamed("color").getValue());
@@ -103,7 +103,7 @@ class CookieTest extends BddTest {
     void canGetUnicode() {
         MockServer.expectCookie("nepali", "फनकी");
 
-        HttpResponse response = Unirest.get(MockServer.GET).asEmpty();
+        var response = Unirest.get(MockServer.GET).asEmpty();
 
         assertEquals("फनकी", response.getCookies().getNamed("nepali").getUrlDecodedValue());
     }
@@ -112,7 +112,7 @@ class CookieTest extends BddTest {
     void canGetValuesWithBadCharacters() {
         MockServer.expectCookie("odd", "1=2;3=4");
 
-        HttpResponse response = Unirest.get(MockServer.GET).asEmpty();
+        var response = Unirest.get(MockServer.GET).asEmpty();
 
         assertEquals("1=2;3=4", response.getCookies().getNamed("odd").getUrlDecodedValue());
     }
@@ -121,7 +121,7 @@ class CookieTest extends BddTest {
     void complicatedCookies(){
         expectCoookie(42);
 
-        HttpResponse response = Unirest.get(MockServer.GET).asEmpty();
+        var response = Unirest.get(MockServer.GET).asEmpty();
 
         Cookie back = response.getCookies().getNamed("color");
         assertEquals("blue", back.getValue());
@@ -135,18 +135,18 @@ class CookieTest extends BddTest {
     @Test
     void cookieLifeCycle() {
         expectCoookie(42);
-        HttpResponse r1 = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
+        var r1 = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
         assertNotNull(r1.getCookies().getNamed("color"));
 
         MockServer.clearCookies();
         expectCoookie(0);
 
-        HttpResponse<RequestCapture> r2 = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
+        var r2 = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
         assertNotNull(r1.getCookies().getNamed("color"));
         r2.getBody().assertCookie("color", "blue");
 
         MockServer.clearCookies();
-        HttpResponse<RequestCapture> r3 = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
+        var r3 = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
         r3.getBody().assertNoCookie("color");
     }
 
@@ -175,13 +175,13 @@ class CookieTest extends BddTest {
     void doubleQuotedValues() {
         MockServer.expectCookie(new io.javalin.http.Cookie("foo", "\"bar\""));
 
-        HttpResponse<RequestCapture> res = Unirest.get(MockServer.GET)
+        var res = Unirest.get(MockServer.GET)
                 .cookie("baz", "\"  wut  \"")
                 .asObject(RequestCapture.class);
 
         res.getBody().assertCookie("baz", "  wut  ");
 
-        Cookie cookie = res
+        var cookie = res
                 .getCookies()
                 .getNamed("foo");
 
@@ -219,7 +219,7 @@ class CookieTest extends BddTest {
 
         // We make a request and the cookie is returned and we have the cookie
         // It should now be in our store
-        HttpResponse r1 = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
+        var r1 = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
         assertNotNull(r1.getCookies().getNamed("color"));
 
     }
@@ -228,14 +228,16 @@ class CookieTest extends BddTest {
     void newAgeCookies() {
         Unirest.config().cookieSpec("standard");
         MockServer.addResponseHeader("Set-Cookie", "cookie_name=blah;Max-Age=86400;Expires=Wed, 9 Dec 2220 20:26:05 GMT;Path=/;Domain=localhost;HTTPOnly");
-        HttpResponse response = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
+
+        var response = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
         assertNotNull(response.getCookies().getNamed("cookie_name"));
-        HttpResponse<RequestCapture> r2 = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
+
+        var r2 = Unirest.get(MockServer.GET).asObject(RequestCapture.class);
         r2.getBody().assertCookie("cookie_name","blah");
     }
 
     private String getCookieValue(ZonedDateTime dt) {
-        String date = dt.format(DateTimeFormatter.ofPattern("EEE, dd-MMM-yyyy HH:mm:ss zzz"));
+        var date = dt.format(DateTimeFormatter.ofPattern("EEE, dd-MMM-yyyy HH:mm:ss zzz"));
         return String.format("color=blue; Path=/get; Max-Age=6000; Domain=localhost; Expires=%s; HttpOnly", date);
     }
 }

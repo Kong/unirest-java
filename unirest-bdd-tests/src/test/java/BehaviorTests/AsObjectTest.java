@@ -43,7 +43,8 @@ class AsObjectTest extends BddTest {
     @Test
     void basicJsonObjectMapperIsTheDefault() {
         Unirest.config().reset(true);
-        assertTrue(Unirest.config().getObjectMapper() instanceof GsonObjectMapper);
+        assertThat(Unirest.config().getObjectMapper())
+                .isInstanceOf(GsonObjectMapper.class);
     }
 
     @Test
@@ -60,10 +61,10 @@ class AsObjectTest extends BddTest {
 
     @Test
     void whenNoBodyIsReturned() {
-        HttpResponse<RequestCapture> i = Unirest.get(MockServer.NOBODY).asObject(RequestCapture.class);
+        var i = Unirest.get(MockServer.NOBODY).asObject(RequestCapture.class);
 
         assertEquals(200, i.getStatus());
-        assertEquals(null, i.getBody());
+        assertNull(i.getBody());
     }
 
     @Test
@@ -102,7 +103,7 @@ class AsObjectTest extends BddTest {
     void canPassAnObjectMapperAsPartOfARequest(){
         Unirest.config().setObjectMapper(null);
 
-        TestingMapper mapper = new TestingMapper();
+        var mapper = new TestingMapper();
         Unirest.post(MockServer.POST)
                 .queryString("foo", "bar")
                 .withObjectMapper(mapper)
@@ -153,7 +154,7 @@ class AsObjectTest extends BddTest {
 
     @Test
     void ifTheObjectMapperFailsReturnEmptyAndAddToParsingError() {
-        HttpResponse<RequestCapture> request = Unirest.get(MockServer.INVALID_REQUEST)
+        var request = Unirest.get(MockServer.INVALID_REQUEST)
                 .asObject(RequestCapture.class);
 
         assertNull(request.getBody());
@@ -167,7 +168,7 @@ class AsObjectTest extends BddTest {
 
     @Test
     void ifTheObjectMapperFailsReturnEmptyAndAddToParsingErrorObGenericTypes() {
-        HttpResponse<RequestCapture> request = Unirest.get(MockServer.INVALID_REQUEST)
+        var request = Unirest.get(MockServer.INVALID_REQUEST)
                 .asObject(new GenericType<RequestCapture>() {});
 
         assertNull(request.getBody());
@@ -180,7 +181,7 @@ class AsObjectTest extends BddTest {
 
     @Test
     void unirestExceptionsAreAlsoParseExceptions() {
-        HttpResponse<RequestCapture> request = Unirest.get(MockServer.INVALID_REQUEST)
+        var request = Unirest.get(MockServer.INVALID_REQUEST)
                 .asObject(new GenericType<RequestCapture>() {});
 
         assertNull(request.getBody());
@@ -193,14 +194,14 @@ class AsObjectTest extends BddTest {
 
     @Test
     void canSetObjectMapperToFailOnUnknown() {
-        com.fasterxml.jackson.databind.ObjectMapper jack = new com.fasterxml.jackson.databind.ObjectMapper();
+        var jack = new com.fasterxml.jackson.databind.ObjectMapper();
         jack.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
 
         Unirest.config().setObjectMapper(new JacksonObjectMapper(jack));
 
         MockServer.setStringResponse("{\"foo\": [1,2,3] }");
 
-        Error error = Unirest.get(MockServer.GET)
+        var error = Unirest.get(MockServer.GET)
                 .asObject(RequestCapture.class)
                 .mapError(Error.class);
 
@@ -216,21 +217,22 @@ class AsObjectTest extends BddTest {
                 .getParsingError()
                 .get();
 
-        assertThat(ex)
-                .isInstanceOf(UnirestParsingException.class)
-                .hasMessage("kong.unirest.core.UnirestException: com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'hi': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n" +
-                        " at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 3]");
+        assertParsingError(ex);
 
         var ex2 = Unirest.get(MockServer.ERROR_RESPONSE)
                 .asObject(new GenericType<SomeTestClass>() {})
                 .getParsingError()
                 .get();
 
-        assertThat(ex2)
+        assertParsingError(ex2);
+
+    }
+
+    private static void assertParsingError(UnirestParsingException e) {
+        assertThat(e)
                 .isInstanceOf(UnirestParsingException.class)
                 .hasMessage("kong.unirest.core.UnirestException: com.fasterxml.jackson.core.JsonParseException: Unrecognized token 'hi': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n" +
                         " at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 3]");
-
     }
 
     static class SomeTestClass {}

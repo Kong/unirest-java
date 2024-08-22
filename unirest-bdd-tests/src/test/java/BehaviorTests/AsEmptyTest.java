@@ -48,7 +48,7 @@ class AsEmptyTest extends BddTest {
     @Test
     void canDoAEmptyRequestThatDoesNotParseBodyAtAll() {
         MockServer.addResponseHeader("Content-Type", "json");
-        HttpResponse<Empty> res = Unirest.get(MockServer.GET).asEmpty();
+        var res = Unirest.get(MockServer.GET).asEmpty();
 
         assertNull(res.getBody());
         assertEquals(200, res.getStatus());
@@ -58,7 +58,7 @@ class AsEmptyTest extends BddTest {
     @Test
     void canDoEmptyAsync() throws Exception {
         MockServer.addResponseHeader("Content-Type", "json");
-        HttpResponse<Empty> res = Unirest.get(MockServer.GET).asEmptyAsync().get();
+        var res = Unirest.get(MockServer.GET).asEmptyAsync().get();
 
         assertNull(res.getBody());
         assertEquals(200, res.getStatus());

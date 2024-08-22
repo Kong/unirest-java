@@ -35,18 +35,18 @@ class AsBytesTest extends BddTest {
 
     @Test
     void getGetResultAsBytes() {
-        byte[] content = Unirest.get(MockServer.GET)
+        var content = Unirest.get(MockServer.GET)
                 .asBytes()
                 .getBody();
 
-        RequestCapture cap = om.readValue(content, RequestCapture.class);
+        var cap = om.readValue(content, RequestCapture.class);
 
         cap.assertStatus(200);
     }
 
     @Test
     void getGetBinaryResultAsBytes() {
-        byte[] content = Unirest.get(MockServer.BINARYFILE)
+        var content = Unirest.get(MockServer.BINARYFILE)
                 .asBytes()
                 .getBody();
 
@@ -55,12 +55,12 @@ class AsBytesTest extends BddTest {
 
     @Test
     void getGetResultAsBytesAsync() throws Exception {
-        byte[] content = Unirest.get(MockServer.GET)
+        var content = Unirest.get(MockServer.GET)
                 .asBytesAsync()
                 .get()
                 .getBody();
 
-        RequestCapture cap = om.readValue(content, RequestCapture.class);
+        var cap = om.readValue(content, RequestCapture.class);
 
         cap.assertStatus(200);
     }
@@ -83,7 +83,7 @@ class AsBytesTest extends BddTest {
     @Test // https://github.com/Kong/unirest-java/issues/424
     void mappingErrorsFromAsBytes() {
         MockServer.setStringResponse("howdy");
-        String r = Unirest.get(MockServer.ERROR_RESPONSE)
+        var r = Unirest.get(MockServer.ERROR_RESPONSE)
                 .asBytes()
                 .mapError(String.class);
 
@@ -93,7 +93,7 @@ class AsBytesTest extends BddTest {
     @Test // https://github.com/Kong/unirest-java/issues/424
     void mappingErrorsFromAsBytesMapped() {
         MockServer.setJsonAsResponse(new Foo("howdy"));
-        Foo r = Unirest.get(MockServer.ERROR_RESPONSE)
+        var r = Unirest.get(MockServer.ERROR_RESPONSE)
                 .asBytes()
                 .mapError(Foo.class);
 

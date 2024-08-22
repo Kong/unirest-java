@@ -151,7 +151,7 @@ class JsonPatchTest extends BddTest {
                 .getBody()
                 .body;
 
-        String expected = TestUtil.getResource("test-json-patch.json");
+        var expected = TestUtil.getResource("test-json-patch.json");
 
         JSONAssert.assertEquals(expected, patch, true);
     }

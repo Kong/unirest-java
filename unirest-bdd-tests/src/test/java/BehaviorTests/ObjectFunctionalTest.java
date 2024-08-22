@@ -45,7 +45,7 @@ class ObjectFunctionalTest extends BddTest {
     void canUseAFunctionToTransform() {
         MockServer.setJsonAsResponse(of("foo", "bar"));
 
-        Map r = Unirest.get(MockServer.GET)
+        var r = Unirest.get(MockServer.GET)
                 .asObject(i -> gson.fromJson(i.getContentReader(), HashMap.class))
                 .getBody();
 
@@ -56,7 +56,7 @@ class ObjectFunctionalTest extends BddTest {
     void canUseAFunctionToTransformAsync() throws Exception {
         MockServer.setJsonAsResponse(of("foo", "bar"));
 
-        Map r = Unirest.get(MockServer.GET)
+        var r = Unirest.get(MockServer.GET)
                 .asObjectAsync(i -> gson.fromJson(i.getContentReader(), HashMap.class))
                 .get()
                 .getBody();
@@ -68,7 +68,7 @@ class ObjectFunctionalTest extends BddTest {
     void willNotStopForParsingExceptions() {
         MockServer.setStringResponse("call me ishmael");
 
-        RuntimeException ohNoes = new RuntimeException("oh noes");
+        var ohNoes = new RuntimeException("oh noes");
 
         HttpResponse<Object> r = Unirest.get(MockServer.GET)
                 .asObject(i -> {
@@ -85,9 +85,9 @@ class ObjectFunctionalTest extends BddTest {
     void willNotStopForParsingExceptions_async() throws Exception {
         MockServer.setStringResponse("call me ishmael");
 
-        RuntimeException ohNoes = new RuntimeException("oh noes");
+        var ohNoes = new RuntimeException("oh noes");
 
-        HttpResponse<Object> r = Unirest.get(MockServer.GET)
+        var r = Unirest.get(MockServer.GET)
                 .asObjectAsync(i -> {
                     throw ohNoes;
                 }).get();
