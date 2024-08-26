@@ -109,6 +109,9 @@ public class Path {
      * @param value the value
      */
     public void queryString(String name, Object value) {
+        if (value == null) {
+            return;
+        }
         StringBuilder queryString = new StringBuilder();
         if (url.contains("?")) {
             queryString.append("&");

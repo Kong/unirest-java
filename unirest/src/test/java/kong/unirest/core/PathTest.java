@@ -75,4 +75,13 @@ class PathTest {
     void willNotAddBaseIfPrimaryPathIsFull() {
         assertEquals("http://somwhere/fruit", new Path("http://somwhere/fruit","http://elsewhere/rocks").toString());
     }
+
+    @Test
+    void willNotAddANullQueryString() {
+        String raw = "http://somewhere/fruits";
+        Path q = new Path(raw, null);
+        String test = null;
+        q.queryString("id", test);
+        assertEquals("http://somewhere/fruits", q.toString());
+    }
 }
