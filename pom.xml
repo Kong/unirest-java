@@ -32,10 +32,11 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <jackson.version>2.16.2</jackson.version>
         <main.dir>${project.basedir}</main.dir>
-        <junit.version>5.10.2</junit.version>
-        <mockito.version>5.11.0</mockito.version>
+        <junit.version>5.11.0</junit.version>
+        <mockito.version>5.12.0</mockito.version>
         <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
-        <assertj.version>3.25.3</assertj.version>
+        <assertj.version>3.26.3</assertj.version>
+        <maven-surefire-plugin.version>3.4.0</maven-surefire-plugin.version>
     </properties>
 
     <scm>
@@ -181,7 +182,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <argLine>-Duser.timezone=UTC</argLine>
                 </configuration>
@@ -189,7 +190,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>${maven-surefire-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
