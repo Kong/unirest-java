@@ -30,7 +30,7 @@ package kong.unirest.core;
  * and its clients where all the action happens.
  * This class is suitable for mocking.
  */
-public class UnirestInstance {
+public class UnirestInstance implements AutoCloseable {
 
     private final Config config;
 
@@ -148,6 +148,7 @@ public class UnirestInstance {
      * used with try-with-resource. This will alleviate the need to manually
      * call shutDown as it will be done automatically.
      */
+    @Override
     public void close() {
         reset(true);
     }
