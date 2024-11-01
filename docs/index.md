@@ -50,7 +50,7 @@ rightmenu: true
         <dependency>
             <groupId>com.konghq</groupId>
             <artifactId>unirest-java-bom</artifactId>
-            <version>4.3.0</version>
+            <version>4.4.5</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -578,7 +578,6 @@ Changing Unirest's config should ideally be done once, or rarely. Once Unirest h
 | ```cookieSpec(String)``` | set a cookie policy. Acceptable values: 'default' (same as Netscape), 'netscape', 'ignoreCookies', 'standard' (RFC 6265 interoprability profile) , 'standard-strict' (RFC 6265 strict profile) | default |
 | ```automaticRetries(boolean)``` | toggle disabling automatic retries (up to 4 times) for socket timeouts | true |
 | ```verifySsl(boolean)``` |toggle enforcing SSL | true |
-| ```addShutdownHook(boolean)``` | toggle to add the clients to the system shutdown hooks automatically | false |
 | ```clientCertificateStore(String,String)``` | Add a PKCS12 KeyStore by path for doing client certificates |  |
 | ```clientCertificateStore(KeyStore,String)``` | Add a PKCS12 KeyStore for doing client certificates |  |
 | ```connectionTTL(long,TimeUnit)``` | Total time to live (TTL)  defines maximum life span of persistent connections regardless of their expiration setting. No persistent connection will be re-used past its TTL value.| -1  |
@@ -608,8 +607,6 @@ As usual, Unirest maintains a primary single instance. Sometimes you might want 
     // You can also get a whole new instance
     UnirestInstance unirest = Unirest.spawnInstance();
 ```
-
-**WARNING!** If you get a new instance of unirest YOU are responsible for shutting it down when the JVM shuts down. It is not tracked or shut down by ```Unirest.shutDown();```
 
 ## Object Mappers
 Unirest offers a few different Object Mapper's based on popular JSON libraries (Jackson and GSON).

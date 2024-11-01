@@ -39,5 +39,7 @@ class UnirestInstanceTest {
         try(UnirestInstance instance = mock){ }
 
         verify(mock).close();
+
+        Unirest.shutDown();
     }
 }

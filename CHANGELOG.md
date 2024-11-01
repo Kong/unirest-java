@@ -1,3 +1,9 @@
+## 4.4.5
+* Issue #536 UnirestInstance should implement AutoCloseable
+
+## 4.4.4
+* issue #528 reset content headers when multiPartContent is called
+
 ## 4.4.0
 * Issue #526 split connection timeout from request timeout. The request no longer has a connection timeout setting, and instead has a request timeout setting as a replacement. Previously these two settings had been conflated. The overall config also has a default request timeout that will be applied to all requests if the request setting is not set. The default setting is null which indicates a infinite timeout. 
 
