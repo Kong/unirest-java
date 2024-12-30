@@ -29,6 +29,7 @@ theme:
 nav:
     - About: index.md
     - Installation: installation.md
+    - Upgrade Guide: upgrade-guide.md
     - Configuration: configuration.md
     - Making Requests: requests.md
     - Handling Responses: responses.md

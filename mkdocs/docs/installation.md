@@ -41,6 +41,9 @@ You can use a maven bom to manage the modules:
 </dependencies>
 ```
 
+#### 🚨 Attention JSON users 🚨
+Under Unirest 4, core no longer comes with ANY transient dependencies, and because Java itself lacks a JSON parser you MUST declare a JSON implementation if you wish to do object mappings or use Json objects.
+
 ### Upgrading from Previous Versions
 See the [Upgrade Guide](https://github.com/Kong/unirest-java/blob/master/UPGRADE_GUIDE.md)
 
