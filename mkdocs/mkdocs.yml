@@ -1,5 +1,7 @@
 site_name: Unirest-Java Documentation
 site_url: https://kong.github.io/unirest-java/installation
+repo_url: https://github.com/Kong/unirest-java
+repo_name: Kong/unirest-java
 theme:
     name: material
     palette:
