@@ -4,6 +4,8 @@ repo_url: https://github.com/Kong/unirest-java
 repo_name: Kong/unirest-java
 theme:
     name: material
+    favicon: images/favicon-180.png
+    logo: images/kong.png
     palette:
        # Palette toggle for automatic mode
        - media: "(prefers-color-scheme)"
