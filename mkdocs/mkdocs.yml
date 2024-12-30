@@ -1,5 +1,5 @@
 site_name: Unirest-Java Documentation
-site_url: https://kong.github.io/unirest-java/
+site_url: https://kong.github.io/unirest-java/installation
 theme:
     name: material
     palette:
@@ -25,6 +25,15 @@ theme:
     features:
        - content.code.copy
        - content.code.select
+       
+nav:
+    - About: index.md
+    - Installation: installation.md
+    - Configuration: configuration.md
+    - Making Requests: requests.md
+    - Handling Responses: responses.md
+    - Caching Responses: caching.md
+    
 
 markdown_extensions:
   - pymdownx.highlight:
