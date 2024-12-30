@@ -36,6 +36,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,13 +61,17 @@ public class HeaderAsserts {
         assertFalse(headers.containsKey(s), "Should Have No Header " + s);
     }
 
-    public HeaderAsserts assertHeader(String key, String... value) {
+    public HeaderAsserts assertContainsHeader(String key){
         TestUtil.assertMultiMap(headers).containsKeys(key);
+        return this;
+    }
+
+    public HeaderAsserts assertHeader(String key, String... value) {
+        assertContainsHeader(key);
         assertThat(headers.get(key))
                 .extracting(HeaderValue::getValue)
                 .contains(value);
         return this;
-
     }
 
     public HeaderAsserts assertBasicAuth(String username, String password) {

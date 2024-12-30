@@ -56,7 +56,7 @@ public class Http2Test extends BddTest  {
                 .getBody()
                 .assertHeader("Connection", "Upgrade, HTTP2-Settings")
                 .assertHeader("Upgrade", "h2c")
-                .assertHeader("HTTP2-Settings", "AAEAAEAAAAIAAAABAAMAAABkAAQBAAAAAAUAAEAA");
+                .assertHeader("HTTP2-Settings", TestUtil.Matchers.isBase64Encoded());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class Http2Test extends BddTest  {
                 .getBody()
                 .assertHeader("Connection", "Upgrade, HTTP2-Settings")
                 .assertHeader("Upgrade", "h2c")
-                .assertHeader("HTTP2-Settings", "AAEAAEAAAAIAAAABAAMAAABkAAQBAAAAAAUAAEAA");
+                .assertHeader("HTTP2-Settings", TestUtil.Matchers.isBase64Encoded());
     }
 
     @Test

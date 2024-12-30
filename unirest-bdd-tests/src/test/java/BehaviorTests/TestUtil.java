@@ -43,9 +43,12 @@ import java.net.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.security.KeyStore;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
+import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -156,5 +159,18 @@ class TestUtil {
 
     public static <K, V> MultimapAssert<K, V> assertMultiMap(final Multimap<K, V> actual) {
         return org.assertj.guava.api.Assertions.assertThat(actual);
+    }
+
+    public static final class Matchers {
+        public static Consumer<HeaderAsserts.HeaderValue> isBase64Encoded() {
+            return h -> {
+              var value = h.getValue();
+              try {
+                  Base64.getDecoder().decode(value);
+              }catch (IllegalArgumentException e){
+                  fail("Header was not base64 encoded: " + value);
+              }
+            };
+        }
     }
 }
