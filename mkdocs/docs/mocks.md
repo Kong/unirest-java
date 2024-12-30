@@ -1,7 +1,7 @@
 # Unirest Mocks
 
 ### About
-A series of mocks for use with Unirest for unit testing. The mock clients will not make any real web requests.
+A series of mocks for use with Unirest for unit testing. Mocked clients will not make any real web requests. This allows you to test the input into unirest and to mock responses from expected requests.
 
 ### Usage
 ```java
@@ -26,4 +26,4 @@ class MyTest {
 
 
 ### Future Enhancements
-   * Body expectations are limited and do not include forms or files.
+* Body expectations are limited and do not include forms or files.

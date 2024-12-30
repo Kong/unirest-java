@@ -34,6 +34,7 @@ nav:
     - Making Requests: requests.md
     - Handling Responses: responses.md
     - Caching Responses: caching.md
+    - Mocking: mocks.md
     
 
 markdown_extensions:
