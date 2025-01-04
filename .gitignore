@@ -14,5 +14,6 @@ Gemfile.lock
 .jekyll-metadata
 1.jpg
 dependency-reduced-pom.xml
+site
 ```
 
