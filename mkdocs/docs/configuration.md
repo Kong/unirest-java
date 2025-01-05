@@ -19,27 +19,28 @@ Changing Unirest's config should ideally be done once, or rarely. Once Unirest h
 
 ## Config Options
 
-| Builder Method  | Impact | Default |
-| ------------- | ------------- | ------------- |
-| ```connectTimeout(int)``` | Sets the connection timeout for all requests in millis  | 10000 |
-| ```proxy(proxy)``` | Sets a proxy object for negotiating proxy servers. Can include auth credentials  |  |
-| ```setDefaultHeader(String, String)``` | Sets  a default header. Will overwrite if it exists  |  |
-| ```setDefaultHeader(String, Supplier<String>)``` | Sets a default header by supplier. Good for setting trace tokens for microservice architectures. Will overwrite if it exists  |  |
-| ```addDefaultHeader(String, String)``` | Adds a default header. Multiple for the same name can exist  |  |
-| ```addDefaultHeader(String, Supplier<String>)``` | Add a default header by supplier. Good for setting trace tokens for microservice architectures.  |  |
-| ```setDefaultBasicAuth(String, String)``` | Add a default Basic Auth Header |  |
-| ```followRedirects(boolean)``` | toggle following redirects | true |
-| ```enableCookieManagement(boolean)``` | toggle accepting and storing cookies | true |
-| ```cookieSpec(String)``` | set a cookie policy. Acceptable values: 'default' (same as Netscape), 'netscape', 'ignoreCookies', 'standard' (RFC 6265 interoprability profile) , 'standard-strict' (RFC 6265 strict profile) | default |
-| ```automaticRetries(boolean)``` | toggle disabling automatic retries (up to 4 times) for socket timeouts | true |
-| ```verifySsl(boolean)``` |toggle enforcing SSL | true |
-| ```clientCertificateStore(String,String)``` | Add a PKCS12 KeyStore by path for doing client certificates |  |
-| ```clientCertificateStore(KeyStore,String)``` | Add a PKCS12 KeyStore for doing client certificates |  |
-| ```connectionTTL(long,TimeUnit)``` | Total time to live (TTL)  defines maximum life span of persistent connections regardless of their expiration setting. No persistent connection will be re-used past its TTL value.| -1  |
-| ```connectionTTL(Duration)``` | Add total time to live (TTL) by [Duration](https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html). Good for moderns Java APIs. | -1  |
-| ```errorHandler(Consumer<HttpResponse<?>> consumer)``` | Set a global error handler that will be invoked for any status > 400 or a parsing error | | 
-| ```interceptor(Interceptor value)``` | Set a global Interceptor handler that will be invoked before and after each request | | 
-| ```defaultBaseUrl(String value)``` | Set a default base URL to be used for all requests that do not already contain a scheme |  | 
+| Builder Method                                         | Impact                                                                                                                                                                                         | Default         |
+|--------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| ```connectTimeout(int)```                              | Sets the connection timeout for all requests in millis                                                                                                                                         | 10000           |
+| ```requestTimeout(int)```                              | Sets the request timeout for all requests in millis                                                                                                                                            | none (infinite) |
+| ```proxy(proxy)```                                     | Sets a proxy object for negotiating proxy servers. Can include auth credentials                                                                                                                |                 |
+| ```setDefaultHeader(String, String)```                 | Sets  a default header. Will overwrite if it exists                                                                                                                                            |                 |
+| ```setDefaultHeader(String, Supplier<String>)```       | Sets a default header by supplier. Good for setting trace tokens for microservice architectures. Will overwrite if it exists                                                                   |                 |
+| ```addDefaultHeader(String, String)```                 | Adds a default header. Multiple for the same name can exist                                                                                                                                    |                 |
+| ```addDefaultHeader(String, Supplier<String>)```       | Add a default header by supplier. Good for setting trace tokens for microservice architectures.                                                                                                |                 |
+| ```setDefaultBasicAuth(String, String)```              | Add a default Basic Auth Header                                                                                                                                                                |                 |
+| ```followRedirects(boolean)```                         | toggle following redirects                                                                                                                                                                     | true            |
+| ```enableCookieManagement(boolean)```                  | toggle accepting and storing cookies                                                                                                                                                           | true            |
+| ```cookieSpec(String)```                               | set a cookie policy. Acceptable values: 'default' (same as Netscape), 'netscape', 'ignoreCookies', 'standard' (RFC 6265 interoprability profile) , 'standard-strict' (RFC 6265 strict profile) | default         |
+| ```automaticRetries(boolean)```                        | toggle disabling automatic retries (up to 4 times) for socket timeouts                                                                                                                         | true            |
+| ```verifySsl(boolean)```                               | toggle enforcing SSL                                                                                                                                                                           | true            |
+| ```clientCertificateStore(String,String)```            | Add a PKCS12 KeyStore by path for doing client certificates                                                                                                                                    |                 |
+| ```clientCertificateStore(KeyStore,String)```          | Add a PKCS12 KeyStore for doing client certificates                                                                                                                                            |                 |
+| ```connectionTTL(long,TimeUnit)```                     | Total time to live (TTL)  defines maximum life span of persistent connections regardless of their expiration setting. No persistent connection will be re-used past its TTL value.             | -1              |
+| ```connectionTTL(Duration)```                          | Add total time to live (TTL) by [Duration](https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html). Good for moderns Java APIs.                                                     | -1              |
+| ```errorHandler(Consumer<HttpResponse<?>> consumer)``` | Set a global error handler that will be invoked for any status > 400 or a parsing error                                                                                                        |                 | 
+| ```interceptor(Interceptor value)```                   | Set a global Interceptor handler that will be invoked before and after each request                                                                                                            |                 | 
+| ```defaultBaseUrl(String value)```                     | Set a default base URL to be used for all requests that do not already contain a scheme                                                                                                        |                 | 
 
 ##  Global Interceptor
 You can set a global interceptor for your configuration. This is invoked before and after each request.
