@@ -106,7 +106,7 @@ The mock module has had its maven artifact ID changed only.
 * Apache Replaced by native Java HTTP Client
 * Modular Maven config with bom
 * Zero external runtime dependencies by default
-* You MUST include JSON support on your own ([see upgrade guide](mkdocs/docs/upgrade-guilde))
+* You MUST include JSON support on your own ([see upgrade guide](mkdocs/docs/upgrade-guide))
 * New Maven coordinates
 * New packaging in order to not conflict with older versions
 
@@ -365,7 +365,7 @@ The mock module has had its maven artifact ID changed only.
 * JsonNode now has a ```toPrettyString``` method for getting a formatted json string
 
 ## 3.0.00
-* Replace the dependency on org.json with a native kong.unirest library powered by gson that matches org.json interfaces. See the [Upgrade Guide](mkdocs/docs/upgrade-guilde) for details.
+* Replace the dependency on org.json with a native kong.unirest library powered by gson that matches org.json interfaces. See the [Upgrade Guide](mkdocs/docs/upgrade-guide) for details.
 * Issue #299. Remove gzip content-encoding header after decompression on async client
 
 ## 2.4.01
