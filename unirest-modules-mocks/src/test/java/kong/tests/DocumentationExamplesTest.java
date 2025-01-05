@@ -122,4 +122,66 @@ public class DocumentationExamplesTest {
         zombo.verify();
         homestar.verify(Times.never());
     }
+
+    @Test
+    void simpleBody() {
+        MockClient mock = MockClient.register();
+
+        mock.expect(HttpMethod.POST, "http://zombo.com")
+                .body("I can do anything? Anything at all?")
+                .thenReturn()
+                .withStatus(201);
+
+        assertEquals(201,
+                Unirest.post("http://zombo.com").body("I can do anything? Anything at all?").asEmpty().getStatus()
+        );
+    }
+
+    @Test
+    void formParams() {
+        MockClient mock = MockClient.register();
+
+        mock.expect(HttpMethod.POST, "http://zombo.com")
+                .body(FieldMatcher.of("foo", "bar",
+                                      "baz", "qux"))
+                .thenReturn()
+                .withStatus(201);
+
+        assertEquals(201,
+                Unirest.post("http://zombo.com")
+                        .field("foo", "bar")
+                        .field("baz", "qux")
+                        .asEmpty().getStatus()
+        );
+    }
+
+    @Test
+    void response() {
+        MockClient mock = MockClient.register();
+
+        mock.expect(HttpMethod.GET, "http://zombo.com")
+                .thenReturn("Care for some tea mum?")
+                .withHeader("x-zombo-brewing", "active")
+                .withStatus(418, "I am a teapot");
+
+        var response = Unirest.get("http://zombo.com").asString();
+
+        assertEquals(418, response.getStatus());
+        assertEquals("I am a teapot", response.getStatusText());
+        assertEquals("Care for some tea mum?", response.getBody());
+        assertEquals("active", response.getHeaders().getFirst("x-zombo-brewing"));
+    }
+
+    static class Teapot { public String brewstatus = "on"; }
+    @Test
+    void pojos() {
+        MockClient mock = MockClient.register();
+
+        mock.expect(HttpMethod.GET, "http://zombo.com")
+                .thenReturn(new Teapot());
+
+        var response = Unirest.get("http://zombo.com").asString();
+
+        assertEquals("{\"brewstatus\":\"on\"}", response.getBody());
+    }
 }
