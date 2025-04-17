@@ -25,6 +25,6 @@
 #
 
 
-mvn clean verify
-mvn release:prepare -DskipTests
-mvn release:perform -DskipTests
+mvn clean verify -P ossrh
+mvn release:prepare -DskipTests -P ossrh
+mvn release:perform -DskipTests -P ossrh
