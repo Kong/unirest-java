@@ -485,7 +485,7 @@ Unirest.get("http://someplace")
 
 ## 2.0.04
 * Disable SSL validation with ```Unirest.config().verifySsl(false)```. PLEASE DO NOT DO THIS IN PRODUCTION
-* Disable Automatic retries with ```Unirest.config().automaticRetries(false)```
+* Disable Automatic retries with ```Unirest.config().ÏautomaticRetries(false)```
 
 ## 2.0.03
 * Make sure the GzipInputStream gets closed.
