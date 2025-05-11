@@ -106,9 +106,8 @@ public class MockClient implements Client {
     }
 
     private Routes createNewPath(HttpRequest request) {
-        Routes p = new Routes(request);
+        Routes p = new Routes(request, defaultResponse);
         routes.add(p);
-        p.addInvoke(defaultResponse);
         return p;
     }
 
