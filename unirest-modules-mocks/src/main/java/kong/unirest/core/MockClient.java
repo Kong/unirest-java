@@ -87,7 +87,7 @@ public class MockClient implements Client {
 
     @Override
     public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, Class<?> resultType) {
-        Routes exp = findExpecation(request);
+        Routes exp = findExpectation(request);
         Config c = this.config.get();
         c.getUniInterceptor().onRequest(request, c);
         MetricContext metric = c.getMetric().begin(request.toSummary());
@@ -98,7 +98,7 @@ public class MockClient implements Client {
         return rez;
     }
 
-    private Routes findExpecation(HttpRequest request) {
+    private Routes findExpectation(HttpRequest request) {
         return routes.stream()
                 .filter(e -> e.matches(request))
                 .findFirst()
