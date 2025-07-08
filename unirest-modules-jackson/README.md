@@ -17,3 +17,4 @@ You may also provide it with your own com.fasterxml.jackson.databind.ObjectMappe
         <version>3.0.01</version>
 </dependency>
 ```
+
