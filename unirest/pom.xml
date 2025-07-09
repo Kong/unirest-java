@@ -9,6 +9,7 @@
 
     <description>Simplified, lightweight HTTP client library.</description>
     <artifactId>unirest-java-core</artifactId>
+    <name>unirest-java-core</name>
     <packaging>jar</packaging>
 
     <properties>
