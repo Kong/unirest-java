@@ -170,13 +170,7 @@ public class JavaClient implements Client {
                 .build();
 
         return client.sendAsync(r, java.net.http.HttpResponse.BodyHandlers.ofLines())
-                .thenAccept(response -> {
-                    response.body().forEach(line -> {
-                        if (!line.isBlank()) {
-                            listener.onComment(line);
-                        }
-                    });
-                })
+                .thenAccept(new SseResponseHandler(listener))
                 .exceptionally(ex -> {
                     System.err.println("Error: " + ex.getMessage());
                     return null;
