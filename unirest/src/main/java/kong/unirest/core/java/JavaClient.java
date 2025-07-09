@@ -160,6 +160,29 @@ public class JavaClient implements Client {
         return new WebSocketResponse(b.buildAsync(URI.create(request.getUrl()), listener), listener);
     }
 
+    @Override
+    public CompletableFuture<Void> sse(SseRequest request, SseListener listener) {
+        var r = java.net.http.HttpRequest
+                .newBuilder()
+                .header("Accept", "text/event-stream")
+                .GET()
+                .uri(URI.create(request.getPath().toString()))
+                .build();
+
+        return client.sendAsync(r, java.net.http.HttpResponse.BodyHandlers.ofLines())
+                .thenAccept(response -> {
+                    response.body().forEach(line -> {
+                        if (!line.isBlank()) {
+                            listener.onComment(line);
+                        }
+                    });
+                })
+                .exceptionally(ex -> {
+                    System.err.println("Error: " + ex.getMessage());
+                    return null;
+                });
+    }
+
     protected <T> HttpResponse<T> transformBody(Function<RawResponse, HttpResponse<T>> transformer, RawResponse rr) {
         try {
             return transformer.apply(rr);

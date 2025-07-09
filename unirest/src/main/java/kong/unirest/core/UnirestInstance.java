@@ -156,4 +156,8 @@ public class UnirestInstance implements AutoCloseable {
     public WebSocketRequest webSocket(String url) {
         return new WebSocketRequestImpl(config, url);
     }
+
+    public SseRequest sse(String url) {
+        return new SseRequest(config, url);
+    }
 }

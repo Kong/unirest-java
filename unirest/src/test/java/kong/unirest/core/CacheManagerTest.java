@@ -101,6 +101,11 @@ class CacheManagerTest {
         }
 
         @Override
+        public CompletableFuture<Void> sse(SseRequest request, SseListener listener) {
+            return null;
+        }
+
+        @Override
         public Object getClient() {
             return null;
         }

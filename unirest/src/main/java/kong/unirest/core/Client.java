@@ -70,4 +70,7 @@ public interface Client {
      * @return a WebSocketResponse
      */
     WebSocketResponse websocket(WebSocketRequest request, WebSocket.Listener listener);
+
+
+    CompletableFuture<Void> sse(SseRequest request, SseListener listener);
 }

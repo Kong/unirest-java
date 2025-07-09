@@ -65,6 +65,7 @@ public class MockServer {
     public static final int PORT = 4567;
     public static final String HOST = "http://localhost:" + PORT;
     public static final String WEBSOCKET = "ws://localhost:" + PORT + "/websocket";
+    public static final String SSE =  HOST + "/sse";
     public static final String WINDOWS_LATIN_1_FILE = HOST + "/public/data/cp1250.txt";
     public static final String REDIRECT = HOST + "/redirect";
     public static final String JAVALIN = HOST + "/sparkle/{spark}/yippy";
@@ -113,6 +114,7 @@ public class MockServer {
         app.error(404, MockServer::notFound);
         app.before(c -> timesCalled++);
         app.ws("/websocket", ws);
+        app.sse("/sse", new TestSSEConsumer());
         app.delete("/delete", MockServer::jsonResponse);
         app.get("/sparkle/{spark}/yippy", MockServer::sparkle);
         app.post("/post", MockServer::jsonResponse);

@@ -143,6 +143,11 @@ class CacheManager {
         public WebSocketResponse websocket(WebSocketRequest request, WebSocket.Listener listener) {
             return originalClient.websocket(request, listener);
         }
+
+        @Override
+        public CompletableFuture<Void> sse(SseRequest request, SseListener listener) {
+            return originalClient.sse(request, listener);
+        }
     }
 
     private static class CacheMap extends LinkedHashMap<Cache.Key, Object> implements Cache {
