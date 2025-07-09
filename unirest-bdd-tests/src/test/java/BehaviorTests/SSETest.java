@@ -52,8 +52,8 @@ public class SSETest extends BddTest {
 
         Thread.sleep(1000);
 
-        TestSSEConsumer.sendComment("hey1");
-        TestSSEConsumer.sendComment("hey2");
+        MockServer.Sse.sendComment("hey1");
+        MockServer.Sse.sendComment("hey2");
 
         Thread.sleep(1000);
 

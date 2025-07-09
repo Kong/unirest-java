@@ -390,4 +390,10 @@ public class MockServer {
     public static void expectErrorCode(int i) {
         errorCode = i;
     }
+
+    public static final class Sse {
+        public static void sendComment(String comment) {
+            TestSSEConsumer.sendComment(comment);
+        }
+    }
 }
