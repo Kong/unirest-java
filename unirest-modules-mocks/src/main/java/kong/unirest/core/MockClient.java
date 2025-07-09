@@ -134,6 +134,11 @@ public class MockClient implements Client {
         return new WebSocketResponse(completedFuture(clientSocket), clientListener);
     }
 
+    @Override
+    public CompletableFuture<Void> sse(SseRequest request, SseListener listener) {
+        return null;
+    }
+
     public SocketSet<MockWebSocket, MockListener> serversSocket() {
         if(remoteSocket == null){
             throw new UnirestException("No Socket Yet Established");

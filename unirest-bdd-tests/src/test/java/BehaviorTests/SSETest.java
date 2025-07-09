@@ -1,3 +1,28 @@
+/**
+ * The MIT License
+ *
+ * Copyright for portions of unirest-java are held by Kong Inc (c) 2013.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package BehaviorTests;
 
 
@@ -5,29 +30,24 @@ import kong.unirest.core.SseListener;
 import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-import java.util.Queue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.DoubleStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SSETest extends BddTest {
 
     @Test
-    void example() throws Exception {
-
-        Listener listener = new Listener();
+    void basicConnection() throws Exception {
+        var tl = new TestListener();
 
         TestUtil.run(() -> {
-            var future = Unirest.sse(MockServer.SSE).connect(listener);
-            TestUtil.blockUntil(() -> future.isDone());
+            var future = Unirest.sse(MockServer.SSE).connect(tl);
+
+            TestUtil.blockUntil(future::isDone);
         });
 
         Thread.sleep(1000);
@@ -35,23 +55,19 @@ public class SSETest extends BddTest {
         TestSSEConsumer.sendComment("hey1");
         TestSSEConsumer.sendComment("hey2");
 
-        // Wait for messages to be received (simple sleep or use Awaitility for better control)
         Thread.sleep(1000);
 
-        assertTrue(listener.stream().anyMatch(msg -> msg.contains("hey1")));
-        assertTrue(listener.stream().anyMatch(msg -> msg.contains("hey2")));
+        tl.assertHasComment(": hey1");
+        tl.assertHasComment(": hey2");
 
     }
 
-    public class Listener implements SseListener {
-        Queue<String> receivedMessages = new ConcurrentLinkedQueue<>();
+    public class TestListener implements SseListener {
+        private final List<String> comments = Collections.synchronizedList(new ArrayList<>());
 
-        public void add(String message){
-            receivedMessages.add(message);
-        }
-
-        public Stream<String> stream() {
-            return receivedMessages.stream();
+        void assertHasComment(String comment){
+            assertThat(comments)
+                    .contains(comment);
         }
 
         @Override
@@ -61,7 +77,7 @@ public class SSETest extends BddTest {
 
         @Override
         public void onComment(String line) {
-            receivedMessages.add(line);
+            comments.add(line);
         }
     }
 
