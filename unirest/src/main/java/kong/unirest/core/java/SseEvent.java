@@ -23,37 +23,53 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package BehaviorTests;
+package kong.unirest.core.java;
 
+import java.util.Objects;
 
-import kong.unirest.core.Unirest;
-import org.junit.jupiter.api.Test;
+public class SseEvent {
+    private final String id;
+    private final Object data;
+    private final String name;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-public class SSETest extends BddTest {
-
-    @Test
-    void basicConnection() throws Exception {
-        var tl = new TestListener();
-
-        TestUtil.run(() -> {
-            var future = Unirest.sse(MockServer.SSE).connect(tl);
-
-            TestUtil.blockUntil(future::isDone);
-        });
-
-        Thread.sleep(1000);
-
-        MockServer.Sse.sendComment("hey1");
-        MockServer.Sse.sendComment("hey2");
-
-        Thread.sleep(1000);
-
-        tl.assertHasComment("hey1");
-        tl.assertHasComment("hey2");
-
+    public SseEvent(String id, String type, Object data){
+        this.id = id;
+        this.name = type;
+        this.data = data;
     }
 
+    public Object data() {
+        return data;
+    }
+
+    public String id() {
+        return id;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof SseEvent)) return false;
+        SseEvent sseEvent = (SseEvent) o;
+        return Objects.equals(id, sseEvent.id)
+                && Objects.equals(data, sseEvent.data)
+                && Objects.equals(name, sseEvent.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, data);
+    }
+
+    @Override
+    public String toString() {
+        return "SseEvent{" +
+                "id='" + id + '\'' +
+                ", data=" + data +
+                ", name=" + name +
+                '}';
+    }
 }

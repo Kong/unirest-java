@@ -25,35 +25,31 @@
 
 package BehaviorTests;
 
+import kong.unirest.core.SseListener;
+import kong.unirest.core.java.SseEvent;
 
-import kong.unirest.core.Unirest;
-import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class SSETest extends BddTest {
+public class TestListener implements SseListener {
+    private final List<String> comments = Collections.synchronizedList(new ArrayList<>());
 
-    @Test
-    void basicConnection() throws Exception {
-        var tl = new TestListener();
+    void assertHasComment(String comment) {
+        assertThat(comments)
+                .contains(comment);
+    }
 
-        TestUtil.run(() -> {
-            var future = Unirest.sse(MockServer.SSE).connect(tl);
 
-            TestUtil.blockUntil(future::isDone);
-        });
-
-        Thread.sleep(1000);
-
-        MockServer.Sse.sendComment("hey1");
-        MockServer.Sse.sendComment("hey2");
-
-        Thread.sleep(1000);
-
-        tl.assertHasComment("hey1");
-        tl.assertHasComment("hey2");
+    @Override
+    public void onEvent(SseEvent event) {
 
     }
 
+    @Override
+    public void onComment(String line) {
+        comments.add(line);
+    }
 }
