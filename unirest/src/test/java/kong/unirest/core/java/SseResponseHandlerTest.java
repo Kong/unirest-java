@@ -69,6 +69,13 @@ class SseResponseHandlerTest {
     }
 
     @Test
+    void dataWithJson(){
+        handle("data: \"foo\": 1", "");
+        listener.assertEventCount(1)
+                .assertEvent("", "", "\"foo\": 1");
+    }
+
+    @Test
     void multipleDataElementEvent() {
         handle("data: YHOO",
                 "data: +2",

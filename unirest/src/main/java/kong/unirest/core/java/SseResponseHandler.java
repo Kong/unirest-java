@@ -71,7 +71,7 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
         } else if (!line.contains(":")) {
             return new ParsedLine(line, "");
         } else {
-            var spl = line.split(":");
+            var spl = line.split(":", 2);
             return new ParsedLine(spl[0].trim(), spl[1]);
         }
     }
