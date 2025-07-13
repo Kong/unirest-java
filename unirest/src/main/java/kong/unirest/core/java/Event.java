@@ -27,14 +27,14 @@ package kong.unirest.core.java;
 
 import java.util.Objects;
 
-public class SseEvent {
+public class Event {
     private final String id;
     private final Object data;
-    private final String name;
+    private final String field;
 
-    public SseEvent(String id, String type, Object data){
+    public Event(String id, String field, Object data){
         this.id = id;
-        this.name = type;
+        this.field = field;
         this.data = data;
     }
 
@@ -47,29 +47,29 @@ public class SseEvent {
     }
 
     public String name() {
-        return name;
+        return field;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof SseEvent)) return false;
-        SseEvent sseEvent = (SseEvent) o;
-        return Objects.equals(id, sseEvent.id)
-                && Objects.equals(data, sseEvent.data)
-                && Objects.equals(name, sseEvent.name);
+        if (!(o instanceof Event)) return false;
+        Event event = (Event) o;
+        return Objects.equals(id, event.id)
+                && Objects.equals(data, event.data)
+                && Objects.equals(field, event.field);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, data);
+        return Objects.hash(id, data, field);
     }
 
     @Override
     public String toString() {
         return "SseEvent{" +
-                "id='" + id + '\'' +
-                ", data=" + data +
-                ", name=" + name +
+                "data=" + data +
+                ", field=" + field +
+                ", id=" + id  +
                 '}';
     }
 }

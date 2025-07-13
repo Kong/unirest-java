@@ -25,9 +25,9 @@
 
 package kong.unirest.core;
 
-import kong.unirest.core.java.SseEvent;
+import kong.unirest.core.java.Event;
 
 public interface SseListener {
-    void onEvent(SseEvent event);
+    void onEvent(Event event);
     void onComment(String line);
 }

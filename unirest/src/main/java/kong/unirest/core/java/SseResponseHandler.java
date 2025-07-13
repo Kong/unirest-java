@@ -79,7 +79,7 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
     private class ParsedLine {
 
         private final String value;
-        private final String name;
+        private final String field;
 
         public ParsedLine(String value) {
             this(null, value);
@@ -89,8 +89,8 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
             this(null, null);
         }
 
-        public ParsedLine(String name, String value) {
-            this.name = name;
+        public ParsedLine(String field, String value) {
+            this.field = field;
             if(value == null){
                 this.value = null;
             } else if (value.startsWith(" ")) {
@@ -101,11 +101,11 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
         }
 
         public boolean isDispatch() {
-            return name == null && value == null;
+            return field == null && value == null;
         }
 
         public boolean isComment() {
-            return name == null;
+            return field == null;
         }
 
         public String value() {
@@ -113,26 +113,26 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
         }
 
         public String name() {
-            return name;
+            return field;
         }
 
         public boolean isData() {
-            return name != null && name.equalsIgnoreCase("data");
+            return field != null && field.equalsIgnoreCase("data");
         }
 
         public boolean isEvent() {
-            return name != null && name.equalsIgnoreCase("event");
+            return field != null && field.equalsIgnoreCase("event");
         }
 
         public boolean isId() {
-            return name != null
-                    && name.equalsIgnoreCase("id")
+            return field != null
+                    && field.equalsIgnoreCase("id")
                     && value != null;
         }
 
         public boolean isRetry() {
-            return value == null && name != null
-                    && name.matches("^\\d+$");
+            return value == null && field != null
+                    && field.matches("^\\d+$");
 
         }
     }
@@ -143,8 +143,8 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
         String type = "";
         StringBuffer buffer = new StringBuffer();
 
-        public SseEvent toEvent() {
-            return new SseEvent(id, type, getValue());
+        public Event toEvent() {
+            return new Event(id, type, getValue());
         }
 
         private String getValue() {

@@ -26,7 +26,7 @@
 package BehaviorTests;
 
 import kong.unirest.core.SseListener;
-import kong.unirest.core.java.SseEvent;
+import kong.unirest.core.java.Event;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +44,7 @@ public class TestListener implements SseListener {
 
 
     @Override
-    public void onEvent(SseEvent event) {
+    public void onEvent(Event event) {
 
     }
 

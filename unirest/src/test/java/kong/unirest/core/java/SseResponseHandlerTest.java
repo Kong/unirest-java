@@ -76,23 +76,38 @@ class SseResponseHandlerTest {
     }
 
     @Test
-    void multipleDataElementEvent() {
-        handle("data: YHOO",
-                "data: +2",
-                "data: 10",
-                "");
-
-        listener.assertEvent("", "", "YHOO\n+2\n10");
-    }
-
-    @Test
     void eventWithId() {
         handle("data: foo", "id: 1", "");
         listener.assertEvent("1", "", "foo");
     }
 
+    @Test //https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream
+    void specExample1() {
+        //The following event stream, once followed by a blank line:
+        handle("data: YHOO",
+                "data: +2",
+                "data: 10",
+                "");
+
+        //...would cause an event message with the interface MessageEvent to be dispatched on the EventSource object.
+        // The event's data attribute would contain the string "YHOO\n+2\n10" (where "\n" represents a newline).
+        listener.assertEvent("", "", "YHOO\n+2\n10");
+    }
+
     @Test
-    void dataEventsWithIds() {
+    void specExample2() {
+        //The following stream contains four blocks. The first block has just a comment, and will fire nothing.
+        //
+        // The second block has two fields with names "data" and "id" respectively; an event will be fired for this block,
+        // with the data "first event", and will then set the last event ID to "1" so that if the connection died between this block and the next,
+        // the server would be sent a `Last-Event-ID` header with the value `1`.
+        //
+        // The third block fires an event with data "second event", and also has an "id" field,
+        // this time with no value, which resets the last event ID to the empty string
+        // (meaning no `Last-Event-ID` header will now be sent in the event of a reconnection being attempted).
+        // Finally, the last block just fires an event with the data " third event" (with a single leading space character).
+        // Note that the last still has to end with a blank line,
+        //  the end of the stream is not enough to trigger the dispatch of the last event.
         handle(": test stream",
                 "",
                 "data: first event",
@@ -101,21 +116,54 @@ class SseResponseHandlerTest {
                 "data:second event",
                 "id",
                 "",
-                "data:  third event");
+                "data:  third event",
+                "",
+                "data: fourth event");
 
-        listener.assertComment("test stream");
-        listener.assertEvent("1", "", "first event");
-        listener.assertEvent("",  "", "second event");
-        listener.assertNoEventContaining("third event");
+
+        listener.assertComment("test stream")
+                .assertEvent("1", "", "first event")
+                .assertEvent("",  "", "second event")
+                .assertEvent("", "", " third event")
+                .assertNoEventContaining("fourth event");
+    }
+
+    @Test
+    void specExample3() {
+        //The following stream fires two events:
+        //The first block fires events with the data set to the empty string, as would the last block if it was followed by a blank line. The middle block fires an event with the data set to a single newline character.
+        // The last block is discarded because it is not followed by a blank line.
+        handle("data",
+                "",
+                "data",
+                "data",
+                "",
+                "data:");
+
+        listener.assertEvent("", "", "")
+                .assertEvent("", "", "\n");
+
+    }
+
+    @Test
+    void specExample4() {
+        //The following stream fires two identical events:
+        //This is because the space after the colon is ignored if present.
+        handle("data:test",
+                "",
+                "data: test",
+                "");
+
+        listener.assertEvent("", "", "test");
     }
 
     private class TestListener implements SseListener {
 
-        private List<SseEvent> events = new ArrayList<>();
+        private List<Event> events = new ArrayList<>();
         private List<String>   comments = new ArrayList<>();
 
         @Override
-        public void onEvent(SseEvent event) {
+        public void onEvent(Event event) {
             events.add(event);
         }
         @Override
@@ -123,10 +171,11 @@ class SseResponseHandlerTest {
             comments.add(line);
         }
 
-        public void assertEvent(String id, String event, String value) {
-            SseEvent expected = new SseEvent(id, event, value);
+        public TestListener assertEvent(String id, String event, String value) {
+            Event expected = new Event(id, event, value);
             assertThat(events)
                     .contains(expected);
+            return this;
 
         }
 
