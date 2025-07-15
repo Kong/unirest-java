@@ -45,8 +45,12 @@ public class TestListener implements SseListener {
     }
 
     public TestListener assertHasEvent(String event, String content) {
+        return assertHasEvent("", event, content);
+    }
+
+    public TestListener assertHasEvent(String id, String event, String content) {
         assertThat(events)
-                .contains(new Event("", event, content));
+                .contains(new Event(id, event, content));
         return this;
     }
 

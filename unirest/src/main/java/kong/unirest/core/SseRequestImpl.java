@@ -38,7 +38,7 @@ public class SseRequestImpl implements SseRequest {
 
     public SseRequestImpl(Config config, String url) {
         Objects.requireNonNull(config, "Config cannot be null");
-        Objects.requireNonNull(url, "URL cannot be null");
+        Objects.requireNonNull(url,    "URL cannot be null");
 
         this.config = config;
         this.url = new Path(url, config.getDefaultBaseUrl());

@@ -63,6 +63,19 @@ public class SSETest extends BddTest {
     }
 
     @Test
+    void eventsWithIds() {
+        runWith(sse(MockServer.SSE), listener);
+
+        MockServer.Sse.sendEvent("123", "cheese", "cheddar");
+        MockServer.Sse.sendEvent(       "cheese", "gouda");
+
+        sleep(500);
+
+        listener.assertHasEvent("123", "cheese", "cheddar")
+                .assertHasEvent("cheese", "gouda");
+    }
+
+    @Test
     void queryParams(){
         runWith(sse(MockServer.SSE)
                 .queryString("foo", "bar")

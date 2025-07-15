@@ -47,6 +47,14 @@ public class TestSSEConsumer implements Consumer<SseClient> {
         clients.forEach(c -> c.sendEvent(data));
     }
 
+    public static void sendEvent(String id, String event, String content) {
+        clients.forEach(c -> c.sendEvent(event, content, id));
+    }
+
+    public static void sendEvent(String event, String content) {
+        clients.forEach(c -> c.sendEvent(event, content));
+    }
+
     @Override
     public void accept(SseClient client) {
         lastRequest = new RequestCapture(client.ctx());

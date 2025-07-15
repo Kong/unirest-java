@@ -402,6 +402,14 @@ public class MockServer {
             TestSSEConsumer.sendEvent(content);
         }
 
+        public static void sendEvent(String id, String event, String content) {
+           TestSSEConsumer.sendEvent(id, event, content);
+        }
+
+        public static void sendEvent(String event, String content) {
+            TestSSEConsumer.sendEvent(event, content);
+        }
+
         public static RequestCapture lastRequest() {
             return TestSSEConsumer.getLastRequest();
         }
