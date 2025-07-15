@@ -55,7 +55,7 @@ public class SSETest extends BddTest {
         MockServer.Sse.sendComment("hey1");
         MockServer.Sse.sendEvent("Whats Happening?");
 
-        sleep(500);
+        sleep(1000);
 
         listener.assertHasEvent("connect", "Welcome to Server Side Events")
                 .assertHasComment("hey1")
@@ -69,7 +69,7 @@ public class SSETest extends BddTest {
         MockServer.Sse.sendEvent("123", "cheese", "cheddar");
         MockServer.Sse.sendEvent(       "cheese", "gouda");
 
-        sleep(500);
+        sleep(1000);
 
         listener.assertHasEvent("123", "cheese", "cheddar")
                 .assertHasEvent("cheese", "gouda");
@@ -130,7 +130,7 @@ public class SSETest extends BddTest {
             });
             t.start();
 
-            Thread.sleep(500);
+            Thread.sleep(1000);
         }catch (Exception e){
             throw new RuntimeException(e);
         }
