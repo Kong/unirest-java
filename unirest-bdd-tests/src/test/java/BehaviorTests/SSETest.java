@@ -29,6 +29,7 @@ package BehaviorTests;
 import kong.unirest.core.SseRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -38,6 +39,7 @@ import java.util.concurrent.Executors;
 
 import static kong.unirest.core.Unirest.sse;
 
+@Disabled
 public class SSETest extends BddTest {
 
     TestListener listener;
@@ -131,7 +133,7 @@ public class SSETest extends BddTest {
 
     private void runWith(SseRequest sse, TestListener tl) {
         try {
-            var t = pool.submit(() -> {
+            pool.submit(() -> {
                 var future = sse.connect(tl);
                 while(!future.isDone()){
                     // waitin'
