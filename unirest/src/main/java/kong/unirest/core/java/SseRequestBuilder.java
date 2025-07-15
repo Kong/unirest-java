@@ -23,41 +23,29 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package BehaviorTests;
+package kong.unirest.core.java;
 
-import kong.unirest.core.SseListener;
-import kong.unirest.core.java.Event;
+import kong.unirest.core.ContentType;
+import kong.unirest.core.SseRequest;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.net.URI;
+import java.net.http.HttpRequest;
 
-import static org.assertj.core.api.Assertions.assertThat;
+public class SseRequestBuilder {
+    static java.net.http.HttpRequest getHttpRequest(SseRequest request) {
+        var accept = HttpRequest
+                .newBuilder()
+                .header("Accept", ContentType.EVENT_STREAMS.getMimeType())
+                .GET()
+                .uri(URI.create(request.getUrl()));
 
-public class TestListener implements SseListener {
-    private final List<String> comments = Collections.synchronizedList(new ArrayList<>());
-    private final List<Event> events    = Collections.synchronizedList(new ArrayList<>());
+        request.getHeaders().all().forEach(h -> {
+            accept.header(h.getName(), h.getValue());
+        });
 
-    TestListener assertHasComment(String comment) {
-        assertThat(comments)
-                .contains(comment);
-        return this;
-    }
 
-    public TestListener assertHasEvent(String event, String content) {
-        assertThat(events)
-                .contains(new Event("", event, content));
-        return this;
+        return accept.build();
     }
 
 
-    @Override
-    public void onEvent(Event event) {
-        events.add(event);
-    }
-
-    @Override
-    public void onComment(String line) {
-        comments.add(line);
-    }
 }

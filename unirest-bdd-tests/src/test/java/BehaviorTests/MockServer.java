@@ -271,6 +271,8 @@ public class MockServer {
     private static void jsonResponse(Context c){
         jsonResponse(c, false);
     }
+
+
     private static void jsonResponse(Context c, Boolean compress) {
         if(retryTimes > 0){
             if(retrySeconds != null) {
@@ -394,6 +396,14 @@ public class MockServer {
     public static final class Sse {
         public static void sendComment(String comment) {
             TestSSEConsumer.sendComment(comment);
+        }
+
+        public static void sendEvent(String content) {
+            TestSSEConsumer.sendEvent(content);
+        }
+
+        public static RequestCapture lastRequest() {
+            return TestSSEConsumer.getLastRequest();
         }
     }
 }

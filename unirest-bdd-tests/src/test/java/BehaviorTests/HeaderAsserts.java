@@ -156,6 +156,11 @@ public class HeaderAsserts {
             return value;
         }
 
+        @Override
+        public String toString(){
+            return value;
+        }
+
         public HeaderValue assertHasParam(String name) {
             TestUtil.assertMultiMap(params)
                     .as("Header Param")

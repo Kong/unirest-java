@@ -56,6 +56,7 @@ public class ContentType {
     public static final ContentType TEXT_HTML = create("text/html", ISO_8859_1);
     public static final ContentType TEXT_PLAIN = create("text/plain", ISO_8859_1);
     public static final ContentType TEXT_XML = create("text/xml", ISO_8859_1);
+    public static final ContentType EVENT_STREAMS = create("text/event-stream", StandardCharsets.UTF_8);
     public static final ContentType WILDCARD = create("*/*");
 
     private final String mimeType;

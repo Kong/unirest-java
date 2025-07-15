@@ -162,12 +162,7 @@ public class JavaClient implements Client {
 
     @Override
     public CompletableFuture<Void> sse(SseRequest request, SseListener listener) {
-        var r = java.net.http.HttpRequest
-                .newBuilder()
-                .header("Accept", "text/event-stream")
-                .GET()
-                .uri(URI.create(request.getPath().toString()))
-                .build();
+        var r = SseRequestBuilder.getHttpRequest(request);
 
         return client.sendAsync(r, java.net.http.HttpResponse.BodyHandlers.ofLines())
                 .thenAccept(new SseResponseHandler(listener))

@@ -33,13 +33,23 @@ import java.util.function.Consumer;
 
 public class TestSSEConsumer implements Consumer<SseClient> {
     private static final Queue<SseClient> clients = new ConcurrentLinkedDeque<>();
+    private static RequestCapture lastRequest;
+
+    public static RequestCapture getLastRequest() {
+        return lastRequest;
+    }
 
     public static void sendComment(String message) {
         clients.forEach(c -> c.sendComment(message));
     }
 
+    public static void sendEvent(String data) {
+        clients.forEach(c -> c.sendEvent(data));
+    }
+
     @Override
     public void accept(SseClient client) {
+        lastRequest = new RequestCapture(client.ctx());
         client.keepAlive();
         client.sendEvent("connect", "Welcome to Server Side Events");
         clients.add(client);

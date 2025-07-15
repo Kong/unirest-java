@@ -47,7 +47,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,13 +59,6 @@ class TestUtil {
     static {
         om.registerModule(new GuavaModule());
     }
-
-    public static Thread run(Runnable runnable){
-        var t = new Thread(runnable);
-        t.start();
-        return t;
-    }
-
 
     public static <T> T readValue(String body, Class<T> as) {
         try {
@@ -166,12 +158,6 @@ class TestUtil {
 
     public static <K, V> MultimapAssert<K, V> assertMultiMap(final Multimap<K, V> actual) {
         return org.assertj.guava.api.Assertions.assertThat(actual);
-    }
-
-    public static void blockUntil(Supplier<Boolean> condition) {
-        while(!condition.get()){
-            // waitin'
-        }
     }
 
     public static final class Matchers {

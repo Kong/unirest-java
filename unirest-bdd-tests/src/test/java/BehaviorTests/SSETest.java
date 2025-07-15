@@ -26,34 +26,109 @@
 package BehaviorTests;
 
 
-import kong.unirest.core.Unirest;
+import kong.unirest.core.SseRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
+
+import static kong.unirest.core.Unirest.sse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SSETest extends BddTest {
 
+    TestListener listener;
+
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+        listener = new TestListener();
+    }
+
     @Test
-    void basicConnection() throws Exception {
-        var tl = new TestListener();
-
-        TestUtil.run(() -> {
-            var future = Unirest.sse(MockServer.SSE).connect(tl);
-
-            TestUtil.blockUntil(future::isDone);
-        });
-
-        Thread.sleep(1000);
+    void basicConnection() {
+        runWith(sse(MockServer.SSE), listener);
 
         MockServer.Sse.sendComment("hey1");
-        MockServer.Sse.sendComment("hey2");
+        MockServer.Sse.sendEvent("Whats Happening?");
 
-        Thread.sleep(1000);
+        sleep(500);
 
-        tl.assertHasComment("hey1");
-        tl.assertHasComment("hey2");
+        listener.assertHasEvent("connect", "Welcome to Server Side Events")
+                .assertHasComment("hey1")
+                .assertHasEvent("message", "Whats Happening?");
+    }
 
+    @Test
+    void queryParams(){
+        runWith(sse(MockServer.SSE)
+                .queryString("foo", "bar")
+                .queryString(Map.of("fruit", "apple", "number", 1))
+                .queryString("droid", List.of("C3PO", "R2D2")), listener);
+
+        MockServer.Sse.lastRequest()
+                .assertParam("foo", "bar")
+                .assertParam("fruit", "apple")
+                .assertParam("number", "1")
+                .assertParam("droid", "C3PO")
+                .assertParam("droid", "R2D2");
+    }
+
+    @Test
+    void headers(){
+        runWith(sse(MockServer.SSE)
+                .header("foo", "bar")
+                .header("qux", "zip")
+                .headerReplace("qux", "ok")
+                .headers(Map.of("fruit", "apple", "number", "1"))
+                .cookie("snack", "snickerdoodle")
+                , listener);
+
+        MockServer.Sse.lastRequest()
+                .assertHeader("Accept", "text/event-stream")
+                .assertHeader("foo", "bar")
+                .assertHeader("qux", "ok")
+                .assertHeader("number", "1")
+                .assertHeader("fruit", "apple")
+                .assertCookie("snack", "snickerdoodle");
+
+    }
+
+    @Test
+    void canReplaceTheDefaultAcceptsHeader(){
+        runWith(sse(MockServer.SSE)
+                        .header("Accept", "application/json")
+                , listener);
+
+        MockServer.Sse.lastRequest()
+                .assertHeader("Accept", "application/json");
+    }
+
+    private static void runWith(SseRequest sse, TestListener tl) {
+        try {
+            var t = new Thread(() -> {
+                var future = sse.connect(tl);
+                while(!future.isDone()){
+                    // waitin'
+                }
+            });
+            t.start();
+
+            Thread.sleep(500);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void sleep(int i) {
+        try {
+            Thread.sleep(i);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

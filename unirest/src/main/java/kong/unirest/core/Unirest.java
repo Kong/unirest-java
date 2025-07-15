@@ -134,7 +134,7 @@ public class Unirest {
         return primaryInstance.webSocket(url);
     }
 
-    public static SseRequest sse(String url) {
+    public static SseRequestImpl sse(String url) {
         return primaryInstance.sse(url);
     }
 
