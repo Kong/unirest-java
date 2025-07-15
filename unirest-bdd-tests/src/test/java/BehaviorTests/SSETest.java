@@ -27,25 +27,34 @@ package BehaviorTests;
 
 
 import kong.unirest.core.SseRequest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static kong.unirest.core.Unirest.sse;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SSETest extends BddTest {
 
     TestListener listener;
+    ExecutorService pool;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
         listener = new TestListener();
+        pool = Executors.newFixedThreadPool(1);
+    }
+
+    @AfterEach
+    @Override
+    public void tearDown() {
+        super.tearDown();
+        pool.shutdown();
     }
 
     @Test
@@ -120,15 +129,14 @@ public class SSETest extends BddTest {
                 .assertHeader("Accept", "application/json");
     }
 
-    private static void runWith(SseRequest sse, TestListener tl) {
+    private void runWith(SseRequest sse, TestListener tl) {
         try {
-            var t = new Thread(() -> {
+            var t = pool.submit(() -> {
                 var future = sse.connect(tl);
                 while(!future.isDone()){
                     // waitin'
                 }
             });
-            t.start();
 
             Thread.sleep(1000);
         }catch (Exception e){
