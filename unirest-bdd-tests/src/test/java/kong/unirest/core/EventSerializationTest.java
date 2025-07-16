@@ -25,10 +25,39 @@
 
 package kong.unirest.core;
 
+import BehaviorTests.Foo;
+import BehaviorTests.JacksonObjectMapper;
 import kong.unirest.core.java.Event;
+import org.junit.jupiter.api.Test;
 
-@FunctionalInterface
-public interface SseListener {
-    void onEvent(Event event);
-    default void onComment(String line) {}
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class EventSerializationTest {
+    @Test
+    void canDeserialize() {
+        var config = new Config();
+        var om = new JacksonObjectMapper();
+        config.setObjectMapper(om);
+
+        var foo = new Foo("qux");
+        var event = new Event("", "message", om.writeValue(foo), config);
+
+        assertThat(event.asObject(Foo.class))
+                .isEqualTo(foo);
+    }
+
+    @Test
+    void canDeserializeWithGenericTypes(){
+        var config = new Config();
+        var om = new JacksonObjectMapper();
+        config.setObjectMapper(om);
+
+        var foo = List.of(new Foo("qux"));
+        var event = new Event("", "message", om.writeValue(foo), config);
+
+        assertThat(event.asObject(new GenericType<List<Foo>>() {}))
+                .isEqualTo(foo);
+    }
 }

@@ -25,20 +25,29 @@
 
 package kong.unirest.core.java;
 
+import kong.unirest.core.Config;
+import kong.unirest.core.GenericType;
+
 import java.util.Objects;
 
 public class Event {
+    private final Config config;
     private final String id;
-    private final Object data;
+    private final String data;
     private final String field;
 
-    public Event(String id, String field, Object data){
+    public Event(String id, String field, String data, Config config) {
+        this.config = config;
         this.id = id;
         this.field = field;
         this.data = data;
     }
 
-    public Object data() {
+    public Event(String id, String field, String data) {
+        this(id, field, data, null);
+    }
+
+    public String data() {
         return data;
     }
 
@@ -71,5 +80,13 @@ public class Event {
                 ", field=" + field +
                 ", id=" + id  +
                 '}';
+    }
+
+    public <T> T asObject(Class<? extends T> responseClass) {
+        return config.getObjectMapper().readValue(data, responseClass);
+    }
+
+    public <T> T asObject(GenericType<T> genericType){
+        return config.getObjectMapper().readValue(data, genericType);
     }
 }

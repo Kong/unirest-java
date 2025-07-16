@@ -118,7 +118,6 @@ public class SSETest extends BddTest {
                 .assertHeader("number", "1")
                 .assertHeader("fruit", "apple")
                 .assertCookie("snack", "snickerdoodle");
-
     }
 
     @Test

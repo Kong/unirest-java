@@ -25,6 +25,7 @@
 
 package kong.unirest.core.java;
 
+import kong.unirest.core.Config;
 import kong.unirest.core.SseListener;
 
 import java.net.http.HttpResponse;
@@ -32,10 +33,12 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
+    private final Config config;
     private final SseListener listener;
     private EventBuffer databuffer = new EventBuffer();
 
-    public SseResponseHandler(SseListener listener) {
+    public SseResponseHandler(Config config, SseListener listener) {
+        this.config = config;
         this.listener = listener;
     }
 
@@ -144,7 +147,7 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
         StringBuffer buffer = new StringBuffer();
 
         public Event toEvent() {
-            return new Event(id, type, getValue());
+            return new Event(id, type, getValue(), config);
         }
 
         private String getValue() {

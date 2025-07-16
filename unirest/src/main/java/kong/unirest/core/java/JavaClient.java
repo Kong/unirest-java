@@ -165,7 +165,7 @@ public class JavaClient implements Client {
         var r = SseRequestBuilder.getHttpRequest(request);
 
         return client.sendAsync(r, java.net.http.HttpResponse.BodyHandlers.ofLines())
-                .thenAccept(new SseResponseHandler(listener))
+                .thenAccept(new SseResponseHandler(config, listener))
                 .exceptionally(ex -> {
                     System.err.println("Error: " + ex.getMessage());
                     return null;

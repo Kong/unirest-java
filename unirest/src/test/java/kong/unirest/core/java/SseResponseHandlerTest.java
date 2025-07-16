@@ -46,7 +46,7 @@ class SseResponseHandlerTest {
     @BeforeEach
     void setUp() {
         listener = new TestListener();
-        handler = new SseResponseHandler(listener);
+        handler = new SseResponseHandler(null, listener);
     }
 
     @Test
