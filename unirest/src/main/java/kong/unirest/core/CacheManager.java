@@ -145,8 +145,8 @@ class CacheManager {
         }
 
         @Override
-        public CompletableFuture<Void> sse(SseRequest request, SseListener listener) {
-            return originalClient.sse(request, listener);
+        public CompletableFuture<Void> sse(SseRequest request, SseHandler handler) {
+            return originalClient.sse(request, handler);
         }
     }
 

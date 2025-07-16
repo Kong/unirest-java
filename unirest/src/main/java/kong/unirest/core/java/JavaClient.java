@@ -161,11 +161,11 @@ public class JavaClient implements Client {
     }
 
     @Override
-    public CompletableFuture<Void> sse(SseRequest request, SseListener listener) {
+    public CompletableFuture<Void> sse(SseRequest request, SseHandler handler) {
         var r = SseRequestBuilder.getHttpRequest(request);
 
         return client.sendAsync(r, java.net.http.HttpResponse.BodyHandlers.ofLines())
-                .thenAccept(new SseResponseHandler(config, listener))
+                .thenAccept(new SseResponseHandler(config, handler))
                 .exceptionally(ex -> {
                     System.err.println("Error: " + ex.getMessage());
                     return null;

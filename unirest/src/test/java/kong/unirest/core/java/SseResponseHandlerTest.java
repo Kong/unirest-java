@@ -25,7 +25,7 @@
 
 package kong.unirest.core.java;
 
-import kong.unirest.core.SseListener;
+import kong.unirest.core.SseHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -41,11 +41,11 @@ import static org.mockito.Mockito.when;
 class SseResponseHandlerTest {
 
     SseResponseHandler handler;
-    TestListener listener;
+    TestHandler listener;
 
     @BeforeEach
     void setUp() {
-        listener = new TestListener();
+        listener = new TestHandler();
         handler = new SseResponseHandler(null, listener);
     }
 
@@ -157,7 +157,7 @@ class SseResponseHandlerTest {
         listener.assertEvent("", "", "test");
     }
 
-    private class TestListener implements SseListener {
+    private class TestHandler implements SseHandler {
 
         private List<Event> events = new ArrayList<>();
         private List<String>   comments = new ArrayList<>();
@@ -171,21 +171,21 @@ class SseResponseHandlerTest {
             comments.add(line);
         }
 
-        public TestListener assertEvent(String id, String event, String value) {
-            Event expected = new Event(id, event, value);
+        public TestHandler assertEvent(String id, String event, String value) {
+            Event expected = new Event(id, event, value, null);
             assertThat(events)
                     .contains(expected);
             return this;
 
         }
 
-        public TestListener assertComment(String comment) {
+        public TestHandler assertComment(String comment) {
             assertThat(comments)
                     .contains(comment);
             return this;
         }
 
-        public TestListener assertNoEventContaining(String value) {
+        public TestHandler assertNoEventContaining(String value) {
             assertThat(events)
                     .extracting(e -> e.data())
                     .doesNotContain(value);
@@ -193,7 +193,7 @@ class SseResponseHandlerTest {
             return this;
         }
 
-        public TestListener assertEventCount(int count) {
+        public TestHandler assertEventCount(int count) {
             assertThat(events)
                     .hasSize(count);
             return this;

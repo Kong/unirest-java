@@ -26,18 +26,23 @@
 package kong.unirest.core.java;
 
 import kong.unirest.core.Config;
-import kong.unirest.core.SseListener;
+import kong.unirest.core.SseHandler;
 
 import java.net.http.HttpResponse;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+/**
+ * Internal SSE Event Handler which reads the raw stream of event data
+ * Event dispatching follows the spec outlined in the HTML5 standard
+ * https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream
+ */
 class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
     private final Config config;
-    private final SseListener listener;
+    private final SseHandler listener;
     private EventBuffer databuffer = new EventBuffer();
 
-    public SseResponseHandler(Config config, SseListener listener) {
+    public SseResponseHandler(Config config, SseHandler listener) {
         this.config = config;
         this.listener = listener;
     }
@@ -66,10 +71,31 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
         }
     }
 
+    /**
+     * Lines must be processed, in the order they are received, as follows:
+     *
+     * If the line is empty (a blank line)
+     * Dispatch the event, as defined below.
+     *
+     * If the line starts with a U+003A COLON character (:)
+     * Ignore the line.
+     *
+     * If the line contains a U+003A COLON character (:)
+     * Collect the characters on the line before the first U+003A COLON character (:), and let field be that string.
+     *
+     * Collect the characters on the line after the first U+003A COLON character (:), and let value be that string. If value starts with a U+0020 SPACE character, remove it from value.
+     *
+     * Process the field using the steps described below, using field as the field name and value as the field value.
+     *
+     * Otherwise, the string is not empty but does not contain a U+003A COLON character (:)
+     * Process the field using the steps described below, using the whole line as the field name, and the empty string as the field value.
+     *
+     * Once the end of the file is reached, any pending data must be discarded. (If the file ends in the middle of an event, before the final empty line, the incomplete event is not dispatched.)
+     */
     private ParsedLine parse(String line) {
         if(line == null || line.isBlank()) {
             return new ParsedLine();
-        } else if (line.trim().startsWith(":")){
+        } else if (line.startsWith(":")){
             return new ParsedLine(line.substring(1));
         } else if (!line.contains(":")) {
             return new ParsedLine(line, "");

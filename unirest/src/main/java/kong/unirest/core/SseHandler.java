@@ -23,45 +23,17 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package BehaviorTests;
+package kong.unirest.core;
 
-import kong.unirest.core.SseListener;
 import kong.unirest.core.java.Event;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class TestListener implements SseListener {
-    private final List<String> comments = Collections.synchronizedList(new ArrayList<>());
-    private final List<Event> events    = Collections.synchronizedList(new ArrayList<>());
-
-    TestListener assertHasComment(String comment) {
-        assertThat(comments)
-                .contains(comment);
-        return this;
-    }
-
-    public TestListener assertHasEvent(String event, String content) {
-        return assertHasEvent("", event, content);
-    }
-
-    public TestListener assertHasEvent(String id, String event, String content) {
-        assertThat(events)
-                .contains(new Event(id, event, content));
-        return this;
-    }
-
-
-    @Override
-    public void onEvent(Event event) {
-        events.add(event);
-    }
-
-    @Override
-    public void onComment(String line) {
-        comments.add(line);
-    }
+/**
+ * The Server Side Event Handler is used to consume Server Sent Events
+ * https://html.spec.whatwg.org/multipage/server-sent-events.html#server-sent-events
+ *
+ */
+@FunctionalInterface
+public interface SseHandler {
+    void onEvent(Event event);
+    default void onComment(String line) {}
 }

@@ -23,12 +23,45 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.core;
+package BehaviorTests;
 
+import kong.unirest.core.SseHandler;
 import kong.unirest.core.java.Event;
 
-@FunctionalInterface
-public interface SseListener {
-    void onEvent(Event event);
-    default void onComment(String line) {}
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class TestHandler implements SseHandler {
+    private final List<String> comments = Collections.synchronizedList(new ArrayList<>());
+    private final List<Event> events    = Collections.synchronizedList(new ArrayList<>());
+
+    TestHandler assertHasComment(String comment) {
+        assertThat(comments)
+                .contains(comment);
+        return this;
+    }
+
+    public TestHandler assertHasEvent(String event, String content) {
+        return assertHasEvent("", event, content);
+    }
+
+    public TestHandler assertHasEvent(String id, String event, String content) {
+        assertThat(events)
+                .contains(new Event(id, event, content, null));
+        return this;
+    }
+
+
+    @Override
+    public void onEvent(Event event) {
+        events.add(event);
+    }
+
+    @Override
+    public void onComment(String line) {
+        comments.add(line);
+    }
 }

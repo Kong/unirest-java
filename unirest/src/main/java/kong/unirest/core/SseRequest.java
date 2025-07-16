@@ -29,6 +29,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * The Server Sent Event Request Builder interface
+ */
 public interface SseRequest {
     /**
      * add a route param that replaces the matching {name}
@@ -64,7 +67,8 @@ public interface SseRequest {
     SseRequest basicAuth(String username, String password);
 
     /**
-     * The Accept header to send (e.g. application/json
+     * The Accept header to send.
+     * The default (and standard) is "text/event-stream"
      * @param value a valid mime type for the Accept header
      * @return this request builder
      */
@@ -140,9 +144,21 @@ public interface SseRequest {
      */
     SseRequest queryString(Map<String, Object> parameters);
 
+    /**
+     * @return the headers for the request
+     */
     Headers getHeaders();
 
+    /**
+     * @return the full URL if the request
+     */
     String getUrl();
 
-    CompletableFuture<Void> connect(SseListener listener);
+    /**
+     * execute a SSE Event connection.
+     * Because these events are a stream they are processed async and take a handler you can use to consume the events
+     * @param handler the SseHandler
+     * @return a CompletableFuture
+     */
+    CompletableFuture<Void> connect(SseHandler handler);
 }

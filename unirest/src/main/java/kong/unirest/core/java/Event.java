@@ -30,33 +30,77 @@ import kong.unirest.core.GenericType;
 
 import java.util.Objects;
 
+/**
+ * A server sent event.
+ * Generally modeled on the HTML5 EventSource standard
+ * https://html.spec.whatwg.org/multipage/
+ */
 public class Event {
     private final Config config;
     private final String id;
     private final String data;
-    private final String field;
+    private final String event;
 
-    public Event(String id, String field, String data, Config config) {
+    /**
+     * Constructor used by unirest which includes the Unirest config which uis used for event serialization
+     * @param id The event ID
+     * @param event the event label. "message" is the default from the server
+     * @param data the data in the event. This is concatenated from all lines before a dispatch event (a blank line)
+     * @param config the unirest config used for deserialization
+     */
+    public Event(String id, String event, String data, Config config) {
         this.config = config;
         this.id = id;
-        this.field = field;
+        this.event = event;
         this.data = data;
     }
 
-    public Event(String id, String field, String data) {
-        this(id, field, data, null);
-    }
-
+    /**
+     * The data field for the message.
+     * When the EventSource receives multiple consecutive lines that begin with data:, it concatenates them, inserting a newline character between each one.
+     * Trailing newlines are removed.
+     * @return the data
+     */
     public String data() {
         return data;
     }
 
+    /**
+     * The event ID to set the EventSource object's last event ID value.
+     * @return the id
+     */
     public String id() {
         return id;
     }
 
-    public String name() {
-        return field;
+    /**
+     * A string identifying the type of event described.
+     * If this is specified, an event will be dispatched on the browser to the listener for the specified event name;
+     * @return the event name
+     */
+    public String event() {
+        return event;
+    }
+
+    /**
+     * Deserialize the data of the event using the Unirest Config's ObjectMapper
+     * @param responseClass the type of class you want back
+     * @return an instance of the class
+     * @param <T> the class type
+     */
+    public <T> T asObject(Class<? extends T> responseClass) {
+        return config.getObjectMapper().readValue(data, responseClass);
+    }
+
+    /**
+     * Deserialize the data of the event using the Unirest Config's ObjectMapper
+     * This method takes a GenericType which retains Generics information for types lke List&lt;Foo&gt;
+     * @param genericType the type of class you want back using a generictype object
+     * @return an instance of the class
+     * @param <T> the class type
+     */
+    public <T> T asObject(GenericType<T> genericType){
+        return config.getObjectMapper().readValue(data, genericType);
     }
 
     @Override
@@ -65,28 +109,20 @@ public class Event {
         Event event = (Event) o;
         return Objects.equals(id, event.id)
                 && Objects.equals(data, event.data)
-                && Objects.equals(field, event.field);
+                && Objects.equals(this.event, event.event);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, data, field);
+        return Objects.hash(id, data, event);
     }
 
     @Override
     public String toString() {
         return "SseEvent{" +
                 "data=" + data +
-                ", field=" + field +
+                ", field=" + event +
                 ", id=" + id  +
                 '}';
-    }
-
-    public <T> T asObject(Class<? extends T> responseClass) {
-        return config.getObjectMapper().readValue(data, responseClass);
-    }
-
-    public <T> T asObject(GenericType<T> genericType){
-        return config.getObjectMapper().readValue(data, genericType);
     }
 }

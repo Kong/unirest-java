@@ -72,5 +72,12 @@ public interface Client {
     WebSocketResponse websocket(WebSocketRequest request, WebSocket.Listener listener);
 
 
-    CompletableFuture<Void> sse(SseRequest request, SseListener listener);
+    /**
+     * execute a SSE Event connection.
+     * Because these events are a stream they are processed async and take a handler you can use to consume the events
+     * @param request the request details
+     * @param handler the SseHandler
+     * @return a CompletableFuture
+     */
+    CompletableFuture<Void> sse(SseRequest request, SseHandler handler);
 }

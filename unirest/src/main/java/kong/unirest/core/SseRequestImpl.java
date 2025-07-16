@@ -124,8 +124,8 @@ public class SseRequestImpl implements SseRequest {
     }
 
     @Override
-    public CompletableFuture<Void> connect(SseListener listener) {
-        return config.getClient().sse(this, listener);
+    public CompletableFuture<Void> connect(SseHandler handler) {
+        return config.getClient().sse(this, handler);
     }
 
     @Override

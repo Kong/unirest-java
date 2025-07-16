@@ -135,7 +135,7 @@ public class MockClient implements Client {
     }
 
     @Override
-    public CompletableFuture<Void> sse(SseRequest request, SseListener listener) {
+    public CompletableFuture<Void> sse(SseRequest request, SseHandler handler) {
         return null;
     }
 

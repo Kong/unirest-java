@@ -42,13 +42,13 @@ import static kong.unirest.core.Unirest.sse;
 @Disabled
 public class SSETest extends BddTest {
 
-    TestListener listener;
+    TestHandler listener;
     ExecutorService pool;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
-        listener = new TestListener();
+        listener = new TestHandler();
         pool = Executors.newFixedThreadPool(1);
     }
 
@@ -130,7 +130,7 @@ public class SSETest extends BddTest {
                 .assertHeader("Accept", "application/json");
     }
 
-    private void runWith(SseRequest sse, TestListener tl) {
+    private void runWith(SseRequest sse, TestHandler tl) {
         try {
             pool.submit(() -> {
                 var future = sse.connect(tl);
