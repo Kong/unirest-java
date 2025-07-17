@@ -38,8 +38,8 @@ public class SseRealExamples {
     void sync() {
         Unirest.sse("https://stream.wikimedia.org/v2/stream/recentchange")
                 .connect()
-                .map(e -> e.asObject(RecentChange.class))
-                .forEach(r -> System.out.println("Changed Page: " + r.getTitle()));
+                .map(event -> event.asObject(RecentChange.class))
+                .forEach(change -> System.out.println("Changed Page: " + change.getTitle()));
     }
 
     @Test
