@@ -34,6 +34,15 @@ import kong.unirest.core.java.Event;
  */
 @FunctionalInterface
 public interface SseHandler {
+    /**
+     * Dispatched event
+     * @param event the event
+     */
     void onEvent(Event event);
+
+    /**
+     * comments are piped to this method and then immediately thrown away
+     * @param line the comment
+     */
     default void onComment(String line) {}
 }

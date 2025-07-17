@@ -25,9 +25,12 @@
 
 package kong.unirest.core;
 
+import kong.unirest.core.java.Event;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 /**
  * The Server Sent Event Request Builder interface
@@ -155,10 +158,20 @@ public interface SseRequest {
     String getUrl();
 
     /**
-     * execute a SSE Event connection.
+     * execute a SSE Event connection async.
      * Because these events are a stream they are processed async and take a handler you can use to consume the events
      * @param handler the SseHandler
-     * @return a CompletableFuture
+     * @return a CompletableFuture which can be used to monitor if the task is complete or not
      */
     CompletableFuture<Void> connect(SseHandler handler);
+
+    /**
+     * execute a synchronous Server Sent Event Stream
+     * Due to the nature of SSE this stream may remain open indefinitely
+     * meaning you may be blocked while attempting to collect the stream.
+     * It is recommend you consume the stream rather than doing any action that requires
+     * it to stop.
+     * @return a stream of events
+     */
+    Stream<Event> connect();
 }

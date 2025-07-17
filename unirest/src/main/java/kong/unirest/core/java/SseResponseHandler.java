@@ -29,8 +29,10 @@ import kong.unirest.core.Config;
 import kong.unirest.core.SseHandler;
 
 import java.net.http.HttpResponse;
+import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Internal SSE Event Handler which reads the raw stream of event data
@@ -53,13 +55,17 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
     }
 
     private void accept(String line) {
+        accept(line, listener);
+    }
+
+    private void accept(String line, SseHandler handler) {
         var pl = parse(line);
 
-        if(pl.isDispatch()){
-            listener.onEvent(databuffer.toEvent());
+        if(pl.isDispatch() && databuffer.buffer.length() > 0){
+            handler.onEvent(databuffer.toEvent());
             databuffer = new EventBuffer();
         } else if (pl.isComment()) {
-            listener.onComment(pl.value());
+            handler.onComment(pl.value());
         } else if(pl.isData()) {
             databuffer.buffer.append(pl.value()).append("\n");
         } else if(pl.isEvent()){
@@ -103,6 +109,19 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
             var spl = line.split(":", 2);
             return new ParsedLine(spl[0].trim(), spl[1]);
         }
+    }
+
+    public Stream<Event> map(Stream<String> stream) {
+        var it = stream.iterator();
+        return StreamSupport.stream(new Spliterators.AbstractSpliterator<>(Long.MAX_VALUE, 0) {
+            @Override
+            public boolean tryAdvance(java.util.function.Consumer<? super Event> action) {
+                while (it.hasNext()) {
+                    accept(it.next(), action::accept);
+                }
+                return false;
+            }
+        }, false);
     }
 
     private class ParsedLine {

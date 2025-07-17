@@ -25,10 +25,13 @@
 
 package kong.unirest.core;
 
+import kong.unirest.core.java.Event;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 public class SseRequestImpl implements SseRequest {
     private final Config config;
@@ -126,6 +129,11 @@ public class SseRequestImpl implements SseRequest {
     @Override
     public CompletableFuture<Void> connect(SseHandler handler) {
         return config.getClient().sse(this, handler);
+    }
+
+    @Override
+    public Stream<Event> connect() {
+        return config.getClient().sse(this);
     }
 
     @Override

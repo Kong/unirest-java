@@ -55,6 +55,10 @@ public class Event {
         this.data = data;
     }
 
+    public Event(String id, String event, String data){
+        this(id, event, data, null);
+    }
+
     /**
      * The data field for the message.
      * When the EventSource receives multiple consecutive lines that begin with data:, it concatenates them, inserting a newline character between each one.

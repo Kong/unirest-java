@@ -25,6 +25,8 @@
 
 package kong.unirest.core;
 
+import kong.unirest.core.java.Event;
+
 import java.net.http.WebSocket;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -34,6 +36,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 class CacheManager {
 
@@ -147,6 +150,11 @@ class CacheManager {
         @Override
         public CompletableFuture<Void> sse(SseRequest request, SseHandler handler) {
             return originalClient.sse(request, handler);
+        }
+
+        @Override
+        public Stream<Event> sse(SseRequest request) {
+            return Stream.empty();
         }
     }
 

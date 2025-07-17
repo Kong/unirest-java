@@ -27,6 +27,7 @@ package kong.unirest.core.java;
 
 import kong.unirest.core.*;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
@@ -34,6 +35,7 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static java.net.http.HttpRequest.newBuilder;
 import static java.net.http.HttpResponse.BodySubscribers.ofInputStream;
@@ -170,6 +172,19 @@ public class JavaClient implements Client {
                     System.err.println("Error: " + ex.getMessage());
                     return null;
                 });
+    }
+
+    @Override
+    public Stream<Event> sse(SseRequest request) {
+
+        try {
+            var r = SseRequestBuilder.getHttpRequest(request);
+            var stream = client.send(r, java.net.http.HttpResponse.BodyHandlers.ofLines());
+            var handler = new SseResponseHandler(config, event -> {});
+            return handler.map(stream.body());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected <T> HttpResponse<T> transformBody(Function<RawResponse, HttpResponse<T>> transformer, RawResponse rr) {

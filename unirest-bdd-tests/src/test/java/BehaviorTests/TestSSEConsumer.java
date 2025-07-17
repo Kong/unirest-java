@@ -26,14 +26,25 @@
 package BehaviorTests;
 
 import io.javalin.http.sse.SseClient;
+import kong.unirest.core.java.Event;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.Consumer;
 
 public class TestSSEConsumer implements Consumer<SseClient> {
     private static final Queue<SseClient> clients = new ConcurrentLinkedDeque<>();
+    private static final List<Event> queuedEvents = new ArrayList<>();
     private static RequestCapture lastRequest;
+    private static boolean keepAlive = true;
+
+    public static void reset(){
+        clients.clear();
+        queuedEvents.clear();
+        keepAlive = true;
+    }
 
     public static RequestCapture getLastRequest() {
         return lastRequest;
@@ -55,11 +66,24 @@ public class TestSSEConsumer implements Consumer<SseClient> {
         clients.forEach(c -> c.sendEvent(event, content));
     }
 
+    public static void queueEvent(String id, String event, String content) {
+        queuedEvents.add(new Event(id, event, content, null));
+    }
+
+    public static void keepAlive(boolean value) {
+        keepAlive = value;
+    }
+
     @Override
     public void accept(SseClient client) {
         lastRequest = new RequestCapture(client.ctx());
-        client.keepAlive();
+        if(keepAlive) {
+            client.keepAlive();
+        }
         client.sendEvent("connect", "Welcome to Server Side Events");
         clients.add(client);
+        queuedEvents.forEach(e -> {
+            client.sendEvent(e.event(), e.data(), e.id());
+        });
     }
 }

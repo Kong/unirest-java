@@ -50,6 +50,7 @@ public class BddTest {
         Unirest.config().setObjectMapper(objectMapper);
         lock = new CountDownLatch(1);
         status = false;
+        TestSSEConsumer.reset();
     }
 
     @AfterEach

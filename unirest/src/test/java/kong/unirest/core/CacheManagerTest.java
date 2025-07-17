@@ -25,12 +25,14 @@
 
 package kong.unirest.core;
 
+import kong.unirest.core.java.Event;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.http.WebSocket;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static kong.unirest.core.HttpMethod.GET;
 import static org.junit.jupiter.api.Assertions.*;
@@ -103,6 +105,11 @@ class CacheManagerTest {
         @Override
         public CompletableFuture<Void> sse(SseRequest request, SseHandler handler) {
             return null;
+        }
+
+        @Override
+        public Stream<Event> sse(SseRequest request) {
+            return Stream.empty();
         }
 
         @Override

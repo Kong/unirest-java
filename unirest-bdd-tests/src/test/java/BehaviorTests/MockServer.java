@@ -88,6 +88,7 @@ public class MockServer {
     public static final String TIMEOUT = HOST + "/timeout";
     private static Javalin app;
     private static int errorCode = 400;
+    private static RequestCapture lastRequest;
 
 
     public static void setJsonAsResponse(Object o) {
@@ -112,7 +113,10 @@ public class MockServer {
 
         }).start(PORT);
         app.error(404, MockServer::notFound);
-        app.before(c -> timesCalled++);
+        app.before(c -> {
+            timesCalled++;
+            lastRequest = new RequestCapture(c);
+        });
         app.ws("/websocket", ws);
         app.sse("/sse", new TestSSEConsumer());
         app.delete("/delete", MockServer::jsonResponse);
@@ -347,6 +351,10 @@ public class MockServer {
         responseHeaders.clear();
     }
 
+    public static RequestCapture lastRequest() {
+        return lastRequest;
+    }
+
     public static class WebSocketHandler implements Consumer<WsConfig> {
 
         private static String onOpenMessage = "Open";
@@ -410,8 +418,16 @@ public class MockServer {
             TestSSEConsumer.sendEvent(event, content);
         }
 
+        public static void queueEvent(String id, String event, String content) {
+            TestSSEConsumer.queueEvent(id, event, content);
+        }
+
         public static RequestCapture lastRequest() {
             return TestSSEConsumer.getLastRequest();
+        }
+
+        public static void keepAlive(boolean value) {
+             TestSSEConsumer.keepAlive(value);
         }
     }
 }

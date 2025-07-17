@@ -25,9 +25,12 @@
 
 package kong.unirest.core;
 
+import kong.unirest.core.java.Event;
+
 import java.net.http.WebSocket;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * The client that does the work.
@@ -80,4 +83,6 @@ public interface Client {
      * @return a CompletableFuture
      */
     CompletableFuture<Void> sse(SseRequest request, SseHandler handler);
+
+    Stream<Event> sse(SseRequest request);
 }

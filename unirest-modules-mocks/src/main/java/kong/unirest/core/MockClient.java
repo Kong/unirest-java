@@ -26,6 +26,8 @@
 package kong.unirest.core;
 
 
+import kong.unirest.core.java.Event;
+
 import java.net.http.WebSocket;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
@@ -137,6 +140,11 @@ public class MockClient implements Client {
     @Override
     public CompletableFuture<Void> sse(SseRequest request, SseHandler handler) {
         return null;
+    }
+
+    @Override
+    public Stream<Event> sse(SseRequest request) {
+        return Stream.empty();
     }
 
     public SocketSet<MockWebSocket, MockListener> serversSocket() {

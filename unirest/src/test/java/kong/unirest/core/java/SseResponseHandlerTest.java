@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,7 +51,7 @@ class SseResponseHandlerTest {
     }
 
     @Test
-    void sendComment(){
+    void sendComment() {
         handle(": Hello World");
         listener.assertComment("Hello World");
     }
@@ -69,7 +70,7 @@ class SseResponseHandlerTest {
     }
 
     @Test
-    void dataWithJson(){
+    void dataWithJson() {
         handle("data: \"foo\": 1", "");
         listener.assertEventCount(1)
                 .assertEvent("", "", "\"foo\": 1");
@@ -81,7 +82,8 @@ class SseResponseHandlerTest {
         listener.assertEvent("1", "", "foo");
     }
 
-    @Test //https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream
+    @Test
+        //https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream
     void specExample1() {
         //The following event stream, once followed by a blank line:
         handle("data: YHOO",
@@ -123,7 +125,7 @@ class SseResponseHandlerTest {
 
         listener.assertComment("test stream")
                 .assertEvent("1", "", "first event")
-                .assertEvent("",  "", "second event")
+                .assertEvent("", "", "second event")
                 .assertEvent("", "", " third event")
                 .assertNoEventContaining("fourth event");
     }
@@ -157,15 +159,55 @@ class SseResponseHandlerTest {
         listener.assertEvent("", "", "test");
     }
 
+    @Test
+    void streamResponseExample1() {
+        var stream = Stream.of("data: YHOO",
+                "data: +2",
+                "data: 10",
+                "");
+
+        var events = handler.map(stream).collect(Collectors.toList());
+
+        assertThat(events)
+                .hasSize(1)
+                .containsExactly(new Event("", "", "YHOO\n+2\n10"));
+    }
+
+    @Test
+    void streamResponseExample2() {
+        var stream = Stream.of(": test stream",
+                "",
+                "data: first event",
+                "id: 1",
+                "",
+                "data:second event",
+                "id",
+                "",
+                "data:  third event",
+                "",
+                "data: fourth event");
+
+        var events = handler.map(stream).collect(Collectors.toList());
+
+        assertThat(events)
+                .hasSize(3)
+                .containsExactly(
+                        new Event("1", "", "first event"),
+                        new Event("", "",  "second event"),
+                        new Event("", "", " third event")
+                );
+    }
+
     private class TestHandler implements SseHandler {
 
         private List<Event> events = new ArrayList<>();
-        private List<String>   comments = new ArrayList<>();
+        private List<String> comments = new ArrayList<>();
 
         @Override
         public void onEvent(Event event) {
             events.add(event);
         }
+
         @Override
         public void onComment(String line) {
             comments.add(line);
