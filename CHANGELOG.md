@@ -1,3 +1,13 @@
+## 4.5.0
+* Added support for Server Sent Events. See Documentation.
+
+## 4.4.11
+* Updated dependencies
+* versions 4.4.8 - 4.4.10 were lost to Maven Central authentication changes
+
+## 4.4.7
+* issue #542 should pass default response to dynamically created invocations
+
 ## 4.4.5
 * Issue #536 UnirestInstance should implement AutoCloseable
 

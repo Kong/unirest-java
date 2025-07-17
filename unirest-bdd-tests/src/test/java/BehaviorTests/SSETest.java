@@ -27,6 +27,7 @@ package BehaviorTests;
 
 
 import kong.unirest.core.SseRequest;
+import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
