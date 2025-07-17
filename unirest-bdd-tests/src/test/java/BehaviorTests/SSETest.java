@@ -68,7 +68,7 @@ public class SSETest extends BddTest {
 
         sleep(1000);
 
-        listener.assertHasEvent("connect", "Welcome to Server Side Events")
+        listener.assertHasEvent("connect", "Welcome to Server Sent Events")
                 .assertHasComment("hey1")
                 .assertHasEvent("message", "Whats Happening?");
     }

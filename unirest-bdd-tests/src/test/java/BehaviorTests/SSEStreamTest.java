@@ -57,7 +57,7 @@ public class SSEStreamTest extends BddTest {
         assertThat(events)
                 .hasSize(3)
                 .containsExactly(
-                        new Event("", "connect", "Welcome to Server Side Events"),
+                        new Event("", "connect", "Welcome to Server Sent Events"),
                         new Event("1", "message", "hi mom"),
                         new Event("2", "message", "i like cheese")
                 );

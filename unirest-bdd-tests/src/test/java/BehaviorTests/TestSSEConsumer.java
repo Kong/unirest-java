@@ -80,7 +80,7 @@ public class TestSSEConsumer implements Consumer<SseClient> {
         if(keepAlive) {
             client.keepAlive();
         }
-        client.sendEvent("connect", "Welcome to Server Side Events");
+        client.sendEvent("connect", "Welcome to Server Sent Events");
         clients.add(client);
         queuedEvents.forEach(e -> {
             client.sendEvent(e.event(), e.data(), e.id());

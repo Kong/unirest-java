@@ -28,7 +28,7 @@ package kong.unirest.core;
 import kong.unirest.core.java.Event;
 
 /**
- * The Server Side Event Handler is used to consume Server Sent Events
+ * The Server Sent Event Handler is used to consume Server Sent Events
  * https://html.spec.whatwg.org/multipage/server-sent-events.html#server-sent-events
  *
  */
