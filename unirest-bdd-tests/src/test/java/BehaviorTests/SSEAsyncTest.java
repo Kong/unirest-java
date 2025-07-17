@@ -27,7 +27,6 @@ package BehaviorTests;
 
 
 import kong.unirest.core.SseRequest;
-import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -41,7 +40,7 @@ import java.util.concurrent.Executors;
 import static kong.unirest.core.Unirest.sse;
 
 @Disabled
-public class SSETest extends BddTest {
+public class SSEAsyncTest extends BddTest {
 
     TestHandler listener;
     ExecutorService pool;
