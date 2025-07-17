@@ -153,6 +153,13 @@ public interface SseRequest {
     Headers getHeaders();
 
     /**
+     * Sets the Last-Event-ID HTTP request header reports an EventSource object's last event ID string to the server when the user agent is to reestablish the connection.
+     * @param id the ID
+     * @return this request builder
+     */
+    SseRequest lastEventId(String id);
+
+    /**
      * @return the full URL if the request
      */
     String getUrl();

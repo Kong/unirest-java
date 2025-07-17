@@ -39,6 +39,7 @@ public class SseRequestImpl implements SseRequest {
     protected Headers headers = new Headers();
 
 
+
     public SseRequestImpl(Config config, String url) {
         Objects.requireNonNull(config, "Config cannot be null");
         Objects.requireNonNull(url,    "URL cannot be null");
@@ -124,6 +125,11 @@ public class SseRequestImpl implements SseRequest {
     public SseRequest queryString(Map<String, Object> parameters) {
         url.queryString(parameters);
         return this;
+    }
+
+    @Override
+    public SseRequest lastEventId(String id) {
+        return header("Last-Event-ID", id);
     }
 
     @Override

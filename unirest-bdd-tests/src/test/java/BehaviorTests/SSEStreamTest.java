@@ -99,4 +99,15 @@ public class SSEStreamTest extends BddTest {
                 .assertHeader("fruit", "apple")
                 .assertCookie("snack", "snickerdoodle");
     }
+
+    @Test
+    void canSendLastEventIdHeader() {
+        Unirest.sse(MockServer.SSE)
+                .lastEventId("42")
+                .connect()
+                .collect(Collectors.toList());
+
+        MockServer.lastRequest()
+                .assertHeader("Last-Event-ID", "42");
+    }
 }

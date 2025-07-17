@@ -105,6 +105,7 @@ public class MockServer {
         WebSocketHandler.reset();
         retryTimes = 0;
         errorCode = 400;
+        lastRequest = null;
     }
 
     static {
