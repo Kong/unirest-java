@@ -6,6 +6,8 @@ The default media type for SSE is ```text/event-stream```.
 ## Consuming Server Sent Events With Unirest-Java
 Unirest has two ways to consume a SSE web service; one async and one synchronous. Please be mindful that SSE is a persistent connection and unirest will keep the connection open as long as the server is willing and able. For this reason you may find the async method a better fit for most production systems. 
 
+NOTE: In order for object mapping to occur you must configure an ObjectMapper with unirest.
+
 ### Async Call
 The following subscribes to wikipedia's SSE stream of recently changed pages. Maps each event into a POJO, and outputs the name of the changed page.
 Note that Unirest will return you a ```CompletableFuture<Void>``` which you can hold on to to monitor the process.

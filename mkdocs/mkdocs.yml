@@ -37,6 +37,7 @@ nav:
     - Configuration: configuration.md
     - Making Requests: requests.md
     - Handling Responses: responses.md
+    - Server Sent Events: server-sent-events.md
     - Caching Responses: caching.md
     - Mocking: mocks.md
     
