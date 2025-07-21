@@ -30,5 +30,5 @@ Include details about your configuration and environment:
    * All code should follow style guidelines enforced by the checkstyle and other static analysis.
    * All code should have tests.
       * Unit tests
-      * Behavioral tests (see https://github.com/Kong/unirest-java/tree/master/unirest/src/test/java/BehaviorTests)
+      * Behavioral tests (see https://github.com/Kong/unirest-java/tree/main/unirest-bdd-tests/src/test/java/BehaviorTests)
   * You should have run verify before submitting and the PR needs to have passed TravisCI before being merged.
