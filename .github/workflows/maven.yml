@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    timeout-minutes: ${{ fromJSON(vars.GHA_DEFAULT_TIMEOUT) }}
+    timeout-minutes: 15
 
     runs-on: ubuntu-latest
 
