@@ -1,10 +1,15 @@
 package kong.unirest.core;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
@@ -12,32 +17,50 @@ import java.util.stream.Collectors;
 
 public class AwsSignerV4 implements Signer {
 
+    public static final String AWS_4_HMAC_SHA_256 = "AWS4-HMAC-SHA256";
+
     @Override
     public void sign(HttpRequest<?> request) {
 
     }
 
     public static class CanonicalRequest {
+        private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'");
         private final HttpRequest request;
         private final URI url;
         private final MultiHashMap<String, String> signingHeaders;
+        private final String accessKey;
+        private final String secretKey;
+        private final String region;
+        private final String service;
+        private final Clock clock;
 
         public CanonicalRequest(HttpRequest request){
+            this(request, null, null, null, null, Clock.systemUTC());
+        }
+
+        public CanonicalRequest(HttpRequest request, String accessKey, String secretKey, String region, String service, Clock clock) {
+            this.clock = clock;
             this.request = request;
             this.url = URI.create(request.getUrl());
             this.signingHeaders = processHeaders(request);
+            this.accessKey = accessKey;
+            this.secretKey = secretKey;
+            this.region = region;
+            this.service = service;
         }
 
         private MultiHashMap<String, String> processHeaders(HttpRequest request) {
             var headers = new MultiHashMap<String, String>();
             request.getHeaders().all().forEach(h -> {
                 var key = h.getName().toLowerCase();
-                if(key.startsWith("x-amz") || key.equals("host")) {
-                    headers.add(key, h.getValue().trim());
-                }
+                headers.add(key, h.getValue().trim());
             });
             if(!headers.containsKey("host")){
                 headers.add("host", url.getHost());
+            }
+            if(!headers.containsKey("x-amz-date")){
+                headers.add("x-amz-date", getFullDateStamp());
             }
             return headers;
         }
@@ -66,7 +89,7 @@ public class AwsSignerV4 implements Signer {
          */
         public String getCanonicalUri() {
             String path = Util.isNullOrEmpty(url.getPath()) ? "/" : url.getPath();
-            return URLEncoder.encode(url.getScheme() + "://" + url.getHost() + path, StandardCharsets.UTF_8);
+            return URI.create(path).getPath();
         }
 
         /**
@@ -151,7 +174,7 @@ public class AwsSignerV4 implements Signer {
                     .stream()
                     .sorted(Map.Entry.comparingByKey())
                     .map(this::renderHeader)
-                    .collect(Collectors.joining("\n"));
+                    .collect(Collectors.joining("\n")) + "\n";
         }
 
         /**
@@ -212,13 +235,107 @@ public class AwsSignerV4 implements Signer {
 
         private static final byte[] HEX_ARRAY = "0123456789abcdef".getBytes(StandardCharsets.US_ASCII);
         private static String bytesToHex(byte[] bytes) {
-            byte[] hexChars = new byte[bytes.length * 2];
-            for (int j = 0; j < bytes.length; j++) {
-                int v = bytes[j] & 0xFF;
-                hexChars[j * 2] = HEX_ARRAY[v >>> 4];
-                hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+            StringBuilder result = new StringBuilder();
+            for (byte b : bytes) {
+                result.append(String.format("%02x", b));
             }
-            return new String(hexChars, StandardCharsets.UTF_8);
+            return result.toString();
+        }
+
+        //"AWS4-HMAC-SHA256 Credential=YOUR_ACCESS_KEY/20250822/us-east-1/execute-api/aws4_request
+        // , SignedHeaders=host;x-amz-date
+        // , Signature=7caad2ddfd8355f9a7149eaa47793b00870f5fc1e1b64ddd010f6a84faa6be1f"
+        public String getAuthHeader() {
+            var sb = new StringBuilder(AWS_4_HMAC_SHA_256).append(" ");
+            sb.append("Credential=").append(accessKey)
+                    .append("/").append(getShortDateStamp())
+                    .append("/").append(region)
+                    .append("/").append(service)
+                    .append("/").append("aws4_request")
+                    .append(", ")
+                    .append("SignedHeaders=").append(getSignedHeaders())
+                    .append(", ")
+                    .append("Signature=").append(sign());
+
+            return sb.toString();
+        }
+
+        private String sign() {
+            String amzDate = getFullDateStamp();
+            String datestamp = getShortDateStamp();
+
+
+//            if (AwsCredentials.getAwsSessionToken() != null && !AwsCredentials.getAwsSessionToken().isEmpty()) {
+//                headers.putIfAbsent("x-amz-security-token", AwsCredentials.getAwsSessionToken());
+//            }
+
+            // Create the canonical request
+            String canonicalRequest = toString();
+
+            // Create the string to sign
+            String credentialScope = datestamp + "/" + region + "/" + service + "/aws4_request";
+            String stringToSign = AWS_4_HMAC_SHA_256 + "\n" + amzDate + "\n" + credentialScope + "\n" + calculateHash(canonicalRequest);
+
+            // Calculate the signature
+            byte[] signingKey = getSignatureKey(secretKey, datestamp, region, service);
+            return calculateHmacHex(signingKey, stringToSign);
+        }
+
+        @Override
+        public String toString() {
+            String query = getCanonicalQueryString();
+            String headers = getCanonicalHeaders();
+            String signedHeaders = getSignedHeaders();
+
+            String canonicalRequest = getHttpMethod()
+                    + "\n" + getCanonicalUri()
+                    + "\n" + query + "\n" +
+                    headers + "\n" + signedHeaders + "\n" + getHashedPayload();
+            return canonicalRequest;
+        }
+
+        private static String calculateHmacHex(byte[] key, String data) {
+            byte[] hmac = hmacSHA256(key, data);
+            return bytesToHex(hmac);
+        }
+
+        private static byte[] getSignatureKey(String key, String dateStamp, String regionName, String serviceName) {
+            byte[] kSecret = ("AWS4" + key).getBytes(StandardCharsets.UTF_8);
+            byte[] kDate = hmacSHA256(kSecret, dateStamp);
+            byte[] kRegion = hmacSHA256(kDate, regionName);
+            byte[] kService = hmacSHA256(kRegion, serviceName);
+            return hmacSHA256(kService, "aws4_request");
+        }
+
+        private static byte[] hmacSHA256(byte[] key, String data) {
+            try {
+                Mac mac = Mac.getInstance("HmacSHA256");
+                mac.init(new SecretKeySpec(key, "HmacSHA256"));
+                return mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to calculate HMAC-SHA256", e);
+            }
+        }
+
+        private String calculateHash(String data) {
+            try {
+                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                byte[] hash = digest.digest(data.getBytes(StandardCharsets.UTF_8));
+                return bytesToHex(hash);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to calculate SHA-256 hash", e);
+            }
+        }
+
+
+
+        public String getFullDateStamp() {
+            return clock.instant().atZone(clock.getZone()).format(FORMATTER);
+            //return "20250214T131509Z";
+        }
+
+        private String getShortDateStamp(){
+            return clock.instant().atZone(clock.getZone()).format(DateTimeFormatter.ofPattern("YYYYMMdd"));
         }
     }
 }

@@ -15,4 +15,28 @@
     <properties>
         <main.dir>${project.parent.basedir}</main.dir>
     </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>auth</artifactId>
+            <version>2.25.10</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>http-client-spi</artifactId>
+            <version>2.25.10</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>regions</artifactId>
+            <version>2.25.10</version>
+            <scope>test</scope>
+        </dependency>
+
+
+    </dependencies>
 </project>

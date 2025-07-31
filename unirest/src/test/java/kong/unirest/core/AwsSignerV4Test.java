@@ -2,6 +2,11 @@ package kong.unirest.core;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+import java.time.LocalDate;
+
+import static java.time.ZoneOffset.UTC;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -17,14 +22,14 @@ class AwsSignerV4Test {
     void getCanonicalUri_noPath() {
         var sig = getSig(Unirest.get("http://foo.com?fruit=apples"));
 
-        assertEquals("http%3A%2F%2Ffoo.com%2F", sig.getCanonicalUri());
+        assertEquals("/", sig.getCanonicalUri());
     }
 
     @Test
     void getCanonicalUri_withPath() {
         var sig = getSig(Unirest.get("http://foo.com/bar/baz?fruit=apples"));
 
-        assertEquals("http%3A%2F%2Ffoo.com%2Fbar%2Fbaz", sig.getCanonicalUri());
+        assertEquals("/bar/baz", sig.getCanonicalUri());
     }
 
     @Test
@@ -71,7 +76,10 @@ class AwsSignerV4Test {
 
         var sig = getSig(req);
 
-        assertEquals("host:foo.com", sig.getCanonicalHeaders());
+        assertThat(sig.getCanonicalHeaders())
+                .isEqualTo("host:foo.com\n" +
+                          "x-amz-date:19720928T000000Z\n");
+
     }
 
     @Test
@@ -84,22 +92,27 @@ class AwsSignerV4Test {
 
         var sig = getSig(req);
 
-        assertEquals("host:foo.com\n" +
-                "x-amz-alpha:cheese,lol\n" +
-                "x-amz-beta:monkeys", sig.getCanonicalHeaders());
+        assertThat(sig.getCanonicalHeaders())
+                .isEqualTo("host:foo.com\n" +
+                        "something:else\n" +
+                        "x-amz-alpha:cheese,lol\n" +
+                        "x-amz-beta:monkeys\n" +
+                        "x-amz-date:19720928T000000Z\n"
+                );
     }
 
     @Test
     void signedHeaders() {
         var req = Unirest.get("http://foo.com/bar/baz")
                 .header("x-amz-zulu", "   monkeys")
-                .header("x-AMZ-alpha", "cheese")
-                .header("x-amz-alpha", "lol")
-                .header("something", "else");
+                .header("x-AMZ-alpha","cheese")
+                .header("x-amz-alpha","lol")
+                .header("something",  "else");
 
         var sig = getSig(req);
 
-        assertEquals("host;x-amz-alpha;x-amz-zulu", sig.getSignedHeaders());
+        assertThat(sig.getSignedHeaders())
+                .isEqualTo("host;something;x-amz-alpha;x-amz-date;x-amz-zulu");
     }
 
     @Test
@@ -113,6 +126,7 @@ class AwsSignerV4Test {
     }
 
     private static AwsSignerV4.CanonicalRequest getSig(GetRequest req) {
-        return new AwsSignerV4.CanonicalRequest(req);
+        return new AwsSignerV4.CanonicalRequest(req, "key", "secret", "", "",
+                Clock.fixed(LocalDate.of(1972, 9, 28).atStartOfDay().toInstant(UTC), UTC));
     }
 }
