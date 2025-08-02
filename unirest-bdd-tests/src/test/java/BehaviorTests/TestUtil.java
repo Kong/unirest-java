@@ -42,7 +42,6 @@ import java.io.InputStream;
 import java.net.*;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
-import java.security.KeyStore;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -114,14 +113,6 @@ class TestUtil {
         }
 
         return map;
-    }
-
-    public static KeyStore readStore() throws Exception {
-        try (InputStream keyStoreStream = TestUtil.class.getResourceAsStream("/certs/badssl.com-client.p12")) {
-            KeyStore keyStore = KeyStore.getInstance("PKCS12");
-            keyStore.load(keyStoreStream, "badssl.com".toCharArray());
-            return keyStore;
-        }
     }
 
     public static String getResource(String resourceName) {
