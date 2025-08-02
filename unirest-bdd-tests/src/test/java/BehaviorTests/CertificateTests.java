@@ -176,6 +176,14 @@ class CertificateTests extends BddTest {
                 "java.io.IOException: PKIX path building failed: " +
                         "sun.security.provider.certpath.SunCertPathBuilderException: " +
                         "unable to find valid certification path to requested target");
+
+
+
+
+    }
+
+    @Test
+    void selfSignedWorksIfDisabled() {
         disableSsl();
         canCall("https://self-signed.badssl.com/");
     }
@@ -214,11 +222,15 @@ class CertificateTests extends BddTest {
     }
 
     private void failsAsync(String url, Class<? extends Throwable> exClass, String error) {
-        Exception e = assertThrows(Exception.class, () -> Unirest.get(url).asEmptyAsync().get());
-        if (!e.getCause().getClass().isAssignableFrom(exClass)) {
-            fail("Expected wrong exception type \n Expected: " + exClass + "\n but got " + e.getCause().getClass());
+        try {
+            var e = Unirest.get(url).asEmptyAsync().get().getParsingError().get().getCause().getCause();
+            if (!e.getCause().getClass().isAssignableFrom(exClass)) {
+                fail("Expected wrong exception type \n Expected: " + exClass + "\n but got " + e.getCause().getClass());
+            }
+            assertEquals(error, e.getMessage(), "Wrong Error Message");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        assertEquals(error, e.getMessage(), "Wrong Error Message");
     }
 
     private void fails(String url, Class<? extends Throwable> exClass, String error) {
