@@ -27,6 +27,7 @@ package BehaviorTests;
 
 import kong.unirest.core.GetRequest;
 
+import kong.unirest.core.HttpResponse;
 import kong.unirest.core.Unirest;
 import kong.unirest.core.UnirestException;
 import kong.unirest.core.java.SSLContextBuilder;
@@ -44,6 +45,7 @@ import java.security.KeyStore;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -215,8 +217,12 @@ class CertificateTests extends BddTest {
         Unirest.config()
                 .sslContext(sslContext);
 
-        Unirest.get("https://self-signed.badssl.com/")
-                .asEmpty();
+        var result = Unirest.get("https://self-signed.badssl.com/").asString();
+
+        assertThat(result.getStatus()).isEqualTo(200);
+        assertThat(result.getBody()).contains("self-signed.<br>badssl.com");
+
+
     }
 
     @Test //issue
