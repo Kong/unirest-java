@@ -142,6 +142,15 @@ class ConfigTest {
         assertThrows(IllegalArgumentException.class, () -> config.requestTimeout(-5));
     }
 
+    @Test
+    void disableHostNameVerification() {
+        assertNull(System.getProperty(Config.JDK_HTTPCLIENT_DISABLE_HOST_NAME_VERIFICATION));
+        config.disableHostNameVerification(true);
+        assertEquals("true", System.getProperty(Config.JDK_HTTPCLIENT_DISABLE_HOST_NAME_VERIFICATION));
+        config.disableHostNameVerification(false);
+        assertEquals("false", System.getProperty(Config.JDK_HTTPCLIENT_DISABLE_HOST_NAME_VERIFICATION));
+    }
+
     private void assertProxy(String host, Integer port, String username, String password) {
         assertEquals(host, config.getProxy().getHost());
         assertEquals(port, config.getProxy().getPort());

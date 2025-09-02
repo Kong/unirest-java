@@ -45,6 +45,7 @@ import java.util.function.Supplier;
 public class Config {
     public static final int DEFAULT_CONNECT_TIMEOUT = 10000;
     public static final String JDK_HTTPCLIENT_KEEPALIVE_TIMEOUT = "jdk.httpclient.keepalive.timeout";
+    public static final String JDK_HTTPCLIENT_DISABLE_HOST_NAME_VERIFICATION = "jdk.internal.httpclient.disableHostnameVerification";
 
     private Optional<Client> client = Optional.empty();
     private Supplier<ObjectMapper> objectMapper;
@@ -897,5 +898,19 @@ public class Config {
 
     public RetryStrategy getRetryStrategy() {
         return retry;
+    }
+
+    /**
+     * Sets the system property jdk.internal.httpclient.disableHostnameVerification
+     *
+     * Disables or enables HostNameVerification for the ENTIRE JVM. This will impact all consumers of
+     * Unirest, java.net.http.HttpClient, or other consumers of either.
+     *
+     * @param enabled boolean value for property. true DISABLES host name verification
+     * @return this config object
+     */
+    public Config disableHostNameVerification(boolean enabled) {
+        System.setProperty(JDK_HTTPCLIENT_DISABLE_HOST_NAME_VERIFICATION, String.valueOf(enabled));
+        return this;
     }
 }
