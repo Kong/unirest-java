@@ -1,3 +1,6 @@
+## 4.5.1
+* Add Config method for setting system property jdk.internal.httpclient.disableHostnameVerification. This will disable host name verification for ALL instances of Unirest or the Java client on the JVM
+
 ## 4.5.0
 * Added support for Server Sent Events. See Documentation.
 
