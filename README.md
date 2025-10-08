@@ -14,7 +14,7 @@ You can use a maven bom to manage the modules:
 Our [Documentation](http://kong.github.io/unirest-java/)
 
 ## Upgrading from Previous Versions 
-See the [Upgrade Guide](http://kong.github.io/unirest-java/upgrade-guilde)
+See the [Upgrade Guide](http://kong.github.io/unirest-java/upgrade-guide)
 
 ## ChangeLog 
 See the [Change Log](CHANGELOG.md) for recent changes.
