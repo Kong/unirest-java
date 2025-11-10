@@ -32,7 +32,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <jackson.version>2.20.1</jackson.version>
         <main.dir>${project.basedir}</main.dir>
-        <junit.version>5.13.4</junit.version>
+        <junit.version>5.14.1</junit.version>
         <mockito.version>5.18.0</mockito.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <assertj.version>3.27.3</assertj.version>
