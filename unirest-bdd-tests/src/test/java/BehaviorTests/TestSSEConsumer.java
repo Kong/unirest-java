@@ -76,6 +76,7 @@ public class TestSSEConsumer implements Consumer<SseClient> {
 
     @Override
     public void accept(SseClient client) {
+        client.ctx().
         lastRequest = new RequestCapture(client.ctx());
         if(keepAlive) {
             client.keepAlive();

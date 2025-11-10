@@ -36,11 +36,11 @@ import java.util.stream.Stream;
 public class SseRequestImpl implements SseRequest {
     private final Config config;
     private final Path url;
+    private final HttpMethod method;
     protected Headers headers = new Headers();
 
-
-
-    public SseRequestImpl(Config config, String url) {
+    public SseRequestImpl(Config config, String url, HttpMethod method) {
+        this.method = method;
         Objects.requireNonNull(config, "Config cannot be null");
         Objects.requireNonNull(url,    "URL cannot be null");
 
@@ -140,6 +140,11 @@ public class SseRequestImpl implements SseRequest {
     @Override
     public Stream<Event> connect() {
         return config.getClient().sse(this);
+    }
+
+    @Override
+    public HttpMethod getMethod() {
+        return method;
     }
 
     @Override

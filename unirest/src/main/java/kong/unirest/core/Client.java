@@ -84,5 +84,6 @@ public interface Client {
      */
     CompletableFuture<Void> sse(SseRequest request, SseHandler handler);
 
+    
     Stream<Event> sse(SseRequest request);
 }

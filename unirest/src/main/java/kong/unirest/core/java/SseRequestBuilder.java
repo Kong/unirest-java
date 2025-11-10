@@ -26,6 +26,7 @@
 package kong.unirest.core.java;
 
 import kong.unirest.core.ContentType;
+import kong.unirest.core.HttpMethod;
 import kong.unirest.core.SseRequest;
 
 import java.net.URI;
@@ -33,11 +34,12 @@ import java.net.http.HttpRequest;
 
 public class SseRequestBuilder {
     static java.net.http.HttpRequest getHttpRequest(SseRequest request) {
-        var accept = HttpRequest
+        var a = HttpRequest
                 .newBuilder()
                 .header("Accept", ContentType.EVENT_STREAMS.getMimeType())
-                .GET()
                 .uri(URI.create(request.getUrl()));
+
+        var accept = addMethod(request, a);
 
         request.getHeaders().all().forEach(h -> {
             accept.header(h.getName(), h.getValue());
@@ -45,6 +47,14 @@ public class SseRequestBuilder {
 
 
         return accept.build();
+    }
+
+    private static HttpRequest.Builder addMethod(SseRequest request, HttpRequest.Builder a) {
+        if(request.getMethod().equals(HttpMethod.GET)){
+            return a.GET();
+        } else {
+            return a.method(request.getMethod().toString(), HttpRequest.BodyPublishers.noBody());
+        }
     }
 
 

@@ -158,6 +158,10 @@ public class UnirestInstance implements AutoCloseable {
     }
 
     public SseRequestImpl sse(String url) {
-        return new SseRequestImpl(config, url);
+        return new SseRequestImpl(config, url, HttpMethod.GET);
+    }
+
+    public SseRequestImpl sse(String url, HttpMethod method) {
+        return new SseRequestImpl(config, url, method);
     }
 }

@@ -25,6 +25,7 @@
 
 package BehaviorTests;
 
+import kong.unirest.core.HttpMethod;
 import kong.unirest.core.Unirest;
 import kong.unirest.core.java.Event;
 import org.junit.jupiter.api.BeforeEach;
@@ -109,5 +110,22 @@ public class SSEStreamTest extends BddTest {
 
         MockServer.lastRequest()
                 .assertHeader("Last-Event-ID", "42");
+    }
+
+    @Test
+    void sendSSEAsAPost() {
+        MockServer.Sse.queueEvent("1", "message", "hi mom");
+
+        var events = Unirest.sse(MockServer.SSE, HttpMethod.POST)
+                .connect()
+                .collect(Collectors.toList());
+
+        assertThat(events)
+                .hasSize(2)
+                .containsExactly(
+                        new Event("", "connect", "Welcome to Server Sent Events"),
+                        new Event("1", "message", "hi mom")
+                );
+
     }
 }

@@ -138,6 +138,10 @@ public class Unirest {
         return primaryInstance.sse(url);
     }
 
+    public static SseRequest sse(String url, HttpMethod method) {
+        return primaryInstance.sse(url, method);
+    }
+
     /**
      * Spawn a new Unirest Instance with a new config.
      * Don't forget to shut it down when your done.

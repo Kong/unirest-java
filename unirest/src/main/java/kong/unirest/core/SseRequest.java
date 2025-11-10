@@ -181,4 +181,10 @@ public interface SseRequest {
      * @return a stream of events
      */
     Stream<Event> connect();
+
+    /**
+     * The method of the request. Defaults to GET
+     * @return the method
+     */
+    HttpMethod getMethod();
 }
