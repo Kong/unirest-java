@@ -62,6 +62,10 @@ class JavaClientBuilder implements Function<Config, HttpClient> {
         if(config.useSystemProperties()){
             builder.proxy(ProxySelector.getDefault());
         }
+        if(config.getAuthenticator() != null){
+            builder.authenticator(config.getAuthenticator());
+        }
+
         return builder.build();
     }
 

@@ -30,6 +30,7 @@ import kong.unirest.core.json.CoreFactory;
 
 import javax.net.ssl.SSLContext;
 import java.io.InputStream;
+import java.net.Authenticator;
 import java.net.http.*;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -74,6 +75,7 @@ public class Config {
     private CacheManager cache;
     private HttpClient.Version version = HttpClient.Version.HTTP_2;
     private RetryStrategy retry;
+    private Authenticator authenticator;
 
     public Config() {
         setDefaults();
@@ -101,6 +103,7 @@ public class Config {
         retry = null;
         objectMapper = () -> CoreFactory.getCore().getObjectMapper();
         version = HttpClient.Version.HTTP_2;
+        authenticator = null;
 
         try {
             clientBuilder = JavaClient::new;
@@ -912,5 +915,22 @@ public class Config {
     public Config disableHostNameVerification(boolean enabled) {
         System.setProperty(JDK_HTTPCLIENT_DISABLE_HOST_NAME_VERIFICATION, String.valueOf(enabled));
         return this;
+    }
+
+    /**
+     * Sets a authenticator object for the client
+     * @param auth
+     * @return this config
+     */
+    public Config authenticator(Authenticator auth) {
+        this.authenticator = auth;
+        return this;
+    }
+
+    /**
+     * @return the authenticator registered with the config
+     */
+    public Authenticator getAuthenticator(){
+        return authenticator;
     }
 }

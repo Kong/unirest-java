@@ -34,6 +34,7 @@ import io.javalin.http.HttpStatus;
 import io.javalin.websocket.WsConfig;
 import jakarta.servlet.ServletOutputStream;
 import org.eclipse.jetty.util.UrlEncoded;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -86,6 +87,7 @@ public class MockServer {
     public static final String ALTGET = "http://127.0.0.1:" + PORT + "/get";
     public static final String ECHO_RAW = HOST + "/raw";
     public static final String TIMEOUT = HOST + "/timeout";
+    public static final String BASICAUTH = HOST + "/basic";
     private static Javalin app;
     private static int errorCode = 400;
     private static RequestCapture lastRequest;
@@ -118,6 +120,12 @@ public class MockServer {
             timesCalled++;
             lastRequest = new RequestCapture(c);
         });
+        app.before("/basic", ctx -> {
+            if (ctx.basicAuthCredentials() == null) {
+                ctx.header("WWW-Authenticate", "Basic realm=\"User Visible Realm\", charset=\"UTF-8\"");
+                ctx.status(401);
+            }
+        });
         app.ws("/websocket", ws);
         app.sse("/sse", new TestSSEConsumer());
         app.delete("/delete", MockServer::jsonResponse);
@@ -144,11 +152,18 @@ public class MockServer {
         app.get("/error", MockServer::error);
         app.get("/hello", MockServer::helloWOrld);
         app.get("/timeout", MockServer::timeout);
+        app.get("/basic", MockServer::basic);
         Runtime.getRuntime().addShutdownHook(new Thread(app::stop));
         try {
             new CountDownLatch(1).await(2, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void basic(@NotNull Context context) {
+        if(!(context.status().getCode() == 401)){
+            jsonResponse(context);
         }
     }
 
