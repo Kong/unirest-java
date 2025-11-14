@@ -30,7 +30,9 @@ import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
 
 import java.net.Authenticator;
+import java.net.InetAddress;
 import java.net.PasswordAuthentication;
+import java.net.URL;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,6 +57,38 @@ public class AuthenticatorTest extends BddTest {
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertBasicAuth("Fred", "Flintstone");
+
+        MockServer.assertRequestCount(2);
+    }
+
+    @Test
+    void setAuthenticatorPerHostAndPort(){
+        Unirest.config().authenticator(new Authenticator() {
+            @Override
+            public PasswordAuthentication requestPasswordAuthenticationInstance(String host, InetAddress addr, int port,
+                                                                                String protocol, String prompt,
+                                                                                String scheme, URL url,
+                                                                                RequestorType reqType) {
+                if(host.contains("localhost")){
+                    return new PasswordAuthentication("Barney", "Rubble".toCharArray());
+                } else {
+                    return new PasswordAuthentication("Fred", "Flintstone".toCharArray());
+                }
+            }
+        });
+
+        Unirest.get(MockServer.BASICAUTH)
+                .queryString("barney", "true")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertBasicAuth("Barney", "Rubble");
+
+        // The Authenticator will cache for different ports and hosts.
+        Unirest.get(MockServer.BASICAUTH.replace("localhost", "127.0.0.1"))
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertBasicAuth("Fred", "Flintstone");
+
 
     }
 }
