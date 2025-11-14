@@ -31,6 +31,7 @@ import kong.unirest.core.json.CoreFactory;
 import javax.net.ssl.SSLContext;
 import java.io.InputStream;
 import java.net.Authenticator;
+import java.net.ProxySelector;
 import java.net.http.*;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -76,6 +77,7 @@ public class Config {
     private HttpClient.Version version = HttpClient.Version.HTTP_2;
     private RetryStrategy retry;
     private Authenticator authenticator;
+    private ProxySelector proxySelector;
 
     public Config() {
         setDefaults();
@@ -104,6 +106,7 @@ public class Config {
         objectMapper = () -> CoreFactory.getCore().getObjectMapper();
         version = HttpClient.Version.HTTP_2;
         authenticator = null;
+        proxySelector = null;
 
         try {
             clientBuilder = JavaClient::new;
@@ -151,13 +154,29 @@ public class Config {
 
     /**
      * Set a proxy
+     * This will set any ProxySelector object already set to null and take over all proxy work
      *
      * @param value Proxy settings object.
      * @return this config object
      */
     public Config proxy(Proxy value) {
         validateClientsNotRunning();
+        this.proxySelector = null;
         this.proxy = value;
+        return this;
+    }
+
+    /**
+     * Set a proxy selector.
+     * This will set any Proxy object already set to null and take over all proxy work
+     *
+     * @param value ProxySelector object.
+     * @return this config object
+     */
+    public Config proxy(ProxySelector value) {
+        validateClientsNotRunning();
+        this.proxy = null;
+        this.proxySelector = value;
         return this;
     }
 
@@ -932,5 +951,12 @@ public class Config {
      */
     public Authenticator getAuthenticator(){
         return authenticator;
+    }
+
+    /**
+     * @return the ProxySelector
+     */
+    public ProxySelector getProxySelector(){
+        return proxySelector;
     }
 }

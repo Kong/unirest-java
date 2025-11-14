@@ -59,6 +59,9 @@ class JavaClientBuilder implements Function<Config, HttpClient> {
         if(config.getProxy() != null){
             createProxy(builder, config.getProxy());
         }
+        if(config.getProxySelector() != null){
+            builder = builder.proxy(config.getProxySelector());
+        }
         if(config.useSystemProperties()){
             builder.proxy(ProxySelector.getDefault());
         }

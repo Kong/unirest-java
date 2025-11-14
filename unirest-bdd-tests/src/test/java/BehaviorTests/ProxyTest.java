@@ -31,6 +31,14 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import kong.unirest.core.Unirest;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
+import java.net.SocketAddress;
+import java.net.URI;
+import java.util.List;
+
+import static java.net.Proxy.Type.HTTP;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Disabled // The Janky Proxy is pretty janky and isn't entirely stable in CI
@@ -63,6 +71,31 @@ class ProxyTest extends BddTest {
         JankyProxy.runServer("localhost", 4567, 7777);
 
         Unirest.config().proxy("localhost", 7777);
+
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertStatus(200);
+
+        assertTrue(JankyProxy.wasUsed());
+    }
+
+    @Test
+    void canUseSelector() {
+        JankyProxy.runServer("localhost", 4567, 7777);
+
+        Unirest.config().proxy(new ProxySelector(){
+            @Override
+            public List<java.net.Proxy> select(URI uri) {
+                var address = InetSocketAddress.createUnresolved("localhost", 7777);
+                return List.of(new java.net.Proxy(HTTP, address));
+            }
+
+            @Override
+            public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
+                throw new RuntimeException(ioe);
+            }
+        });
 
         Unirest.get(MockServer.GET)
                 .asObject(RequestCapture.class)
