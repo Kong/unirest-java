@@ -32,6 +32,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Locale;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class UtilTest {
@@ -67,5 +68,11 @@ class UtilTest {
         Locale.setDefault(Locale.CHINESE);
         assertEquals(ZonedDateTime.of(2020,3,6, 16,5,35,0, ZoneId.of("GMT")),
                 Util.tryParseToDate("Fri, 06 Mar 2020 16:05:35 GMT"));
+    }
+
+    @Test
+    void basicAuth() {
+        assertThat(Util.toBasicAuthValue("username", "password"))
+                .isEqualTo("Basic dXNlcm5hbWU6cGFzc3dvcmQ=");
     }
 }

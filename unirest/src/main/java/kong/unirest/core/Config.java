@@ -883,6 +883,9 @@ public class Config {
         return this.defaultBaseUrl;
     }
 
+    /**
+     * @return the custom executor
+     */
     public Executor getCustomExecutor(){
         return customExecutor;
     }
@@ -918,6 +921,9 @@ public class Config {
         }
     }
 
+    /**
+     * @return the RetryStrategy configured
+     */
     public RetryStrategy getRetryStrategy() {
         return retry;
     }

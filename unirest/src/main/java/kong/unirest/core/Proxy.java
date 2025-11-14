@@ -25,16 +25,34 @@
 
 package kong.unirest.core;
 
+/**
+ * represents basic proxy settings
+ * When this is used to configure the client it sets the following:
+ *    Proxy host and port are configured as a simple java.net.ProxySelector and set as the default selector
+ *    Username and password are configured as a single java.net.Authenticator which will apply to ALL auth challenges (not just the proxy)
+ */
 public class Proxy {
     private final String host;
     private final Integer port;
     private final String username;
     private final String password;
 
+    /**
+     * Construct just based on host and port
+     * @param host hostname
+     * @param port the port
+     */
     public Proxy(String host, Integer port){
         this(host, port, null, null);
     }
 
+    /**
+     * Construct with all the things
+     * @param host hostname
+     * @param port the port
+     * @param username username for authentication
+     * @param password password for authentication
+     */
     public Proxy(String host, Integer port, String username, String password) {
         this.host = host;
         this.port = port;
@@ -42,22 +60,37 @@ public class Proxy {
         this.password = password;
     }
 
+    /**
+     * @return the host
+     */
     public String getHost() {
         return host;
     }
 
+    /**
+     * @return the port
+     */
     public Integer getPort() {
         return port;
     }
 
+    /**
+     * @return the username for authentication
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * @return the password
+     */
     public String getPassword() {
         return password;
     }
 
+    /**
+     * @return indicates that the username and password have been configured.
+     */
     public boolean isAuthenticated() {
         return username != null && password != null;
     }
