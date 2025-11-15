@@ -1,3 +1,9 @@
+## 4.6.0
+* Add support for multiple proxies and authentication per host
+
+## 4.5.2
+* Dependency updates
+
 ## 4.5.1
 * Add Config method for setting system property jdk.internal.httpclient.disableHostnameVerification. This will disable host name verification for ALL instances of Unirest or the Java client on the JVM
 
