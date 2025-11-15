@@ -40,6 +40,7 @@ nav:
     - Server Sent Events: server-sent-events.md
     - Caching Responses: caching.md
     - Mocking: mocks.md
+    - Proxies: proxies.md
     
 
 markdown_extensions:
