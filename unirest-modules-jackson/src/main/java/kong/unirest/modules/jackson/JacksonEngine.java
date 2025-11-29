@@ -25,28 +25,31 @@
 
 package kong.unirest.modules.jackson;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.json.JsonReadFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.node.*;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import kong.unirest.core.ObjectMapper;
 import kong.unirest.core.UnirestException;
-import kong.unirest.core.json.*;
+import kong.unirest.core.json.JSONElement;
+import kong.unirest.core.json.JSONException;
+import kong.unirest.core.json.JsonEngine;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.json.JsonReadFeature;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.*;
 
-import java.io.IOException;
 import java.io.Writer;
 import java.math.BigInteger;
 import java.util.Collection;
 
 public class JacksonEngine implements JsonEngine {
-    private com.fasterxml.jackson.databind.ObjectMapper om;
+    private tools.jackson.databind.ObjectMapper om;
     private ObjectMapper objm;
 
     public JacksonEngine(){
         objm = new JacksonObjectMapper();
-        om = JsonMapper.builder()
-                .enable(JsonReadFeature.ALLOW_UNQUOTED_FIELD_NAMES)
+        om = JsonMapper.builderWithJackson2Defaults()
+                .enable(JsonReadFeature.ALLOW_UNQUOTED_PROPERTY_NAMES)
+                .changeDefaultVisibility(vc -> vc.withFieldVisibility(JsonAutoDetect.Visibility.ANY))
                 .build();
     }
 
@@ -55,7 +58,7 @@ public class JacksonEngine implements JsonEngine {
         try {
             return om.writerWithDefaultPrettyPrinter()
                     .writeValueAsString(obj.getEngineElement());
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new UnirestException(e);
         }
     }
@@ -64,7 +67,7 @@ public class JacksonEngine implements JsonEngine {
     public String toJson(Element obj) {
         try {
             return om.writeValueAsString(obj.getEngineElement());
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new UnirestException(e);
         }
     }
@@ -73,7 +76,7 @@ public class JacksonEngine implements JsonEngine {
     public void toJson(Element obj, Writer sw) {
         try {
             om.writeValue(sw, obj.getEngineElement());
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new JSONException(e);
         }
     }
@@ -83,14 +86,14 @@ public class JacksonEngine implements JsonEngine {
         try {
             om.writerWithDefaultPrettyPrinter()
                     .writeValue(sw, obj.getEngineElement());
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new JSONException(e);
         }
     }
 
     @Override
     public Element toJsonTree(java.lang.Object obj) {
-        return JacksonElement.wrap(om.convertValue(obj, JsonNode.class));
+        return JacksonElement.wrap(om.valueToTree(obj));
     }
 
     @Override
@@ -102,7 +105,7 @@ public class JacksonEngine implements JsonEngine {
     public Object newEngineObject(String string) throws JSONException {
         try {
             return new JacksonObject(om.readValue(string, ObjectNode.class));
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new JSONException("Invalid JSON");
         }
     }
@@ -111,7 +114,7 @@ public class JacksonEngine implements JsonEngine {
     public Array newJsonArray(String jsonString) throws JSONException {
         try {
             return new JacksonArray(om.readValue(jsonString, ArrayNode.class));
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new JSONException("Invalid JSON");
         }
     }
@@ -162,7 +165,7 @@ public class JacksonEngine implements JsonEngine {
 
     @Override
     public Primitive newJsonPrimitive(String string) {
-        return convert(string, v -> new TextNode(v));
+        return convert(string, StringNode::new);
     }
 
     @Override
@@ -183,7 +186,7 @@ public class JacksonEngine implements JsonEngine {
 
     @Override
     public Primitive newJsonPrimitive(Boolean bool) {
-        return convert(bool, v -> BooleanNode.valueOf(v));
+        return convert(bool, BooleanNode::valueOf);
     }
 
     @Override
@@ -195,14 +198,14 @@ public class JacksonEngine implements JsonEngine {
     public String quote(java.lang.Object s) {
         try {
             return om.writeValueAsString(s);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new JSONException(e);
         }
     }
 
     @FunctionalInterface
     private interface ValueSupplier<V> {
-        ValueNode getIt(V value) throws JsonProcessingException;
+        ValueNode getIt(V value);
     }
 
     private <T> Primitive convert(T value, ValueSupplier<T> supplier){
@@ -211,7 +214,7 @@ public class JacksonEngine implements JsonEngine {
                 return new JacksonPrimitive(NullNode.getInstance());
             }
             return new JacksonPrimitive(supplier.getIt(value));
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new UnirestException(e);
         }
     }

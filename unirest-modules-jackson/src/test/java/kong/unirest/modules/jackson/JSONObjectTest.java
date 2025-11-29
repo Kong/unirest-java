@@ -646,7 +646,7 @@ class JSONObjectTest {
 
         public TestMe(){ }
 
-        public TestMe(boolean bool, String aString, int aNumber, TestMe aSub){
+        public TestMe(boolean bool, String aString, int aNumber, TestMe aSub) {
             this.aBoolean = bool;
             this.aSillyString = aString;
             this.aNumber = aNumber;

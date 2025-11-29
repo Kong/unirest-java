@@ -107,7 +107,7 @@ public class JSONPointer {
     /**
      * Many of the path compiling code was borrowed from Jackson.
      * It is, slightly modified but similar enough to give credit.
-     * please see com.fasterxml.jackson.core.JsonPointer
+     * please see tools.jackson.core.JsonPointer
      * @author Tatu Saloranta
      */
     private static JSONPointer compileNext(String query) {

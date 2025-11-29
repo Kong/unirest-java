@@ -25,30 +25,31 @@
 
 package BehaviorTests;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.StreamWriteFeature;
+import tools.jackson.databind.*;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
+import tools.jackson.datatype.guava.GuavaModule;
 import kong.unirest.core.*;
 import kong.unirest.core.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 
 public class JacksonObjectMapper implements kong.unirest.core.ObjectMapper {
 
-	public final com.fasterxml.jackson.databind.ObjectMapper om;
+	public tools.jackson.databind.ObjectMapper om;
 
-	public JacksonObjectMapper(com.fasterxml.jackson.databind.ObjectMapper om){
+	public JacksonObjectMapper(tools.jackson.databind.ObjectMapper om){
 		this.om = om;
 	}
 
 	public JacksonObjectMapper(){
-		this(new com.fasterxml.jackson.databind.ObjectMapper());
-		om.registerModule(new GuavaModule());
+        JsonMapper.Builder builder = JsonMapper.builderWithJackson2Defaults();
+        builder.addModule(new GuavaModule());
 		SimpleModule simpleModule = new SimpleModule();
 		simpleModule.addSerializer(JsonPatchItem.class, new PatchSerializer());
 		simpleModule.addSerializer(JsonPatch.class, new JsonPatchSerializer());
@@ -56,15 +57,16 @@ public class JacksonObjectMapper implements kong.unirest.core.ObjectMapper {
 		simpleModule.addDeserializer(JsonPatch.class, new JsonPatchDeSerializer());
 		simpleModule.addSerializer(HttpMethod.class, new HttpMethodSerializer());
 		simpleModule.addDeserializer(HttpMethod.class, new HttpMethodDeSerializer());
-		om.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
-		om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		om.registerModule(simpleModule);
+        builder.configure(StreamWriteFeature.IGNORE_UNKNOWN, true);
+        builder.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        builder.addModule(simpleModule);
+        this.om = builder.build();
 	}
 
 	public <T> T readValue(File f, Class<T> valueType){
 		try {
 			return om.readValue(f, valueType);
-		} catch (IOException e) {
+		} catch (JacksonException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -73,7 +75,7 @@ public class JacksonObjectMapper implements kong.unirest.core.ObjectMapper {
 	public <T> T readValue(String value, Class<T> valueType) {
 		try {
 			return om.readValue(value, valueType);
-		} catch (IOException e) {
+		} catch (JacksonException e) {
 			throw new UnirestException(e);
 		}
 	}
@@ -82,7 +84,7 @@ public class JacksonObjectMapper implements kong.unirest.core.ObjectMapper {
 	public <T> T readValue(String value, GenericType<T> genericType) {
 		try {
 			return om.readValue(value,  om.constructType(genericType.getType()));
-		} catch (IOException e) {
+		} catch (JacksonException e) {
 			throw new UnirestException(e);
 		}
 	}
@@ -91,7 +93,7 @@ public class JacksonObjectMapper implements kong.unirest.core.ObjectMapper {
 	public String writeValue(Object value) {
 		try {
 			return om.writeValueAsString(value);
-		} catch (JsonProcessingException e) {
+		} catch (JacksonException e) {
 			throw new UnirestException(e);
 		}
 	}
@@ -99,7 +101,7 @@ public class JacksonObjectMapper implements kong.unirest.core.ObjectMapper {
 	public <T> T readValue(InputStream rawBody, Class<T> as) {
 		try {
 			return om.readValue(rawBody, as);
-		} catch (IOException e) {
+		} catch (JacksonException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -107,51 +109,51 @@ public class JacksonObjectMapper implements kong.unirest.core.ObjectMapper {
 	public <T> T readValue(byte[] content, Class<T> clazz) {
 		try {
 			return om.readValue(content, clazz);
-		} catch (IOException e) {
+		} catch (JacksonException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public static class JsonPatchSerializer extends JsonSerializer<JsonPatch>{
-		@Override
-		public void serialize(JsonPatch patch, JsonGenerator jgen, SerializerProvider serializerProvider) throws IOException {
-			jgen.writeRawValue(patch.toString());
-		}
-	}
+	public static class JsonPatchSerializer extends ValueSerializer<JsonPatch>{
+        @Override
+        public void serialize(JsonPatch patch, JsonGenerator jgen, SerializationContext ctxt) throws JacksonException {
+            jgen.writeRawValue(patch.toString());
+        }
+    }
 
-	public static class JsonPatchDeSerializer extends JsonDeserializer<JsonPatch>{
+	public static class JsonPatchDeSerializer extends ValueDeserializer<JsonPatch>{
 		@Override
-		public JsonPatch deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+		public JsonPatch deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) {
 			String s = jsonParser.readValueAsTree().toString();
 			return new JsonPatch(s);
 		}
 	}
 
-	public static class PatchSerializer extends JsonSerializer<JsonPatchItem> {
-		@Override
-		public void serialize(JsonPatchItem jwk, JsonGenerator jgen, SerializerProvider serializerProvider) throws IOException {
-			jgen.writeRaw(jwk.toString());
-		}
-	}
+	public static class PatchSerializer extends ValueSerializer<JsonPatchItem> {
+        @Override
+        public void serialize(JsonPatchItem jwk, JsonGenerator jgen, SerializationContext ctxt) throws JacksonException {
+            jgen.writeRaw(jwk.toString());
+        }
+    }
 
-	public static class PatchDeserializer extends JsonDeserializer<JsonPatchItem> {
+	public static class PatchDeserializer extends ValueDeserializer<JsonPatchItem> {
 		@Override
-		public JsonPatchItem deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+		public JsonPatchItem deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) {
 			String s = jsonParser.readValueAsTree().toString();
 			return new JsonPatchItem(new JSONObject(s));
 		}
 	}
 
-	public static class HttpMethodSerializer extends JsonSerializer<HttpMethod> {
-		@Override
-		public void serialize(HttpMethod httpMethod, JsonGenerator jgen, SerializerProvider serializerProvider) throws IOException {
-			jgen.writeString(httpMethod.name());
-		}
-	}
+	public static class HttpMethodSerializer extends ValueSerializer<HttpMethod> {
+        @Override
+        public void serialize(HttpMethod httpMethod, JsonGenerator jgen, SerializationContext ctxt) throws JacksonException {
+            jgen.writeString(httpMethod.name());
+        }
+    }
 
-	public static class HttpMethodDeSerializer extends JsonDeserializer<HttpMethod> {
+	public static class HttpMethodDeSerializer extends ValueDeserializer<HttpMethod> {
 		@Override
-		public HttpMethod deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+		public HttpMethod deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) {
 			String s = jsonParser.readValueAs(String.class);
 			return HttpMethod.valueOf(s);
 		}

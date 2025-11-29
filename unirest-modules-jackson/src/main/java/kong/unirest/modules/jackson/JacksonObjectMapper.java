@@ -49,43 +49,41 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 package kong.unirest.modules.jackson;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.StreamWriteFeature;
+import tools.jackson.databind.DeserializationFeature;
 import kong.unirest.core.GenericType;
 import kong.unirest.core.ObjectMapper;
 import kong.unirest.core.UnirestException;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
 import java.util.function.Consumer;
 
 
 public class JacksonObjectMapper implements ObjectMapper {
-    private final com.fasterxml.jackson.databind.ObjectMapper om;
+    private tools.jackson.databind.ObjectMapper om;
 
     public JacksonObjectMapper(){
         this(c -> {});
     }
 
     /**
-     * Pass in any additional ObjectMapper configurations you want
-     * @param configurations consumer of confiruations to perform on the com.fasterxml.jackson.databind.ObjectMapper
+     * Pass in any additional JsonMapper configurations you want
+     * @param configurations consumer of configurations to perform on the tools.jackson.databind.JsonMapper.Builder
      */
-    public JacksonObjectMapper(Consumer<com.fasterxml.jackson.databind.ObjectMapper> configurations) {
-        this(new com.fasterxml.jackson.databind.ObjectMapper());
-        om.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
-        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        //om.configure(WRITE_DATES_AS_TIMESTAMPS, false);
-        om.registerModule(new JavaTimeModule());
-        configurations.accept(om);
+    public JacksonObjectMapper(Consumer<JsonMapper.Builder> configurations) {
+        JsonMapper.Builder builder = JsonMapper.builderWithJackson2Defaults();
+        builder.configure(StreamWriteFeature.IGNORE_UNKNOWN, true);
+        builder.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        configurations.accept(builder);
+        this.om = builder.build();
     }
 
-    public JacksonObjectMapper(com.fasterxml.jackson.databind.ObjectMapper om){
+    public JacksonObjectMapper(tools.jackson.databind.ObjectMapper om){
         this.om = om;
     }
 
-    public com.fasterxml.jackson.databind.ObjectMapper getJacksonMapper(){
+    public tools.jackson.databind.ObjectMapper getJacksonMapper(){
         return om;
     }
 
@@ -93,7 +91,7 @@ public class JacksonObjectMapper implements ObjectMapper {
     public <T> T readValue(String value, Class<T> valueType) {
         try {
             return om.readValue(value, valueType);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new UnirestException(e);
         }
     }
@@ -102,7 +100,7 @@ public class JacksonObjectMapper implements ObjectMapper {
     public <T> T readValue(String value, GenericType<T> genericType) {
         try {
             return om.readValue(value,  om.constructType(genericType.getType()));
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new UnirestException(e);
         }
     }
@@ -111,7 +109,7 @@ public class JacksonObjectMapper implements ObjectMapper {
     public String writeValue(Object value) {
         try {
             return om.writeValueAsString(value);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new UnirestException(e);
         }
     }

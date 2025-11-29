@@ -7,7 +7,7 @@ Use it like this:
      Unirest.config().setObjectMapper(new JacksonObjectMapper());
 ```
 
-You may also provide it with your own com.fasterxml.jackson.databind.ObjectMapper.
+You may also provide it with your own tools.jackson.databind.ObjectMapper.
 
 ## Install With [Maven](https://mvnrepository.com/artifact/com.konghq/)
 ```

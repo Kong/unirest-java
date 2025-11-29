@@ -49,12 +49,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 package kong.unirest.modules.jackson;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
 import kong.unirest.core.GenericType;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 
@@ -85,7 +85,7 @@ class JacksonObjectMapperTest {
         assertEquals(42, test.nmbr);
         assertEquals("bar", test.another.text);
         assertEquals(666, test.another.nmbr);
-        assertEquals(null, test.another.another);
+        assertNull(test.another.another);
     }
 
     @Test
@@ -99,22 +99,22 @@ class JacksonObjectMapperTest {
         assertEquals(42, test.nmbr);
         assertEquals("bar", test.another.text);
         assertEquals(666, test.another.nmbr);
-        assertEquals(null, test.another.another);
+        assertNull(test.another.another);
     }
 
     @Test
     void configSoItFails() {
-        ObjectMapper jom = new ObjectMapper();
-        jom.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+        final JsonMapper jom = JsonMapper.builder()
+                .enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .build();
         JacksonObjectMapper j = new JacksonObjectMapper(jom);
 
         try {
             j.readValue("{\"something\": [1,2,3] }", TestMe.class);
             fail("Should have thrown");
-        }catch (Exception e) {
-            assertEquals("com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field \"something\" (class kong.unirest.modules.jackson.JacksonObjectMapperTest$TestMe), not marked as ignorable (3 known properties: \"another\", \"text\", \"nmbr\"])\n" +
-                            " at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 16] (through reference chain: kong.unirest.modules.jackson.JacksonObjectMapperTest$TestMe[\"something\"])",
-                    e.getMessage());
+        } catch (Exception e) {
+            assertEquals("tools.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized property \"something\" (class kong.unirest.modules.jackson.JacksonObjectMapperTest$TestMe), not marked as ignorable (3 known properties: \"another\", \"nmbr\", \"text\")\n" +
+                    " at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); byte offset: #UNKNOWN] (through reference chain: kong.unirest.modules.jackson.JacksonObjectMapperTest$TestMe[\"something\"])", e.getMessage());
         }
     }
 

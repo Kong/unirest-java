@@ -26,11 +26,11 @@
 package kong.unirest.modules.jackson;
 
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.ValueNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.NullNode;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.ValueNode;
 import kong.unirest.core.json.*;
 
 import java.math.BigDecimal;
@@ -101,7 +101,7 @@ class JacksonElement<T extends JsonNode> implements JsonEngine.Element {
 
     @Override
     public String getAsString() {
-        return element.asText();
+        return element.asString();
     }
 
     @Override

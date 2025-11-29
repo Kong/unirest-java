@@ -25,7 +25,7 @@
 
 package kong.unirest.modules.jackson;
 
-import com.fasterxml.jackson.databind.node.ValueNode;
+import tools.jackson.databind.node.ValueNode;
 import kong.unirest.core.json.JsonEngine;
 
 class JacksonPrimitive extends JacksonElement<ValueNode> implements JsonEngine.Primitive {
