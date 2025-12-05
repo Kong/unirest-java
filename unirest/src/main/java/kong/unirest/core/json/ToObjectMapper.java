@@ -39,21 +39,27 @@ class ToObjectMapper {
         mappers.put(j -> j == null || j.isJsonNull(), j -> null);
         mappers.put(JsonEngine.Element::isJsonArray, JSONArray::new);
         mappers.put(JsonEngine.Element::isJsonObject, JSONObject::new);
-        mappers.put(JsonEngine.Element::isJsonPrimitive, j -> mapPrimative(j.getAsJsonPrimitive()));
+        mappers.put(JsonEngine.Element::isJsonPrimitive, j -> mapPrimitive(j.getAsJsonPrimitive()));
     }
 
-    private static Object mapPrimative(JsonEngine.Primitive e) {
-        if(e.isBoolean()){
+    private static Object mapPrimitive(JsonEngine.Primitive e) {
+        if (e.isBoolean()) {
             return e.getAsBoolean();
-        } else if (e.isNumber()){
+        } else if (e.isNumber()) {
             String s = e.getAsString();
-            if(s.contains(".")){
+            if (s.contains(".")) {
                 return e.getAsDouble();
-            } else if (e.getAsInt() == e.getAsLong()){
-                return e.getAsInt();
+            } else {
+                try {
+                    if (e.getAsInt() == e.getAsLong()) {
+                        return e.getAsInt();
+                    }
+                } catch (Exception err) {
+                    return e.getAsLong();
+                }
             }
             return e.getAsLong();
-        } else if (e.isJsonNull()){
+        } else if (e.isJsonNull()) {
             return null;
         }
         return e.getAsString();

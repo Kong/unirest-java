@@ -25,12 +25,13 @@
 
 package kong.unirest.modules.jackson;
 
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.NullNode;
+import tools.jackson.databind.node.ObjectNode;
 import kong.unirest.core.json.JsonEngine;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Map;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -113,7 +114,7 @@ class JacksonObject extends JacksonElement<ObjectNode> implements JsonEngine.Obj
     public Set<String> keySet() {
         return StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(
-                        element.fieldNames(),
+                        element.properties().stream().map(Map.Entry::getKey).collect(Collectors.toSet()).iterator(),
                         Spliterator.ORDERED)
                 , false)
                 .collect(Collectors.toSet());

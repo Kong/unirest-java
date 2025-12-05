@@ -26,11 +26,9 @@
 package BehaviorTests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import kong.unirest.core.HttpResponse;
 import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
+import tools.jackson.core.StreamWriteFeature;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,7 +37,7 @@ class ErrorParsingTest extends BddTest {
     private boolean errorCalled;
 
     @Test
-    void passParsingErrorsOnInFalure() {
+    void passParsingErrorsOnInFailure() {
         MockServer.setStringResponse("not json");
 
         Unirest.get(MockServer.GET)
@@ -110,8 +108,10 @@ class ErrorParsingTest extends BddTest {
     @Test
     void failsIfErrorResponseCantBeMapped() {
         var om = new JacksonObjectMapper();
-        om.om.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, false);
-        om.om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+        om.om = om.om.rebuild()
+                .configure(StreamWriteFeature.IGNORE_UNKNOWN, false)
+                .configure(tools.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true)
+                .build();
 
         MockServer.setJsonAsResponse(new ErrorThing("boom!"));
 

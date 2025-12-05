@@ -4,7 +4,7 @@
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java-parent</artifactId>
     <packaging>pom</packaging>
-    <version>4.6.1-SNAPSHOT</version>
+    <version>4.7.0-SNAPSHOT</version>
     <name>unirest</name>
     <description>Parent pom for unirest packages</description>
     <url>http://github.com/Kong/unirest-java/</url>
@@ -30,7 +30,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <jackson.version>2.20.1</jackson.version>
+        <jackson.version>3.0.2</jackson.version>
         <main.dir>${project.basedir}</main.dir>
         <junit.version>5.14.1</junit.version>
         <mockito.version>5.20.0</mockito.version>

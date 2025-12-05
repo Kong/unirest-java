@@ -25,9 +25,9 @@
 
 package kong.unirest.modules.jackson;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.NullNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.NullNode;
 import kong.unirest.core.json.JsonEngine;
 
 import java.math.BigDecimal;

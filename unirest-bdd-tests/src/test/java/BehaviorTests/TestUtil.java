@@ -25,8 +25,10 @@
 
 package BehaviorTests;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.datatype.guava.GuavaModule;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Multimap;
 import com.google.common.io.Resources;
@@ -53,16 +55,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class TestUtil {
-    private static final ObjectMapper om = new ObjectMapper();
-
-    static {
-        om.registerModule(new GuavaModule());
-    }
+    private static final ObjectMapper om = JsonMapper.builderWithJackson2Defaults().addModule(new GuavaModule()).build();
 
     public static <T> T readValue(String body, Class<T> as) {
         try {
             return om.readValue(body, as);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException(e);
         }
     }

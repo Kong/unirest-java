@@ -1,3 +1,10 @@
+## 4.7.0 
+* Bump Jackson module to Jackson 3. This also requires the Jackson module to be at Java 17. All other modules are still at 11
+  * Users who wish to continue to use Jackson 2 may still pull in the last Jackson module on that version (4.6.1). It will continue to be compatible with Unirest 4
+  
+## 4.6.1
+* Minor dependency bumps
+
 ## 4.6.0
 * Add support for multiple proxies and authentication per host
 
