@@ -35,11 +35,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 class BodyBuilder {
-    public static final Charset ASCII = Charset.forName("US-ASCII");
+    public static final Charset ASCII = StandardCharsets.US_ASCII;
     private final kong.unirest.core.HttpRequest request;
 
     BodyBuilder(kong.unirest.core.HttpRequest request) {
@@ -181,7 +182,7 @@ class BodyBuilder {
     private HttpRequest.BodyPublisher createInputStreamBody(Body b, BodyPart bodyPart) {
         if(b.getMonitor() != null){
             return HttpRequest.BodyPublishers.ofInputStream(
-                    () -> new MonitoringInputStream((InputStream) bodyPart.getValue(), b.getMonitor()));
+                    () -> new MonitorWrapper((InputStream) bodyPart.getValue(), b.getMonitor()));
         }
         return HttpRequest.BodyPublishers.ofInputStream(
                 () -> (InputStream) bodyPart.getValue());

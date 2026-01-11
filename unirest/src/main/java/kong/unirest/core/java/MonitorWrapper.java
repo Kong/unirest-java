@@ -30,13 +30,13 @@ import kong.unirest.core.ProgressMonitor;
 import java.io.IOException;
 import java.io.InputStream;
 
-class MonitoringInputStream extends InputStream {
+class MonitorWrapper extends InputStream {
     private final InputStream in;
     private volatile long totalNumBytesRead = 0;
 
     private ProgressMonitor monitor;
 
-    public MonitoringInputStream(InputStream value, ProgressMonitor monitor) {
+    public MonitorWrapper(InputStream value, ProgressMonitor monitor) {
         this.in = value;
         this.monitor = monitor;
     }

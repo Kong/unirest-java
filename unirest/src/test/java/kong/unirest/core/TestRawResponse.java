@@ -29,7 +29,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 class TestRawResponse extends RawResponseBase {
-
+    private Headers headers = new Headers();
     public String type;
 
     TestRawResponse(Config config) {
@@ -48,7 +48,7 @@ class TestRawResponse extends RawResponseBase {
 
     @Override
     public Headers getHeaders() {
-        return null;
+        return headers;
     }
 
     @Override
