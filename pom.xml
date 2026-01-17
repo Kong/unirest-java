@@ -21,6 +21,7 @@
         <module>unirest</module>
         <module>unirest-modules-gson</module>
         <module>unirest-modules-jackson</module>
+        <module>unirest-modules-jackson-legacy</module>
         <module>unirest-modules-mocks</module>
         <module>unirest-bdd-tests</module>
         <module>unirest-java-bom</module>
