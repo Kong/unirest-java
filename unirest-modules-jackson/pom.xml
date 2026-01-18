@@ -10,7 +10,7 @@
 
     <artifactId>unirest-modules-jackson</artifactId>
     <name>unirest-modules-jackson</name>
-    <description>Jackson based object mapper for Unirest</description>
+    <description>Jackson 3 based object mapper for Unirest</description>
 
     <properties>
         <main.dir>${project.parent.basedir}</main.dir>
