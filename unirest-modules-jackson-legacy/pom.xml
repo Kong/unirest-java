@@ -8,7 +8,7 @@
     </parent>
 
     <artifactId>unirest-modules-jackson-legacy</artifactId>
-    <name>unirest-modules-jackson</name>
+    <name>unirest-modules-jackson-legacy</name>
     <description>Jackson 2 based object mapper for Unirest</description>
 
     <properties>
