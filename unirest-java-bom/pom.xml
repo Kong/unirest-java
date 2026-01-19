@@ -30,6 +30,11 @@
             </dependency>
             <dependency>
                 <groupId>com.konghq</groupId>
+                <artifactId>unirest-modules-jackson-legacy</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.konghq</groupId>
                 <artifactId>unirest-modules-gson</artifactId>
                 <version>${project.version}</version>
             </dependency>
