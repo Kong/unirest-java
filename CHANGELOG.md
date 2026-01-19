@@ -3,7 +3,8 @@
 
 ## 4.7.0 
 * Bump Jackson module to Jackson 3. This also requires the Jackson module to be at Java 17. All other modules are still at 11
-  * Users who wish to continue to use Jackson 2 can use the unirest-modules-jackson-legacy module.
+  * Users who wish to continue to use Jackson 2 can use the unirest-modules-jackson-legacy module that was added just after this version (see 4.7.4).
+
 ## 4.6.0
 * Add support for multiple proxies and authentication per host
 
