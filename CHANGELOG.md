@@ -1,7 +1,9 @@
+## 4.7.4
+* Re-Introduce a 2 Jackson 2 module available as unirest-modules-jackson-legacy. This will give people a better chance to migrate. This module will be dropped if/when Unirest goes to version 5. See the discussions for an apology. 
+
 ## 4.7.0 
 * Bump Jackson module to Jackson 3. This also requires the Jackson module to be at Java 17. All other modules are still at 11
-  * Users who wish to continue to use Jackson 2 may still pull in the last Jackson module on that version (4.6.0). It will continue to be compatible with Unirest 4
-
+  * Users who wish to continue to use Jackson 2 can use the unirest-modules-jackson-legacy module.
 ## 4.6.0
 * Add support for multiple proxies and authentication per host
 
