@@ -1,13 +1,13 @@
 # Responses
-Unirest makes the actual request the moment you invoke of it's ```as[type]``` method. These methods also inform Unirest what type to map the response to. Options are ```Empty```, ```String```, ```File```, ```Object```, ```byte``` and ```Json```.
+Unirest makes the actual request the moment you invoke one of its ```as[type]``` methods. These methods also inform Unirest what type to map the response to. Options are ```Empty```, ```String```, ```File```, ```Object```, ```byte``` and ```Json```.
 
 The response returns as a ```HttpResponse<T>``` where the ```HttpResponse``` object has all of the common response data like status and headers. The Body (if present) can be accessed via the desired type with the ```.getBody()``` method. 
 
 ## Empty Responses
-If you aren't expecting a body back, ```asEmpty``` is the easiest choice. You will still get back response information like status and headers.
+If you aren't expecting a body back, or you don't care about the body, ```asEmpty``` is the easiest choice. You will still get back response information like status and headers. Note that this method effectively ignores any body that might be present. 
 
 ```java
-HttpResponse response = Unirest.delete("http://localhost").asEmpty()
+HttpResponse response = Unirest.delete("http://localhost").asEmpty();
 ```
 
 ## String Responses
@@ -15,16 +15,16 @@ The next easiest response type is String. You can do whatever you want with it a
 
 ```java
 String body = Unirest.get("http://localhost")
-					 .asString()
-					 .getBody();
+                     .asString()
+                     .getBody();
 ```
 
 ## Object Mapped Responses
 Most of the time when consuming RESTful services you probably want to map the response into an object. 
 
-For this you need to provide the Unirest configuration with a implementation of ```ObjectMapper``` (see [Object Mappers](#object-mappers) for details.).
+For this you need to provide the Unirest configuration with an implementation of ```ObjectMapper``` (see [Object Mappers](#object-mappers) for details.).
 
-If the response is JSON you are in luck and Unirest comes with a basic ```JsonObjectMapper``` basic on Google GSON  
+If the response is JSON you are in luck and Unirest comes with a basic ```JsonObjectMapper``` based on Google GSON.  
 
 Before an `asObject(Class)` it is necessary to provide a custom implementation of the `ObjectMapper` interface (if you do not wish to use the default mapper). This should be done only the first time, as the instance of the ObjectMapper will be shared globally.
 
