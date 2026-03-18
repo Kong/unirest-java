@@ -133,6 +133,12 @@ public interface MultipartBody extends HttpRequest<MultipartBody>, Body {
     MultipartBody field(String name, byte[] bytes, String fileName);
 
     /**
+     * sort fields on name, in alphabetical order
+     * @return The same MultipartBody
+     */
+    MultipartBody sortFields();
+
+    /**
      * Set the encoding of the request body
      * @param charset the character set encoding of the body
      * @return The same MultipartBody

@@ -112,6 +112,24 @@ class BodyLogSummaryTest extends BddTest {
         assertEquals("POST http://somewhere/beans?fruit=apple\n" +
                 "Accept: image/raw\n" +
                 "===================================\n" +
+                "band=Talking+Heads&album=77", log);
+    }
+
+    @Test
+    void simpleFormBodySorted() {
+        var log = Unirest.post("http://somewhere/{magic}")
+                .routeParam("magic", "beans")
+                .queryString("fruit", "apple")
+                .header("Accept", "image/raw")
+                .field("band", "Talking Heads")
+                .field("album", "77")
+                .sortFields()
+                .toSummary()
+                .asString();
+
+        assertEquals("POST http://somewhere/beans?fruit=apple\n" +
+                "Accept: image/raw\n" +
+                "===================================\n" +
                 "album=77&band=Talking+Heads", log);
     }
 
@@ -123,6 +141,42 @@ class BodyLogSummaryTest extends BddTest {
                 .field("band", "Talking Heads")
                 .field("album", "77")
                 .field("file", rezFile("/test.txt"))
+                .boundary(boundary)
+                .toSummary()
+                .asString();
+
+        assertThat(body).isEqualTo(
+                "POST http://localhost:4567/raw\n" +
+                        "Accept: image/raw\n" +
+                        "Content-Type: multipart/form-data; boundary=ABC-123-BOUNDARY;charset=UTF-8\"\n" +
+                        "===================================\n" +
+                        "--ABC-123-BOUNDARY\n" +
+                        "Content-Disposition: form-data; name:\"band\"\n" +
+                        "Content-Type: application/x-www-form-urlencoded; charset=UTF-8\n" +
+                        "Talking Heads\n" +
+                        "\n" +
+                        "--ABC-123-BOUNDARY\n" +
+                        "Content-Disposition: form-data; name:\"album\"\n" +
+                        "Content-Type: application/x-www-form-urlencoded; charset=UTF-8\n" +
+                        "77\n" +
+                        "\n" +
+                        "--ABC-123-BOUNDARY\n" +
+                        "Content-Disposition: form-data; name=\"file\"; filename=\"test.txt\"\n" +
+                        "Content-Type: application/octet-stream\n" +
+                        "<BINARY DATA>\n"
+        );
+
+    }
+
+    @Test
+    void multiPartSorted() {
+        var boundary = "ABC-123-BOUNDARY";
+        var body = Unirest.post(MockServer.ECHO_RAW)
+                .header("Accept", "image/raw")
+                .field("band", "Talking Heads")
+                .field("album", "77")
+                .field("file", rezFile("/test.txt"))
+                .sortFields()
                 .boundary(boundary)
                 .toSummary()
                 .asString();
@@ -149,6 +203,5 @@ class BodyLogSummaryTest extends BddTest {
         );
 
     }
-
 
 }
