@@ -1,3 +1,6 @@
+## 4.8.0
+* Changed default ordering of form fields to the order they were added from alphabetical. Added additional sort method in case anyone wants them sorted the old way.
+
 ## 4.7.4
 * Re-Introduce a 2 Jackson 2 module available as unirest-modules-jackson-legacy. This will give people a better chance to migrate. This module will be dropped if/when Unirest goes to version 5. See the discussions for an apology. 
 
