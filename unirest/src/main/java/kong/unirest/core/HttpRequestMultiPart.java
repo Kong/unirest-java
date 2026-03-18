@@ -123,6 +123,12 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
     }
 
     @Override
+    public MultipartBody sortFields() {
+        Collections.sort(parameters);
+        return this;
+    }
+
+    @Override
     public MultipartBody charset(Charset charset) {
         this.charSet = charset;
         return this;
@@ -195,7 +201,6 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
 
     private void addPart(BodyPart value) {
         parameters.add(value);
-        Collections.sort(parameters);
     }
 
     @Override

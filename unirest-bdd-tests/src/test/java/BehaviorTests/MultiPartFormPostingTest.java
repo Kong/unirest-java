@@ -424,6 +424,24 @@ class MultiPartFormPostingTest extends BddTest {
     }
 
     @Test
+    void rawInspectionSorted() {
+        var body = Unirest.post(MockServer.ECHO_RAW)
+                .field("marky", "mark")
+                .field("funky", "bunch")
+                .field("file", rezFile("/test.txt"))
+                .sortFields()
+                .asString()
+                .getBody();
+
+        var expected = TestUtil.getResource("rawPostSorted.txt").replaceAll("\r", "").trim();
+
+        var id = body.substring(2, body.indexOf("\n") - 1);
+        body = body.replaceAll(id, "IDENTIFIER").replaceAll("\r", "").trim();
+
+        assertEquals(expected, body);
+    }
+
+    @Test
     void mediaTypesForParts() {
         Unirest.post(MockServer.POST)
                 .field("content", rezInput("/spidey.pdf"), APPLICATION_PDF, "spiderman")
