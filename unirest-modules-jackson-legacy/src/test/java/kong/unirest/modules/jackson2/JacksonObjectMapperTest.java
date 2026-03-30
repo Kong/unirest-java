@@ -112,7 +112,7 @@ class JacksonObjectMapperTest {
             j.readValue("{\"something\": [1,2,3] }", TestMe.class);
             fail("Should have thrown");
         }catch (Exception e) {
-            assertEquals("com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field \"something\" (class kong.unirest.modules.jackson2.JacksonObjectMapperTest$TestMe), not marked as ignorable (3 known properties: \"another\", \"text\", \"nmbr\"])\n" +
+            assertEquals("com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException: Unrecognized field \"something\" (class kong.unirest.modules.jackson2.JacksonObjectMapperTest$TestMe), not marked as ignorable (3 known properties: \"another\", \"text\", \"nmbr\")\n" +
                             " at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 16] (through reference chain: kong.unirest.modules.jackson2.JacksonObjectMapperTest$TestMe[\"something\"])",
                     e.getMessage());
         }
