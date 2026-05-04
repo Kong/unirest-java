@@ -93,20 +93,38 @@ class Routes implements Assert {
     }
 
     private Optional<Invocation> getBestMatch(HttpRequest request, boolean expected) {
-        Map<Integer, Invocation> map = new TreeMap<>();
-        invokes.stream()
-                .forEach(i -> {
-                    Integer score = i.scoreMatch(request);
-                    if(score >= 0) {
-                        map.put(score, i);
-                    }
-                });
-        if (map.size() == 0) {
+        Invocation best = null;
+        int bestScore = -1;
+
+        for (Invocation invocation : invokes) {
+            if (!invocation.isExpected().equals(expected)) {
+                continue;
+            }
+
+            int score = invocation.scoreMatch(request);
+
+            if (score < 0) {
+                continue;
+            }
+
+            if (score > bestScore) {
+                best = invocation;
+                bestScore = score;
+            } else if (score == bestScore
+                    && expected
+                    && best != null
+                    && best.requestSize() > 0
+                    && invocation.requestSize() == 0) {
+                best = invocation;
+            }
+        }
+
+        if (best == null) {
             return Optional.empty();
         }
-        Invocation value = map.get(Collections.max(map.keySet()));
-        value.log(request);
-        return Optional.of(value);
+
+        best.log(request);
+        return Optional.of(best);
     }
 
     @Override
