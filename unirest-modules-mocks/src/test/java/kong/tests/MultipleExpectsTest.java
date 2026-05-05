@@ -94,7 +94,7 @@ class MultipleExpectsTest extends Base {
     }
 
     @Test
-    void whenDuplicateExpectsExistUseTheLastOne() {
+    void whenDuplicateExpectsExistUseThemInOrder() {
         client.expect(GET, path)
                 .queryString("monster", "grover")
                 .thenReturn("one");
@@ -103,17 +103,19 @@ class MultipleExpectsTest extends Base {
                 .queryString("monster", "grover")
                 .thenReturn("two");
 
-        String result = Unirest.get(path)
+        String first = Unirest.get(path)
                 .queryString("monster", "grover")
                 .asString()
                 .getBody();
 
-        assertEquals("two", result);
+        String second = Unirest.get(path)
+                .queryString("monster", "grover")
+                .asString()
+                .getBody();
 
-        assertException(() -> client.verifyAll(),
-                "Expected at least 1 invocations but got 0\n" +
-                        "GET http://basic\n" +
-                        "Params:\n" +
-                        "monster: grover");
+        assertEquals("one", first);
+        assertEquals("two", second);
+
+        client.verifyAll();
     }
 }
