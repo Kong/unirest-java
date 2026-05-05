@@ -1,3 +1,9 @@
+## 4.9.0
+* Issue #531 : Support chaining expectations in the mocking library. Users who had multiple matching expects for a route will now be expected to be performed in order.
+
+## 4.8.1
+* Dependency updates
+
 ## 4.8.0
 * Changed default ordering of form fields to the order they were added from alphabetical. Added additional sort method in case anyone wants them sorted the old way.
 
