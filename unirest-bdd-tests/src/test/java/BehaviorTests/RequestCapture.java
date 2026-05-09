@@ -37,6 +37,7 @@ import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Part;
 import org.assertj.core.data.MapEntry;
+import org.assertj.guava.api.MultimapAssert;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -50,7 +51,6 @@ import java.util.stream.Stream;
 
 import static java.lang.System.getProperty;
 import static kong.unirest.core.JsonPatchRequest.CONTENT_TYPE;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RequestCapture {
@@ -382,13 +382,22 @@ public class RequestCapture {
         }
 
         public MultiPart assertContentType(String contentType) {
-            TestUtil.assertMultiMap(headers).contains(MapEntry.entry("content-type", contentType));
+            assertHeaders().contains(MapEntry.entry("content-type", contentType));
             return this;
         }
 
         public MultiPart assertContentDisposition(String disposition) {
-            TestUtil.assertMultiMap(headers).contains(MapEntry.entry("content-disposition", disposition));
+            assertHeaders().contains(MapEntry.entry("content-disposition", disposition));
             return this;
+        }
+
+        public MultiPart assertHeader(String name, String value) {
+            assertHeaders().contains(MapEntry.entry(name, value));
+            return this;
+        }
+
+        private MultimapAssert<String, String> assertHeaders() {
+            return TestUtil.assertMultiMap(headers);
         }
     }
 

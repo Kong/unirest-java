@@ -26,6 +26,7 @@
 package kong.unirest.core.java;
 
 
+import kong.unirest.core.Headers;
 import kong.unirest.core.ProgressMonitor;
 import kong.unirest.core.UnirestException;
 
@@ -140,10 +141,10 @@ final class MultipartBodyPublisher implements BodyPublisher {
          * @param bodyPublisher the field's body publisher
          * @param contentType   the content type for the part
          */
-        MultipartBodyPublisher.Builder formPart(String name, BodyPublisher bodyPublisher, String contentType) {
+        MultipartBodyPublisher.Builder formPart(String name, BodyPublisher bodyPublisher, String contentType, Headers additionalHeaders) {
             requireNonNull(name, "name");
             requireNonNull(bodyPublisher, "body");
-            parts.add(new Part(name, null, bodyPublisher, contentType));
+            parts.add(new Part(name, null, bodyPublisher, contentType, additionalHeaders));
             return this;
         }
 
@@ -154,11 +155,11 @@ final class MultipartBodyPublisher implements BodyPublisher {
          * @param filename the field's filename
          * @param body the field's body publisher
          */
-        MultipartBodyPublisher.Builder formPart(String name, String filename, BodyPublisher body,  String contentType) {
+        MultipartBodyPublisher.Builder formPart(String name, String filename, BodyPublisher body, String contentType, Headers additionalHeaders) {
             requireNonNull(name, "name");
             requireNonNull(filename, "filename");
             requireNonNull(body, "body");
-            parts.add(new Part(name, filename, body, contentType));
+            parts.add(new Part(name, filename, body, contentType, additionalHeaders));
             return this;
         }
 
@@ -169,8 +170,8 @@ final class MultipartBodyPublisher implements BodyPublisher {
          * @param name the field's name
          * @param value an object whose string representation is used as the value
          */
-        MultipartBodyPublisher.Builder textPart(String name, Object value, String contentType) {
-            return textPart(name, value, UTF_8, contentType);
+        MultipartBodyPublisher.Builder textPart(String name, Object value, String contentType, Headers additionalHeaders) {
+            return textPart(name, value, UTF_8, contentType, additionalHeaders);
         }
 
         /**
@@ -181,11 +182,11 @@ final class MultipartBodyPublisher implements BodyPublisher {
          * @param value an object whose string representation is used as the value
          * @param charset the charset for encoding the field's body
          */
-        MultipartBodyPublisher.Builder textPart(String name, Object value, Charset charset, String contentType) {
+        MultipartBodyPublisher.Builder textPart(String name, Object value, Charset charset, String contentType, Headers additionalHeaders) {
             requireNonNull(name, "name");
             requireNonNull(value, "value");
             requireNonNull(charset, "charset");
-            return formPart(name, BodyPublishers.ofString(value.toString(), charset), contentType);
+            return formPart(name, BodyPublishers.ofString(value.toString(), charset), contentType, additionalHeaders);
         }
 
 
@@ -199,7 +200,7 @@ final class MultipartBodyPublisher implements BodyPublisher {
          * @param mediaType the part's media type
          * @throws FileNotFoundException if a file with the given path cannot be found
          */
-        MultipartBodyPublisher.Builder filePart(String name, Path file, String mediaType)
+        MultipartBodyPublisher.Builder filePart(String name, Path file, String mediaType, Headers additionalHeaders)
                 throws FileNotFoundException {
             requireNonNull(name, "name");
             requireNonNull(file, "file");
@@ -208,7 +209,7 @@ final class MultipartBodyPublisher implements BodyPublisher {
             String filename = filenameComponent != null ? filenameComponent.toString() : "";
             PartPublisher publisher =
                     new PartPublisher(BodyPublishers.ofFile(file), mediaType);
-            return formPart(name, filename, publisher, mediaType);
+            return formPart(name, filename, publisher, mediaType, additionalHeaders);
         }
 
         /**

@@ -129,26 +129,27 @@ class BodyBuilder {
                 try {
                     builder.filePart(part.getName(),
                             ((File) part.getValue()).toPath(),
-                            contentType);
+                            contentType,
+                            part.getHeaders());
                 } catch (FileNotFoundException e) {
                     throw new UnirestException(e);
                 }
             } else if (part instanceof InputStreamPart) {
                 if (part.getFileName() != null) {
                     builder.formPart(part.getName(), standardizeName(part, o.getMode()),
-                            new PartPublisher(HttpRequest.BodyPublishers.ofInputStream(() -> (InputStream) part.getValue()), contentType), contentType);
+                            new PartPublisher(HttpRequest.BodyPublishers.ofInputStream(() -> (InputStream) part.getValue()), contentType), contentType, part.getHeaders());
                 } else {
                     builder.formPart(part.getName(),
-                            new PartPublisher(HttpRequest.BodyPublishers.ofInputStream(() -> (InputStream) part.getValue()), contentType), contentType);
+                            new PartPublisher(HttpRequest.BodyPublishers.ofInputStream(() -> (InputStream) part.getValue()), contentType), contentType, part.getHeaders());
                 }
 
             } else if (part instanceof ByteArrayPart) {
                 builder.formPart(part.getName(),
                         standardizeName(part, o.getMode()),
-                        new PartPublisher(HttpRequest.BodyPublishers.ofByteArray((byte[]) part.getValue()), contentType), contentType);
+                        new PartPublisher(HttpRequest.BodyPublishers.ofByteArray((byte[]) part.getValue()), contentType), contentType, part.getHeaders());
             }
         } else {
-            builder.textPart(part.getName(), String.valueOf(part.getValue()), contentType);
+            builder.textPart(part.getName(), String.valueOf(part.getValue()), contentType, part.getHeaders());
         }
     }
 

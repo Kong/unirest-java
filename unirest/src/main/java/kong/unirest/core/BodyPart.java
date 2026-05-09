@@ -32,12 +32,18 @@ public abstract class BodyPart<T> implements Comparable { ;
     private final T value;
     private final String contentType;
     private final Class<?> partType;
+    private final Headers headers;
 
     protected BodyPart(T value, String name, String contentType) {
+        this(value, name, contentType, null);
+    }
+
+    protected BodyPart(T value, String name, String contentType, Headers headers) {
         this.name = name;
         this.value = value;
         this.contentType = contentType;
         this.partType = value.getClass();
+        this.headers = headers;
     }
 
     public T getValue() {
@@ -76,4 +82,8 @@ public abstract class BodyPart<T> implements Comparable { ;
 
 
     abstract public boolean isFile();
+
+    public Headers getHeaders() {
+        return headers;
+    }
 }

@@ -35,7 +35,11 @@ public class FilePart extends BodyPart<File> {
     }
 
     public FilePart(File file, String name, String contentType) {
-        super(file, name, contentType);
+        this(file, name, contentType, null);
+    }
+
+    public FilePart(File file, String name, String contentType, Headers headers) {
+        super(file, name, contentType, headers);
         this.fileName = file.getName();
     }
 

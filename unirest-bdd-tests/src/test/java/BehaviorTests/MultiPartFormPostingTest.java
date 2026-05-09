@@ -25,9 +25,7 @@
 
 package BehaviorTests;
 
-import kong.unirest.core.ContentType;
-import kong.unirest.core.MultipartMode;
-import kong.unirest.core.Unirest;
+import kong.unirest.core.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -452,8 +450,6 @@ class MultiPartFormPostingTest extends BddTest {
                         h.assertMainValue("multipart/form-data");
                         h.assertHasParam("boundary");
                         h.assertParam("charset", "UTF-8");
-                        // Lets create a way to tell unirest what the boundary should be so we can test it easier.
-                        //h.assertRawValue("multipart/form-data; boundary=4ebf68bc-70f8-462b-b3a5-48dadb236af3;charset=UTF-8");
                 })
                 .assertBodyPart("content", p -> {
                     p.assertFileName("spiderman");
@@ -465,7 +461,91 @@ class MultiPartFormPostingTest extends BddTest {
                     p.assertContentType("application/json");
                     p.assertContentDisposition("form-data; name=\"metadata\"");
                 });
+    }
 
+    @Test
+    void addBodyPartWithBuilder() {
+        Unirest.post(MockServer.POST)
+                .field(MultiPartBuilder.named("metadata")
+                                    .value("{\"foo\": 1}")
+                                    .contentType("application/json")
+                                    .header("foo", "bar"))
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertBodyPart("metadata", p -> {
+                    p.assertBody("{\"foo\": 1}");
+                    p.assertContentType("application/json");
+                    p.assertContentDisposition("form-data; name=\"metadata\"");
+                    p.assertHeader("foo", "bar");
+                });
+    }
+
+    @Test
+    void partBuilderWithFiles() {
+        Unirest.post(MockServer.POST)
+                .field(MultiPartBuilder.named("content")
+                        .value(rezInput("/spidey.pdf"))
+                        .fileName("spiderman")
+                        .header("foo", "bar"))
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("Content-Type", h -> {
+                    h.assertMainValue("multipart/form-data");
+                    h.assertHasParam("boundary");
+                    h.assertParam("charset", "UTF-8");
+                })
+                .assertBodyPart("content", p -> {
+                    p.assertFileName("spiderman");
+                    p.assertContentType("application/octet-stream");
+                    p.assertContentDisposition("form-data; name=\"content\"; filename=\"spiderman\"");
+                    p.assertHeader("foo", "bar");
+                });
+    }
+
+    @Test
+    void partBuilderWithInputStream() throws Exception {
+        Unirest.post(MockServer.POST)
+                .field(MultiPartBuilder.named("content")
+                        .value(new FileInputStream(rezFile("/test.txt")))
+                        .fileName("testfile")
+                        .contentType(ContentType.WILDCARD)
+                        .header("foo", "bar"))
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("Content-Type", h -> {
+                    h.assertMainValue("multipart/form-data");
+                    h.assertHasParam("boundary");
+                    h.assertParam("charset", "UTF-8");
+                })
+                .assertBodyPart("content", p -> {
+                    p.assertFileName("testfile");
+                    p.assertContentType(ContentType.WILDCARD.getMimeType());
+                    p.assertContentDisposition("form-data; name=\"content\"; filename=\"testfile\"");
+                    p.assertHeader("foo", "bar");
+                });
+    }
+
+    @Test
+    void partBuilderWithBytes() throws Exception {
+        Unirest.post(MockServer.POST)
+                .field(MultiPartBuilder.named("content")
+                        .value(getFileBytes("/image.jpg"))
+                        .fileName("testfile")
+                        .contentType(ContentType.WILDCARD)
+                        .header("foo", "bar"))
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("Content-Type", h -> {
+                    h.assertMainValue("multipart/form-data");
+                    h.assertHasParam("boundary");
+                    h.assertParam("charset", "UTF-8");
+                })
+                .assertBodyPart("content", p -> {
+                    p.assertFileName("testfile");
+                    p.assertContentType(ContentType.WILDCARD.getMimeType());
+                    p.assertContentDisposition("form-data; name=\"content\"; filename=\"testfile\"");
+                    p.assertHeader("foo", "bar");
+                });
     }
 
     @Test
@@ -479,8 +559,6 @@ class MultiPartFormPostingTest extends BddTest {
                     h.assertMainValue("multipart/form-data");
                     h.assertHasParam("boundary");
                     h.assertParam("charset", "UTF-8");
-                    // Lets create a way to tell unirest what the boundary should be so we can test it easier.
-                    //h.assertRawValue("multipart/form-data; boundary=4ebf68bc-70f8-462b-b3a5-48dadb236af3;charset=UTF-8");
                 })
                 .assertBodyPart("content", p -> {
                     p.assertFileName("spiderman");

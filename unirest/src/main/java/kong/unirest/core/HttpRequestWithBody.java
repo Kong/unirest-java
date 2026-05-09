@@ -86,6 +86,14 @@ public interface HttpRequestWithBody extends HttpRequest<HttpRequestWithBody> {
      */
     MultipartBody field(String name, File file);
 
+
+    /**
+     * Add a multipart field with a FieldBuilder which supports many different options
+     * @param builder a FieldBuilder
+     * @return this request builder
+     */
+    MultipartBody field(MultiPartBuilder builder);
+
     /**
      * Sets a File on the body with a specified content-type.
      * @param name the name of the file field

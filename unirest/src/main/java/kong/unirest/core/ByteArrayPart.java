@@ -30,7 +30,11 @@ public class ByteArrayPart extends BodyPart<byte[]> {
     private final String fileName;
 
     ByteArrayPart(String name, byte[] bytes, ContentType contentType, String fileName) {
-        super(bytes, name, contentType.toString());
+        this(name, bytes, contentType, fileName, null);
+    }
+
+    ByteArrayPart(String name, byte[] bytes, ContentType contentType, String fileName, Headers headers) {
+        super(bytes, name, contentType.toString(), headers);
         this.fileName = fileName;
     }
 

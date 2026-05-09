@@ -28,10 +28,10 @@ package kong.unirest.core;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HeadersTest {
@@ -119,5 +119,27 @@ class HeadersTest {
         headers.add("header1", "value");
         headers.add("header2", (String) null);
         assertEquals(2, headers.size());
+    }
+
+    @Test
+    void mergeHeaders() {
+        var h1 = new Headers();
+        h1.add("foo", "bar");
+
+        var h2 = new Headers();
+        h2.add("baz", "qux");
+
+        h1.putAll(h2);
+
+        assertThat(h1.size()).isEqualTo(2);
+        assertThat(h1.getFirst("foo")).isEqualTo("bar");
+        assertThat(h1.getFirst("baz")).isEqualTo("qux");
+    }
+
+    @Test
+    void nullIsIgnored() {
+        var h = new Headers();
+        h.putAll((Headers) null);
+        assertTrue(true, "no NPE was thrown");
     }
 }

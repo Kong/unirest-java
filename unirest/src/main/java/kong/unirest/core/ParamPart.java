@@ -34,7 +34,11 @@ public class ParamPart extends BodyPart<String> {
     }
 
     ParamPart(String name, String value, String contentType) {
-        super(value, name, contentType);
+        this(name, value, contentType, null);
+    }
+
+    ParamPart(String name, String value, String contentType, Headers headers) {
+        super(value, name, contentType, headers);
     }
 
     @Override
