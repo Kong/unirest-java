@@ -33,33 +33,64 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- * The client that does the work.
+ * The HTTP client interface responsible for executing HTTP requests.
+ * <p>
+ * This interface defines the contract for the underlying HTTP client implementation
+ * that performs the actual network communication. It supports synchronous and asynchronous
+ * HTTP requests, WebSocket connections, and Server-Sent Events (SSE).
+ * </p>
+ * <p>
+ * The default implementation uses Java's built-in {@link java.net.http.HttpClient},
+ * but this interface allows for alternative implementations or mock clients for testing.
+ * </p>
+ *
+ * @see HttpRequest
+ * @see HttpResponse
+ * @see RawResponse
  */
 public interface Client {
+
     /**
-     * @param <T> the underlying client
-     * @return the underlying client if this instance is wrapping another library.
+     * Returns the underlying HTTP client instance.
+     * <p>
+     * This method provides access to the native HTTP client being wrapped by this implementation,
+     * allowing direct interaction with the underlying library when needed.
+     * </p>
+     *
+     * @param <T> the type of the underlying client (e.g., {@link java.net.http.HttpClient})
+     * @return the underlying client instance
      */
     <T> T getClient();
 
     /**
-     * Make a request
-     * @param <T> The type of the body
-     * @param request the prepared request object
-     * @param transformer the function to transform the response
-     * @param resultType the final body result type. This is a hint to downstream systems to make up for type erasure.
-     * @return a HttpResponse with a transformed body
+     * Executes a synchronous HTTP request and transforms the response.
+     * <p>
+     * This method blocks until the response is received and transformed.
+     * </p>
+     *
+     * @param <T>         the type of the transformed response body
+     * @param request     the prepared HTTP request to execute
+     * @param transformer a function to transform the raw response into the desired type
+     * @param resultType  the expected body result type; used as a hint to downstream systems
+     *                    to work around Java type erasure
+     * @return an {@link HttpResponse} containing the transformed body
      */
     <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, Class<?> resultType);
 
     /**
-     * Make a Async request
-     * @param <T> The type of the body
-     * @param request the prepared request object
-     * @param transformer the function to transform the response
-     * @param callback the CompletableFuture that will handle the eventual response
-     * @param resultType the final body result type. This is a hint to downstream systems to make up for type erasure.
-     * @return a CompletableFuture of a response
+     * Executes an asynchronous HTTP request and transforms the response.
+     * <p>
+     * This method returns immediately with a {@link CompletableFuture} that will be
+     * completed when the response is received and transformed.
+     * </p>
+     *
+     * @param <T>         the type of the transformed response body
+     * @param request     the prepared HTTP request to execute
+     * @param transformer a function to transform the raw response into the desired type
+     * @param callback    the {@link CompletableFuture} that will be completed with the response
+     * @param resultType  the expected body result type; used as a hint to downstream systems
+     *                    to work around Java type erasure
+     * @return a {@link CompletableFuture} that will complete with the transformed {@link HttpResponse}
      */
     <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request,
                                                    Function<RawResponse, HttpResponse<T>> transformer,
@@ -67,22 +98,41 @@ public interface Client {
                                                    Class<?> resultType);
 
     /**
-     * Create a websocket connection
-     * @param request the connection
-     * @param listener (in the voice of Cicero) the listener
-     * @return a WebSocketResponse
+     * Establishes a WebSocket connection.
+     * <p>
+     * Creates a WebSocket connection to the specified endpoint and associates it
+     * with the provided listener to handle incoming messages and connection events.
+     * </p>
+     *
+     * @param request  the WebSocket connection request containing the target URI and configuration
+     * @param listener the {@link WebSocket.Listener} to handle WebSocket events
+     * @return a {@link WebSocketResponse} representing the established connection
      */
     WebSocketResponse websocket(WebSocketRequest request, WebSocket.Listener listener);
 
-
     /**
-     * execute a SSE Event connection.
-     * Because these events are a stream they are processed async and take a handler you can use to consume the events
-     * @param request the request details
-     * @param handler the SseHandler
-     * @return a CompletableFuture
+     * Establishes a Server-Sent Events (SSE) connection with a handler.
+     * <p>
+     * Opens an SSE connection to the specified endpoint. Because SSE events are
+     * streamed continuously, they are processed asynchronously. The provided handler
+     * is used to consume incoming events as they arrive.
+     * </p>
+     *
+     * @param request the SSE request containing the target URI and configuration
+     * @param handler the {@link SseHandler} to process incoming events
+     * @return a {@link CompletableFuture} that completes when the SSE connection is closed
      */
     CompletableFuture<Void> sse(SseRequest request, SseHandler handler);
 
+    /**
+     * Establishes a Server-Sent Events (SSE) connection and returns a stream of events.
+     * <p>
+     * Opens an SSE connection to the specified endpoint and returns a {@link Stream}
+     * of events that can be processed using standard stream operations.
+     * </p>
+     *
+     * @param request the SSE request containing the target URI and configuration
+     * @return a {@link Stream} of {@link Event} objects representing the incoming SSE events
+     */
     Stream<Event> sse(SseRequest request);
 }
