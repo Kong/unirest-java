@@ -199,7 +199,7 @@ public class MultiPartBuilder {
         } else if (fieldValue instanceof byte[]) {
             return new ByteArrayPart(partName, (byte[]) fieldValue, partContentType, fName, headers);
         } else {
-            return new ParamPart(partName, String.valueOf(fieldValue), getMimeType(), headers);
+            return new ParamPart(partName, fieldValue == null ? "" : String.valueOf(fieldValue), getMimeType(), headers);
         }
     }
 

@@ -51,6 +51,7 @@ import java.util.stream.Stream;
 
 import static java.lang.System.getProperty;
 import static kong.unirest.core.JsonPatchRequest.CONTENT_TYPE;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RequestCapture {
@@ -174,7 +175,7 @@ public class RequestCapture {
 
     public RequestCapture assertParam(String key, String value) {
         assertTrue(params.containsKey(key), String.format("Expect param of '%s' but none was present", key));
-        assertTrue(params.get(key).contains(value), "Expected Query or Form value: " + value);
+        assertThat(params.get(key)).contains(value);
         return this;
     }
 
