@@ -68,14 +68,24 @@ class SummaryFormatter implements Function<HttpRequest<?>, String> {
             if(p.isFile()){
                 sj.add(String.format("Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"", p.getName(), p.getFileName()));
                 sj.add("Content-Type: " + p.getContentType());
+                addExtraHeaders(p, sj);
                 sj.add("<BINARY DATA>");
             } else {
                 sj.add("Content-Disposition: form-data; name:\""+p.getName()+"\"");
                 sj.add("Content-Type: " + p.getContentType());
+                addExtraHeaders(p, sj);
                 sj.add(String.valueOf(p.getValue()));
             }
             sj.add("");
         });
         return sj.toString();
+    }
+
+    private void addExtraHeaders(BodyPart p, StringJoiner sj) {
+        if(p.getHeaders() != null){
+            p.getHeaders().all().forEach(h -> {
+                sj.add(h.getName() + ": " + h.getValue());
+            });
+        }
     }
 }

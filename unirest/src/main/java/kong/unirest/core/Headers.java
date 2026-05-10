@@ -106,10 +106,12 @@ public class Headers {
 
     /**
      * Add a bunch of headers at once
-     * @param header a header
+     * @param other a header
      */
-    public void putAll(Headers header) {
-        this.headers.addAll(header.headers);
+    public void putAll(Headers other) {
+        if(other != null) {
+            this.headers.addAll(other.headers);
+        }
     }
 
     /**

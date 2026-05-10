@@ -29,7 +29,7 @@ import java.io.InputStream;
 
 class InputStreamBody extends BodyPart<InputStream> {
     public InputStreamBody(InputStream body) {
-        super(body, null, null);
+        super(body, null, null, null);
     }
 
     @Override

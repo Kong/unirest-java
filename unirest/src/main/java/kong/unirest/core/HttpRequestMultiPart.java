@@ -30,6 +30,8 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.*;
 
+import static kong.unirest.core.MultiPartBuilder.named;
+
 class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements MultipartBody {
     private List<BodyPart> parameters = new ArrayList<>();
 
@@ -60,6 +62,12 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
     }
 
     @Override
+    public MultipartBody field(MultiPartBuilder builder) {
+        addPart(builder.toBodyPart());
+        return this;
+    }
+
+    @Override
     public MultipartBody field(String name, String value, String contentType) {
         addPart(name, value, contentType);
         return this;
@@ -81,45 +89,37 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
 
     @Override
     public MultipartBody field(String name, InputStream value, ContentType contentType) {
-        addPart(new InputStreamPart(name, value, contentType.toString()));
-        return this;
+        return field(named(name).value(value).contentType(contentType));
     }
 
     @Override
     public MultipartBody field(String name, File file) {
-        addPart(new FilePart(file, name));
-        return this;
+        return field(named(name).value(file));
     }
 
     @Override
     public MultipartBody field(String name, File file, String contentType) {
-        addPart(new FilePart(file, name, contentType));
-        return this;
+        return field(named(name).value(file).contentType(contentType));
     }
 
     @Override
     public MultipartBody field(String name, InputStream stream, ContentType contentType, String fileName) {
-        addPart(new InputStreamPart(name, stream, contentType.toString(), fileName));
-
-        return this;
+        return field(named(name).value(stream).contentType(contentType).fileName(fileName));
     }
 
     @Override
     public MultipartBody field(String name, InputStream stream, String fileName) {
-        addPart(new InputStreamPart(name, stream, ContentType.APPLICATION_OCTET_STREAM.toString(), fileName));
-        return this;
+        return field(named(name).value(stream).contentType(ContentType.APPLICATION_OCTET_STREAM).fileName(fileName));
     }
 
     @Override
     public MultipartBody field(String name, byte[] bytes, ContentType contentType, String fileName) {
-        addPart(new ByteArrayPart(name, bytes, contentType, fileName));
-        return this;
+        return field(named(name).value(bytes).contentType(contentType).fileName(fileName));
     }
 
     @Override
     public MultipartBody field(String name, byte[] bytes, String fileName) {
-        addPart(new ByteArrayPart(name, bytes, ContentType.APPLICATION_OCTET_STREAM, fileName));
-        return this;
+        return field(named(name).value(bytes).contentType(ContentType.APPLICATION_OCTET_STREAM).fileName(fileName));
     }
 
     @Override

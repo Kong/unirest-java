@@ -42,11 +42,11 @@ class Part {
     private final String fieldName;
     private final String filename;
 
-    Part(String fieldName, String filename, HttpRequest.BodyPublisher bodyPublisher, String contentType) {
+    Part(String fieldName, String filename, HttpRequest.BodyPublisher bodyPublisher, String contentType, Headers additionalHeaders) {
         requireNonNull(bodyPublisher, "bodyPublisher");
         this.fieldName = fieldName;
         this.filename = filename;
-        this.headers = getFormHeaders(fieldName, filename, contentType);
+        this.headers = getFormHeaders(fieldName, filename, contentType, additionalHeaders);
         this.bodyPublisher = bodyPublisher;
     }
 
@@ -66,9 +66,7 @@ class Part {
         return bodyPublisher;
     }
 
-
-
-    private static Headers getFormHeaders(String name, String filename, String contentType) {
+    private static Headers getFormHeaders(String name, String filename, String contentType, Headers additionalHeaders) {
         StringBuilder disposition = new StringBuilder();
         appendEscaped(disposition.append("form-data; name="), name);
         if (filename != null) {
@@ -77,6 +75,7 @@ class Part {
         Headers headers = new Headers();
         headers.add("Content-Disposition", disposition.toString());
         headers.add("Content-Type", contentType);
+        headers.putAll(additionalHeaders);
         return headers;
     }
 

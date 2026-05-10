@@ -31,11 +31,15 @@ public class InputStreamPart extends BodyPart<InputStream> {
     private String fileName;
 
     InputStreamPart(String name, InputStream value, String contentType) {
-        super(value, name, contentType);
+        this(name, value, contentType, null);
     }
 
     InputStreamPart(String name, InputStream value, String contentType, String fileName) {
-        super(value, name, contentType);
+        this(name, value, contentType, fileName, null);
+    }
+
+    InputStreamPart(String name, InputStream value, String contentType, String fileName, Headers headers) {
+        super(value, name, contentType, headers);
         this.fileName = fileName;
     }
 

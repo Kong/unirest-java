@@ -77,6 +77,14 @@ public interface MultipartBody extends HttpRequest<MultipartBody>, Body {
     MultipartBody field(String name, File file);
 
     /**
+     * add a field using the MultiPartBuilder.
+     * This forces the request into a multipart request
+     * @param builder the builder
+     * @return the same MultipartBody
+     */
+    MultipartBody field(MultiPartBuilder builder);
+
+    /**
      * add a simple field with a name and value
      * @param name: the Name of the form field
      * @param file: A File object.

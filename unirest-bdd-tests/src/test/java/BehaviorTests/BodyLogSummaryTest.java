@@ -25,6 +25,7 @@
 
 package BehaviorTests;
 
+import kong.unirest.core.MultiPartBuilder;
 import kong.unirest.core.Unirest;
 import kong.unirest.core.json.JSONObject;
 import org.junit.jupiter.api.Disabled;
@@ -164,6 +165,35 @@ class BodyLogSummaryTest extends BddTest {
                         "Content-Disposition: form-data; name=\"file\"; filename=\"test.txt\"\n" +
                         "Content-Type: application/octet-stream\n" +
                         "<BINARY DATA>\n"
+        );
+
+    }
+
+    @Test
+    void multiPartWithExtraHeaders() {
+        var boundary = "ABC-123-BOUNDARY";
+        var body = Unirest.post(MockServer.ECHO_RAW)
+                .field(MultiPartBuilder.named("file").value(rezFile("/test.txt")).header("foo", "bar"))
+                .field(MultiPartBuilder.named("metadata").value("cheese").header("baz", "qux"))
+                .boundary(boundary)
+                .toSummary()
+                .asString();
+
+        assertThat(body).isEqualTo(
+                "POST http://localhost:4567/raw\n" +
+                        "Content-Type: multipart/form-data; boundary=ABC-123-BOUNDARY;charset=UTF-8\"\n" +
+                        "===================================\n" +
+                        "--ABC-123-BOUNDARY\n" +
+                        "Content-Disposition: form-data; name=\"file\"; filename=\"test.txt\"\n" +
+                        "Content-Type: application/octet-stream\n" +
+                        "foo: bar\n" +
+                        "<BINARY DATA>\n" +
+                        "\n" +
+                        "--ABC-123-BOUNDARY\n" +
+                        "Content-Disposition: form-data; name:\"metadata\"\n" +
+                        "Content-Type: application/x-www-form-urlencoded; charset=UTF-8\n" +
+                        "baz: qux\n" +
+                        "cheese\n"
         );
 
     }

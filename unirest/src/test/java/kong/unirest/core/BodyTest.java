@@ -25,10 +25,6 @@
 
 package kong.unirest.core;
 
-import kong.unirest.core.Body;
-import kong.unirest.core.BodyPart;
-import kong.unirest.core.ParamPart;
-import kong.unirest.core.TestBody;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
