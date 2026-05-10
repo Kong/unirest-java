@@ -30,28 +30,37 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * A failed response you COULD return if you want to live in a house of lies.
- * This can be returned by a interceptor rather than throwing an exception.
- * It's possible if not handled correctly this could be more confusing than the exception
+ * Represents a failed HTTP response when an exception occurs before receiving a server response.
+ * <p>
+ * This class can be returned by an interceptor instead of throwing an exception,
+ * allowing failed requests to be handled through the normal response processing flow.
+ * Since no actual HTTP response was received, this class provides synthetic values
+ * for status code, headers, and body.
+ * </p>
+ *
+ * @param <T> the type of the response body (always {@code null} for failed responses)
+ * @see HttpResponse
  */
 public class FailedResponse<T> implements HttpResponse<T> {
     private final Exception failureReason;
 
     /**
-     * Build a elaborate lie from a failure.
-     * Just like what you're going to do at thanksgiving dinner.
-     * @param e where it all went wrong.
+     * Creates a new FailedResponse wrapping the given exception.
+     *
+     * @param e the exception that caused the request to fail
      */
     public FailedResponse(Exception e) {
         this.failureReason = e;
     }
 
     /**
-     * Returns a 542, which is nothing and a lie.
-     * The remove server in this case returned nothing all all.
-     * As far as we know you aren't even on the internet.
-     * So we  made up this code, because a 500+ status is better than 0
-     * @return 542
+     * Returns a synthetic status code of 542.
+     * <p>
+     * Since no actual response was received from the server, this method returns
+     * a non-standard 5xx status code to indicate a client-side failure.
+     * </p>
+     *
+     * @return 542 (a synthetic error status code)
      */
     @Override
     public int getStatus() {
@@ -59,8 +68,9 @@ public class FailedResponse<T> implements HttpResponse<T> {
     }
 
     /**
-     * a error message of the exception
-     * @return a 'status' message
+     * Returns the exception message as the status text.
+     *
+     * @return the message from the underlying exception
      */
     @Override
     public String getStatusText() {
@@ -68,7 +78,12 @@ public class FailedResponse<T> implements HttpResponse<T> {
     }
 
     /**
-     * @return a empty headers object because none was returned because there was no return
+     * Returns an empty headers collection.
+     * <p>
+     * Since no response was received, there are no headers to return.
+     * </p>
+     *
+     * @return an empty {@link Headers} object
      */
     @Override
     public Headers getHeaders() {
@@ -76,7 +91,9 @@ public class FailedResponse<T> implements HttpResponse<T> {
     }
 
     /**
-     * @return null, because there was no response
+     * Returns {@code null} since no response body was received.
+     *
+     * @return {@code null}
      */
     @Override
     public T getBody() {
@@ -84,7 +101,9 @@ public class FailedResponse<T> implements HttpResponse<T> {
     }
 
     /**
-     * @return a parsing exception with the exception.
+     * Returns a parsing exception containing the original failure reason.
+     *
+     * @return an {@link Optional} containing a {@link UnirestParsingException} wrapping the failure
      */
     @Override
     public Optional<UnirestParsingException> getParsingError() {
@@ -92,9 +111,15 @@ public class FailedResponse<T> implements HttpResponse<T> {
     }
 
     /**
-     * @param func a function to transform a body type to something else.
-     * @param <V> always null
-     * @return another object
+     * Applies the mapping function to the body.
+     * <p>
+     * Since the body is always {@code null} for failed responses, this passes
+     * {@code null} to the function.
+     * </p>
+     *
+     * @param func a function to transform the body
+     * @param <V> the type to transform the body into
+     * @return the result of applying the function to {@code null}
      */
     @Override
     public <V> V mapBody(Function<T, V> func) {
@@ -102,9 +127,15 @@ public class FailedResponse<T> implements HttpResponse<T> {
     }
 
     /**
-     * @param func a function to transform a body type to something else.
-     * @param <V> always null
-     * @return another response
+     * Maps this response to a new response type.
+     * <p>
+     * Since the body is always {@code null} for failed responses, this passes
+     * {@code null} to the function.
+     * </p>
+     *
+     * @param func a function to transform the body
+     * @param <V> the type to transform the body into
+     * @return a new HttpResponse with the transformed body type
      */
     @Override
     public <V> HttpResponse<V> map(Function<T, V> func) {
@@ -112,9 +143,10 @@ public class FailedResponse<T> implements HttpResponse<T> {
     }
 
     /**
-     * @param consumer a function to consume a successful HttpResponse.
-     *                This is never called in this case.
-     * @return this HttpResponse.
+     * Does nothing, as this response is never successful.
+     *
+     * @param consumer a function to consume a successful HttpResponse (never invoked)
+     * @return this HttpResponse
      */
     @Override
     public HttpResponse<T> ifSuccess(Consumer<HttpResponse<T>> consumer) {
@@ -122,8 +154,12 @@ public class FailedResponse<T> implements HttpResponse<T> {
     }
 
     /**
-     * @param consumer a function to consume a failed HttpResponse
-     *                 always called in this case
+     * Invokes the consumer with this response.
+     * <p>
+     * Since this is always a failed response, the consumer is always invoked.
+     * </p>
+     *
+     * @param consumer a function to consume the failed HttpResponse
      * @return this HttpResponse
      */
     @Override
@@ -133,10 +169,15 @@ public class FailedResponse<T> implements HttpResponse<T> {
     }
 
     /**
-     * @param errorClass the class to transform the body to. However as the body is null
-     *                   in this case it will also be null
-     * @param consumer a function to consume a failed HttpResponse
-     *                 always called in this case
+     * Invokes the consumer for a failed response.
+     * <p>
+     * Note: The consumer receives {@code null} since the body cannot be mapped
+     * to the error class when no response was received.
+     * </p>
+     *
+     * @param <E> the error type
+     * @param errorClass the class to transform the body to (unused since body is null)
+     * @param consumer a function to consume the failed HttpResponse
      * @return this HttpResponse
      */
     @Override
@@ -146,8 +187,9 @@ public class FailedResponse<T> implements HttpResponse<T> {
     }
 
     /**
-     * is this a success?  Obvs no!
-     * @return false
+     * Always returns {@code false} since this represents a failed response.
+     *
+     * @return {@code false}
      */
     @Override
     public boolean isSuccess() {
@@ -155,22 +197,35 @@ public class FailedResponse<T> implements HttpResponse<T> {
     }
 
     /**
-     * Map the body to an error object, however because the body in this case is always
-     * null this will always return null
-     * @param errorClass the class for the error
+     * Returns {@code null} since there is no body to map to an error class.
+     *
      * @param <E> the error type
-     * @return null
+     * @param errorClass the class for the error (unused)
+     * @return {@code null}
      */
     @Override
     public <E> E mapError(Class<? extends E> errorClass) {
         return null;
     }
 
+    /**
+     * Returns an empty cookies collection.
+     * <p>
+     * Since no response was received, there are no cookies to return.
+     * </p>
+     *
+     * @return an empty {@link Cookies} collection
+     */
     @Override
     public Cookies getCookies() {
         return new Cookies();
     }
 
+    /**
+     * Returns {@code null} since there is no request summary available.
+     *
+     * @return {@code null}
+     */
     @Override
     public HttpRequestSummary getRequestSummary() {
         return null;

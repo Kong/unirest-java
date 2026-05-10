@@ -40,6 +40,8 @@ import java.util.function.Function;
 /**
     The primary request builder used to create a request. This will be completed after calling one of
     the "as**" methods like asString()
+
+    @param <R> a interface that extends this interface which supports the builder pattern
  */
 public interface HttpRequest<R extends HttpRequest>  {
     /**

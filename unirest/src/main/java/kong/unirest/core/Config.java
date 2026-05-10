@@ -44,9 +44,50 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * Configuration class for Unirest HTTP client settings.
+ * <p>
+ * This class provides a fluent API for configuring all aspects of HTTP client behavior,
+ * including timeouts, proxies, SSL/TLS settings, headers, cookies, authentication, and more.
+ * <p>
+ * Configuration can be accessed and modified through {@link Unirest#config()} or by creating
+ * a custom {@link UnirestInstance} with its own configuration.
+ * <p>
+ * Example usage:
+ * <pre>{@code
+ * Unirest.config()
+ *     .connectTimeout(5000)
+ *     .defaultBaseUrl("https://api.example.com")
+ *     .setDefaultHeader("Accept", "application/json")
+ *     .proxy("proxy.example.com", 8080);
+ * }</pre>
+ * <p>
+ * Most configuration changes require the client to not be running. If the client has already
+ * been built, call {@link #reset()} before making changes that require a client rebuild.
+ *
+ * @see Unirest
+ * @see UnirestInstance
+ */
 public class Config {
+    /**
+     * Default connection timeout in milliseconds (10 seconds).
+     */
     public static final int DEFAULT_CONNECT_TIMEOUT = 10000;
+
+    /**
+     * System property name for configuring the HTTP keep-alive timeout in seconds.
+     * This applies to both HTTP/1.1 and HTTP/2 connections.
+     *
+     * @see <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.net.http/module-summary.html">Java HTTP Client Module</a>
+     */
     public static final String JDK_HTTPCLIENT_KEEPALIVE_TIMEOUT = "jdk.httpclient.keepalive.timeout";
+
+    /**
+     * System property name for disabling hostname verification in SSL/TLS connections.
+     * <p>
+     * <strong>Warning:</strong> Disabling hostname verification affects the entire JVM
+     * and should only be used in development/testing environments.
+     */
     public static final String JDK_HTTPCLIENT_DISABLE_HOST_NAME_VERIFICATION = "jdk.internal.httpclient.disableHostnameVerification";
 
     private Optional<Client> client = Optional.empty();
@@ -79,10 +120,28 @@ public class Config {
     private Authenticator authenticator;
     private ProxySelector proxySelector;
 
+    /**
+     * Creates a new Config instance with default settings.
+     * <p>
+     * Default values:
+     * <ul>
+     *   <li>Connection timeout: 10 seconds</li>
+     *   <li>Request timeout: none (infinite)</li>
+     *   <li>Follow redirects: true</li>
+     *   <li>Cookie management: true</li>
+     *   <li>Request compression: true</li>
+     *   <li>SSL verification: true</li>
+     *   <li>HTTP version: HTTP/2</li>
+     *   <li>Default encoding: UTF-8</li>
+     * </ul>
+     */
     public Config() {
         setDefaults();
     }
 
+    /**
+     * Resets all configuration options to their default values.
+     */
     private void setDefaults() {
         proxy = null;
         cache = null;
@@ -730,54 +789,66 @@ public class Config {
     }
 
     /**
-     * @return if cookie management should be enabled.
-     *         default: true
+     * Returns whether cookie management is enabled.
+     *
+     * @return {@code true} if cookie management is enabled, {@code false} otherwise.
+     *         Default: {@code true}
      */
     public boolean getEnabledCookieManagement() {
         return cookieManagement;
     }
 
     /**
-     * @return if the clients should follow redirects
-     *         default: true
+     * Returns whether the client follows redirects.
+     *
+     * @return {@code true} if the client follows redirects, {@code false} otherwise.
+     *         Default: {@code true}
      */
     public boolean getFollowRedirects() {
         return followRedirects;
     }
 
     /**
-     * @return the connection timeout in milliseconds
-     *         default: 10000
+     * Returns the connection timeout in milliseconds.
+     *
+     * @return the connection timeout in milliseconds. Default: 10000
      */
     public int getConnectionTimeout() {
         return connectionTimeout;
     }
 
     /**
-     * @return the connection timeout in milliseconds
-     *         default: null (infinite)
+     * Returns the request timeout in milliseconds.
+     *
+     * @return the request timeout in milliseconds, or {@code null} for infinite. Default: {@code null}
      */
     public Integer getRequestTimeout() {
         return requestTimeout;
     }
 
     /**
-     * @return a security keystore if one has been provided
+     * Returns the configured keystore for SSL client certificates.
+     *
+     * @return the keystore, or {@code null} if none has been configured
      */
     public KeyStore getKeystore() {
         return this.keystore;
     }
 
     /**
-     * @return The password for the keystore if provided
+     * Returns the password for the configured keystore.
+     *
+     * @return the keystore password, or {@code null} if none has been configured
      */
     public String getKeyStorePassword() {
         return this.keystorePassword.get();
     }
 
     /**
-     * @return a configured object mapper
-     * @throws UnirestException if none has been configured.
+     * Returns the configured ObjectMapper for JSON serialization.
+     *
+     * @return the configured ObjectMapper
+     * @throws UnirestConfigException if no ObjectMapper has been configured
      */
     public ObjectMapper getObjectMapper() {
         ObjectMapper om = this.objectMapper.get();
@@ -797,121 +868,154 @@ public class Config {
     }
 
     /**
-     * @return the configured proxy configuration
+     * Returns the configured proxy settings.
+     *
+     * @return the proxy configuration, or {@code null} if none is configured
      */
     public Proxy getProxy() {
         return proxy;
     }
 
     /**
-     * @return if the system will pick up system properties (default is false)
+     * Returns whether the client uses system properties for configuration.
+     *
+     * @return {@code true} if system properties are used, {@code false} otherwise. Default: {@code false}
      */
     public boolean useSystemProperties() {
         return this.useSystemProperties;
     }
 
     /**
-     * @return the default encoding (UTF-8 is the default default)
+     * Returns the default response encoding.
+     *
+     * @return the default encoding. Default: UTF-8
      */
     public String getDefaultResponseEncoding() {
         return defaultResponseEncoding;
     }
 
     /**
-     * @return if request compression is on (default is true)
+     * Returns whether request compression is enabled.
+     *
+     * @return {@code true} if request compression is enabled, {@code false} otherwise. Default: {@code true}
      */
     public boolean isRequestCompressionOn() {
         return requestCompressionOn;
     }
 
     /**
-     * Will unirest verify the SSL?
-     * You should only do this in non-prod environments.
-     * Default is true
-     * @return if unirest will verify the SSL
+     * Returns whether SSL verification is enabled.
+     * <p>
+     * You should only disable this in non-production environments.
+     *
+     * @return {@code true} if SSL is verified, {@code false} otherwise. Default: {@code true}
      */
     public boolean isVerifySsl() {
         return verifySsl;
     }
 
     /**
-     * @return the configured Cookie Spec
+     * Returns the configured cookie specification policy.
+     *
+     * @return the cookie spec policy, or {@code null} if using default
      */
     public String getCookieSpec() {
         return cookieSpec;
     }
 
     /**
-     * @return the currently configured UniMetric object
+     * Returns the configured metrics instrumentation object.
+     *
+     * @return the UniMetric object
      */
     public UniMetric getMetric() {
         return metrics;
     }
 
     /**
-     * @return the currently configured Interceptor
+     * Returns the configured request interceptor.
+     *
+     * @return the Interceptor
      */
     public Interceptor getUniInterceptor() {
         return interceptor;
     }
 
     /**
-     * @return the SSL connection configuration
+     * Returns the configured SSL context.
+     *
+     * @return the SSLContext, or {@code null} if none is configured
      */
     public SSLContext getSslContext() {
         return sslContext;
     }
 
     /**
-     * @return the ciphers for the SSL connection configuration
+     * Returns the configured SSL ciphers.
+     *
+     * @return the array of cipher names, or {@code null} if using defaults
      */
     public String[] getCiphers() {
         return ciphers;
     }
 
     /**
-     * @return the protocols for the SSL connection configuration
+     * Returns the configured SSL protocols.
+     *
+     * @return the array of protocol names, or {@code null} if using defaults
      */
     public String[] getProtocols() {
         return protocols;
     }
 
     /**
-     * @return the default base URL
+     * Returns the default base URL for all requests.
+     *
+     * @return the default base URL, or {@code null} if none is configured
      */
     public String getDefaultBaseUrl() {
         return this.defaultBaseUrl;
     }
 
     /**
-     * @return the custom executor
+     * Returns the custom executor for async requests.
+     *
+     * @return the custom Executor, or {@code null} if using the default
      */
     public Executor getCustomExecutor(){
         return customExecutor;
     }
 
     /**
-     * @return the preferred http version
+     * Returns the preferred HTTP protocol version.
+     *
+     * @return the HTTP version. Default: HTTP/2
      */
     public HttpClient.Version getVersion() {
         return version;
     }
     /**
-     * @return if unirest will retry requests on 429/529
+     * Returns whether automatic retry on 429/529 responses is enabled.
+     *
+     * @return {@code true} if automatic retry is enabled, {@code false} otherwise
      */
     public boolean isAutomaticRetryAfter(){
         return retry != null;
     }
 
     /**
-     * @return the max number of times to attempt to do a 429/529 retry-after
+     * Returns the maximum number of retry attempts for 429/529 responses.
+     *
+     * @return the maximum number of retry attempts
      */
     public int maxRetries() {
         return retry.getMaxAttempts();
     }
 
     /**
-     * @return the maximum life span of persistent connections regardless of their expiration setting.
+     * Returns the time-to-live for persistent connections.
+     *
+     * @return the TTL in seconds, or -1 if not configured
      */
     public long getTTL() {
         try {
@@ -922,7 +1026,9 @@ public class Config {
     }
 
     /**
-     * @return the RetryStrategy configured
+     * Returns the configured retry strategy.
+     *
+     * @return the RetryStrategy, or {@code null} if none is configured
      */
     public RetryStrategy getRetryStrategy() {
         return retry;
@@ -943,9 +1049,10 @@ public class Config {
     }
 
     /**
-     * Sets a authenticator object for the client
-     * @param auth
-     * @return this config
+     * Sets an authenticator for the HTTP client.
+     *
+     * @param auth the Authenticator to use for authentication challenges
+     * @return this config object
      */
     public Config authenticator(Authenticator auth) {
         this.authenticator = auth;
@@ -953,14 +1060,18 @@ public class Config {
     }
 
     /**
-     * @return the authenticator registered with the config
+     * Returns the configured authenticator.
+     *
+     * @return the Authenticator, or {@code null} if none is configured
      */
     public Authenticator getAuthenticator(){
         return authenticator;
     }
 
     /**
-     * @return the ProxySelector
+     * Returns the configured proxy selector.
+     *
+     * @return the ProxySelector, or {@code null} if none is configured
      */
     public ProxySelector getProxySelector(){
         return proxySelector;

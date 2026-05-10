@@ -29,30 +29,34 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 /**
- * Parts of this file were taken from Jackson/core TypeReference under the Apache License:
+ * A type reference holder that preserves generic type information at runtime.
+ * <p>
+ * This class works around Java's type erasure by capturing generic type parameters
+ * through subclassing. Create an anonymous subclass to preserve the type information:
+ * <pre>{@code
+ * GenericType<List<Integer>> ref = new GenericType<List<Integer>>() { };
+ * }</pre>
+ * <p>
+ * This technique is commonly used in libraries like Jackson, GSON, and Spring
+ * for object mapping with generic types.
+ * <p>
+ * Parts of this implementation were derived from Jackson's TypeReference
+ * under the Apache License 2.0.
  *
- * Apache (Software) License, version 2.0 ("the License").
- * See the License for details about distribution rights, and the
- * specific rights regarding derivate works.
- *
- * You may obtain a copy of the License at:
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- *  
- * A class to hold onto generic type params for object mapping by creating a anonymous subtype.
- * This is a common "trick" commonly used in Java to avoid issues with type erasure.
- *
- * Other examples can be found in popular libraries like Jackson, GSON, and Spring
- *
- * <pre>
- *  GenericType ref = new GenericType&lt;List&lt;Integer&gt;&gt;() { };
- * </pre>
- * @param <T> the generic type you wish to represent.
+ * @param <T> the generic type to represent
+ * @see <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>
  */
 public abstract class GenericType<T> implements Comparable<GenericType<T>> {
     protected final Type type;
 
+    /**
+     * Creates a new GenericType instance, capturing the generic type information.
+     * <p>
+     * This constructor must be called from a subclass (typically an anonymous class)
+     * that provides the actual type argument.
+     *
+     * @throws IllegalArgumentException if instantiated without actual type information
+     */
     protected GenericType() {
         Type superClass = this.getClass().getGenericSuperclass();
         if (superClass instanceof Class) {
@@ -63,16 +67,32 @@ public abstract class GenericType<T> implements Comparable<GenericType<T>> {
     }
 
     /**
-     * @return the Type which includes generic type information
+     * Returns the captured generic type.
+     *
+     * @return the {@link Type} which includes generic type information
      */
     public Type getType() {
         return this.type;
     }
 
+    /**
+     * Compares this GenericType with another for ordering.
+     * <p>
+     * This implementation always returns 0, indicating all GenericType instances
+     * are considered equal for ordering purposes.
+     *
+     * @param o the GenericType to compare with
+     * @return always returns 0
+     */
     public int compareTo(GenericType<T> o) {
         return 0;
     }
 
+    /**
+     * Returns the runtime class of the type.
+     *
+     * @return the {@link Class} object representing the type's runtime class
+     */
     public Class<?> getTypeClass(){
         return this.type.getClass();
     }

@@ -30,9 +30,30 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * An HTTP response implementation that provides the response body as a byte array.
+ * <p>
+ * This class is used when the response content needs to be consumed as raw bytes,
+ * such as when downloading binary files. It supports optional progress monitoring
+ * for tracking download progress.
+ *
+ * @see BaseResponse
+ * @see HttpResponse
+ */
 public class ByteResponse extends BaseResponse<byte[]> {
     private final byte[] body;
 
+    /**
+     * Creates a new ByteResponse from a raw HTTP response.
+     * <p>
+     * If a progress monitor is provided, the download progress will be tracked
+     * and reported through the monitor. Otherwise, the content is read directly.
+     *
+     * @param r the raw HTTP response to read the body from
+     * @param downloadMonitor the progress monitor for tracking download progress,
+     *                        or {@code null} for no monitoring
+     * @throws UnirestException if an I/O error occurs while reading the response body
+     */
     public ByteResponse(RawResponse r, ProgressMonitor downloadMonitor) {
         super(r);
         if(downloadMonitor == null) {
@@ -47,6 +68,16 @@ public class ByteResponse extends BaseResponse<byte[]> {
         }
     }
 
+    /**
+     * Reads all bytes from an input stream into a byte array.
+     * <p>
+     * This utility method handles both {@link ByteArrayInputStream} (optimized path)
+     * and general input streams. The input stream is closed after reading.
+     *
+     * @param is the input stream to read from
+     * @return a byte array containing all bytes read from the stream
+     * @throws IOException if an I/O error occurs while reading the stream
+     */
     public static byte[] getBytes(InputStream is) throws IOException {
         try {
             int len;
@@ -71,15 +102,34 @@ public class ByteResponse extends BaseResponse<byte[]> {
         }
     }
 
+    /**
+     * Checks if a content encoding value indicates gzip compression.
+     *
+     * @param value the content encoding header value to check
+     * @return {@code true} if the value indicates gzip encoding, {@code false} otherwise
+     */
     public static boolean isGzipped(String value) {
         return "gzip".equalsIgnoreCase(value.toLowerCase().trim());
     }
 
+    /**
+     * Returns the response body as a byte array.
+     *
+     * @return the response body bytes
+     */
     @Override
     public byte[] getBody() {
         return body;
     }
 
+    /**
+     * Returns the raw body as a string.
+     * <p>
+     * This implementation always returns {@code null} since the byte response
+     * does not retain a string representation of the body.
+     *
+     * @return {@code null}
+     */
     @Override
     protected String getRawBody() {
         return null;

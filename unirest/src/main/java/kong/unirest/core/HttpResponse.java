@@ -30,102 +30,141 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * @param <T> a Http Response holding a specific type of body.
+ * Represents an HTTP response with a typed body.
+ * <p>
+ * This interface provides access to the response status, headers, body, and cookies.
+ * It also supports functional-style operations for mapping and conditional processing.
+ *
+ * @param <T> the type of the response body
  */
 public interface HttpResponse<T> {
 
     /**
-     * @return the HTTP status code.
+     * Returns the HTTP status code of the response.
+     *
+     * @return the HTTP status code (e.g., 200, 404, 500)
      */
     int getStatus();
 
     /**
-     * @return status text
+     * Returns the HTTP status text of the response.
+     *
+     * @return the HTTP status text (e.g., "OK", "Not Found")
      */
     String getStatusText();
 
     /**
-     * @return Response Headers (map) with <b>same case</b> as server response.
-     * For instance use <code>getHeaders().getFirst("Location")</code> and not <code>getHeaders().getFirst("location")</code> to get first header "Location"
+     * Returns the response headers.
+     * <p>
+     * Headers are returned with the <b>same case</b> as the server response.
+     * For instance, use {@code getHeaders().getFirst("Location")} and not
+     * {@code getHeaders().getFirst("location")} to get the first "Location" header.
+     *
+     * @return the response {@link Headers}
      */
     Headers getHeaders();
 
     /**
-     * @return the body
+     * Returns the response body.
+     *
+     * @return the body of type {@code T}
      */
     T getBody();
 
     /**
-     * If the transformation to the body failed by an exception it will be kept here
-     * @return a possible RuntimeException. Checked exceptions are wrapped in a UnirestException
+     * Returns any exception that occurred during body transformation.
+     * <p>
+     * If the transformation to the body failed, the exception is captured here.
+     * Checked exceptions are wrapped in a {@link UnirestParsingException}.
+     *
+     * @return an {@link Optional} containing the parsing exception, or empty if parsing succeeded
      */
     Optional<UnirestParsingException> getParsingError();
 
     /**
-     * Map the body into another type
-     * @param func a function to transform a body type to something else.
-     * @param <V> The return type of the function
-     * @return the return type
+     * Maps the body into another type.
+     *
+     * @param func a function to transform the body to another type
+     * @param <V> the type to transform the body into
+     * @return the result of applying the function to the body
      */
     <V> V mapBody(Function<T, V> func);
 
     /**
-     * Map the Response into another response with a different body
-     * @param func a function to transform a body type to something else.
-     * @param <V> The return type of the function
-     * @return the return type
+     * Maps this response into another response with a different body type.
+     *
+     * @param func a function to transform the body to another type
+     * @param <V> the type to transform the body into
+     * @return a new {@link HttpResponse} with the transformed body
      */
     <V> HttpResponse<V> map(Function<T, V> func);
 
     /**
-     * If the response was a 200-series response. Invoke this consumer
-     * can be chained with ifFailure
-     * @param consumer a function to consume a HttpResponse
-     * @return the same response
+     * Invokes the consumer if the response was successful (2xx status code).
+     * <p>
+     * Can be chained with {@link #ifFailure(Consumer)}.
+     *
+     * @param consumer a consumer to process the successful response
+     * @return this response for method chaining
      */
     HttpResponse<T> ifSuccess(Consumer<HttpResponse<T>> consumer);
 
     /**
-     * If the response was NOT a 200-series response or a mapping exception happened. Invoke this consumer
-     * can be chained with ifSuccess
-     * @param consumer a function to consume a HttpResponse
-     * @return the same response
+     * Invokes the consumer if the response was not successful or a mapping exception occurred.
+     * <p>
+     * Can be chained with {@link #ifSuccess(Consumer)}.
+     *
+     * @param consumer a consumer to process the failed response
+     * @return this response for method chaining
      */
     HttpResponse<T> ifFailure(Consumer<HttpResponse<T>> consumer);
 
 
     /**
-     * If the response was NOT a 200-series response or a mapping exception happened. map the original body into a error type and invoke this consumer
-     * can be chained with ifSuccess
-     * @param <E> the type of error class to map the body
-     * @param errorClass the class of the error type to map to
-     * @param consumer a function to consume a HttpResponse
-     * @return the same response
+     * Invokes the consumer if the response was not successful or a mapping exception occurred,
+     * mapping the body to the specified error type.
+     * <p>
+     * Can be chained with {@link #ifSuccess(Consumer)}.
+     *
+     * @param <E> the error type to map the body to
+     * @param errorClass the class of the error type
+     * @param consumer a consumer to process the failed response with the mapped error body
+     * @return this response for method chaining
      */
     <E> HttpResponse<T> ifFailure(Class<? extends E> errorClass, Consumer<HttpResponse<E>> consumer);
 
-     /**
-     * @return true if the response was a 200-series response and no mapping exception happened, else false
+    /**
+     * Indicates whether this response represents a successful request.
+     *
+     * @return {@code true} if the response has a 2xx status code and no mapping exception occurred,
+     *         {@code false} otherwise
      */
     boolean isSuccess();
 
     /**
-     * Map the body into a error class if the response was NOT a 200-series response or a mapping exception happened.
-     * Uses the system Object Mapper
-     * @param <E> the response type
-     * @param errorClass the class for the error
-     * @return the error object
+     * Maps the body into an error object if the response was not successful.
+     * <p>
+     * Uses the configured {@link ObjectMapper} for deserialization.
+     *
+     * @param <E> the error type
+     * @param errorClass the class to map the error body to
+     * @return the mapped error object, or {@code null} if the response was successful
      */
     <E> E mapError(Class<? extends E> errorClass);
 
     /**
-     * return a cookie collection parse from the set-cookie header
-     * @return a Cookies collection
+     * Returns the cookies from the response.
+     * <p>
+     * Cookies are parsed from the {@code Set-Cookie} header.
+     *
+     * @return a {@link Cookies} collection containing the response cookies
      */
     Cookies getCookies();
 
     /**
-     * @return a Summary of the HttpRequest that created this response
+     * Returns a summary of the request that created this response.
+     *
+     * @return the {@link HttpRequestSummary} for the originating request
      */
     HttpRequestSummary getRequestSummary();
 }

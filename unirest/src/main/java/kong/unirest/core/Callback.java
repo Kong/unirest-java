@@ -25,10 +25,78 @@
 
 package kong.unirest.core;
 
+/**
+ * A callback interface for handling asynchronous HTTP responses.
+ * <p>
+ * Implement this interface to receive notifications when an asynchronous
+ * HTTP request completes, fails, or is cancelled. This is used with
+ * asynchronous request methods to process responses without blocking
+ * the calling thread.
+ * </p>
+ *
+ * <p>Example usage:</p>
+ * <pre>{@code
+ * Unirest.get("http://example.com/api")
+ *     .asStringAsync(new Callback<String>() {
+ *         @Override
+ *         public void completed(HttpResponse<String> response) {
+ *             System.out.println("Response: " + response.getBody());
+ *         }
+ *
+ *         @Override
+ *         public void failed(UnirestException e) {
+ *             System.err.println("Request failed: " + e.getMessage());
+ *         }
+ *
+ *         @Override
+ *         public void cancelled() {
+ *             System.out.println("Request was cancelled");
+ *         }
+ *     });
+ * }</pre>
+ *
+ * @param <T> the type of the response body
+ */
 public interface Callback<T> {
+	/**
+	 * Called when the asynchronous HTTP request completes successfully.
+	 * <p>
+	 * This method is invoked when the HTTP request finishes and a response
+	 * is received, regardless of the HTTP status code. Check
+	 * {@link HttpResponse#getStatus()} to determine if the response
+	 * indicates success or an error.
+	 * </p>
+	 *
+	 * @param response the HTTP response containing the status, headers, and body
+	 */
 	void completed(HttpResponse<T> response);
 
-	default void failed(UnirestException e){}
+	/**
+	 * Called when the asynchronous HTTP request fails due to an exception.
+	 * <p>
+	 * This method is invoked when the request cannot be completed due to
+	 * network errors, connection timeouts, or other exceptional conditions
+	 * that prevent receiving a response.
+	 * </p>
+	 * <p>
+	 * The default implementation does nothing. Override this method to
+	 * handle failure scenarios.
+	 * </p>
+	 *
+	 * @param e the exception that caused the request to fail
+	 */
+	default void failed(UnirestException e) {}
 
-	default void cancelled(){}
+	/**
+	 * Called when the asynchronous HTTP request is cancelled.
+	 * <p>
+	 * This method is invoked when the request is cancelled before completion,
+	 * typically by calling {@code cancel()} on the returned {@link java.util.concurrent.Future}.
+	 * </p>
+	 * <p>
+	 * The default implementation does nothing. Override this method to
+	 * handle cancellation scenarios.
+	 * </p>
+	 */
+	default void cancelled() {}
 }

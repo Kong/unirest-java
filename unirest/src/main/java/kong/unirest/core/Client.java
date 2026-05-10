@@ -33,33 +33,56 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
- * The client that does the work.
+ * The HTTP client abstraction responsible for executing HTTP requests.
+ * <p>
+ * This interface defines the contract for HTTP client implementations that
+ * handle synchronous and asynchronous requests, WebSocket connections, and
+ * Server-Sent Events (SSE). The default implementation uses Java's built-in
+ * {@link java.net.http.HttpClient}.
+ * </p>
+ * <p>
+ * Custom implementations can be provided to wrap other HTTP libraries or
+ * to add custom behavior such as logging, metrics, or request manipulation.
+ * </p>
+ *
+ * @see Config#httpClient(Client)
  */
 public interface Client {
     /**
-     * @param <T> the underlying client
-     * @return the underlying client if this instance is wrapping another library.
+     * Returns the underlying HTTP client implementation.
+     * <p>
+     * This method provides access to the wrapped HTTP client library,
+     * allowing direct access to implementation-specific features when needed.
+     * </p>
+     *
+     * @param <T> the type of the underlying client
+     * @return the underlying client instance
      */
     <T> T getClient();
 
     /**
-     * Make a request
-     * @param <T> The type of the body
-     * @param request the prepared request object
-     * @param transformer the function to transform the response
-     * @param resultType the final body result type. This is a hint to downstream systems to make up for type erasure.
-     * @return a HttpResponse with a transformed body
+     * Executes a synchronous HTTP request.
+     *
+     * @param <T> the type of the response body
+     * @param request the prepared request object containing the HTTP method, URL, headers, and body
+     * @param transformer the function to transform the raw response into the desired response type
+     * @param resultType the expected body result type; used as a hint to downstream systems
+     *                   to work around type erasure
+     * @return an {@link HttpResponse} containing the status, headers, and transformed body
      */
     <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, Class<?> resultType);
 
     /**
-     * Make a Async request
-     * @param <T> The type of the body
-     * @param request the prepared request object
-     * @param transformer the function to transform the response
-     * @param callback the CompletableFuture that will handle the eventual response
-     * @param resultType the final body result type. This is a hint to downstream systems to make up for type erasure.
-     * @return a CompletableFuture of a response
+     * Executes an asynchronous HTTP request.
+     *
+     * @param <T> the type of the response body
+     * @param request the prepared request object containing the HTTP method, URL, headers, and body
+     * @param transformer the function to transform the raw response into the desired response type
+     * @param callback the {@link CompletableFuture} that will be completed with the response
+     *                 when the request finishes
+     * @param resultType the expected body result type; used as a hint to downstream systems
+     *                   to work around type erasure
+     * @return a {@link CompletableFuture} that will be completed with the HTTP response
      */
     <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request,
                                                    Function<RawResponse, HttpResponse<T>> transformer,
@@ -67,22 +90,38 @@ public interface Client {
                                                    Class<?> resultType);
 
     /**
-     * Create a websocket connection
-     * @param request the connection
-     * @param listener (in the voice of Cicero) the listener
-     * @return a WebSocketResponse
+     * Creates a WebSocket connection.
+     *
+     * @param request the WebSocket connection request containing the URL and headers
+     * @param listener the WebSocket listener to handle incoming messages and connection events
+     * @return a {@link WebSocketResponse} representing the established WebSocket connection
      */
     WebSocketResponse websocket(WebSocketRequest request, WebSocket.Listener listener);
 
 
     /**
-     * execute a SSE Event connection.
-     * Because these events are a stream they are processed async and take a handler you can use to consume the events
-     * @param request the request details
-     * @param handler the SseHandler
-     * @return a CompletableFuture
+     * Executes a Server-Sent Events (SSE) connection with a handler.
+     * <p>
+     * Because SSE events are streamed, they are processed asynchronously.
+     * The provided handler is invoked for each event received from the server.
+     * </p>
+     *
+     * @param request the SSE request containing the URL and headers
+     * @param handler the {@link SseHandler} to process incoming events
+     * @return a {@link CompletableFuture} that completes when the SSE connection closes
      */
     CompletableFuture<Void> sse(SseRequest request, SseHandler handler);
 
+    /**
+     * Executes a Server-Sent Events (SSE) connection and returns a stream of events.
+     * <p>
+     * This method provides a reactive-style API for consuming SSE events as a
+     * {@link Stream}. The stream will continue to provide events until the
+     * connection is closed or an error occurs.
+     * </p>
+     *
+     * @param request the SSE request containing the URL and headers
+     * @return a {@link Stream} of {@link Event} objects representing the SSE events
+     */
     Stream<Event> sse(SseRequest request);
 }
