@@ -75,8 +75,8 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
 
     @Override
     public MultipartBody field(String name, String value, ContentType contentType) {
-        String contentType1 = contentType.getMimeType();
-        field(named(name).value((Object) value).contentType(contentType1));
+        Objects.requireNonNull(contentType, "contentType is required");
+        field(named(name).value((Object) value).contentType(contentType.getMimeType()));
         return this;
     }
 
