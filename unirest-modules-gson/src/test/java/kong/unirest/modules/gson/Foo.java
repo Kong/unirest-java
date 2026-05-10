@@ -23,7 +23,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.core.json;
+package kong.unirest.modules.gson;
 
 
 

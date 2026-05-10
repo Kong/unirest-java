@@ -26,7 +26,6 @@
 package kong.unirest.modules.jackson;
 
 
-import kong.unirest.core.json.Foo;
 import kong.unirest.core.json.JSONArray;
 import kong.unirest.core.json.JSONException;
 import kong.unirest.core.json.JSONObject;
