@@ -118,6 +118,19 @@ public class MultiPartBuilder {
     }
 
     /**
+     * Sets the value of this part to an object.
+     * First class types supported include File, InputStream and byte[]
+     * all other types will be converted to a string
+     *
+     * @param content the object being set for a value.
+     * @return this builder for method chaining
+     */
+    public MultiPartBuilder value(Object content) {
+        this.fieldValue = content;
+        return this;
+    }
+
+    /**
      * Sets the file name for this part.
      * <p>
      * This is useful when uploading input streams or byte arrays

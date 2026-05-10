@@ -94,4 +94,20 @@ class MultiPartBuilderTest {
         assertEquals("application/json", part.getContentType());
         assertEquals("jazzy.json", part.getFileName());
     }
+
+    @Test
+    void buildWithObject(){
+        Object value = new File("/jazzy.json");
+        var part = MultiPartBuilder.named("jerry")
+                .value(value)
+                .fileName("jazzy.json")
+                .contentType("application/json")
+                .toBodyPart();
+
+        assertInstanceOf(FilePart.class, part);
+        assertEquals("jerry", part.getName());
+        assertSame(value, part.getValue());
+        assertEquals("application/json", part.getContentType());
+        assertEquals("jazzy.json", part.getFileName());
+    }
 }

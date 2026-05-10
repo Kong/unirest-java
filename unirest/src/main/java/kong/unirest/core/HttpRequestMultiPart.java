@@ -56,33 +56,34 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
     }
 
     @Override
-    public MultipartBody field(String name, String value) {
-        addPart(new ParamPart(name, value));
+    public MultipartBody field(MultiPartBuilder builder) {
+        parameters.add(builder.toBodyPart());
         return this;
     }
 
     @Override
-    public MultipartBody field(MultiPartBuilder builder) {
-        addPart(builder.toBodyPart());
+    public MultipartBody field(String name, String value) {
+        field(MultiPartBuilder.named(name).value(value));
         return this;
     }
 
     @Override
     public MultipartBody field(String name, String value, String contentType) {
-        addPart(name, value, contentType);
+        field(named(name).value((Object) value).contentType(contentType));
         return this;
     }
 
     @Override
     public MultipartBody field(String name, String value, ContentType contentType) {
-        addPart(name, value, contentType.getMimeType());
+        String contentType1 = contentType.getMimeType();
+        field(named(name).value((Object) value).contentType(contentType1));
         return this;
     }
 
     @Override
     public MultipartBody field(String name, Collection<?> collection) {
         for (Object current: collection) {
-            addPart(name, current, null);
+            field(named(name).value(current));
         }
         return this;
     }
@@ -185,22 +186,8 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
     }
 
     public MultipartBody field(String name, Object value, String contentType) {
-        addPart(name, value, contentType);
+        field(named(name).value(value).contentType(contentType));
         return this;
-    }
-
-    private void addPart(String name, Object value, String contentType) {
-        if(value instanceof InputStream){
-            addPart(new InputStreamPart(name, (InputStream)value, contentType));
-        } else if (value instanceof File) {
-            addPart(new FilePart((File)value, name, contentType));
-        } else {
-            addPart(new ParamPart(name, Util.nullToEmpty(value), contentType));
-        }
-    }
-
-    private void addPart(BodyPart value) {
-        parameters.add(value);
     }
 
     @Override
