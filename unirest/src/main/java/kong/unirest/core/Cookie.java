@@ -32,11 +32,48 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Represents a cookie parsed from the set-cookie header
- * per https://tools.ietf.org/html/rfc6265
+ * Represents a cookie parsed from the Set-Cookie HTTP response header.
+ * <p>
+ * This class provides functionality to parse, store, and serialize HTTP cookies
+ * as defined in <a href="https://tools.ietf.org/html/rfc6265">RFC 6265</a>.
+ * </p>
+ * <p>
+ * Cookies can be constructed either by providing name-value pairs directly,
+ * or by parsing a Set-Cookie header string. The class supports all standard
+ * cookie attributes including:
+ * </p>
+ * <ul>
+ *   <li><b>Domain</b> - The domain to which the cookie applies</li>
+ *   <li><b>Path</b> - The URL path for which the cookie is valid</li>
+ *   <li><b>Expires</b> - The expiration date/time of the cookie</li>
+ *   <li><b>Max-Age</b> - The maximum age in seconds before the cookie expires</li>
+ *   <li><b>Secure</b> - Whether the cookie should only be sent over HTTPS</li>
+ *   <li><b>HttpOnly</b> - Whether the cookie is inaccessible to JavaScript</li>
+ *   <li><b>SameSite</b> - Cross-site request restrictions (None, Strict, Lax)</li>
+ *   <li><b>Partitioned</b> - Whether the cookie is partitioned (CHIPS)</li>
+ * </ul>
  *
- * note that the RFC is awful.
- * The wikipedia article is far easier to understand https://en.wikipedia.org/wiki/HTTP_cookie
+ * <h2>Usage Examples:</h2>
+ * <pre>{@code
+ * // Create a simple cookie
+ * Cookie cookie = new Cookie("sessionId", "abc123");
+ *
+ * // Parse a Set-Cookie header
+ * Cookie parsed = new Cookie("sessionId=abc123; Path=/; HttpOnly; Secure");
+ *
+ * // Access cookie attributes
+ * String name = cookie.getName();
+ * String value = cookie.getValue();
+ * boolean isSecure = cookie.isSecure();
+ * }</pre>
+ *
+ * <p>
+ * Note: The RFC 6265 specification is complex. For a more accessible explanation,
+ * see the <a href="https://en.wikipedia.org/wiki/HTTP_cookie">Wikipedia article on HTTP cookies</a>.
+ * </p>
+ *
+ * @see <a href="https://tools.ietf.org/html/rfc6265">RFC 6265 - HTTP State Management Mechanism</a>
+ * @see <a href="https://en.wikipedia.org/wiki/HTTP_cookie">Wikipedia - HTTP cookie</a>
  */
 public class Cookie {
     private String name;
@@ -50,14 +87,36 @@ public class Cookie {
     private SameSite sameSite;
     private boolean partitioned;
 
+    /**
+     * Constructs a cookie with the specified name and value.
+     * <p>
+     * This creates a simple cookie without any additional attributes.
+     * Attributes can be set using the setter methods.
+     * </p>
+     *
+     * @param name  the cookie name (cookie-name)
+     * @param value the cookie value (cookie-value)
+     */
     public Cookie(String name, String value){
         this.name = name;
         this.value = value;
     }
 
     /**
-     * Construct a cookie from a set-cookie value
-     * @param v cookie string value
+     * Constructs a cookie by parsing a Set-Cookie header value.
+     * <p>
+     * The string is expected to be in the format defined by RFC 6265,
+     * with the name-value pair first, followed by semicolon-separated attributes.
+     * </p>
+     *
+     * <h3>Example formats:</h3>
+     * <pre>{@code
+     * "sessionId=abc123"
+     * "sessionId=abc123; Path=/; HttpOnly"
+     * "sessionId=abc123; Domain=.example.com; Secure; SameSite=Strict"
+     * }</pre>
+     *
+     * @param v the Set-Cookie header value to parse
      */
     public Cookie(String v) {
         this(v.split(";"));
@@ -136,6 +195,15 @@ public class Cookie {
         expires = Util.tryParseToDate(text);
     }
 
+    /**
+     * Returns the string representation of this cookie in Set-Cookie header format.
+     * <p>
+     * The output includes the name-value pair followed by all set attributes,
+     * separated by semicolons, suitable for use in a Set-Cookie header.
+     * </p>
+     *
+     * @return the cookie as a Set-Cookie header string
+     */
     @Override
     public String toString() {
         List<Pair> pairs = new ArrayList<>();
@@ -164,26 +232,84 @@ public class Cookie {
         return pairs.stream().map(Pair::toString).collect(Collectors.joining(";"));
     }
 
+    /**
+     * Sets the domain attribute of this cookie.
+     * <p>
+     * The domain attribute specifies which hosts can receive the cookie.
+     * If not specified, the cookie is only sent to the origin server.
+     * </p>
+     *
+     * @param domain the domain value (e.g., ".example.com")
+     */
     public void setDomain(String domain) {
         this.domain = domain;
     }
 
+    /**
+     * Sets the path attribute of this cookie.
+     * <p>
+     * The path attribute specifies the URL path that must exist in the
+     * requested URL for the browser to send the cookie.
+     * </p>
+     *
+     * @param path the path value (e.g., "/api")
+     */
     public void setPath(String path) {
         this.path = path;
     }
 
+    /**
+     * Sets the HttpOnly attribute of this cookie.
+     * <p>
+     * When {@code true}, the cookie is inaccessible to JavaScript's
+     * {@code Document.cookie} API, helping to mitigate cross-site
+     * scripting (XSS) attacks.
+     * </p>
+     *
+     * @param httpOnly {@code true} to make the cookie HTTP-only
+     */
     public void setHttpOnly(boolean httpOnly) {
         this.httpOnly = httpOnly;
     }
 
+    /**
+     * Returns whether this cookie has the Partitioned attribute set.
+     * <p>
+     * Partitioned cookies (also known as CHIPS - Cookies Having Independent
+     * Partitioned State) are stored separately for each top-level site,
+     * providing better privacy by preventing cross-site tracking.
+     * </p>
+     *
+     * @return {@code true} if the cookie is partitioned
+     */
     public boolean isPartitioned() {
         return this.partitioned;
     }
 
+    /**
+     * Sets the Partitioned attribute of this cookie.
+     * <p>
+     * Partitioned cookies (CHIPS) are isolated by top-level site,
+     * which helps prevent cross-site tracking while still allowing
+     * embedded third-party content to maintain state.
+     * </p>
+     *
+     * @param partitionedFlag {@code true} to make the cookie partitioned
+     * @see <a href="https://developer.mozilla.org/en-US/docs/Web/Privacy/Privacy_sandbox/Partitioned_cookies">CHIPS Documentation</a>
+     */
     public void setPartitioned(boolean partitionedFlag) {
         this.partitioned = partitionedFlag;
     }
 
+    /**
+     * Sets the Secure attribute of this cookie.
+     * <p>
+     * When {@code true}, the cookie is only sent to the server over
+     * HTTPS connections, never over unencrypted HTTP.
+     * </p>
+     *
+     * @param secureFlag {@code true} to make the cookie secure-only
+     */
     public void setSecured(boolean secureFlag) {
         this.secure = secureFlag;
     }
@@ -289,11 +415,46 @@ public class Cookie {
         return sameSite;
     }
 
+    /**
+     * The SameSite cookie attribute values.
+     * <p>
+     * The SameSite attribute controls whether a cookie is sent with cross-site requests,
+     * providing protection gegen cross-site request forgery (CSRF) attacks.
+     * </p>
+     *
+     * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie/SameSite">MDN SameSite Documentation</a>
+     */
     public enum SameSite {
-        None, Strict, Lax;
+        /**
+         * The cookie is sent with both cross-site and same-site requests.
+         * Requires the Secure attribute when used.
+         */
+        None,
+
+        /**
+         * The cookie is only sent with same-site requests (not with cross-site requests).
+         * Provides the strictest CSRF protection.
+         */
+        Strict,
+
+        /**
+         * The cookie is sent with same-site requests and top-level navigations
+         * from external sites (e.g., clicking a link), but not with cross-site
+         * subrequests (e.g., loading images or frames).
+         */
+        Lax;
 
         private static EnumSet<SameSite> all = EnumSet.allOf(SameSite.class);
 
+        /**
+         * Parses a string value to a SameSite enum constant.
+         * <p>
+         * The comparison is case-insensitive.
+         * </p>
+         *
+         * @param value the string value to parse (e.g., "Strict", "lax", "NONE")
+         * @return the matching SameSite constant, or {@code null} if no match is found
+         */
         public static SameSite parse(String value) {
             return all.stream()
                     .filter(e -> e.name().equalsIgnoreCase(value))
