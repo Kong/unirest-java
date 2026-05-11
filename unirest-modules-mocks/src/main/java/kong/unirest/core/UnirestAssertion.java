@@ -26,9 +26,38 @@
 package kong.unirest.core;
 
 /**
- * Thrown to indicate that an assertion has failed.
+ * Thrown to indicate that a mock verification or assertion has failed.
+ * <p>
+ * This exception extends {@link AssertionError} and is used by the Unirest mock framework
+ * to signal that an expected condition was not met. It is thrown by various assertion
+ * and verification methods in the mocking API.
+ * </p>
+ *
+ * <h2>Common scenarios where this is thrown:</h2>
+ * <ul>
+ *   <li>An expected request was never invoked</li>
+ *   <li>A request was invoked a different number of times than expected</li>
+ *   <li>An expected message was not received on a WebSocket</li>
+ *   <li>A mock component was not properly initialized</li>
+ * </ul>
+ *
+ * @see MockClient#assertThat(HttpMethod, String)
+ * @see MockClient#verifyAll()
+ * @see MockListener
+ * @see Times
  */
 public class UnirestAssertion extends AssertionError {
+
+    /**
+     * Constructs a new UnirestAssertion with a formatted message.
+     * <p>
+     * The message is formatted using {@link String#format(String, Object...)},
+     * allowing for dynamic error messages with placeholders.
+     * </p>
+     *
+     * @param base the format string for the error message
+     * @param args the arguments to be substituted into the format string
+     */
     public UnirestAssertion(String base, Object... args){
         super(String.format(base, args));
     }
