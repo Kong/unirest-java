@@ -31,87 +31,169 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * A expectation for a particular method/path
+ * Represents an expectation for a particular HTTP method and path in the mock client.
+ * <p>
+ * An Expectation defines the criteria that an incoming request must match,
+ * as well as the response that should be returned when a match occurs.
+ * Expectations are created via {@link MockClient#expect(HttpMethod, String)} and support
+ * a fluent API for configuring matching criteria and responses.
+ * </p>
+ *
+ * <h2>Usage Example:</h2>
+ * <pre>{@code
+ * // Set up an expectation with request matching and response
+ * mockClient.expect(HttpMethod.POST, "/api/users")
+ *     .header("Content-Type", "application/json")
+ *     .queryString("active", "true")
+ *     .body("{\"name\":\"John\"}")
+ *     .thenReturn("{\"id\":1,\"name\":\"John\"}")
+ *     .withStatus(201);
+ *
+ * // Verify the expectation was met
+ * mockClient.expect(HttpMethod.POST, "/api/users")
+ *     .verify(Times.exactlyOnce());
+ * }</pre>
+ *
+ * @see MockClient
+ * @see ExpectedResponse
+ * @see Times
+ * @see BodyMatcher
  */
 public interface Expectation {
+
     /**
-     * A expected header for a request
-     * @param key the header key
-     * @param value the header value
-     * @return this Expectation
+     * Adds an expected header that must be present in the request.
+     *
+     * @param key   the header name
+     * @param value the expected header value
+     * @return this Expectation for method chaining
      */
     Expectation header(String key, String value);
 
     /**
-     * A expected header for a request
-     * @param key the query key
-     * @param value the query value
-     * @return this Expectation
+     * Adds an expected query string parameter that must be present in the request URL.
+     *
+     * @param key   the query parameter name
+     * @param value the expected query parameter value
+     * @return this Expectation for method chaining
      */
     Expectation queryString(String key, String value);
 
     /**
-     * A expected body for a request
-     * @param body the expected body
-     * @return this Expectation
+     * Sets the expected request body using exact string matching.
+     *
+     * @param body the expected body content
+     * @return this Expectation for method chaining
      */
     Expectation body(String body);
 
     /**
-     * A matcher for the body for a request
-     * @param matcher the matcher
-     * @return this Expectation
+     * Sets a custom body matcher for flexible request body matching.
+     * <p>
+     * Use this method when you need more sophisticated body matching logic,
+     * such as JSON comparison, regex matching, or partial content matching.
+     * </p>
+     *
+     * @param matcher the {@link BodyMatcher} implementation to use
+     * @return this Expectation for method chaining
+     * @see EqualsBodyMatcher
      */
     Expectation body(BodyMatcher matcher);
 
     /**
-     * expect a null response
-     * @return The ExpectedResponse
+     * Configures this expectation to return an empty response.
+     * <p>
+     * Use the returned {@link ExpectedResponse} to further configure
+     * the response status and headers.
+     * </p>
+     *
+     * @return an {@link ExpectedResponse} for configuring the response details
      */
     ExpectedResponse thenReturn();
 
     /**
-     * expect a string response
-     * @param body the expected response body
-     * @return The ExpectedResponse
+     * Configures this expectation to return a response with the specified string body.
+     *
+     * @param body the response body content
+     * @return an {@link ExpectedResponse} for configuring additional response details
      */
     ExpectedResponse thenReturn(String body);
 
     /**
-     * expect a json response
-     * @param jsonObject the expected response body
-     * @return The ExpectedResponse
+     * Configures this expectation to return a response with a JSON body.
+     * <p>
+     * The JSON element will be serialized to a string when the response is built.
+     * </p>
+     *
+     * @param jsonObject the JSON element ({@link kong.unirest.core.json.JSONObject} or {@link kong.unirest.core.json.JSONArray})
+     * @return an {@link ExpectedResponse} for configuring additional response details
      */
     ExpectedResponse thenReturn(JSONElement jsonObject);
 
     /**
-     * expect a object response as defined by a pojo using the requests / configuration object mapper
-     * @param pojo the expected response body
-     * @return The ExpectedResponse
+     * Configures this expectation to return a response with a serialized POJO body.
+     * <p>
+     * The object will be serialized using the configured object mapper.
+     * </p>
+     *
+     * @param pojo the object to serialize as the response body
+     * @return an {@link ExpectedResponse} for configuring additional response details
      */
     ExpectedResponse thenReturn(Object pojo);
 
     /**
-     * A supplier for the expected body which will get invoked at the time of build the response.
-     * @param supplier the expected response body supplier
-     * @return The ExpectedResponse
+     * Configures this expectation with a dynamic response body supplier.
+     * <p>
+     * The supplier is invoked at response time, allowing for dynamic response generation.
+     * </p>
+     *
+     * @param supplier a supplier that provides the response body string
+     * @return an {@link ExpectedResponse} for configuring additional response details
      */
     ExpectedResponse thenReturn(Supplier<String> supplier);
 
     /**
-     * Allows for a full override of the way a expected response is built.
-     * useful in building more complicated test-doubles of services that implement logic
-     * @param fun the function to convert a request to a response
+     * Configures this expectation with a function that generates the response based on the request.
+     * <p>
+     * This allows for full control over response generation based on request details,
+     * making it useful for building more complex test doubles that implement service logic.
+     * </p>
+     *
+     * @param fun a function that takes the incoming {@link HttpRequest} and returns an {@link ExpectedResponse}
      */
     void thenReturn(Function<HttpRequest<?>, ExpectedResponse> fun);
 
     /**
-     * verify that all Expectations was fulfilled at least once.
-     * @throws UnirestAssertion when all expectations have not been fulfilled
+     * Verifies that this expectation was fulfilled at least once.
+     * <p>
+     * This is equivalent to calling {@code verify(Times.atLeastOnce())}.
+     * </p>
+     *
+     * @throws UnirestAssertion if the expectation was not fulfilled
      */
     void verify();
 
+    /**
+     * Verifies that this expectation was fulfilled the specified number of times.
+     *
+     * @param times the expected invocation count
+     * @throws UnirestAssertion if the expectation was not fulfilled the expected number of times
+     * @see Times
+     */
     void verify(Times times);
 
-    Expectation times(Times never);
+    /**
+     * Sets the expected number of times this expectation should be invoked.
+     * <p>
+     * This can be used during setup to define how many times a request is expected,
+     * and then verified later with {@link MockClient#verifyAll()}.
+     * </p>
+     *
+     * @param times the expected invocation count
+     * @return this Expectation for method chaining
+     * @see Times#never()
+     * @see Times#exactlyOnce()
+     * @see Times#exactly(int)
+     */
+    Expectation times(Times times);
 }
