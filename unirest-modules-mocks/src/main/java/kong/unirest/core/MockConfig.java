@@ -26,11 +26,45 @@
 package kong.unirest.core;
 
 /**
- * A Mock Config that will not actually start up any real clients.
+ * A mock configuration that uses a {@link MockClient} instead of a real HTTP client.
+ * <p>
+ * This class extends {@link Config} and automatically creates a {@link MockClient}
+ * as its HTTP client, allowing you to use all of Unirest's configuration options
+ * without making actual network requests.
+ * </p>
+ * <p>
+ * Use this class when you need a standalone mock configuration, for example when
+ * creating a {@link UnirestInstance} specifically for testing.
+ * </p>
+ *
+ * <h2>Usage Example:</h2>
+ * <pre>{@code
+ * // Create a mock configuration
+ * MockConfig config = new MockConfig();
+ *
+ * // Use it with a UnirestInstance
+ * UnirestInstance unirest = new UnirestInstance(config);
+ *
+ * // Access the mock client to set up expectations
+ * MockClient mockClient = (MockClient) config.getClient();
+ * mockClient.expect(HttpMethod.GET, "/api/users")
+ *     .thenReturn("{\"id\": 1}")
+ *     .withStatus(200);
+ * }</pre>
+ *
+ * @see Config
+ * @see MockClient
+ * @see UnirestInstance
  */
 public class MockConfig extends Config {
     private MockClient client = new MockClient(() -> this);
 
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return the {@link MockClient} instance associated with this configuration
+     */
     @Override
     public Client getClient() {
         return client;
