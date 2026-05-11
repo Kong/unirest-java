@@ -1,3 +1,6 @@
+## 4.10.0
+* Issue #567 : Add support for additional headers added to multi-part form parts. This is supported though a new sub-builder for fields. This sub-builder will eventually take over for many of the complex overloads of ::field which will be dropped in Unirest 5.
+
 ## 4.9.0
 * Issue #531 : Support chaining expectations in the mocking library. Users who had multiple matching expects for a route will now be expected to be performed in order.
 
