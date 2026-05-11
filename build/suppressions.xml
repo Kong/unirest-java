@@ -5,6 +5,7 @@
         "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
 <suppressions>
     <suppress checks="MethodCount" files="Config.java"/>
+    <suppress checks="FileLength" files="Config.java"/>
     <suppress checks="MethodCount" files="HttpRequest.java"/>
     <suppress checks="MethodCount" files="BaseRequest.java"/>
     <suppress checks="MethodCount" files="JSONArray.java"/>

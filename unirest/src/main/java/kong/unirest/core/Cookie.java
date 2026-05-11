@@ -107,9 +107,9 @@ public class Cookie {
      * <p>
      * The string is expected to be in the format defined by RFC 6265,
      * with the name-value pair first, followed by semicolon-separated attributes.
-     * </p>
      *
-     * <h3>Example formats:</h3>
+     * <p>
+     * Example formats:
      * <pre>{@code
      * "sessionId=abc123"
      * "sessionId=abc123; Path=/; HttpOnly"

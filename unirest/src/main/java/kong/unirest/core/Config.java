@@ -44,9 +44,83 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * Central configuration class for Unirest HTTP client settings.
+ * <p>
+ * This class provides a fluent API for configuring all aspects of HTTP client behavior,
+ * including timeouts, proxies, SSL/TLS settings, headers, cookies, interceptors, and more.
+ * Configuration can be applied to the primary static {@link Unirest} instance or to
+ * individual {@link UnirestInstance} objects.
+ * </p>
+ *
+ * <h2>Basic Usage:</h2>
+ * <pre>{@code
+ * // Configure the primary instance
+ * Unirest.config()
+ *     .connectTimeout(5000)
+ *     .defaultBaseUrl("https://api.example.com")
+ *     .setDefaultHeader("Accept", "application/json");
+ *
+ * // Or configure a custom instance
+ * UnirestInstance instance = new UnirestInstance(new Config());
+ * instance.config()
+ *     .proxy("proxy.example.com", 8080)
+ *     .verifySsl(false);
+ * }</pre>
+ *
+ * <h2>Configuration Categories:</h2>
+ * <ul>
+ *   <li><b>Timeouts:</b> {@link #connectTimeout(int)}, {@link #requestTimeout(Integer)}, {@link #connectionTTL(long, TimeUnit)}</li>
+ *   <li><b>Proxy:</b> {@link #proxy(String, int)}, {@link #proxy(Proxy)}, {@link #proxy(ProxySelector)}</li>
+ *   <li><b>SSL/TLS:</b> {@link #verifySsl(boolean)}, {@link #sslContext(SSLContext)}, {@link #clientCertificateStore(KeyStore, String)}</li>
+ *   <li><b>Headers/Cookies:</b> {@link #setDefaultHeader(String, String)}, {@link #addDefaultCookie(String, String)}</li>
+ *   <li><b>Serialization:</b> {@link #setObjectMapper(ObjectMapper)}</li>
+ *   <li><b>Behavior:</b> {@link #followRedirects(boolean)}, {@link #enableCookieManagement(boolean)}, {@link #retryAfter(boolean)}</li>
+ *   <li><b>Caching:</b> {@link #cacheResponses(boolean)}, {@link #cacheResponses(Cache.Builder)}</li>
+ *   <li><b>Interceptors:</b> {@link #interceptor(Interceptor)}, {@link #instrumentWith(UniMetric)}</li>
+ * </ul>
+ *
+ * <h2>Thread Safety:</h2>
+ * <p>
+ * Configuration should be performed before making requests. Once HTTP clients are built
+ * (after the first request), certain settings cannot be changed without calling {@link #reset()}.
+ * Methods that require this will throw {@link UnirestConfigException} if clients are already running.
+ * </p>
+ *
+ * @see Unirest
+ * @see UnirestInstance
+ * @see Client
+ * @see Interceptor
+ */
 public class Config {
+    /**
+     * Default connection timeout in milliseconds (10 seconds).
+     * Used when no custom timeout is configured via {@link #connectTimeout(int)}.
+     */
     public static final int DEFAULT_CONNECT_TIMEOUT = 10000;
+
+    /**
+     * System property name for configuring HTTP keep-alive timeout.
+     * <p>
+     * This property controls the number of seconds to keep idle HTTP connections
+     * alive in the keep-alive cache. Applies to both HTTP/1.1 and HTTP/2.
+     * </p>
+     *
+     * @see #connectionTTL(long, TimeUnit)
+     * @see <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.net.http/module-summary.html">Java HTTP Client Module</a>
+     */
     public static final String JDK_HTTPCLIENT_KEEPALIVE_TIMEOUT = "jdk.httpclient.keepalive.timeout";
+
+    /**
+     * System property name for disabling hostname verification.
+     * <p>
+     * When set to "true", disables SSL hostname verification for the entire JVM.
+     * <b>Warning:</b> This affects all HTTP clients in the JVM, not just Unirest.
+     * Should only be used in non-production environments.
+     * </p>
+     *
+     * @see #disableHostNameVerification(boolean)
+     */
     public static final String JDK_HTTPCLIENT_DISABLE_HOST_NAME_VERIFICATION = "jdk.internal.httpclient.disableHostnameVerification";
 
     private Optional<Client> client = Optional.empty();
@@ -79,6 +153,9 @@ public class Config {
     private Authenticator authenticator;
     private ProxySelector proxySelector;
 
+    /**
+     * Creates a new Config instance with default settings.
+     */
     public Config() {
         setDefaults();
     }
@@ -333,8 +410,11 @@ public class Config {
     }
 
     /**
-     * Clear default headers
-     * @return this config object
+     * Removes all default headers from this configuration.
+     *
+     * @return this config object for method chaining
+     * @see #setDefaultHeader(String, String)
+     * @see #addDefaultHeader(String, String)
      */
     public Config clearDefaultHeaders() {
         headers.clear();
@@ -342,10 +422,15 @@ public class Config {
     }
 
     /**
-     * Default basic auth credentials
-     * @param username the username
-     * @param password the password
-     * @return this config object
+     * Sets default Basic Authentication credentials for all requests.
+     * <p>
+     * This adds an {@code Authorization} header with Base64-encoded credentials
+     * to all requests made with this configuration.
+     * </p>
+     *
+     * @param username the username for Basic Authentication
+     * @param password the password for Basic Authentication
+     * @return this config object for method chaining
      */
     public Config setDefaultBasicAuth(String username, String password) {
         headers.replace("Authorization", Util.toBasicAuthValue(username, password));
@@ -431,10 +516,15 @@ public class Config {
     }
 
     /**
-     * Allow the client to follow redirects. Defaults to TRUE
+     * Configures whether the client should automatically follow redirects.
+     * <p>
+     * When enabled, the client will automatically follow HTTP redirects (3xx responses).
+     * </p>
      *
-     * @param enable The name of the header.
-     * @return this config object
+     * @param enable {@code true} to follow redirects (default), {@code false} to disable
+     * @return this config object for method chaining
+     * @throws UnirestConfigException if called after the client has been built
+     * @see #getFollowRedirects()
      */
     public Config followRedirects(boolean enable) {
         validateClientsNotRunning();
@@ -443,10 +533,16 @@ public class Config {
     }
 
     /**
-     * Allow the client to manage cookies. Defaults to TRUE
+     * Configures whether the client should manage cookies automatically.
+     * <p>
+     * When enabled, the client will store cookies from responses and send them
+     * with subsequent requests to the same domain.
+     * </p>
      *
-     * @param enable The name of the header.
-     * @return this config object
+     * @param enable {@code true} to enable cookie management (default), {@code false} to disable
+     * @return this config object for method chaining
+     * @throws UnirestConfigException if called after the client has been built
+     * @see #getEnabledCookieManagement()
      */
     public Config enableCookieManagement(boolean enable) {
         validateClientsNotRunning();
@@ -455,10 +551,15 @@ public class Config {
     }
 
     /**
-     * Toggle verifying SSL/TLS certificates. Defaults to TRUE
+     * Configures whether SSL/TLS certificates should be verified.
+     * <p>
+     * <b>Warning:</b> Disabling SSL verification is a security risk and should
+     * only be done in development or testing environments, never in production.
+     * </p>
      *
-     * @param value a bool is its true or not.
-     * @return this config object
+     * @param value {@code true} to verify SSL certificates (default), {@code false} to skip verification
+     * @return this config object for method chaining
+     * @see #isVerifySsl()
      */
     public Config verifySsl(boolean value) {
         this.verifySsl = value;
@@ -466,10 +567,15 @@ public class Config {
     }
 
     /**
-     * Tell the HttpClients to use the system properties for things like proxies
+     * Configures whether the client should use system properties for configuration.
+     * <p>
+     * When enabled, the client will read proxy settings and other configuration
+     * from system properties.
+     * </p>
      *
-     * @param value a bool is its true or not.
-     * @return this config object
+     * @param value {@code true} to use system properties, {@code false} to ignore them (default)
+     * @return this config object for method chaining
+     * @see #useSystemProperties()
      */
     public Config useSystemProperties(boolean value) {
         this.useSystemProperties = value;
@@ -477,11 +583,15 @@ public class Config {
     }
 
     /**
-     * Turn on or off requesting all content as compressed. (GZIP encoded)
-     * Default is true
+     * Configures whether the client should request compressed responses.
+     * <p>
+     * When enabled, the client sends an {@code Accept-Encoding: gzip} header
+     * and automatically decompresses GZIP-encoded responses.
+     * </p>
      *
-     * @param value a bool is its true or not.
-     * @return this config object
+     * @param value {@code true} to request compression (default), {@code false} to disable
+     * @return this config object for method chaining
+     * @see #isRequestCompressionOn()
      */
     public Config requestCompression(boolean value) {
         this.requestCompressionOn = value;
@@ -489,16 +599,20 @@ public class Config {
     }
 
     /**
-     * Sets a cookie policy
+     * Sets the cookie specification policy for cookie handling.
+     * <p>
      * Acceptable values:
-     *  'default' (same as Netscape),
-     *  'netscape',
-     *  'ignoreCookies',
-     *  'standard' (RFC 6265 interoprability profile) ,
-     *  'standard-strict' (RFC 6265 strict profile)
+     * <ul>
+     *   <li>{@code "default"} - same as Netscape</li>
+     *   <li>{@code "netscape"} - original Netscape cookie spec</li>
+     *   <li>{@code "ignoreCookies"} - ignore all cookies</li>
+     *   <li>{@code "standard"} - RFC 6265 interoperability profile</li>
+     *   <li>{@code "standard-strict"} - RFC 6265 strict profile</li>
+     * </ul>
      *
-     * @param policy: the policy for cookies to follow
-     * @return this config object
+     * @param policy the cookie policy name
+     * @return this config object for method chaining
+     * @see #getCookieSpec()
      */
     public Config cookieSpec(String policy) {
         this.cookieSpec = policy;
@@ -506,9 +620,13 @@ public class Config {
     }
 
     /**
-     * Enable Response Caching with default options
-     * @param value enable or disable response caching
-     * @return this config object
+     * Enables or disables response caching with default options.
+     * <p>
+     * When enabled, HTTP responses will be cached based on standard HTTP caching headers.
+     * </p>
+     *
+     * @param value {@code true} to enable caching, {@code false} to disable
+     * @return this config object for method chaining
      */
     public Config cacheResponses(boolean value) {
         if(value){
@@ -520,9 +638,11 @@ public class Config {
     }
 
     /**
-     * Enable Response Caching with custom options
-     * @param value enable or disable response caching
-     * @return this config object
+     * Enables response caching with custom cache configuration.
+     *
+     * @param value the cache builder with custom configuration
+     * @return this config object for method chaining
+     * @see Cache.Builder
      */
     public Config cacheResponses(Cache.Builder value) {
         this.cache = value.build();
@@ -530,11 +650,12 @@ public class Config {
     }
 
     /**
-     * Set the default encoding that will be used for serialization into Strings.
-     * The default-default is UTF-8
+     * Sets the default character encoding for response body serialization.
      *
-     * @param value a bool is its true or not.
-     * @return this config object
+     * @param value the encoding name (e.g., "UTF-8", "ISO-8859-1")
+     * @return this config object for method chaining
+     * @throws NullPointerException if value is null
+     * @see #getDefaultResponseEncoding()
      */
     public Config setDefaultResponseEncoding(String value) {
         Objects.requireNonNull(value, "Encoding cannot be null");
@@ -543,14 +664,19 @@ public class Config {
     }
 
     /**
-     * Sets the jdk.httpclient.keepalive.timeout setting
-     *      https://docs.oracle.com/en/java/javase/20/docs/api/java.net.http/module-summary.html
-     * The number of seconds to keep idle HTTP connections alive in the keep alive cache.
-     * This property applies to both HTTP/1.1 and HTTP/2.
+     * Sets the HTTP connection keep-alive timeout.
+     * <p>
+     * This configures the {@code jdk.httpclient.keepalive.timeout} system property,
+     * which controls how long idle HTTP connections are kept alive in the connection pool.
+     * Applies to both HTTP/1.1 and HTTP/2.
+     * </p>
      *
-     * @param duration of ttl.
-     * @param unit the time unit of the ttl
-     * @return this config object
+     * @param duration the keep-alive duration
+     * @param unit the time unit of the duration
+     * @return this config object for method chaining
+     * @throws NullPointerException if unit is null
+     * @see #getTTL()
+     * @see <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.net.http/module-summary.html">Java HTTP Client Module</a>
      */
     public Config connectionTTL(long duration, TimeUnit unit) {
         Objects.requireNonNull(unit, "TimeUnit required");
@@ -562,36 +688,53 @@ public class Config {
     }
 
     /**
-     * Sets the jdk.httpclient.keepalive.timeout setting
-     *      https://docs.oracle.com/en/java/javase/20/docs/api/java.net.http/module-summary.html
-     * The number of seconds to keep idle HTTP connections alive in the keep alive cache.
-     * This property applies to both HTTP/1.1 and HTTP/2.
+     * Sets the HTTP connection keep-alive timeout.
+     * <p>
+     * This configures the {@code jdk.httpclient.keepalive.timeout} system property,
+     * which controls how long idle HTTP connections are kept alive in the connection pool.
+     * Applies to both HTTP/1.1 and HTTP/2.
+     * </p>
      *
-     * @param duration of ttl.
-     * @return this config object
+     * @param duration the keep-alive duration
+     * @return this config object for method chaining
+     * @see #getTTL()
+     * @see <a href="https://docs.oracle.com/en/java/javase/20/docs/api/java.net.http/module-summary.html">Java HTTP Client Module</a>
      */
     public Config connectionTTL(Duration duration){
         return connectionTTL(duration.toMillis(), TimeUnit.MILLISECONDS);
     }
 
     /**
-     * Automatically retry synchronous requests on 429/529 responses with the Retry-After response header
-     * Default is false
+     * Enables automatic retry for requests that receive 429 (Too Many Requests) or
+     * 529 (Site Overloaded) responses with a {@code Retry-After} header.
+     * <p>
+     * When enabled, the client will wait for the duration specified in the
+     * {@code Retry-After} header before automatically retrying the request,
+     * up to a maximum of 10 retry attempts.
+     * </p>
      *
-     * @param value a bool is its true or not.
-     * @return this config object
+     * @param value {@code true} to enable automatic retry, {@code false} to disable (default)
+     * @return this config object for method chaining
+     * @see #retryAfter(boolean, int)
+     * @see #isAutomaticRetryAfter()
      */
     public Config retryAfter(boolean value) {
        return retryAfter(value, 10);
     }
 
     /**
-     * Automatically retry synchronous requests on 429/529 responses with the Retry-After response header
-     * Default is false
+     * Enables automatic retry for requests that receive 429 (Too Many Requests) or
+     * 529 (Site Overloaded) responses with a {@code Retry-After} header.
+     * <p>
+     * When enabled, the client will wait for the duration specified in the
+     * {@code Retry-After} header before automatically retrying the request.
+     * </p>
      *
-     * @param value a bool is its true or not.
-     * @param maxRetryAttempts max retry attempts
-     * @return this config object
+     * @param value {@code true} to enable automatic retry, {@code false} to disable (default)
+     * @param maxRetryAttempts the maximum number of retry attempts
+     * @return this config object for method chaining
+     * @see #maxRetries()
+     * @see #isAutomaticRetryAfter()
      */
     public Config retryAfter(boolean value, int maxRetryAttempts) {
         if(value) {
@@ -603,11 +746,15 @@ public class Config {
     }
 
     /**
-     * Automatically retry synchronous requests on 429/529 responses with the Retry-After response header
-     * Default is false
+     * Configures automatic retry using a custom retry strategy.
+     * <p>
+     * This allows for custom logic to determine when and how to retry requests.
+     * </p>
      *
-     * @param strategy a RetryStrategy
-     * @return this config object
+     * @param strategy the custom {@link RetryStrategy} to use, or {@code null} to disable retry
+     * @return this config object for method chaining
+     * @see #getRetryStrategy()
+     * @see #isAutomaticRetryAfter()
      */
     public Config retryAfter(RetryStrategy strategy) {
         this.retry = strategy;
@@ -616,26 +763,26 @@ public class Config {
 
     /**
      * Requests a specific HTTP protocol version where possible.
-     *
-     * This is a direct proxy setter for the Java Http-Client that powers unirest.
-     *
-     * <p> If this method is not invoked prior to using, then newly built clients will prefer {@linkplain
-     * HttpClient.Version#HTTP_2 HTTP/2}.
-     *
-     * <p> If set to {@linkplain HttpClient.Version#HTTP_2 HTTP/2}, then each request
-     * will attempt to upgrade to HTTP/2. If the upgrade succeeds, then the
-     * response to this request will use HTTP/2 and all subsequent requests
-     * and responses to the same
-     * <a href="https://tools.ietf.org/html/rfc6454#section-4">origin server</a>
-     * will use HTTP/2. If the upgrade fails, then the response will be
-     * handled using HTTP/1.1
-     *
-     * Constraints may also affect the selection of protocol version.
-     * For example, if HTTP/2 is requested through a proxy, and if the implementation
-     * does not support this mode, then HTTP/1.1 may be used
+     * <p>
+     * If this method is not invoked, newly built clients will prefer
+     * {@link HttpClient.Version#HTTP_2 HTTP/2}.
+     * </p>
+     * <p>
+     * If set to {@link HttpClient.Version#HTTP_2 HTTP/2}, each request will attempt
+     * to upgrade to HTTP/2. If the upgrade succeeds, the response and all subsequent
+     * requests/responses to the same origin server will use HTTP/2. If the upgrade
+     * fails, HTTP/1.1 will be used.
+     * </p>
+     * <p>
+     * Constraints may affect protocol version selection. For example, if HTTP/2 is
+     * requested through a proxy and the implementation does not support this mode,
+     * HTTP/1.1 may be used instead.
+     * </p>
      *
      * @param value the requested HTTP protocol version
-     * @return this config
+     * @return this config object for method chaining
+     * @throws NullPointerException if value is null
+     * @see #getVersion()
      */
     public Config version(HttpClient.Version value) {
         Objects.requireNonNull(value);
@@ -644,15 +791,22 @@ public class Config {
     }
 
     /**
-     * set a default base url for all routes.
-     * this is overridden if the url contains a valid base already
-     * the url may contain path params
+     * Sets a default base URL to be prepended to all relative request paths.
+     * <p>
+     * This is useful when making multiple requests to the same server. The base URL
+     * is only used if the request path does not already contain a valid base URL.
+     * The URL may contain path parameters.
+     * </p>
      *
-     * for example. Setting a default path of 'http://somwhere'
-     * and then calling Unirest with Unirest.get('/place')
-     * will result in a path of 'https://somwehre/place'
-     * @param value the base URL to use
-     * @return  this config object
+     * <h4>Example:</h4>
+     * <pre>{@code
+     * Unirest.config().defaultBaseUrl("http://api.example.com");
+     * Unirest.get("/users");  // Results in: http://api.example.com/users
+     * }</pre>
+     *
+     * @param value the base URL to use for relative paths
+     * @return this config object for method chaining
+     * @see #getDefaultBaseUrl()
      */
     public Config defaultBaseUrl(String value) {
         this.defaultBaseUrl = value;
@@ -660,27 +814,36 @@ public class Config {
     }
 
     /**
-     * Return default headers that are added to every request
+     * Returns the default headers that are added to every request.
      *
-     * @return Headers
+     * @return the default {@link Headers} collection
      */
     public Headers getDefaultHeaders() {
         return headers;
     }
 
     /**
-     * Does the config have currently running clients? Find out here.
+     * Checks if the HTTP client has been built and is currently running.
+     * <p>
+     * Once a client is running, certain configuration options cannot be changed
+     * without first calling {@link #reset()}.
+     * </p>
      *
-     * @return boolean
+     * @return {@code true} if the client has been built and is running, {@code false} otherwise
      */
     public boolean isRunning() {
         return client.isPresent();
     }
 
     /**
-     * Shutdown the current config and re-init.
+     * Shuts down the current HTTP client and prepares for re-initialization.
+     * <p>
+     * This method preserves all configuration settings but releases the HTTP client,
+     * allowing configuration changes that require a client restart.
+     * </p>
      *
-     * @return this config
+     * @return this config object for method chaining
+     * @see #reset(boolean)
      */
     public Config reset() {
         reset(false);
@@ -689,10 +852,14 @@ public class Config {
 
 
     /**
-     * Shut down the configuration and its clients.
-     * The config can be re-initialized with its settings
+     * Shuts down the HTTP client and optionally resets all configuration to defaults.
+     * <p>
+     * When {@code clearOptions} is {@code false}, all configuration settings are preserved
+     * but the HTTP client is released. When {@code true}, all settings are reset to their
+     * default values.
+     * </p>
      *
-     * @param clearOptions should the current non-client settings be retained.
+     * @param clearOptions if {@code true}, reset all settings to defaults; if {@code false}, preserve current settings
      */
     public void reset(boolean clearOptions) {
         client = Optional.empty();
@@ -703,10 +870,13 @@ public class Config {
     }
 
     /**
-     * Return the current Client. One will be build if it does
-     * not yet exist.
+     * Returns the current HTTP client, building one if it does not yet exist.
+     * <p>
+     * If response caching is enabled, the returned client will be wrapped
+     * with caching functionality.
+     * </p>
      *
-     * @return A synchronous Client
+     * @return the configured {@link Client} instance
      */
     public Client getClient() {
         if (!client.isPresent()) {
@@ -730,54 +900,72 @@ public class Config {
     }
 
     /**
-     * @return if cookie management should be enabled.
-     *         default: true
+     * Returns whether cookie management is enabled.
+     *
+     * @return {@code true} if cookie management is enabled (default), {@code false} otherwise
+     * @see #enableCookieManagement(boolean)
      */
     public boolean getEnabledCookieManagement() {
         return cookieManagement;
     }
 
     /**
-     * @return if the clients should follow redirects
-     *         default: true
+     * Returns whether automatic redirect following is enabled.
+     *
+     * @return {@code true} if redirects are followed automatically (default), {@code false} otherwise
+     * @see #followRedirects(boolean)
      */
     public boolean getFollowRedirects() {
         return followRedirects;
     }
 
     /**
-     * @return the connection timeout in milliseconds
-     *         default: 10000
+     * Returns the connection timeout in milliseconds.
+     *
+     * @return the connection timeout in milliseconds (default: {@value #DEFAULT_CONNECT_TIMEOUT})
+     * @see #connectTimeout(int)
      */
     public int getConnectionTimeout() {
         return connectionTimeout;
     }
 
     /**
-     * @return the connection timeout in milliseconds
-     *         default: null (infinite)
+     * Returns the request timeout in milliseconds.
+     *
+     * @return the request timeout in milliseconds, or {@code null} for infinite timeout (default)
+     * @see #requestTimeout(Integer)
      */
     public Integer getRequestTimeout() {
         return requestTimeout;
     }
 
     /**
-     * @return a security keystore if one has been provided
+     * Returns the configured SSL keystore for client certificate authentication.
+     *
+     * @return the configured {@link KeyStore}, or {@code null} if not configured
+     * @see #clientCertificateStore(KeyStore, String)
+     * @see #clientCertificateStore(String, String)
      */
     public KeyStore getKeystore() {
         return this.keystore;
     }
 
     /**
-     * @return The password for the keystore if provided
+     * Returns the password for the configured keystore.
+     *
+     * @return the keystore password, or {@code null} if not configured
+     * @see #clientCertificateStore(KeyStore, String)
      */
     public String getKeyStorePassword() {
         return this.keystorePassword.get();
     }
 
     /**
-     * @return a configured object mapper
-     * @throws UnirestException if none has been configured.
+     * Returns the configured ObjectMapper for JSON serialization/deserialization.
+     *
+     * @return the configured {@link ObjectMapper}
+     * @throws UnirestConfigException if no ObjectMapper has been configured
+     * @see #setObjectMapper(ObjectMapper)
      */
     public ObjectMapper getObjectMapper() {
         ObjectMapper om = this.objectMapper.get();
@@ -797,28 +985,41 @@ public class Config {
     }
 
     /**
-     * @return the configured proxy configuration
+     * Returns the configured proxy settings.
+     *
+     * @return the configured {@link Proxy}, or {@code null} if no proxy is configured
+     * @see #proxy(Proxy)
+     * @see #proxy(String, int)
      */
     public Proxy getProxy() {
         return proxy;
     }
 
     /**
-     * @return if the system will pick up system properties (default is false)
+     * Returns whether the client uses system properties for configuration.
+     *
+     * @return {@code true} if system properties are used, {@code false} otherwise (default)
+     * @see #useSystemProperties(boolean)
      */
     public boolean useSystemProperties() {
         return this.useSystemProperties;
     }
 
     /**
-     * @return the default encoding (UTF-8 is the default default)
+     * Returns the default character encoding for response body serialization.
+     *
+     * @return the default encoding name (default: UTF-8)
+     * @see #setDefaultResponseEncoding(String)
      */
     public String getDefaultResponseEncoding() {
         return defaultResponseEncoding;
     }
 
     /**
-     * @return if request compression is on (default is true)
+     * Returns whether request compression (GZIP) is enabled.
+     *
+     * @return {@code true} if compression is enabled (default), {@code false} otherwise
+     * @see #requestCompression(boolean)
      */
     public boolean isRequestCompressionOn() {
         return requestCompressionOn;
@@ -835,83 +1036,125 @@ public class Config {
     }
 
     /**
-     * @return the configured Cookie Spec
+     * Returns the configured cookie specification policy.
+     *
+     * @return the cookie spec name, or {@code null} if using default behavior
+     * @see #cookieSpec(String)
      */
     public String getCookieSpec() {
         return cookieSpec;
     }
 
     /**
-     * @return the currently configured UniMetric object
+     * Returns the configured metrics collector for instrumentation.
+     *
+     * @return the configured {@link UniMetric} instance
+     * @see #instrumentWith(UniMetric)
      */
     public UniMetric getMetric() {
         return metrics;
     }
 
     /**
-     * @return the currently configured Interceptor
+     * Returns the configured request/response interceptor.
+     *
+     * @return the configured {@link Interceptor} instance
+     * @see #interceptor(Interceptor)
      */
     public Interceptor getUniInterceptor() {
         return interceptor;
     }
 
     /**
-     * @return the SSL connection configuration
+     * Returns the configured SSL context for secure connections.
+     *
+     * @return the configured {@link SSLContext}, or {@code null} if not configured
+     * @see #sslContext(SSLContext)
      */
     public SSLContext getSslContext() {
         return sslContext;
     }
 
     /**
-     * @return the ciphers for the SSL connection configuration
+     * Returns the configured SSL/TLS cipher suites.
+     *
+     * @return the array of cipher suite names, or {@code null} if using defaults
+     * @see #ciphers(String...)
      */
     public String[] getCiphers() {
         return ciphers;
     }
 
     /**
-     * @return the protocols for the SSL connection configuration
+     * Returns the configured SSL/TLS protocols.
+     *
+     * @return the array of protocol names, or {@code null} if using defaults
+     * @see #protocols(String...)
      */
     public String[] getProtocols() {
         return protocols;
     }
 
     /**
-     * @return the default base URL
+     * Returns the default base URL prepended to relative request paths.
+     *
+     * @return the default base URL, or {@code null} if not configured
+     * @see #defaultBaseUrl(String)
      */
     public String getDefaultBaseUrl() {
         return this.defaultBaseUrl;
     }
 
     /**
-     * @return the custom executor
+     * Returns the custom executor used for asynchronous requests.
+     *
+     * @return the custom {@link Executor}, or {@code null} if using the default
+     * @see #executor(Executor)
      */
     public Executor getCustomExecutor(){
         return customExecutor;
     }
 
     /**
-     * @return the preferred http version
+     * Returns the preferred HTTP protocol version.
+     *
+     * @return the configured {@link HttpClient.Version} (default: HTTP/2)
+     * @see #version(HttpClient.Version)
      */
     public HttpClient.Version getVersion() {
         return version;
     }
+
     /**
-     * @return if unirest will retry requests on 429/529
+     * Returns whether automatic retry on 429/529 responses is enabled.
+     *
+     * @return {@code true} if automatic retry is enabled, {@code false} otherwise (default)
+     * @see #retryAfter(boolean)
+     * @see #retryAfter(RetryStrategy)
      */
     public boolean isAutomaticRetryAfter(){
         return retry != null;
     }
 
     /**
-     * @return the max number of times to attempt to do a 429/529 retry-after
+     * Returns the maximum number of retry attempts for 429/529 responses.
+     *
+     * @return the maximum number of retry attempts
+     * @throws NullPointerException if no retry strategy is configured
+     * @see #retryAfter(boolean, int)
      */
     public int maxRetries() {
         return retry.getMaxAttempts();
     }
 
     /**
-     * @return the maximum life span of persistent connections regardless of their expiration setting.
+     * Returns the connection keep-alive timeout (TTL) in seconds.
+     * <p>
+     * This value is read from the system property {@value #JDK_HTTPCLIENT_KEEPALIVE_TIMEOUT}.
+     * </p>
+     *
+     * @return the TTL in seconds, or {@code -1} if not configured or invalid
+     * @see #connectionTTL(long, TimeUnit)
      */
     public long getTTL() {
         try {
@@ -922,7 +1165,10 @@ public class Config {
     }
 
     /**
-     * @return the RetryStrategy configured
+     * Returns the configured retry strategy for handling 429/529 responses.
+     *
+     * @return the configured {@link RetryStrategy}, or {@code null} if not configured
+     * @see #retryAfter(RetryStrategy)
      */
     public RetryStrategy getRetryStrategy() {
         return retry;
@@ -943,9 +1189,15 @@ public class Config {
     }
 
     /**
-     * Sets a authenticator object for the client
-     * @param auth
-     * @return this config
+     * Sets an authenticator for handling authentication challenges.
+     * <p>
+     * The authenticator is used by the underlying HTTP client to respond to
+     * authentication challenges from servers or proxies.
+     * </p>
+     *
+     * @param auth the {@link Authenticator} to use for authentication challenges
+     * @return this config object for method chaining
+     * @see #getAuthenticator()
      */
     public Config authenticator(Authenticator auth) {
         this.authenticator = auth;
@@ -953,14 +1205,20 @@ public class Config {
     }
 
     /**
-     * @return the authenticator registered with the config
+     * Returns the configured authenticator for handling authentication challenges.
+     *
+     * @return the configured {@link Authenticator}, or {@code null} if not configured
+     * @see #authenticator(Authenticator)
      */
     public Authenticator getAuthenticator(){
         return authenticator;
     }
 
     /**
-     * @return the ProxySelector
+     * Returns the configured proxy selector for dynamic proxy selection.
+     *
+     * @return the configured {@link ProxySelector}, or {@code null} if not configured
+     * @see #proxy(ProxySelector)
      */
     public ProxySelector getProxySelector(){
         return proxySelector;
