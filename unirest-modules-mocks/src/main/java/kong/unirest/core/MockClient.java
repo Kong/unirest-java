@@ -144,7 +144,29 @@ public class MockClient implements Client {
 
     @Override
     public Stream<Event> sse(SseRequest request) {
-        return Stream.empty();
+        HttpRequest<?> httpRequest = new MockSseHttpRequest(config.get(), request);
+        RawResponse response = findExpectation(httpRequest).exchange(httpRequest, config.get());
+        return parseSseEvents(response.getContentAsString());
+    }
+
+    private Stream<Event> parseSseEvents(String body) {
+        if (body == null || body.isEmpty()) {
+            return Stream.empty();
+        }
+
+        List<Event> events = new ArrayList<>();
+        SseEventBuilder builder = new SseEventBuilder(config.get());
+
+        for (String line : body.split("\\R", -1)) {
+            if (line.isEmpty()) {
+                builder.addEvent(events);
+            } else if (!line.startsWith(":")) {
+                builder.accept(line);
+            }
+        }
+
+        builder.addEvent(events);
+        return events.stream();
     }
 
     public SocketSet<MockWebSocket, MockListener> serversSocket() {
@@ -223,5 +245,68 @@ public class MockClient implements Client {
     public ExpectedResponse defaultResponse() {
         this.defaultResponse = new Invocation();
         return this.defaultResponse.thenReturn();
+    }
+
+    private static class MockSseHttpRequest extends BaseRequest<MockSseHttpRequest> {
+        private MockSseHttpRequest(Config config, SseRequest request) {
+            super(config, HttpMethod.GET, request.getUrl());
+            this.headers.putAll(request.getHeaders());
+        }
+    }
+
+    private static class SseEventBuilder {
+
+        private final Config config;
+        private String id = "";
+        private String event = "";
+        private final StringBuilder data = new StringBuilder();
+
+        private SseEventBuilder(Config config) {
+            this.config = config;
+        }
+
+        private void accept(String line) {
+            int separator = line.indexOf(':');
+            String field = separator >= 0 ? line.substring(0, separator) : line;
+            String value = separator >= 0 ? line.substring(separator + 1) : "";
+
+            if (value.startsWith(" ")) {
+                value = value.substring(1);
+            }
+
+            accept(field, value);
+        }
+
+        private void accept(String field, String value) {
+            switch (field) {
+                case "id":
+                    id = value;
+                    break;
+                case "event":
+                    event = value;
+                    break;
+                case "data":
+                    data.append(value).append('\n');
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void addEvent(List<Event> events) {
+            if (data.length() == 0) {
+                return;
+            }
+
+            data.setLength(data.length() - 1);
+            events.add(new Event(id, event, data.toString(), config));
+            reset();
+        }
+
+        private void reset() {
+            id = "";
+            event = "";
+            data.setLength(0);
+        }
     }
 }
