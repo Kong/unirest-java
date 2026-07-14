@@ -66,7 +66,8 @@ public class VerifyTimesTest extends Base {
         client.expect(HttpMethod.POST, path)
                 .thenReturn(r -> response);
 
-        assertThrows(UnirestAssertion.class, response::verify);
+        var ex = assertThrows(UnirestAssertion.class, response::verify);
+        assertEquals("An expectation was never invoked!", ex.getMessage());
 
         Unirest.post(path).asEmpty();
 
