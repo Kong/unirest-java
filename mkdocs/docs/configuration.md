@@ -5,12 +5,12 @@ All configuration is now done through ```Unirest.config()```
 
 ```java
     Unirest.config()
-           .connectTimeout(1000)
-           .proxy(new Proxy("https://proxy"))
-           .setDefaultHeader("Accept", "application/json")
-           .followRedirects(false)
-           .enableCookieManagement(false)
-           .addInterceptor(new MyCustomInterceptor());
+            .connectTimeout(1000)
+            .proxy("proxy.example.com", 8080)
+            .setDefaultHeader("Accept", "application/json")
+            .followRedirects(false)
+            .enableCookieManagement(false)
+            .interceptor(new MyCustomInterceptor());
 ```
 
 Changing Unirest's config should ideally be done once, or rarely. Once Unirest has been activated configuration options that are involved in creating the client cannot be changed without an explicit shutdown or reset.
