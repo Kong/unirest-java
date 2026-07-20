@@ -7,6 +7,9 @@ on:
       - apache5
   pull_request:
 
+permissions:
+  contents: read
+  
 jobs:
   build:
     timeout-minutes: 15
@@ -15,11 +18,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '21'
+          java-version: '25'
       - name: Cache
         uses: actions/cache@v4
         with:
