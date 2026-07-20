@@ -7,6 +7,9 @@ on:
       - apache5
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     timeout-minutes: 15
