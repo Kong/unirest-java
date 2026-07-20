@@ -35,6 +35,7 @@ public class HttpMethod {
 
 	public static final HttpMethod GET = valueOf("GET");
 	public static final HttpMethod POST = valueOf("POST");
+	public static final HttpMethod QUERY = valueOf("QUERY");
 	public static final HttpMethod PUT = valueOf("PUT");
 	public static final HttpMethod DELETE = valueOf("DELETE");
 	public static final HttpMethod PATCH = valueOf("PATCH");

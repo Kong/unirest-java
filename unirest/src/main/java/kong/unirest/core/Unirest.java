@@ -116,6 +116,10 @@ public class Unirest {
         return primaryInstance.put(url);
     }
 
+    public static HttpRequestWithBody query(String url){
+        return primaryInstance.query(url);
+    }
+
     /**
      * Start a PATCH HttpRequest which supports a JSON Patch builder.
      * this supports RFC-6902 https://tools.ietf.org/html/rfc6902

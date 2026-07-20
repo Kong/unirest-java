@@ -102,6 +102,10 @@ public class UnirestInstance implements AutoCloseable {
         return new HttpRequestBody(config, HttpMethod.POST, url);
     }
 
+    public HttpRequestWithBody query(String url) {
+        return new HttpRequestBody(config, HttpMethod.QUERY, url);
+    }
+
     /**
      * Start a DELETE HttpRequest which supports a body from the primary config
      * @param url the endpoint to access. Can include placeholders for path params using curly braces {}

@@ -76,6 +76,7 @@ public class MockServer {
     public static final String POST = HOST + "/post";
     public static final String GET = HOST + "/get";
     public static final String ERROR_RESPONSE = HOST + "/error";
+    public static final String QUERY = HOST + "/query";
     public static final String DELETE = HOST + "/delete";
     public static final String GZIP = HOST + "/gzip";
     public static final String EMPTY_GZIP = HOST + "/empty-gzip";
@@ -129,6 +130,7 @@ public class MockServer {
             c.routes.get("/sparkle/{spark}/yippy", MockServer::sparkle);
             c.routes.post("/post", MockServer::jsonResponse);
             c.routes.get("/get", MockServer::jsonResponse);
+            c.routes.query("/query", MockServer::jsonResponse);
             c.routes.get("/gzip", MockServer::gzipResponse);
             c.routes.post("/empty-gzip", MockServer::emptyGzipResponse);
             c.routes.get("/redirect", MockServer::redirect);
