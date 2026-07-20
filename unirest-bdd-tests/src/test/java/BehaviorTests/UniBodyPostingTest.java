@@ -67,7 +67,7 @@ class UniBodyPostingTest extends BddTest {
                 .body("foo")
                 .asObject(RequestCapture.class)
                 .getBody()
-                .assertRawContentType("text/plain; charset=UTF-8");
+                .assertRawContentType("text/plain; charset=utf-8");
     }
 
     @Test

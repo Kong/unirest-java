@@ -153,8 +153,8 @@ public class RequestCapture {
 
     private ListMultimap<String, String> extractHeaders(Part part) {
         ListMultimap<String, String> h = LinkedListMultimap.create();
-        for(String header : part.getHeaderNames()){
-            h.putAll(header, part.getHeaders(header));
+        for (String header : part.getHeaderNames()) {
+            h.putAll(header.toLowerCase(), part.getHeaders(header));
         }
         return h;
     }
@@ -296,7 +296,7 @@ public class RequestCapture {
     }
 
     public RequestCapture assertUrlEncodedContent() {
-        return assertRawContentType("application/x-www-form-urlencoded; charset=UTF-8");
+        return assertRawContentType("application/x-www-form-urlencoded; charset=utf-8");
     }
 
     public RequestCapture assertCookie(String name, String value) {

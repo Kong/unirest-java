@@ -113,46 +113,45 @@ public class MockServer {
     static {
         app = Javalin.create(c -> {
             c.staticFiles.add("public/");
-
+            c.routes.before(ctx -> {
+                timesCalled++;
+                lastRequest = new RequestCapture(ctx);
+            });
+            c.routes.before("/basic", ctx -> {
+                if (ctx.header("Authorization") == null) {
+                    ctx.header("WWW-Authenticate", "Basic realm=\"User Visible Realm\", charset=\"UTF-8\"");
+                    ctx.status(HttpStatus.UNAUTHORIZED);
+                }
+            });
+            c.routes.ws("/websocket", ws);
+            c.routes.sse("/sse", new TestSSEConsumer());
+            c.routes.delete("/delete", MockServer::jsonResponse);
+            c.routes.get("/sparkle/{spark}/yippy", MockServer::sparkle);
+            c.routes.post("/post", MockServer::jsonResponse);
+            c.routes.get("/get", MockServer::jsonResponse);
+            c.routes.get("/gzip", MockServer::gzipResponse);
+            c.routes.post("/empty-gzip", MockServer::emptyGzipResponse);
+            c.routes.get("/redirect", MockServer::redirect);
+            c.routes.post("/redirect", MockServer::redirect);
+            c.routes.patch("/patch", MockServer::jsonResponse);
+            c.routes.get("/invalid", MockServer::inValid);
+            c.routes.options("/get", MockServer::jsonResponse);
+            c.routes.get("/nobody", MockServer::nobody);
+            c.routes.head("/get", MockServer::jsonResponse);
+            c.routes.put("/post", MockServer::jsonResponse);
+            c.routes.get("/get/{params}/passed", MockServer::jsonResponse);
+            c.routes.get("/get/{params}/passed/{another}", MockServer::jsonResponse);
+            c.routes.get("/proxy", MockServer::proxiedResponse);
+            c.routes.get("/binary", MockServer::file);
+            c.routes.get("/paged", MockServer::paged);
+            c.routes.post("/paged", MockServer::paged);
+            c.routes.post("/raw", MockServer::echo);
+            c.routes.get("/error", MockServer::error);
+            c.routes.get("/hello", MockServer::helloWOrld);
+            c.routes.get("/timeout", MockServer::timeout);
+            c.routes.get("/basic", MockServer::basic);
+            c.routes.error(404, MockServer::notFound);
         }).start(PORT);
-        app.error(404, MockServer::notFound);
-        app.before(c -> {
-            timesCalled++;
-            lastRequest = new RequestCapture(c);
-        });
-        app.before("/basic", ctx -> {
-            if (ctx.basicAuthCredentials() == null) {
-                ctx.header("WWW-Authenticate", "Basic realm=\"User Visible Realm\", charset=\"UTF-8\"");
-                ctx.status(401);
-            }
-        });
-        app.ws("/websocket", ws);
-        app.sse("/sse", new TestSSEConsumer());
-        app.delete("/delete", MockServer::jsonResponse);
-        app.get("/sparkle/{spark}/yippy", MockServer::sparkle);
-        app.post("/post", MockServer::jsonResponse);
-        app.get("/get", MockServer::jsonResponse);
-        app.get("/gzip", MockServer::gzipResponse);
-        app.post("/empty-gzip", MockServer::emptyGzipResponse);
-        app.get("/redirect", MockServer::redirect);
-        app.post("/redirect", MockServer::redirect);
-        app.patch("/patch", MockServer::jsonResponse);
-        app.get("/invalid", MockServer::inValid);
-        app.options("/get", MockServer::jsonResponse);
-        app.get("/nobody", MockServer::nobody);
-        app.head("/get", MockServer::jsonResponse);
-        app.put("/post", MockServer::jsonResponse);
-        app.get("/get/{params}/passed", MockServer::jsonResponse);
-        app.get("/get/{params}/passed/{another}", MockServer::jsonResponse);
-        app.get("/proxy", MockServer::proxiedResponse);
-        app.get("/binary", MockServer::file);
-        app.get("/paged", MockServer::paged);
-        app.post("/paged", MockServer::paged);
-        app.post("/raw", MockServer::echo);
-        app.get("/error", MockServer::error);
-        app.get("/hello", MockServer::helloWOrld);
-        app.get("/timeout", MockServer::timeout);
-        app.get("/basic", MockServer::basic);
         Runtime.getRuntime().addShutdownHook(new Thread(app::stop));
         try {
             new CountDownLatch(1).await(2, TimeUnit.SECONDS);
@@ -162,7 +161,7 @@ public class MockServer {
     }
 
     private static void basic(@NotNull Context context) {
-        if(!(context.status().getCode() == 401)){
+        if (!(context.status().getCode() == 401)) {
             jsonResponse(context);
         }
     }

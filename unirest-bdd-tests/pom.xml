@@ -32,7 +32,7 @@
         <dependency>
             <groupId>io.javalin</groupId>
             <artifactId>javalin</artifactId>
-            <version>6.7.0</version>
+            <version>7.2.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
