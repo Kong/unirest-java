@@ -103,6 +103,15 @@ public class UnirestInstance implements AutoCloseable {
     }
 
     /**
+     * Start a QUERY HttpRequest from this instance.
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return a HttpRequest builder
+     */
+    public HttpRequestWithBody query(String url) {
+        return new HttpRequestBody(config, HttpMethod.QUERY, url);
+    }
+
+    /**
      * Start a DELETE HttpRequest which supports a body from the primary config
      * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
      * @return A HttpRequest builder
@@ -139,6 +148,12 @@ public class UnirestInstance implements AutoCloseable {
         return new HttpRequestJsonPatch(config, url);
     }
 
+    /**
+     * Start an HttpRequest for the given HTTP method.
+     * @param method the HTTP method name
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return a HttpRequest builder
+     */
     public HttpRequestWithBody request(String method, String url) {
         return new HttpRequestBody(config, HttpMethod.valueOf(method), url);
     }
@@ -153,10 +168,20 @@ public class UnirestInstance implements AutoCloseable {
         reset(true);
     }
 
+    /**
+     * Start a WebSocket request from this instance.
+     * @param url the endpoint to access
+     * @return a WebSocket request builder
+     */
     public WebSocketRequest webSocket(String url) {
         return new WebSocketRequestImpl(config, url);
     }
 
+    /**
+     * Start a Server-Sent Events request from this instance.
+     * @param url the endpoint to access
+     * @return an SSE request builder
+     */
     public SseRequestImpl sse(String url) {
         return new SseRequestImpl(config, url);
     }

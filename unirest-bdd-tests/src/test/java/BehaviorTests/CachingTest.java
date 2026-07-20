@@ -62,6 +62,17 @@ class CachingTest extends BddTest {
     }
 
     @Test
+    void queryAlsoCaches() {
+        Unirest.config().cacheResponses(true);
+
+        var r1 = Unirest.get(MockServer.QUERY).asObject(RequestCapture.class).getBody().requestId;
+        var r2 = Unirest.get(MockServer.QUERY).asObject(RequestCapture.class).getBody().requestId;
+
+        assertEquals(1,  MockServer.timesCalled);
+        assertEquals(r1, r2);
+    }
+
+    @Test
     void canCacheResponsesForEqualRequests_async() throws Exception {
         Unirest.config().cacheResponses(true);
 

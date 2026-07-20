@@ -25,6 +25,23 @@
 
 package kong.unirest.core;
 
+/**
+ * Static entry point for the primary Unirest client.
+ * <p>
+ * Use this facade to access the default shared {@link UnirestInstance}, configure
+ * the global client, create requests, or spawn isolated instances when you need
+ * separate configuration.
+ * </p>
+ *
+ * <h2>Typical usage</h2>
+ * <pre>{@code
+ * Unirest.config().defaultBaseUrl("https://api.example.com");
+ * String body = Unirest.get("/status").asString().getBody();
+ * }</pre>
+ *
+ * @see UnirestInstance
+ * @see Config
+ */
 public class Unirest {
 
     private static UnirestInstance primaryInstance = new UnirestInstance(new Config());
@@ -117,6 +134,15 @@ public class Unirest {
     }
 
     /**
+     * Start a QUERY HttpRequest from the primary config.
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return A HttpRequest builder
+     */
+    public static HttpRequestWithBody query(String url){
+        return primaryInstance.query(url);
+    }
+
+    /**
      * Start a PATCH HttpRequest which supports a JSON Patch builder.
      * this supports RFC-6902 https://tools.ietf.org/html/rfc6902
      * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
@@ -126,14 +152,30 @@ public class Unirest {
         return primaryInstance.jsonPatch(url);
     }
 
+    /**
+     * Start an HttpRequest for the given HTTP method from the primary config.
+     * @param method the HTTP method name
+     * @param url the endpoint to access. Can include placeholders for path params using curly braces {}
+     * @return A HttpRequest builder
+     */
     public static HttpRequestWithBody request(String method, String url) {
         return primaryInstance.request(method, url);
     }
 
+    /**
+     * Start a WebSocket request from the primary config.
+     * @param url the endpoint to access
+     * @return a WebSocket request builder
+     */
     public static WebSocketRequest webSocket(String url) {
         return primaryInstance.webSocket(url);
     }
 
+    /**
+     * Start a Server-Sent Events request from the primary config.
+     * @param url the endpoint to access
+     * @return an SSE request builder
+     */
     public static SseRequest sse(String url) {
         return primaryInstance.sse(url);
     }
@@ -150,9 +192,8 @@ public class Unirest {
     }
 
     /**
-     * return the primary UnirestInstance.
-     *
-     * @return a new UnirestInstance
+     * Return the shared primary {@link UnirestInstance}.
+     * @return the primary instance
      */
     public static UnirestInstance primaryInstance() {
         return primaryInstance;
