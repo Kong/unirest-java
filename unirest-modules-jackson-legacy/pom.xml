@@ -13,7 +13,7 @@
 
     <properties>
         <main.dir>${project.parent.basedir}</main.dir>
-        <legacy-jackson.version>2.22.0</legacy-jackson.version>
+        <legacy-jackson.version>2.22.1</legacy-jackson.version>
     </properties>
     
     <dependencies>
