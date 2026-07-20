@@ -11,8 +11,8 @@
     <name>unirest-bdd-tests</name>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>23</maven.compiler.source>
+        <maven.compiler.target>23</maven.compiler.target>
         <main.dir>${project.parent.basedir}</main.dir>
     </properties>
 
@@ -55,4 +55,21 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <fork>true</fork>
+                    <meminitial>128m</meminitial>
+                    <maxmem>512m</maxmem>
+                    <source>23</source>
+                    <target>23</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
