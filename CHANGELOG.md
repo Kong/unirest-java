@@ -1,3 +1,7 @@
+## 4.10.1
+* Add support for the new QUERY method in HTTP
+* Minor javadoc and error message fixes
+
 ## 4.10.0
 * Issue #567 : Add support for additional headers added to multi-part form parts. This is supported though a new sub-builder for fields. This sub-builder will eventually take over for many of the complex overloads of ::field which will be dropped in Unirest 5.
 
