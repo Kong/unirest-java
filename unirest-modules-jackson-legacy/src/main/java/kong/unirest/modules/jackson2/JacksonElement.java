@@ -128,7 +128,7 @@ class JacksonElement<T extends JsonNode> implements JsonEngine.Element {
     @Override
     public BigInteger getAsBigInteger() {
         if(!element.isIntegralNumber()) {
-            throw new NumberFormatException("Not a integer");
+            throw new NumberFormatException("Not an integer");
         }
         return element.bigIntegerValue();
     }
