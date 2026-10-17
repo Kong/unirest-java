@@ -27,6 +27,8 @@ package BehaviorTests;
 
 import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.nio.charset.StandardCharsets;
 
@@ -34,6 +36,33 @@ import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FormPostingTest extends BddTest {
+
+    @ParameterizedTest
+    @ValueSource(strings = {"a&b", "a=b", "a+b", "a%b", "first name", "café", "日本語", "a%26b"})
+    void formFieldNamesSurvivePosting(String name) {
+        RequestCapture capture = Unirest.post(MockServer.POST)
+                .field(name, "v +&=%")
+                .asObject(RequestCapture.class)
+                .getBody();
+
+        capture.assertUrlEncodedContent().assertParam(name, "v +&=%");
+        assertEquals(1, capture.params.size());
+    }
+
+    @Test
+    void encodedFormFieldNamesSurviveAsyncPosting() throws Exception {
+        RequestCapture capture = Unirest.post(MockServer.POST)
+                .field("a&b", "one")
+                .field("a&b", "two")
+                .asObjectAsync(RequestCapture.class)
+                .get()
+                .getBody();
+
+        capture.assertUrlEncodedContent()
+                .assertParam("a&b", "one")
+                .assertParam("a&b", "two");
+        assertEquals(2, capture.params.size());
+    }
 
     @Test
     void testFormFields() {
