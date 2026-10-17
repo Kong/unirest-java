@@ -115,7 +115,7 @@ class BodyBuilder {
     private String toPair(ParamPart p, Body o) {
         try {
             String encoding = o.getCharset() == null ? "UTF-8" : o.getCharset().toString();
-            return String.format("%s=%s", p.getName(), URLEncoder.encode(p.getValue(), encoding));
+            return String.format("%s=%s", URLEncoder.encode(p.getName(), encoding), URLEncoder.encode(p.getValue(), encoding));
         } catch (UnsupportedEncodingException e) {
             throw new UnirestException(e);
         }
