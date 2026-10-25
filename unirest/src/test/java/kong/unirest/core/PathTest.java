@@ -67,6 +67,17 @@ class PathTest {
     }
 
     @Test
+    void routeParamsCannotBeDotSegments() {
+        Path p = new Path("http://somewhere/users/{id}/profile", null);
+        var ex = assertThrows(UnirestException.class, () -> p.param("id", ".."));
+        assertEquals("Route parameter \"id\" can't be a relative path segment (\".\" or \"..\")", ex.getMessage());
+        assertThrows(UnirestException.class, () -> p.param("id", "."));
+
+        p.param("id", "...");
+        assertEquals("http://somewhere/users/.../profile", p.toString());
+    }
+
+    @Test
     void canBuildUsingDefaultBase() {
         assertEquals("http://somwhere/fruit", new Path("/fruit","http://somwhere").toString());
     }

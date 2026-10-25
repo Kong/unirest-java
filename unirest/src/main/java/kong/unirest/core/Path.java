@@ -82,6 +82,9 @@ public class Path {
         if (!matcher.find()) {
             throw new UnirestException("Can't find route parameter name \"" + name + "\"");
         }
+        if (".".equals(value) || "..".equals(value)) {
+            throw new UnirestException("Route parameter \"" + name + "\" can't be a relative path segment (\".\" or \"..\")");
+        }
         this.url = matcher.replaceAll(encodePath(value));
     }
 
