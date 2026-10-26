@@ -75,4 +75,13 @@ class UtilTest {
         assertThat(Util.toBasicAuthValue("username", "password"))
                 .isEqualTo("Basic dXNlcm5hbWU6cGFzc3dvcmQ=");
     }
+
+    @Test
+    void doesNotEncodeDots(){
+        assertThat(Util.encode("foo.bar"))
+                .isEqualTo("foo.bar");
+
+        assertThat(Util.encode("foo..bar"))
+                .isEqualTo("foo..bar");
+    }
 }
