@@ -1,3 +1,6 @@
+## 4.10.3
+* Updated dependencies
+
 ## 4.10.2
 * Encode URL-encoded form field names with the configured charset, matching form values. Callers that pre-encoded names to work around this defect should pass the original unencoded name instead.
 
