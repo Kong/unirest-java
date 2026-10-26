@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URLEncoder;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -188,5 +189,21 @@ class PathParamTest extends BddTest {
         assertEquals("http://localhost:4567/get/cheese/passed?fruit=apples", sum.getUrl());
         assertEquals("http://localhost:4567/get/{params}/passed", sum.getRawPath());
         assertEquals(HttpMethod.GET, sum.getHttpMethod());
+    }
+
+    @Test
+    void dotsInPaths() {
+        Unirest.get(MockServer.PASSED_PATH_PARAM)
+                .routeParam("params", ".")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertPathParam("params", ".");
+
+
+        Unirest.get(MockServer.PASSED_PATH_PARAM)
+                .routeParam("params", "..")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertPathParam("params", "..");
     }
 }

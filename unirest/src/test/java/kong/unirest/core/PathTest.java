@@ -28,6 +28,7 @@ package kong.unirest.core;
 import kong.unirest.core.Path;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PathTest {
@@ -74,5 +75,25 @@ class PathTest {
     @Test
     void willNotAddBaseIfPrimaryPathIsFull() {
         assertEquals("http://somwhere/fruit", new Path("http://somwhere/fruit","http://elsewhere/rocks").toString());
+    }
+
+    @Test
+    void dotsInPaths() {
+        var path = new Path("http://localhost/{a}/");
+
+        path.param("a", ".");
+
+        assertThat(path.toString())
+                .isEqualTo("http://localhost/./");
+    }
+
+    @Test
+    void doubleDotsInPaths() {
+        var path = new Path("http://localhost/{a}/");
+
+        path.param("a", "..");
+
+        assertThat(path.toString())
+                .isEqualTo("http://localhost/../");
     }
 }
