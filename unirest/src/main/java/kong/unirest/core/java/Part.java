@@ -83,10 +83,16 @@ class Part {
         target.append("\"");
         for (int i = 0, len = field.length(); i < len; i++) {
             char c = field.charAt(i);
-            if (c == '\\' || c == '\"') {
-                target.append('\\');
+            if (c == '\r') {
+                target.append("%0D");
+            } else if (c == '\n') {
+                target.append("%0A");
+            } else {
+                if (c == '\\' || c == '\"') {
+                    target.append('\\');
+                }
+                target.append(c);
             }
-            target.append(c);
         }
         target.append("\"");
     }
