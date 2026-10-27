@@ -574,6 +574,19 @@ class MultiPartFormPostingTest extends BddTest {
     }
 
     @Test
+    void lineBreaksInFileNamesDoNotInjectPartHeaders() {
+        Unirest.post(MockServer.POST)
+                .field("content", new ByteArrayInputStream("data".getBytes()), "a.txt\r\nContent-Type: text/html\r\n\r\n<script>")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertBodyPart("content", p -> {
+                    p.assertFileName("a.txt%0D%0AContent-Type: text/html%0D%0A%0D%0A<script>");
+                    p.assertContentType("application/octet-stream");
+                    p.assertBody("data");
+                });
+    }
+
+    @Test
     void settingTheBoundary() {
         String boundary = "ABC-123-BOUNDARY";
 

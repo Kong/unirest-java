@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.http.HttpRequest;
 import java.nio.ByteBuffer;
@@ -95,6 +96,22 @@ class BodyBuilderTest {
                     .field("a&b", "two");
 
             assertEquals("a%26b=one&a%26b=two", body(request));
+        }
+    }
+
+    @Test
+    void encodesLineBreaksInMultipartNamesAndFilenames() throws Exception {
+        try (UnirestInstance client = Unirest.spawnInstance()) {
+            MultipartBody request = client.post("http://localhost/upload")
+                    .field("file\r\nX-Injected: name", new ByteArrayInputStream("data".getBytes(StandardCharsets.UTF_8)), "a.txt\r\nContent-Type: text/html\r\n\r\n<script>")
+                    .boundary("b");
+
+            assertEquals("--b\r\n"
+                    + "Content-Disposition: form-data; name=\"file%0D%0AX-Injected: name\"; filename=\"a.txt%0D%0AContent-Type: text/html%0D%0A%0D%0A<script>\"\r\n"
+                    + "Content-Type: application/octet-stream\r\n"
+                    + "\r\n"
+                    + "data\r\n"
+                    + "--b--\r\n", body(request));
         }
     }
 
