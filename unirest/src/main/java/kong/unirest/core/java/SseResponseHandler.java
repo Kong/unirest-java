@@ -72,8 +72,6 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
             databuffer.type = pl.value();
         } else if (pl.isId()){
             databuffer.id = pl.value();
-        } else if (pl.isRetry()){
-
         }
     }
 
