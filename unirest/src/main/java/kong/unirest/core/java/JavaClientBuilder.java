@@ -35,6 +35,7 @@ import javax.net.ssl.TrustManagerFactory;
 import java.net.*;
 import java.net.http.HttpClient;
 import java.time.Duration;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -54,7 +55,7 @@ class JavaClientBuilder implements Function<Config, HttpClient> {
             builder.executor(config.getCustomExecutor());
         }
         if(config.getEnabledCookieManagement()){
-            builder = builder.cookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+            builder = builder.cookieHandler(new CookieManager(null, JavaClientBuilder::domainMatchesRequestHost));
         }
         if(config.getProxy() != null){
             createProxy(builder, config.getProxy());
@@ -119,6 +120,31 @@ class JavaClientBuilder implements Function<Config, HttpClient> {
         }catch (Exception e){
             throw new UnirestConfigException(e);
         }
+    }
+
+    /**
+     * RFC 6265 section 5.1.3 domain matching: only keep a cookie whose Domain is the
+     * request host itself or a parent of it, so one host cannot set cookies that are
+     * later sent to another. CookiePolicy.ACCEPT_ORIGINAL_SERVER is too strict for this:
+     * it rejects dotless hosts such as localhost and Domain values without a leading dot.
+     */
+    static boolean domainMatchesRequestHost(URI uri, HttpCookie cookie) {
+        String domain = cookie.getDomain();
+        if (domain == null) {
+            return true;
+        }
+        String host = uri.getHost();
+        if (host == null) {
+            return false;
+        }
+        if (domain.startsWith(".")) {
+            domain = domain.substring(1);
+        }
+        host = host.toLowerCase(Locale.ROOT);
+        domain = domain.toLowerCase(Locale.ROOT);
+        return host.equals(domain)
+                || host.endsWith("." + domain)
+                || HttpCookie.domainMatches(domain, host);
     }
 
     private HttpClient.Redirect redirectPolicy(Config config) {
