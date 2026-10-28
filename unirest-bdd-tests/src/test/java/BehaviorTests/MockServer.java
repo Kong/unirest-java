@@ -89,6 +89,7 @@ public class MockServer {
     public static final String ECHO_RAW = HOST + "/raw";
     public static final String TIMEOUT = HOST + "/timeout";
     public static final String BASICAUTH = HOST + "/basic";
+    public static final String PROXYAUTH = HOST + "/proxy-auth";
     private static Javalin app;
     private static int errorCode = 400;
     private static RequestCapture lastRequest;
@@ -124,6 +125,12 @@ public class MockServer {
                     ctx.status(HttpStatus.UNAUTHORIZED);
                 }
             });
+            c.routes.before("/proxy-auth", ctx -> {
+                if (ctx.header("Proxy-Authorization") == null) {
+                    ctx.header("Proxy-Authenticate", "Basic realm=\"Proxy Realm\"");
+                    ctx.status(HttpStatus.PROXY_AUTHENTICATION_REQUIRED);
+                }
+            });
             c.routes.ws("/websocket", ws);
             c.routes.sse("/sse", new TestSSEConsumer());
             c.routes.delete("/delete", MockServer::jsonResponse);
@@ -152,6 +159,7 @@ public class MockServer {
             c.routes.get("/hello", MockServer::helloWOrld);
             c.routes.get("/timeout", MockServer::timeout);
             c.routes.get("/basic", MockServer::basic);
+            c.routes.get("/proxy-auth", MockServer::proxyAuth);
             c.routes.error(404, MockServer::notFound);
         }).start(PORT);
         Runtime.getRuntime().addShutdownHook(new Thread(app::stop));
@@ -164,6 +172,12 @@ public class MockServer {
 
     private static void basic(@NotNull Context context) {
         if (!(context.status().getCode() == 401)) {
+            jsonResponse(context);
+        }
+    }
+
+    private static void proxyAuth(@NotNull Context context) {
+        if (!(context.status().getCode() == 407)) {
             jsonResponse(context);
         }
     }

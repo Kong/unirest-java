@@ -29,7 +29,8 @@ package kong.unirest.core;
  * represents basic proxy settings
  * When this is used to configure the client it sets the following:
  *    Proxy host and port are configured as a simple java.net.ProxySelector and set as the default selector
- *    Username and password are configured as a single java.net.Authenticator which will apply to ALL auth challenges (not just the proxy)
+ *    Username and password are configured as a single java.net.Authenticator which only answers challenges from the proxy itself (407)
+ *    Credentials for servers behind the proxy can be sent with basicAuth, or a Config::authenticator can be set to answer both kinds of challenge
  */
 public class Proxy {
     private final String host;

@@ -3,6 +3,8 @@ Sometimes you need to tunnel through a proxy. Unirest provides several different
 
 ## Simple Proxy
 You can set a simple single proxy object. This will create a simple ```java.net.ProxySelector``` and ```java.net.Authenticator``` (if passing creds)
+
+The credentials are only used to answer the proxy's own challenges (```407 Proxy Authentication Required```), not a ```401``` from the servers behind the proxy. If those servers need credentials as well, use ```basicAuth``` on the request, or an ```Authenticator``` as shown in [Dealing with Multiple Proxies](#dealing-with-multiple-proxies).
 ```java
     // Configure with authentication:
     Unirest.config().proxy("proxy.com", 7777, "username", "password1!");
