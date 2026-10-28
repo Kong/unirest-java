@@ -26,11 +26,13 @@
 package BehaviorTests;
 
 import kong.unirest.core.Cookie;
+import kong.unirest.core.DomainMatchCookiePolicy;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.Unirest;
 
 import org.junit.jupiter.api.Test;
 
+import java.net.CookiePolicy;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -169,6 +171,81 @@ class CookieTest extends BddTest {
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertNoCookie("JSESSIONID");
+    }
+
+    @Test
+    void acceptsCookiesForAnyDomainByDefault() {
+        expectCookieForAnotherHost();
+        Unirest.get(MockServer.GET).asEmpty();
+
+        MockServer.clearCookies();
+        Unirest.get(MockServer.ALTGET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertCookie("color", "blue");
+    }
+
+    @Test
+    void domainMatchPolicyRejectsCookiesForAnotherHost() {
+        Unirest.config().cookiePolicy(new DomainMatchCookiePolicy());
+        expectCookieForAnotherHost();
+        Unirest.get(MockServer.GET).asEmpty();
+
+        MockServer.clearCookies();
+        Unirest.get(MockServer.ALTGET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertNoCookie("color");
+    }
+
+    @Test
+    void domainMatchPolicyKeepsCookiesForTheRequestHost() {
+        Unirest.config().cookiePolicy(new DomainMatchCookiePolicy());
+        expectCoookie(42);
+        MockServer.expectCookie("JSESSIONID", "ABC123");
+        Unirest.get(MockServer.GET).asEmpty();
+
+        MockServer.clearCookies();
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertCookie("color", "blue")
+                .assertCookie("JSESSIONID", "ABC123");
+    }
+
+    @Test
+    void canSetACustomCookiePolicy() {
+        Unirest.config().cookiePolicy((uri, cookie) -> !cookie.getName().equals("JSESSIONID"));
+        MockServer.expectCookie("JSESSIONID", "ABC123");
+        MockServer.expectCookie("flavor", "snickerdoodle");
+        Unirest.get(MockServer.GET).asEmpty();
+
+        MockServer.clearCookies();
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertNoCookie("JSESSIONID")
+                .assertCookie("flavor", "snickerdoodle");
+    }
+
+    @Test
+    void canUseAJdkCookiePolicy() {
+        Unirest.config().cookiePolicy(CookiePolicy.ACCEPT_NONE);
+        MockServer.expectCookie("JSESSIONID", "ABC123");
+        Unirest.get(MockServer.GET).asEmpty();
+
+        MockServer.clearCookies();
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertNoCookie("JSESSIONID");
+    }
+
+    private void expectCookieForAnotherHost() {
+        var cookie = new io.javalin.http.Cookie("color", "blue");
+        cookie.setDomain("127.0.0.1");
+        cookie.setPath("/get");
+        MockServer.expectCookie(cookie);
     }
 
     @Test

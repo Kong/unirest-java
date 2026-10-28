@@ -26,9 +26,11 @@
 package kong.unirest.core.java;
 
 import kong.unirest.core.Config;
+import kong.unirest.core.DomainMatchCookiePolicy;
 import org.junit.jupiter.api.Test;
 
 import java.net.CookieHandler;
+import java.net.CookiePolicy;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -38,35 +40,38 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JavaClientBuilderTest {
 
     @Test
-    void doesNotStoreCookiesSetForAnotherDomain() throws Exception {
-        CookieHandler cookies = cookieHandler();
+    void acceptsAllCookiesByDefault() throws Exception {
+        CookieHandler cookies = cookieHandler(new Config());
 
-        cookies.put(new URI("http://evil.example/"), Map.of("Set-Cookie", List.of("session=attacker; Domain=bank.example")));
+        plantCrossDomainCookie(cookies);
+
+        assertThat(cookiesSentTo(cookies, "http://bank.example/")).containsExactly("session=attacker");
+    }
+
+    @Test
+    void usesTheConfiguredCookiePolicy() throws Exception {
+        CookieHandler cookies = cookieHandler(new Config().cookiePolicy(new DomainMatchCookiePolicy()));
+
+        plantCrossDomainCookie(cookies);
 
         assertThat(cookiesSentTo(cookies, "http://bank.example/")).isEmpty();
-        assertThat(cookiesSentTo(cookies, "http://evil.example/")).isEmpty();
     }
 
     @Test
-    void storesCookiesForTheRequestHost() throws Exception {
-        CookieHandler cookies = cookieHandler();
+    void canUseACustomCookiePolicy() throws Exception {
+        CookieHandler cookies = cookieHandler(new Config().cookiePolicy(CookiePolicy.ACCEPT_NONE));
 
-        cookies.put(new URI("http://localhost:8080/get"), Map.of("Set-Cookie", List.of("color=blue; Domain=localhost", "JSESSIONID=ABC123")));
+        cookies.put(new URI("http://bank.example/"), Map.of("Set-Cookie", List.of("session=abc")));
 
-        assertThat(cookiesSentTo(cookies, "http://localhost:8080/get")).containsExactlyInAnyOrder("color=blue", "JSESSIONID=ABC123");
+        assertThat(cookiesSentTo(cookies, "http://bank.example/")).isEmpty();
     }
 
-    @Test
-    void storesCookiesForAParentDomainOfTheRequestHost() throws Exception {
-        CookieHandler cookies = cookieHandler();
-
-        cookies.put(new URI("https://api.example.com/"), Map.of("Set-Cookie", List.of("sub=1; Domain=example.com", "dot=1; Domain=.example.com")));
-
-        assertThat(cookiesSentTo(cookies, "https://www.example.com/")).containsExactlyInAnyOrder("sub=1", "dot=1");
+    private void plantCrossDomainCookie(CookieHandler cookies) throws Exception {
+        cookies.put(new URI("http://evil.example/"), Map.of("Set-Cookie", List.of("session=attacker; Domain=bank.example")));
     }
 
-    private CookieHandler cookieHandler() {
-        return new JavaClientBuilder().apply(new Config()).cookieHandler().get();
+    private CookieHandler cookieHandler(Config config) {
+        return new JavaClientBuilder().apply(config).cookieHandler().get();
     }
 
     private List<String> cookiesSentTo(CookieHandler cookies, String uri) throws Exception {
