@@ -26,6 +26,7 @@ Changing Unirest's config should ideally be done once, or rarely. Once Unirest h
 | ```connectTimeout(int)```                              | Sets the connection timeout for all requests in millis                                                                                                                                         | 10000           |
 | ```connectionTTL(Duration)```                          | Add total time to live (TTL) by [Duration](https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html). Good for moderns Java APIs.                                                     | -1              |
 | ```connectionTTL(long,TimeUnit)```                     | Total time to live (TTL)  defines maximum life span of persistent connections regardless of their expiration setting. No persistent connection will be re-used past its TTL value.             | -1              |
+| ```cookiePolicy(CookiePolicy)```                       | set which response cookies are stored. Use ```DomainMatchCookiePolicy``` to reject cookies whose Domain does not match the request host, a JDK policy, or your own                             | ACCEPT_ALL      |
 | ```cookieSpec(String)```                               | set a cookie policy. Acceptable values: 'default' (same as Netscape), 'netscape', 'ignoreCookies', 'standard' (RFC 6265 interoprability profile) , 'standard-strict' (RFC 6265 strict profile) | default         |
 | ```defaultBaseUrl(String value)```                     | Set a default base URL to be used for all requests that do not already contain a scheme                                                                                                        |                 | 
 | ```disableHostNameVerification(Boolean value)```       | Sets the system property jdk.internal.httpclient.disableHostnameVerification. This will disable host name verification for ALL instances of Unirest or the Java client on the JVM              |                 | 
@@ -43,6 +44,18 @@ Changing Unirest's config should ideally be done once, or rarely. Once Unirest h
 | ```retryAfter(boolean)```                              | Automatically retry synchronous requests on 429/529 responses with the Retry-After response header                                                                                             | false           |
 | ```retryAfter(boolean,int)```                          | Automatically retry synchronous requests on 429/529 responses with the Retry-After response header as well as number of attempts                                                               | false           |
 | ```verifySsl(boolean)```                               | toggle enforcing SSL                                                                                                                                                                           | true            |
+
+## Cookie Policy
+By default Unirest stores every cookie a response sets, whatever its Domain attribute (```CookiePolicy.ACCEPT_ALL```). This makes it easy to manipulate cookies, but it also means a response from one host can set cookies that are later sent to another.
+To only accept cookies whose Domain matches the request host (RFC 6265 domain matching), use ```DomainMatchCookiePolicy```. Any ```java.net.CookiePolicy``` can be used, including the JDK's own policies or your own implementation.
+
+```java
+    Unirest.config().cookiePolicy(new DomainMatchCookiePolicy());
+
+    Unirest.config().cookiePolicy(CookiePolicy.ACCEPT_ORIGINAL_SERVER);
+
+    Unirest.config().cookiePolicy((uri, cookie) -> !cookie.getName().equals("tracking"));
+```
 
 ##  Global Interceptor
 You can set a global interceptor for your configuration. This is invoked before and after each request.

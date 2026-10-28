@@ -31,6 +31,7 @@ import kong.unirest.core.json.CoreFactory;
 import javax.net.ssl.SSLContext;
 import java.io.InputStream;
 import java.net.Authenticator;
+import java.net.CookiePolicy;
 import java.net.ProxySelector;
 import java.net.http.*;
 import java.net.http.HttpRequest;
@@ -133,6 +134,7 @@ public class Config {
     private Integer requestTimeout;
     private boolean followRedirects;
     private boolean cookieManagement;
+    private CookiePolicy cookiePolicy;
     private boolean useSystemProperties;
     private String defaultResponseEncoding = StandardCharsets.UTF_8.name();
     private Function<Config, Client> clientBuilder;
@@ -170,6 +172,7 @@ public class Config {
         followRedirects = true;
         useSystemProperties = false;
         cookieManagement = true;
+        cookiePolicy = CookiePolicy.ACCEPT_ALL;
         requestCompressionOn = true;
         verifySsl = true;
         keystore = null;
@@ -536,7 +539,8 @@ public class Config {
      * Configures whether the client should manage cookies automatically.
      * <p>
      * When enabled, the client will store cookies from responses and send them
-     * with subsequent requests to the same domain.
+     * with subsequent requests that match the cookie's domain and path. Which cookies
+     * are stored is decided by {@link #cookiePolicy(CookiePolicy)}.
      * </p>
      *
      * @param enable {@code true} to enable cookie management (default), {@code false} to disable
@@ -547,6 +551,28 @@ public class Config {
     public Config enableCookieManagement(boolean enable) {
         validateClientsNotRunning();
         this.cookieManagement = enable;
+        return this;
+    }
+
+    /**
+     * Sets the policy deciding which response cookies the cookie manager stores.
+     * <p>
+     * The default is {@link CookiePolicy#ACCEPT_ALL}, which stores every cookie regardless
+     * of its Domain attribute, so a response from one host can set cookies for another.
+     * Use {@link DomainMatchCookiePolicy} to only accept cookies whose Domain matches the
+     * request host, one of the JDK policies such as {@link CookiePolicy#ACCEPT_ORIGINAL_SERVER},
+     * or your own implementation. Only applies when cookie management is enabled.
+     * </p>
+     *
+     * @param policy the cookie policy
+     * @return this config object for method chaining
+     * @throws UnirestConfigException if called after the client has been built
+     * @see #getCookiePolicy()
+     * @see #enableCookieManagement(boolean)
+     */
+    public Config cookiePolicy(CookiePolicy policy) {
+        validateClientsNotRunning();
+        this.cookiePolicy = Objects.requireNonNull(policy, "cookie policy");
         return this;
     }
 
@@ -1033,6 +1059,16 @@ public class Config {
      */
     public boolean isVerifySsl() {
         return verifySsl;
+    }
+
+    /**
+     * Returns the policy deciding which response cookies the cookie manager stores.
+     *
+     * @return the cookie policy, {@link CookiePolicy#ACCEPT_ALL} by default
+     * @see #cookiePolicy(CookiePolicy)
+     */
+    public CookiePolicy getCookiePolicy() {
+        return cookiePolicy;
     }
 
     /**

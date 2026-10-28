@@ -54,7 +54,7 @@ class JavaClientBuilder implements Function<Config, HttpClient> {
             builder.executor(config.getCustomExecutor());
         }
         if(config.getEnabledCookieManagement()){
-            builder = builder.cookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+            builder = builder.cookieHandler(new CookieManager(null, config.getCookiePolicy()));
         }
         if(config.getProxy() != null){
             createProxy(builder, config.getProxy());
