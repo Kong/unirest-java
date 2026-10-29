@@ -97,6 +97,9 @@ class JavaClientBuilder implements Function<Config, HttpClient> {
             builder.authenticator(new Authenticator() {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
+                    if(getRequestorType() != RequestorType.PROXY){
+                        return null;
+                    }
                     return new PasswordAuthentication(proxy.getUsername(), proxy.getPassword().toCharArray());
                 }
             });

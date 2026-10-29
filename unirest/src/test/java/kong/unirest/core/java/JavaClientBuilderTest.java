@@ -29,8 +29,11 @@ import kong.unirest.core.Config;
 import kong.unirest.core.DomainMatchCookiePolicy;
 import org.junit.jupiter.api.Test;
 
+import java.net.Authenticator;
+import java.net.Authenticator.RequestorType;
 import java.net.CookieHandler;
 import java.net.CookiePolicy;
+import java.net.PasswordAuthentication;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +67,33 @@ class JavaClientBuilderTest {
         cookies.put(new URI("http://bank.example/"), Map.of("Set-Cookie", List.of("session=abc")));
 
         assertThat(cookiesSentTo(cookies, "http://bank.example/")).isEmpty();
+    }
+
+    @Test
+    void proxyCredentialsAnswerProxyChallenges() throws Exception {
+        Authenticator auth = proxyAuthenticator();
+
+        PasswordAuthentication creds = challenge(auth, "proxy.example", RequestorType.PROXY);
+
+        assertThat(creds.getUserName()).isEqualTo("proxyuser");
+        assertThat(creds.getPassword()).isEqualTo("proxypass".toCharArray());
+    }
+
+    @Test
+    void proxyCredentialsAreNotGivenToServers() throws Exception {
+        Authenticator auth = proxyAuthenticator();
+
+        assertThat(challenge(auth, "evil.example", RequestorType.SERVER)).isNull();
+    }
+
+    private Authenticator proxyAuthenticator() {
+        Config config = new Config().proxy("proxy.example", 3128, "proxyuser", "proxypass");
+        return new JavaClientBuilder().apply(config).authenticator().get();
+    }
+
+    private PasswordAuthentication challenge(Authenticator auth, String host, RequestorType type) throws Exception {
+        return auth.requestPasswordAuthenticationInstance(host, null, 80, "http", "realm", "Basic",
+                URI.create("http://" + host + "/").toURL(), type);
     }
 
     private void plantCrossDomainCookie(CookieHandler cookies) throws Exception {

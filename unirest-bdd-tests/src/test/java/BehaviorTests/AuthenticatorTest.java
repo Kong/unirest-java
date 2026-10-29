@@ -27,14 +27,17 @@ package BehaviorTests;
 
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.Unirest;
+import kong.unirest.core.UnirestException;
 import org.junit.jupiter.api.Test;
 
 import java.net.Authenticator;
 import java.net.InetAddress;
 import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.util.Base64;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class AuthenticatorTest extends BddTest {
     @Test
@@ -90,5 +93,30 @@ public class AuthenticatorTest extends BddTest {
                 .assertBasicAuth("Fred", "Flintstone");
 
 
+    }
+
+    // MockServer accepts the absolute-form requests a client sends to an HTTP proxy, so it can play the proxy here
+    @Test
+    void proxyCredentialsAnswerTheProxyChallenge(){
+        Unirest.config().proxy("localhost", MockServer.PORT, "proxyuser", "proxypass");
+
+        Unirest.get(MockServer.PROXYAUTH)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("Proxy-Authorization", "Basic " + Base64.getEncoder().encodeToString("proxyuser:proxypass".getBytes()))
+                .assertNoHeader("Authorization");
+
+        MockServer.assertRequestCount(2);
+    }
+
+    @Test
+    void proxyCredentialsAreNotSentToTheServer(){
+        Unirest.config().proxy("localhost", MockServer.PORT, "proxyuser", "proxypass");
+
+        assertThatThrownBy(() -> Unirest.get(MockServer.BASICAUTH).asEmpty())
+                .isInstanceOf(UnirestException.class);
+
+        MockServer.lastRequest().assertNoHeader("Authorization");
+        MockServer.assertRequestCount(1);
     }
 }
