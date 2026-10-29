@@ -31,11 +31,13 @@ import java.net.http.WebSocket;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class CacheManager {
@@ -79,17 +81,24 @@ class CacheManager {
     }
 
     private static class HashKey implements Cache.Key {
+        private final HttpMethod method;
+        private final String url;
+        private final List<String> headers;
+        private final Boolean isAsync;
+        private final Class<?> responseType;
         private final int hash;
         private final Instant time;
 
         HashKey(HttpRequest request, Boolean isAsync, Class<?> responseType) {
-            this(Objects.hash(request.hashCode(), isAsync, responseType),
-                 request.getCreationTime());
-        }
-
-        HashKey(int hash, Instant time) {
-            this.hash = hash;
-            this.time = time;
+            this.method = request.getHttpMethod();
+            this.url = request.getUrl();
+            this.headers = request.getHeaders().all().stream()
+                    .map(h -> h.getName() + ": " + h.getValue())
+                    .collect(Collectors.toList());
+            this.isAsync = isAsync;
+            this.responseType = responseType;
+            this.hash = Objects.hash(method, url, headers, isAsync, responseType);
+            this.time = request.getCreationTime();
         }
 
         @Override
@@ -101,7 +110,12 @@ class CacheManager {
                 return false;
             }
             HashKey key = (HashKey) o;
-            return hash == key.hash;
+            return hash == key.hash &&
+                    Objects.equals(method, key.method) &&
+                    Objects.equals(url, key.url) &&
+                    Objects.equals(headers, key.headers) &&
+                    Objects.equals(isAsync, key.isAsync) &&
+                    Objects.equals(responseType, key.responseType);
         }
 
         @Override

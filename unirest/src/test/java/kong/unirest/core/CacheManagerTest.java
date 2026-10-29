@@ -89,6 +89,28 @@ class CacheManagerTest {
         assertEquals(2, client.invokes);
     }
 
+    @Test
+    void requestsWithCollidingHashCodesAreDifferent() {
+        assertEquals("/Aa".hashCode(), "/BB".hashCode());
+
+        assertNotSame(
+                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/Aa"), null, Object.class),
+                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/BB"), null, Object.class)
+        );
+
+        assertEquals(2, client.invokes);
+    }
+
+    @Test
+    void headersWithCollidingHashCodesAreDifferent() {
+        assertNotSame(
+                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/").header("Authorization", "Aa"), null, Object.class),
+                cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/").header("Authorization", "BB"), null, Object.class)
+        );
+
+        assertEquals(2, client.invokes);
+    }
+
     private static class MockClient implements Client {
         public int invokes = 0;
         @Override

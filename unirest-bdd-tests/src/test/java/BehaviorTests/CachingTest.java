@@ -73,6 +73,18 @@ class CachingTest extends BddTest {
     }
 
     @Test
+    void requestsWithCollidingHashCodesAreNotCachedTogether() {
+        Unirest.config().cacheResponses(true);
+
+        var r1 = Unirest.get(MockServer.GET).queryString("q", "Aa").asObject(RequestCapture.class).getBody();
+        var r2 = Unirest.get(MockServer.GET).queryString("q", "BB").asObject(RequestCapture.class).getBody();
+
+        assertEquals(2,  MockServer.timesCalled);
+        assertNotEquals(r1.requestId, r2.requestId);
+        r2.assertParam("q", "BB");
+    }
+
+    @Test
     void canCacheResponsesForEqualRequests_async() throws Exception {
         Unirest.config().cacheResponses(true);
 
