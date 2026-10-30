@@ -27,11 +27,13 @@ package BehaviorTests;
 
 import com.google.common.cache.CacheBuilder;
 import kong.unirest.core.Cache;
+import kong.unirest.core.HttpRequest;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
@@ -68,12 +70,13 @@ class CachingAlternativeTest extends BddTest {
     }
 
     @Test
-    void supplyCustomCacheKeyFunction() {
-        Unirest.config().cacheResponses(Cache.builder().withKeyGen((r,a,z) -> new CustomKey()));
+    void canSupplyCustomCacheAsync() throws ExecutionException, InterruptedException {
+        var cache = new GuavaCache();
+        Unirest.config().cacheResponses(Cache.builder().backingCache(cache));
 
         assertSame(
-                Unirest.get(MockServer.GET).asString(),
-                Unirest.get(MockServer.POST).asString()
+                Unirest.get(MockServer.GET).asStringAsync().get(),
+                Unirest.get(MockServer.GET).asStringAsync().get()
         );
 
         assertEquals(1, MockServer.timesCalled);
@@ -83,18 +86,18 @@ class CachingAlternativeTest extends BddTest {
         com.google.common.cache.Cache<Key, HttpResponse> regular = CacheBuilder.newBuilder().build();
         com.google.common.cache.Cache<Key, CompletableFuture> async = CacheBuilder.newBuilder().build();
         @Override
-        public <T> HttpResponse get(Key key, Supplier<HttpResponse<T>> fetcher) {
+        public <T> HttpResponse get(HttpRequest request, Class<?> responseType, Supplier<HttpResponse<T>> fetcher) {
             try {
-                return regular.get(key, fetcher::get);
+                return regular.get(new CustomKey(request, false, responseType), fetcher::get);
             } catch (ExecutionException e) {
                 throw new RuntimeException(e);
             }
         }
 
         @Override
-        public <T> CompletableFuture getAsync(Key key, Supplier<CompletableFuture<HttpResponse<T>>> fetcher) {
+        public <T> CompletableFuture getAsync(HttpRequest request, Class<?> responseType, Supplier<CompletableFuture<HttpResponse<T>>> fetcher) {
             try {
-                return async.get(key, fetcher::get);
+                return async.get(new CustomKey(request, true, responseType), fetcher::get);
             } catch (ExecutionException e) {
                 throw new RuntimeException(e);
             }
@@ -104,22 +107,29 @@ class CachingAlternativeTest extends BddTest {
             regular.invalidateAll();
             async.invalidateAll();
         }
+
+        private class CustomKey implements Key {
+            final int hash;
+            public CustomKey(HttpRequest request, boolean isAsync, Class<?> responseType){
+                hash = Objects.hash(request.getHttpMethod(), request.getUrl(), isAsync, responseType);
+            }
+
+            @Override
+            public int hashCode() {
+                return hash;
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return Objects.equals(obj.hashCode(), hash);
+            }
+
+            @Override
+            public Instant getTime() {
+                return null;
+            }
+        }
     }
 
-    class CustomKey implements Cache.Key {
-        @Override
-        public int hashCode() {
-            return 1;
-        }
 
-        @Override
-        public boolean equals(Object obj) {
-            return true;
-        }
-
-        @Override
-        public Instant getTime() {
-            return  Instant.now();
-        }
-    }
 }

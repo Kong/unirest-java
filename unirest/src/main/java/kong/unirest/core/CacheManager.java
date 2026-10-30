@@ -45,25 +45,19 @@ class CacheManager {
     private final CacheWrapper wrapper = new CacheWrapper();
     private final CacheWrapper asyncWrapper = new CacheWrapper();
     private final Cache backingCache;
-    private final Cache.KeyGenerator keyGen;
 
     private Client originalClient;
 
     public CacheManager() {
-        this(100, 0, HashKey::new);
+        this(100, 0);
     }
 
-    public CacheManager(int depth, long ttl, Cache.KeyGenerator keyGenerator) {
-        this(new CacheMap(depth, ttl), keyGenerator);
+    public CacheManager(int depth, long ttl) {
+        this(new CacheMap(depth, ttl));
     }
 
-    public CacheManager(Cache backing, Cache.KeyGenerator keyGenerator) {
+    public CacheManager(Cache backing) {
         backingCache = backing;
-        if(keyGenerator != null){
-            this.keyGen = keyGenerator;
-        }else{
-            this.keyGen = HashKey::new;
-        }
     }
 
     Client wrap(Client client) {
@@ -76,9 +70,6 @@ class CacheManager {
         return asyncWrapper;
     }
 
-    private <T> Cache.Key getHash(HttpRequest request, Boolean isAsync, Class<?> responseType) {
-        return keyGen.apply(request, isAsync, responseType);
-    }
 
     private static class HashKey implements Cache.Key {
         private final HttpMethod method;
@@ -141,8 +132,7 @@ class CacheManager {
                                            Function<RawResponse, HttpResponse<T>> transformer,
                                            Class<?> responseType) {
 
-            Cache.Key hash = getHash(request, false, responseType);
-            return backingCache.get(hash,
+            return backingCache.get(request, responseType,
                     () -> originalClient.request(request, transformer, responseType));
         }
 
@@ -151,8 +141,7 @@ class CacheManager {
                                                               Function<RawResponse, HttpResponse<T>> transformer,
                                                               CompletableFuture<HttpResponse<T>> callback,
                                                               Class<?> responseType) {
-            Cache.Key key = getHash(request, true, responseType);
-            return backingCache.getAsync(key,
+            return backingCache.getAsync(request, responseType,
                     () -> originalClient.request(request, transformer, callback, responseType));
         }
 
@@ -175,6 +164,7 @@ class CacheManager {
     private static class CacheMap extends LinkedHashMap<Cache.Key, Object> implements Cache {
         private final int maxSize;
         private long ttl;
+        private KeyGenerator keyGen = HashKey::new;
 
         CacheMap(int maxSize, long ttl) {
             this.maxSize = maxSize;
@@ -182,14 +172,16 @@ class CacheManager {
         }
 
         @Override
-        public <T> HttpResponse<T> get(Key key, Supplier<HttpResponse<T>> fetcher) {
+        public <T> HttpResponse<T> get(HttpRequest request, Class<?> responseType, Supplier<HttpResponse<T>> fetcher) {
             clearOld();
+            var key = keyGen.apply(request, false, responseType);
             return (HttpResponse<T>)super.computeIfAbsent(key, (k) -> fetcher.get());
         }
 
         @Override
-        public <T> CompletableFuture getAsync(Key key, Supplier<CompletableFuture<HttpResponse<T>>> fetcher) {
+        public <T> CompletableFuture getAsync(HttpRequest request, Class<?> responseType, Supplier<CompletableFuture<HttpResponse<T>>> fetcher) {
             clearOld();
+            var key = keyGen.apply(request, true, responseType);
             return (CompletableFuture)super.computeIfAbsent(key, (k) -> fetcher.get());
         }
 

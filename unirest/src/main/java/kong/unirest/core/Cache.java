@@ -37,23 +37,25 @@ public interface Cache {
 
     /**
      * Returns the cached HttpResponse for a key or uses the Supplier to fetch the response
-     * @param key the cache key
+     * @param request the base request
+     * @param responseType expected response type
      * @param fetcher a function to execute the request and return the response. This response should be
      *                cached by the implementation
      * @param <T> the type of response
      * @return the Http Response
      */
-    <T> HttpResponse get(Key key, Supplier<HttpResponse<T>> fetcher);
+    <T> HttpResponse get(HttpRequest request, Class<?> responseType, Supplier<HttpResponse<T>> fetcher);
 
     /**
      * Returns the cached HttpResponse for a key or uses the Supplier to fetch the response
-     * @param key the cache key
+     * @param request the base request
+     * @param responseType expected response type
      * @param fetcher a function to execute the request and return the response. This response should be
      *                cached by the implementation
      * @param <T> the type of response
      * @return the CompletableFuture for the response
      */
-    <T> CompletableFuture getAsync(Key key, Supplier<CompletableFuture<HttpResponse<T>>> fetcher);
+    <T> CompletableFuture getAsync(HttpRequest request, Class<?> responseType, Supplier<CompletableFuture<HttpResponse<T>>> fetcher);
 
     /**
      * a builder for cache options
@@ -67,13 +69,12 @@ public interface Cache {
         private int depth = 100;
         private long ttl = 0;
         private Cache backing;
-        private KeyGenerator keyGen;
 
         CacheManager build() {
             if(backing != null){
-                return new CacheManager(backing, keyGen);
+                return new CacheManager(backing);
             }
-            return new CacheManager(depth, ttl, keyGen);
+            return new CacheManager(depth, ttl);
         }
 
         /**
@@ -111,17 +112,6 @@ public interface Cache {
          */
         public Builder backingCache(Cache cache) {
             this.backing = cache;
-            return this;
-        }
-
-        /**
-         * Provide a custom key generator.
-         * The default key is a hash of the request, the request execution type and the response type.
-         * @param keyGenerator a custom cache key generator
-         * @return this builder
-         */
-        public Builder withKeyGen(KeyGenerator keyGenerator) {
-            this.keyGen = keyGenerator;
             return this;
         }
     }
