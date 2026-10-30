@@ -1,3 +1,11 @@
+## 4.10.5
+* Proxy should only respond to challenge from a proxy server by looking at the java requestor type.
+* Compare the full request in the default cache key, not just its hash
+
+## 4.10.4
+* Files with CR and LF in their names were not being properly encoded in multipart segments
+* Allow setting a Cookie Policy for requests. Defaults to ACCEPT_ALL
+
 ## 4.10.3
 * Updated dependencies
 
