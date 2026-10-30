@@ -83,8 +83,8 @@ class CachingAlternativeTest extends BddTest {
     }
 
     public static class GuavaCache implements Cache {
-        com.google.common.cache.Cache<Key, HttpResponse> regular = CacheBuilder.newBuilder().build();
-        com.google.common.cache.Cache<Key, CompletableFuture> async = CacheBuilder.newBuilder().build();
+        com.google.common.cache.Cache<CustomKey, HttpResponse> regular = CacheBuilder.newBuilder().build();
+        com.google.common.cache.Cache<CustomKey, CompletableFuture> async = CacheBuilder.newBuilder().build();
         @Override
         public <T> HttpResponse get(HttpRequest request, Class<?> responseType, Supplier<HttpResponse<T>> fetcher) {
             try {
@@ -108,7 +108,7 @@ class CachingAlternativeTest extends BddTest {
             async.invalidateAll();
         }
 
-        private class CustomKey implements Key {
+        private class CustomKey  {
             final int hash;
             public CustomKey(HttpRequest request, boolean isAsync, Class<?> responseType){
                 hash = Objects.hash(request.getHttpMethod(), request.getUrl(), isAsync, responseType);
@@ -124,10 +124,6 @@ class CachingAlternativeTest extends BddTest {
                 return Objects.equals(obj.hashCode(), hash);
             }
 
-            @Override
-            public Instant getTime() {
-                return null;
-            }
         }
     }
 
