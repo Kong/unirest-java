@@ -25,7 +25,6 @@
 
 package kong.unirest.core;
 
-import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -114,57 +113,5 @@ public interface Cache {
             this.backing = cache;
             return this;
         }
-    }
-
-    /**
-     * A functional interface to generate a cache key
-     */
-    @FunctionalInterface
-    interface KeyGenerator {
-        /**
-         * A function to generate a cache key
-         * @param request the current http request
-         * @param isAsync indicates if this request is being executed async
-         * @param responseType the response type (String, JsonNode, etc)
-         * @return a key which can be used as a hash for the cache
-         */
-        Key apply(HttpRequest request, Boolean isAsync, Class<?> responseType);
-    }
-
-    /**
-     * Interface for the cache key which can be implemented by consumers
-     * The key should implement equals and hashCode
-     * It must must return the time the key was created.
-     */
-    interface Key {
-        /**
-         * @param   obj   the reference object with which to compare.
-         * @return  {@code true} if this object is the same as the obj
-         *          argument; {@code false} otherwise.
-         * @see     #hashCode()
-         * @see     java.util.HashMap
-         */
-        @Override
-        boolean equals(Object obj);
-
-        /**
-         * As much as is reasonably practical, the hashCode method defined
-         * by class {@code Object} does return distinct integers for
-         * distinct objects. (The hashCode may or may not be implemented
-         * as some function of an object's memory address at some point
-         * in time.)
-         *
-         * @return  a hash code value for this object.
-         * @see     java.lang.Object#equals(java.lang.Object)
-         * @see     java.lang.System#identityHashCode
-         */
-        @Override
-        int hashCode();
-
-        /**
-         * The time the key was created to be used by purging functions
-         * @return the time as an instant
-         */
-        Instant getTime();
     }
 }
