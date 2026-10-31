@@ -31,8 +31,8 @@ import kong.unirest.core.json.JSONObject;
 import kong.unirest.core.json.JSONPointer;
 import kong.unirest.core.json.JSONPointerException;
 import org.junit.jupiter.api.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
 
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JSONPointerTest {
@@ -181,7 +181,8 @@ class JSONPointerTest {
     }
 
     private void assertQueryJson(String s, String s2) throws Exception {
-        JSONAssert.assertEquals(s, obj.query(s2).toString(), true);
+        assertThatJson(obj.query(s2).toString())
+                .isEqualTo(s);
     }
 
 }

@@ -52,28 +52,24 @@ package kong.unirest.modules.jackson2;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kong.unirest.core.GenericType;
-import org.json.JSONException;
 import org.junit.jupiter.api.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.List;
 
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JacksonObjectMapperTest {
     private JacksonObjectMapper om = new JacksonObjectMapper();
 
     @Test
-    void canWrite() throws JSONException {
+    void canWrite() {
         var test = new TestMe("foo", 42, new TestMe("bar", 666, null));
 
         String json = om.writeValue(test);
 
-        JSONAssert.assertEquals(
-                "{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666,\"another\":null}}"
-                , json
-                , true
-        );
+        assertThatJson(json)
+                .isEqualTo("{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666,\"another\":null}}");
     }
 
     @Test

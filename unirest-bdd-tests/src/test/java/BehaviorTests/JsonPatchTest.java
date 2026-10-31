@@ -30,7 +30,7 @@ import kong.unirest.core.Unirest;
 import kong.unirest.core.json.JSONArray;
 import kong.unirest.core.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
 
 import static kong.unirest.core.JsonPatchOperation.*;
@@ -153,7 +153,8 @@ class JsonPatchTest extends BddTest {
 
         var expected = TestUtil.getResource("test-json-patch.json");
 
-        JSONAssert.assertEquals(expected, patch, true);
+        assertThatJson(patch)
+                .isEqualTo(expected);
     }
 
 }

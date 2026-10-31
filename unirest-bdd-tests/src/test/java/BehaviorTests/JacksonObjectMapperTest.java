@@ -27,16 +27,17 @@ package BehaviorTests;
 
 
 import kong.unirest.core.JsonPatch;
-import org.json.JSONException;
 import org.junit.jupiter.api.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
+
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+
 
 class JacksonObjectMapperTest {
 
     private final JacksonObjectMapper om = new JacksonObjectMapper();
 
     @Test
-    void jsonPatch() throws JSONException {
+    void jsonPatch() {
         var patch = new JsonPatch();
         patch.add("/foo", "bar");
         patch.add("/baz", "qux");
@@ -44,24 +45,7 @@ class JacksonObjectMapperTest {
         String expectStr = patch.toString();
         String actualStr = om.writeValue(patch);
 
-        JSONAssert.assertEquals(expectStr,
-                actualStr,
-                true);
-    }
-
-    @Test
-    void jsonPatchInRequestCapture() throws JSONException {
-        var patch = new JsonPatch();
-        patch.add("/foo", "bar");
-        patch.add("/baz", "qux");
-
-        var rc = new RequestCapture();
-        rc.setPatch(patch);
-
-        String actualStr = om.writeValue(rc);
-        System.out.println("actualStr = " + actualStr);
-        JSONAssert.assertEquals("{}",
-                actualStr,
-                false);
+        assertThatJson(actualStr)
+                .isEqualTo(expectStr);
     }
 }

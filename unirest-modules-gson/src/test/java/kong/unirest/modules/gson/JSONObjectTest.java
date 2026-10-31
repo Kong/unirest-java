@@ -26,11 +26,9 @@
 package kong.unirest.modules.gson;
 
 
-import kong.unirest.core.UnirestException;
 import kong.unirest.core.json.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -43,6 +41,7 @@ import java.util.Set;
 import static com.google.common.collect.ImmutableMap.of;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JSONObjectTest {
@@ -624,11 +623,8 @@ class JSONObjectTest {
     }
 
     public static void assertEqualJson(Object subObj, Object value){
-        try {
-            JSONAssert.assertEquals(subObj.toString(), value.toString(), true);
-        } catch (org.json.JSONException e) {
-            throw new UnirestException(e);
-        }
+       assertThatJson(value.toString())
+               .isEqualTo(subObj.toString());
     }
 
     public static void isTypeAndValue(Object o, Class<?> type, Object value) {

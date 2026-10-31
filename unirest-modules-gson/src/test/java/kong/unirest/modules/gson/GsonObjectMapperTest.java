@@ -52,8 +52,9 @@ package kong.unirest.modules.gson;
 import com.google.gson.GsonBuilder;
 import kong.unirest.core.GenericType;
 import org.junit.jupiter.api.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
 
+
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
 import java.util.List;
 
@@ -68,11 +69,9 @@ class GsonObjectMapperTest {
 
         String json = om.writeValue(test);
 
-        JSONAssert.assertEquals(
-                "{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666}}"
-                , json
-                , true
-        );
+
+        assertThatJson(json)
+                .isEqualTo("{\"text\":\"foo\",\"nmbr\":42,\"another\":{\"text\":\"bar\",\"nmbr\":666}}");
     }
 
     @Test
@@ -111,7 +110,8 @@ class GsonObjectMapperTest {
 
         TestMe testMe = new TestMe(null, null, null);
 
-        assertEquals("{\"text\":null,\"nmbr\":null,\"another\":null}", om.writeValue(testMe));
+        assertThatJson(om.writeValue(testMe)).
+                isEqualTo("{\"text\":null,\"nmbr\":null,\"another\":null}");
     }
 
     public static class TestMe {
