@@ -2,7 +2,7 @@
 # Caching
 Unirest offers a simple im memory response caching mechanism with a few options for entry expiration.
 This can be either be enabled with defaults, with expiration options or consumers may supply a custom cache backed by the cache of their choice.
-It is reccomended that in high load systems consumers back the cache with a dedicated cache implementation like EHCache or Guava.
+It is recommended that in high load systems consumers back the cache with a dedicated cache implementation like EHCache or Guava.
 
 #### Basic cache:
 ```java

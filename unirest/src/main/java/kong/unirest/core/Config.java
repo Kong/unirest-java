@@ -648,7 +648,7 @@ public class Config {
     /**
      * Enables or disables response caching with default options.
      * <p>
-     * When enabled, HTTP responses will be cached based on standard HTTP caching headers.
+     * When enabled, HTTP responses will be cached.
      * </p>
      *
      * @param value {@code true} to enable caching, {@code false} to disable

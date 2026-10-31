@@ -104,7 +104,7 @@ public interface Cache {
         }
 
         /**
-         * Sets a custom backing cache. This cache must implement it's own purging rules
+         * Sets a custom backing cache. This cache must implement its own purging rules
          * There is no TTL by default and objects will be kept indefinitely
          * @param cache the backing cache implementation
          * @return this builder.
