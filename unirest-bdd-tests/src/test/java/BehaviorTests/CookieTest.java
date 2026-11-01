@@ -185,6 +185,33 @@ class CookieTest extends BddTest {
                 .assertCookie("color", "blue");
     }
 
+    // MockServer accepts the absolute-form requests a client sends to an HTTP proxy, so it can answer for any host here
+    @Test
+    void cookiesAreNotSentToAHostThatOnlySharesASuffix() {
+        Unirest.config().proxy("localhost", MockServer.PORT);
+        MockServer.expectCookie("JSESSIONID", "ABC123");
+        Unirest.get("http://bank.example/get").asEmpty();
+
+        MockServer.clearCookies();
+        Unirest.get("http://notbank.example/get")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertNoCookie("JSESSIONID");
+    }
+
+    @Test
+    void cookiesAreStillSentBackToTheirHost() {
+        Unirest.config().proxy("localhost", MockServer.PORT);
+        MockServer.expectCookie("JSESSIONID", "ABC123");
+        Unirest.get("http://bank.example/get").asEmpty();
+
+        MockServer.clearCookies();
+        Unirest.get("http://bank.example/get")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertCookie("JSESSIONID", "ABC123");
+    }
+
     @Test
     void domainMatchPolicyRejectsCookiesForAnotherHost() {
         Unirest.config().cookiePolicy(new DomainMatchCookiePolicy());

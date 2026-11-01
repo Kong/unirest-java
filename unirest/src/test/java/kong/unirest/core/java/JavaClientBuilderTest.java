@@ -70,6 +70,43 @@ class JavaClientBuilderTest {
     }
 
     @Test
+    void cookiesAreNotSentToAHostThatOnlySharesASuffix() throws Exception {
+        for (String cookie : List.of(
+                "session=abc",
+                "session=abc; Domain=bank.example",
+                "session=abc; Max-Age=60",
+                "session=abc; Domain=bank.example; Max-Age=60")) {
+            CookieHandler cookies = cookieHandler(new Config());
+
+            cookies.put(new URI("http://bank.example/"), Map.of("Set-Cookie", List.of(cookie)));
+
+            assertThat(cookiesSentTo(cookies, "http://notbank.example/")).as(cookie).isEmpty();
+        }
+    }
+
+    @Test
+    void cookiesFromAnIpAreNotSentToAnotherIpThatEndsTheSame() throws Exception {
+        CookieHandler cookies = cookieHandler(new Config());
+
+        cookies.put(new URI("http://10.0.0.1/"), Map.of("Set-Cookie", List.of("session=abc")));
+
+        assertThat(cookiesSentTo(cookies, "http://110.0.0.1/")).isEmpty();
+    }
+
+    @Test
+    void cookiesAreStillSentToTheirDomainAndSubdomains() throws Exception {
+        for (String cookie : List.of("session=abc; Domain=bank.example", "session=abc; Domain=.bank.example")) {
+            CookieHandler cookies = cookieHandler(new Config());
+
+            cookies.put(new URI("http://bank.example/"), Map.of("Set-Cookie", List.of(cookie)));
+
+            assertThat(cookiesSentTo(cookies, "http://bank.example/")).as(cookie).containsExactly("session=abc");
+            assertThat(cookiesSentTo(cookies, "http://BANK.example/")).as(cookie).containsExactly("session=abc");
+            assertThat(cookiesSentTo(cookies, "http://www.bank.example/")).as(cookie).containsExactly("session=abc");
+        }
+    }
+
+    @Test
     void proxyCredentialsAnswerProxyChallenges() throws Exception {
         Authenticator auth = proxyAuthenticator();
 
