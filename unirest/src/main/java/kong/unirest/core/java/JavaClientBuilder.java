@@ -26,6 +26,7 @@
 package kong.unirest.core.java;
 
 import kong.unirest.core.Config;
+import kong.unirest.core.DomainBoundaryCookieStore;
 import kong.unirest.core.Proxy;
 import kong.unirest.core.UnirestConfigException;
 
@@ -54,7 +55,7 @@ class JavaClientBuilder implements Function<Config, HttpClient> {
             builder.executor(config.getCustomExecutor());
         }
         if(config.getEnabledCookieManagement()){
-            builder = builder.cookieHandler(new CookieManager(new DomainBoundaryCookieStore(), config.getCookiePolicy()));
+            builder = builder.cookieHandler(new CookieManager(config.getCookieStore(), config.getCookiePolicy()));
         }
         if(config.getProxy() != null){
             createProxy(builder, config.getProxy());

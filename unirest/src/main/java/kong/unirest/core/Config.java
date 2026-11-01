@@ -32,6 +32,7 @@ import javax.net.ssl.SSLContext;
 import java.io.InputStream;
 import java.net.Authenticator;
 import java.net.CookiePolicy;
+import java.net.CookieStore;
 import java.net.ProxySelector;
 import java.net.http.*;
 import java.net.http.HttpRequest;
@@ -135,6 +136,7 @@ public class Config {
     private boolean followRedirects;
     private boolean cookieManagement;
     private CookiePolicy cookiePolicy;
+    private CookieStore cookieStore;
     private boolean useSystemProperties;
     private String defaultResponseEncoding = StandardCharsets.UTF_8.name();
     private Function<Config, Client> clientBuilder;
@@ -173,6 +175,7 @@ public class Config {
         useSystemProperties = false;
         cookieManagement = true;
         cookiePolicy = CookiePolicy.ACCEPT_ALL;
+        cookieStore = new DomainBoundaryCookieStore();
         requestCompressionOn = true;
         verifySsl = true;
         keystore = null;
@@ -187,6 +190,7 @@ public class Config {
         version = HttpClient.Version.HTTP_2;
         authenticator = null;
         proxySelector = null;
+
 
         try {
             clientBuilder = JavaClient::new;
@@ -573,6 +577,19 @@ public class Config {
     public Config cookiePolicy(CookiePolicy policy) {
         validateClientsNotRunning();
         this.cookiePolicy = Objects.requireNonNull(policy, "cookie policy");
+        return this;
+    }
+
+    /**
+     * Sets the java.net.CookieStore used for this configuration.
+     * The default store is DomainBoundaryCookieStore
+     * Setting this to null will result in the use of java.net.InMemoryCookieStore
+     * @param store to set
+     * @return this config
+     */
+    public Config cookieStore(CookieStore store) {
+        validateClientsNotRunning();
+        this.cookieStore = store;
         return this;
     }
 
@@ -1059,6 +1076,14 @@ public class Config {
      */
     public boolean isVerifySsl() {
         return verifySsl;
+    }
+
+    /**
+     * get the configured CookieStore. Null will result in use of java.net.InMemoryCookieStore
+     * @return the CookieStore
+     */
+    public CookieStore getCookieStore() {
+        return cookieStore;
     }
 
     /**

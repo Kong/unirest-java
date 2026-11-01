@@ -23,7 +23,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package kong.unirest.core.java;
+package kong.unirest.core;
 
 import java.net.CookieManager;
 import java.net.CookieStore;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * Everything else is left to the JDK, this only drops matches that do not start on a dot.
  * </p>
  */
-class DomainBoundaryCookieStore implements CookieStore {
+public class DomainBoundaryCookieStore implements CookieStore {
 
     private final CookieStore store = new CookieManager().getCookieStore();
 
