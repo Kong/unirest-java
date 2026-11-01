@@ -1,3 +1,10 @@
+## 4.11.1
+For security reasons, a series of very small breaking changes to some of the more obscure parts of Unirest
+* Change to the cache implementation: The KeyGenerator has been removed and the interface for the cache now contains the request and other objects. 
+* Introduced the DomainBoundaryCookieStore as the default cookie store to avoid bugs with the JDK provided InMemoryCookieStore. If you wish to use the old java.util.InMemoryCookieStore set this property to null in the config (that class is Java's default but the class is not public).
+* DomainMatchCookiePolicy is now the default cookie policy rather than CookiePolicy.ACCEPT_ALL.
+* Cookie handling is now OFF by default
+
 ## 4.10.5
 * Proxy should only respond to challenge from a proxy server by looking at the java requestor type.
 * Compare the full request in the default cache key, not just its hash

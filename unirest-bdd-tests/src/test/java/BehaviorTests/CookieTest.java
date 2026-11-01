@@ -25,10 +25,7 @@
 
 package BehaviorTests;
 
-import kong.unirest.core.Cookie;
-import kong.unirest.core.DomainMatchCookiePolicy;
-import kong.unirest.core.HttpResponse;
-import kong.unirest.core.Unirest;
+import kong.unirest.core.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -174,8 +171,9 @@ class CookieTest extends BddTest {
     }
 
     @Test
-    void acceptsCookiesForAnyDomainByDefault() {
+    void acceptsCookiesForAnyDomain() {
         expectCookieForAnotherHost();
+        Unirest.config().cookiePolicy(CookiePolicy.ACCEPT_ALL);
         Unirest.get(MockServer.GET).asEmpty();
 
         MockServer.clearCookies();

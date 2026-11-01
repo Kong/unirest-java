@@ -173,8 +173,8 @@ public class Config {
         requestTimeout = null;
         followRedirects = true;
         useSystemProperties = false;
-        cookieManagement = true;
-        cookiePolicy = CookiePolicy.ACCEPT_ALL;
+        cookieManagement = false;
+        cookiePolicy = new DomainMatchCookiePolicy();
         cookieStore = new DomainBoundaryCookieStore();
         requestCompressionOn = true;
         verifySsl = true;

@@ -43,8 +43,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JavaClientBuilderTest {
 
     @Test
-    void acceptsAllCookiesByDefault() throws Exception {
-        CookieHandler cookies = cookieHandler(new Config());
+    void canAcceptsAllCookies() throws Exception {
+        CookieHandler cookies = cookieHandler(getConfig().cookiePolicy(CookiePolicy.ACCEPT_ALL));
 
         plantCrossDomainCookie(cookies);
 
@@ -53,7 +53,7 @@ class JavaClientBuilderTest {
 
     @Test
     void usesTheConfiguredCookiePolicy() throws Exception {
-        CookieHandler cookies = cookieHandler(new Config().cookiePolicy(new DomainMatchCookiePolicy()));
+        CookieHandler cookies = cookieHandler(getConfig().cookiePolicy(new DomainMatchCookiePolicy()));
 
         plantCrossDomainCookie(cookies);
 
@@ -62,11 +62,15 @@ class JavaClientBuilderTest {
 
     @Test
     void canUseACustomCookiePolicy() throws Exception {
-        CookieHandler cookies = cookieHandler(new Config().cookiePolicy(CookiePolicy.ACCEPT_NONE));
+        CookieHandler cookies = cookieHandler(getConfig().cookiePolicy(CookiePolicy.ACCEPT_NONE));
 
         cookies.put(new URI("http://bank.example/"), Map.of("Set-Cookie", List.of("session=abc")));
 
         assertThat(cookiesSentTo(cookies, "http://bank.example/")).isEmpty();
+    }
+
+    private static Config getConfig() {
+        return new Config().enableCookieManagement(true);
     }
 
     @Test
@@ -76,7 +80,7 @@ class JavaClientBuilderTest {
                 "session=abc; Domain=bank.example",
                 "session=abc; Max-Age=60",
                 "session=abc; Domain=bank.example; Max-Age=60")) {
-            CookieHandler cookies = cookieHandler(new Config());
+            CookieHandler cookies = cookieHandler(getConfig());
 
             cookies.put(new URI("http://bank.example/"), Map.of("Set-Cookie", List.of(cookie)));
 
@@ -86,7 +90,7 @@ class JavaClientBuilderTest {
 
     @Test
     void cookiesFromAnIpAreNotSentToAnotherIpThatEndsTheSame() throws Exception {
-        CookieHandler cookies = cookieHandler(new Config());
+        CookieHandler cookies = cookieHandler(getConfig());
 
         cookies.put(new URI("http://10.0.0.1/"), Map.of("Set-Cookie", List.of("session=abc")));
 
@@ -96,7 +100,7 @@ class JavaClientBuilderTest {
     @Test
     void cookiesAreStillSentToTheirDomainAndSubdomains() throws Exception {
         for (String cookie : List.of("session=abc; Domain=bank.example", "session=abc; Domain=.bank.example")) {
-            CookieHandler cookies = cookieHandler(new Config());
+            CookieHandler cookies = cookieHandler(getConfig());
 
             cookies.put(new URI("http://bank.example/"), Map.of("Set-Cookie", List.of(cookie)));
 
@@ -124,7 +128,7 @@ class JavaClientBuilderTest {
     }
 
     private Authenticator proxyAuthenticator() {
-        Config config = new Config().proxy("proxy.example", 3128, "proxyuser", "proxypass");
+        Config config = getConfig().proxy("proxy.example", 3128, "proxyuser", "proxypass");
         return new JavaClientBuilder().apply(config).authenticator().get();
     }
 
