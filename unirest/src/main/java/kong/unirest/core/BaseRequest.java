@@ -341,10 +341,15 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     @Override
     public <T> PagedList<T> asPaged(Function<HttpRequest, HttpResponse> mappingFunction, Function<HttpResponse<T>, String> linkExtractor) {
         PagedList<T> all = new PagedList<>();
+        Path origin = this.url;
         String nextLink = this.getUrl();
         do {
             this.url = new Path(nextLink, config.getDefaultBaseUrl());
             BaseRequest<R> t = RequestFactory.copy(this);
+            if (!origin.isSameOrigin(this.url)) {
+                t.headers.remove(HeaderNames.AUTHORIZATION);
+                t.headers.remove("Cookie");
+            }
             HttpResponse<T> next = mappingFunction.apply(t);
             all.add(next);
             nextLink = linkExtractor.apply(next);

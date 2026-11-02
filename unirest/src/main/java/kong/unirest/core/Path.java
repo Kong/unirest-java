@@ -26,6 +26,7 @@
 package kong.unirest.core;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Map;
@@ -152,6 +153,33 @@ public class Path {
      */
     public String rawPath() {
         return rawPath;
+    }
+
+    /**
+     * @param other the path to compare to
+     * @return true if both paths have the same scheme, host and port. A path without a host only matches itself.
+     */
+    boolean isSameOrigin(Path other) {
+        if (equals(other)) {
+            return true;
+        }
+        try {
+            URI a = URI.create(toString());
+            URI b = URI.create(other.toString());
+            return a.isAbsolute() && a.getHost() != null
+                    && a.getScheme().equalsIgnoreCase(b.getScheme())
+                    && a.getHost().equalsIgnoreCase(b.getHost())
+                    && effectivePort(a) == effectivePort(b);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    private static int effectivePort(URI uri) {
+        if (uri.getPort() != -1) {
+            return uri.getPort();
+        }
+        return "https".equalsIgnoreCase(uri.getScheme()) ? 443 : 80;
     }
 
     /**

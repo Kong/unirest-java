@@ -361,6 +361,8 @@ public interface HttpRequest<R extends HttpRequest>  {
     /**
      * Allows for following paging links common in many APIs.
      * Each request will result in the same request (headers, etc) but will use the "next" link provided by the extract function.
+     * The Authorization and Cookie headers are dropped for links on a different scheme, host or port than the original request,
+     * the same as the Java client does for redirects. The mapping function can set them again if a link should receive them.
      *
      * @param <T> the type of response.
      * @param mappingFunction a function to return the desired return type leveraging one of the as* methods (asString, asObject, etc).
