@@ -163,7 +163,7 @@ class CacheManager {
         Instant getTime();
     }
 
-    private static class CacheMap extends LinkedHashMap<Key, Object> implements Cache {
+    static class CacheMap extends LinkedHashMap<Key, Object> implements Cache {
         private final int maxSize;
         private long ttl;
         private KeyGenerator keyGen = HashKey::new;
@@ -199,7 +199,7 @@ class CacheManager {
             return size() > maxSize;
         }
 
-        private static class HashKey implements Key  {
+        static class HashKey implements Key  {
             private final HttpMethod method;
             private final String url;
             private final List<String> headers;
