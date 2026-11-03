@@ -27,6 +27,9 @@ package kong.unirest.core;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class HashKeyTest {
@@ -109,6 +112,80 @@ class HashKeyTest {
 
         assertThat(key2)
                 .isEqualTo(key3);
+    }
+
+    @Test
+    void headerValuesContainingTheSeparatorAreNotSplit() {
+        var key1 = createKey(Unirest.get("http://somewhere").header("foo", "bar|fruit: apple"), false, String.class);
+        var key2 = createKey(Unirest.get("http://somewhere").header("foo", "bar").header("fruit", "apple"), false, String.class);
+
+        assertThat(key1)
+                .isNotEqualTo(key2);
+    }
+
+    @Test
+    void bodiesMakeThemDifferent() {
+        var key1 = createKey(Unirest.post("http://somewhere").body("{\"user\":\"alice\"}"), false, String.class);
+        var key2 = createKey(Unirest.post("http://somewhere").body("{\"user\":\"bob\"}"), false, String.class);
+        var key3 = createKey(Unirest.post("http://somewhere").body("{\"user\":\"bob\"}"), false, String.class);
+
+        assertThat(key1)
+                .isNotEqualTo(key2);
+
+        assertThat(key2)
+                .isEqualTo(key3);
+    }
+
+    @Test
+    void byteBodiesAreComparedByContent() {
+        var key1 = createKey(Unirest.post("http://somewhere").body(new byte[]{1, 2}), false, String.class);
+        var key2 = createKey(Unirest.post("http://somewhere").body(new byte[]{1, 3}), false, String.class);
+        var key3 = createKey(Unirest.post("http://somewhere").body(new byte[]{1, 3}), false, String.class);
+
+        assertThat(key1)
+                .isNotEqualTo(key2);
+
+        assertThat(key2)
+                .isEqualTo(key3);
+    }
+
+    @Test
+    void formFieldsMakeThemDifferent() {
+        var key1 = createKey(Unirest.post("http://somewhere").field("user", "alice").field("password", "right"), false, String.class);
+        var key2 = createKey(Unirest.post("http://somewhere").field("user", "alice").field("password", "wrong"), false, String.class);
+        var key3 = createKey(Unirest.post("http://somewhere").field("user", "alice").field("password", "wrong"), false, String.class);
+        var key4 = createKey(Unirest.post("http://somewhere").field("user", "alice|password|wrong"), false, String.class);
+
+        assertThat(key1)
+                .isNotEqualTo(key2);
+
+        assertThat(key2)
+                .isEqualTo(key3)
+                .isNotEqualTo(key4);
+    }
+
+    @Test
+    void entityAndFormBodiesAreDifferent() {
+        var key1 = createKey(Unirest.post("http://somewhere").body("user=alice"), false, String.class);
+        var key2 = createKey(Unirest.post("http://somewhere").field("user", "alice"), false, String.class);
+
+        assertThat(key1)
+                .isNotEqualTo(key2);
+    }
+
+    @Test
+    void filesAndStreamsNeverShareAKey() {
+        var file = new File("pom.xml");
+        var key1 = createKey(Unirest.post("http://somewhere").field("upload", file), false, String.class);
+        var key2 = createKey(Unirest.post("http://somewhere").field("upload", file), false, String.class);
+        var key3 = createKey(Unirest.post("http://somewhere").body(new ByteArrayInputStream(new byte[]{1})), false, String.class);
+        var key4 = createKey(Unirest.post("http://somewhere").body(new ByteArrayInputStream(new byte[]{1})), false, String.class);
+
+        assertThat(key1)
+                .isNotEqualTo(key2);
+
+        assertThat(key3)
+                .isNotEqualTo(key4);
     }
 
     private CacheManager.Key createKey(HttpRequest request, boolean isAsync, Class<?> responseType) {

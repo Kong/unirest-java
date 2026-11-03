@@ -12,6 +12,8 @@ It is recommended that in high load systems consumers back the cache with a dedi
      Unirest.get("https://somwhere").asString();
      Unirest.get("https://somwhere").asString();
 ```
+Requests are matched on their method, URL, headers, body and response type. Requests that upload a File or InputStream are never answered from the cache because their content is only read when the request is sent.
+
 #### Advanced Options:
 You can use a builder to customize eviction rules:
 
