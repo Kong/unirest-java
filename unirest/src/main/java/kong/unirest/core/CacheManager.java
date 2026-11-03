@@ -27,17 +27,18 @@ package kong.unirest.core;
 
 import kong.unirest.core.java.Event;
 
+import java.math.BigInteger;
 import java.net.http.WebSocket;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class CacheManager {
@@ -219,24 +220,44 @@ class CacheManager {
         }
 
         static class HashKey implements Key  {
-            private final HttpMethod method;
-            private final String url;
-            private final List<String> headers;
-            private final Boolean isAsync;
-            private final Class<?> responseType;
-            private final int hash;
+            private final BigInteger hash;
             private final Instant time;
 
             HashKey(HttpRequest request, Boolean isAsync, Class<?> responseType) {
-                this.method = request.getHttpMethod();
-                this.url = request.getUrl();
-                this.headers = request.getHeaders().all().stream()
-                        .map(h -> h.getName() + ": " + h.getValue())
-                        .collect(Collectors.toList());
-                this.isAsync = isAsync;
-                this.responseType = responseType;
-                this.hash = Objects.hash(method, url, headers, isAsync, responseType);
-                this.time = request.getCreationTime();
+                try {
+                    this.time = request.getCreationTime();
+
+                    var sha = new Hash(MessageDigest.getInstance("SHA-256"));
+                    sha.update(request.getHttpMethod());
+                    sha.update(request.getUrl());
+                    request.getHeaders().all().stream()
+                            .map(h -> h.getName() + ": " + h.getValue())
+                            .forEach(sha::update);
+                    sha.update(isAsync);
+                    sha.update(responseType);
+                    this.hash = sha.getDigest();
+                } catch (Exception e) {
+                    throw new UnirestException(e);
+                }
+            }
+
+            private static class Hash {
+                private final MessageDigest md;
+                private final byte[] delimiter = "|".getBytes(StandardCharsets.UTF_8);
+
+                Hash(MessageDigest md){
+                    this.md = md;
+                }
+
+                void update(Object thing) {
+                    md.update(String.valueOf(thing).getBytes(StandardCharsets.UTF_8));
+                    md.update(delimiter);
+                }
+
+                BigInteger getDigest(){
+                    return new BigInteger(1, md.digest());
+                }
+
             }
 
             @Override
@@ -248,17 +269,12 @@ class CacheManager {
                     return false;
                 }
                 HashKey key = (HashKey) o;
-                return hash == key.hash &&
-                        Objects.equals(method, key.method) &&
-                        Objects.equals(url, key.url) &&
-                        Objects.equals(headers, key.headers) &&
-                        Objects.equals(isAsync, key.isAsync) &&
-                        Objects.equals(responseType, key.responseType);
+                return hash.equals(key.hash);
             }
 
             @Override
             public int hashCode() {
-                return hash;
+                return Objects.hashCode(hash);
             }
 
             @Override
