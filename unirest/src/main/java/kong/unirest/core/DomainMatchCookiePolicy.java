@@ -29,6 +29,7 @@ import java.net.CookiePolicy;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 /**
  * A {@link CookiePolicy} that applies RFC 6265 section 5.1.3 domain matching: a cookie is
@@ -42,6 +43,8 @@ import java.util.Locale;
  * @see Config#cookiePolicy(CookiePolicy)
  */
 public class DomainMatchCookiePolicy implements CookiePolicy {
+
+    private static final Pattern IPV4 = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3}");
 
     @Override
     public boolean shouldAccept(URI uri, HttpCookie cookie) {
@@ -58,8 +61,18 @@ public class DomainMatchCookiePolicy implements CookiePolicy {
         }
         host = host.toLowerCase(Locale.ROOT);
         domain = domain.toLowerCase(Locale.ROOT);
-        return host.equals(domain)
-                || host.endsWith("." + domain)
-                || HttpCookie.domainMatches(domain, host);
+        if (host.equals(domain)) {
+            return true;
+        }
+        // HttpCookie.domainMatches does not check for a dot before the domain, so it is only used
+        // for dotless hosts such as localhost, which the CookieManager gives a host.local domain
+        if (host.indexOf('.') == -1) {
+            return HttpCookie.domainMatches(domain, host);
+        }
+        return !isIpAddress(host) && host.endsWith("." + domain);
+    }
+
+    private static boolean isIpAddress(String host) {
+        return host.startsWith("[") || IPV4.matcher(host).matches();
     }
 }
