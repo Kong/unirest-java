@@ -1,3 +1,7 @@
+## 4.11.2
+* pr #591 make the default response cache safe for concurrent requests
+* pr #592 drop credentials when asPaged follows a link to another origin
+
 ## 4.11.1
 For security reasons, a series of very small breaking changes to some of the more obscure parts of Unirest
 * Change to the cache implementation: The KeyGenerator has been removed and the interface for the cache now contains the request and other objects. 
