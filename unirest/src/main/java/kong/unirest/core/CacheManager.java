@@ -35,7 +35,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -243,7 +242,7 @@ class CacheManager {
 
             private static class Hash {
                 private final MessageDigest md;
-                private final byte[] delimiter = "|".getBytes(StandardCharsets.UTF_8);
+                private final byte delimiter = '|';
 
                 Hash(MessageDigest md){
                     this.md = md;
@@ -274,7 +273,7 @@ class CacheManager {
 
             @Override
             public int hashCode() {
-                return Objects.hashCode(hash);
+                return hash.hashCode();
             }
 
             @Override
