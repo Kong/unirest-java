@@ -175,16 +175,35 @@ class CacheManager {
 
         @Override
         public <T> HttpResponse<T> get(HttpRequest request, Class<?> responseType, Supplier<HttpResponse<T>> fetcher) {
-            clearOld();
             var key = keyGen.apply(request, false, responseType);
-            return (HttpResponse<T>)super.computeIfAbsent(key, (k) -> fetcher.get());
+            return (HttpResponse<T>) getOrFetch(key, fetcher);
         }
 
         @Override
         public <T> CompletableFuture getAsync(HttpRequest request, Class<?> responseType, Supplier<CompletableFuture<HttpResponse<T>>> fetcher) {
-            clearOld();
             var key = keyGen.apply(request, true, responseType);
-            return (CompletableFuture)super.computeIfAbsent(key, (k) -> fetcher.get());
+            return (CompletableFuture) getOrFetch(key, fetcher);
+        }
+
+        // The fetcher runs the request, so it must not run while holding the lock or inside
+        // computeIfAbsent: other threads would block on it, and HashMap throws
+        // ConcurrentModificationException when the map changes during the mapping function.
+        private Object getOrFetch(Key key, Supplier<?> fetcher) {
+            synchronized (this) {
+                clearOld();
+                Object cached = super.get(key);
+                if (cached != null) {
+                    return cached;
+                }
+            }
+            Object fetched = fetcher.get();
+            if (fetched == null) {
+                return null;
+            }
+            synchronized (this) {
+                Object cached = super.putIfAbsent(key, fetched);
+                return cached == null ? fetched : cached;
+            }
         }
 
         private void clearOld() {

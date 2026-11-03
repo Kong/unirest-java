@@ -31,9 +31,14 @@ import org.junit.jupiter.api.Test;
 
 import java.net.http.WebSocket;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static kong.unirest.core.HttpMethod.GET;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -109,6 +114,47 @@ class CacheManagerTest {
         );
 
         assertEquals(2, client.invokes);
+    }
+
+    @Test
+    void requestsInFlightOnOtherThreadsDoNotBreakTheCache() throws Exception {
+        CountDownLatch slowStarted = new CountDownLatch(1);
+        CountDownLatch slowRelease = new CountDownLatch(1);
+        client = new MockClient() {
+            @Override
+            public <T> HttpResponse<T> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, Class<?> resultType) {
+                if (request.getUrl().equals("/slow")) {
+                    slowStarted.countDown();
+                    await(slowRelease);
+                }
+                return super.request(request, transformer, resultType);
+            }
+        };
+        Client wrapped = cache.wrap(client);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            Future<HttpResponse> slow = executor.submit(() -> wrapped.request(new HttpRequestNoBody(config, GET, "/slow"), null, Object.class));
+            assertTrue(slowStarted.await(5, SECONDS));
+
+            HttpResponse fast = wrapped.request(new HttpRequestNoBody(config, GET, "/fast"), null, Object.class);
+            slowRelease.countDown();
+
+            assertNotNull(slow.get(5, SECONDS));
+            assertSame(slow.get(), wrapped.request(new HttpRequestNoBody(config, GET, "/slow"), null, Object.class));
+            assertSame(fast, wrapped.request(new HttpRequestNoBody(config, GET, "/fast"), null, Object.class));
+            assertEquals(2, client.invokes);
+        } finally {
+            slowRelease.countDown();
+            executor.shutdownNow();
+        }
+    }
+
+    private static void await(CountDownLatch latch) {
+        try {
+            latch.await(5, SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private static class MockClient implements Client {
