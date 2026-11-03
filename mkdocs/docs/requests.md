@@ -208,6 +208,16 @@ PagedList<Doggos> result =  Unirest.get("https://somewhere/dogs")
                 
 ```
 
+The ```next``` link comes from the response, so the ```Authorization``` and ```Cookie``` headers are only sent to the scheme, host and port of the original request, the same as the Java client does for redirects. If a service pages across hosts that should receive them, set them again in the first function:
+
+```java
+PagedList<Doggos> result =  Unirest.get("https://somewhere/dogs")
+                .asPaged(
+                        r -> r.headerReplace("Authorization", token).asObject(Doggos.class),
+                        r -> r.getHeaders().getFirst("nextPage")
+                );
+```
+
 ## Client Certificates
 In case you need to use a custom client certificate to call a service you can provide unirest with a custom keystore.
 You may either pass a KeyStore object or a path to a valid PKCS#12 keystore file.

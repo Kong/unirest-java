@@ -31,6 +31,7 @@ import kong.unirest.core.PagedList;
 import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayDeque;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -83,6 +84,60 @@ class AsPagedTest extends BddTest {
                         "http://localhost:4567/paged?page=5"
                 );
 
+    }
+
+    @Test
+    void credentialsAreNotSentToADifferentOrigin() {
+        var links = new ArrayDeque<>(List.of("http://127.0.0.1:4567/paged"));
+
+        PagedList<RequestCapture> result = Unirest.get(MockServer.PAGED)
+                .basicAuth("user", "secret")
+                .cookie("session", "abc")
+                .header("x-header", "h-value")
+                .asPaged(
+                        r -> r.asObject(RequestCapture.class),
+                        r -> links.poll()
+                );
+
+        assertThat(result).hasSize(2);
+        result.get(0).getBody()
+                .assertBasicAuth("user", "secret")
+                .assertCookie("session", "abc");
+        result.get(1).getBody()
+                .assertNoHeader("Authorization")
+                .assertNoHeader("Cookie")
+                .assertHeader("x-header", "h-value");
+    }
+
+    @Test
+    void credentialsAreKeptForLaterPagesOnTheOriginalOrigin() {
+        var links = new ArrayDeque<>(List.of("http://127.0.0.1:4567/paged", MockServer.PAGED + "?page=3"));
+
+        PagedList<RequestCapture> result = Unirest.get(MockServer.PAGED)
+                .basicAuth("user", "secret")
+                .asPaged(
+                        r -> r.asObject(RequestCapture.class),
+                        r -> links.poll()
+                );
+
+        assertThat(result).hasSize(3);
+        result.get(1).getBody().assertNoHeader("Authorization");
+        result.get(2).getBody().assertBasicAuth("user", "secret");
+    }
+
+    @Test
+    void credentialsCanBeSentToAnotherOriginOnPurpose() {
+        var links = new ArrayDeque<>(List.of("http://127.0.0.1:4567/paged"));
+
+        PagedList<RequestCapture> result = Unirest.get(MockServer.PAGED)
+                .basicAuth("user", "secret")
+                .asPaged(
+                        r -> r.basicAuth("user", "secret").asObject(RequestCapture.class),
+                        r -> links.poll()
+                );
+
+        assertThat(result).hasSize(2);
+        result.get(1).getBody().assertBasicAuth("user", "secret");
     }
 
     @Test

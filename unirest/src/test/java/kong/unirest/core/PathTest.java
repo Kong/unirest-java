@@ -33,6 +33,45 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PathTest {
     @Test
+    void sameOriginIgnoresPathQueryAndCase() {
+        Path p = new Path("https://Example.com/a?b=c", null);
+
+        assertTrue(p.isSameOrigin(new Path("HTTPS://example.COM/other?page=2", null)));
+    }
+
+    @Test
+    void sameOriginTreatsTheDefaultPortAsImplicit() {
+        assertTrue(new Path("https://example.com/", null).isSameOrigin(new Path("https://example.com:443/", null)));
+        assertTrue(new Path("http://example.com/", null).isSameOrigin(new Path("http://example.com:80/", null)));
+    }
+
+    @Test
+    void differentHostSchemeOrPortIsAnotherOrigin() {
+        Path p = new Path("https://example.com/", null);
+
+        assertFalse(p.isSameOrigin(new Path("https://other.example.com/", null)));
+        assertFalse(p.isSameOrigin(new Path("http://example.com/", null)));
+        assertFalse(p.isSameOrigin(new Path("https://example.com:8443/", null)));
+    }
+
+    @Test
+    void userInfoDoesNotChangeTheComparedHost() {
+        Path p = new Path("https://example.com/", null);
+
+        assertFalse(p.isSameOrigin(new Path("https://example.com@evil.example/", null)));
+    }
+
+    @Test
+    void hostlessOrInvalidUrlsOnlyMatchThemselves() {
+        Path relative = new Path("/a", null);
+
+        assertTrue(relative.isSameOrigin(new Path("/a", null)));
+        assertFalse(relative.isSameOrigin(new Path("/b", null)));
+        assertFalse(new Path("http://a_b/", null).isSameOrigin(new Path("http://c_d/", null)));
+        assertFalse(new Path("http://[bad/", null).isSameOrigin(new Path("http://example.com/", null)));
+    }
+
+    @Test
     void pathIsTheSameIfUrlIs() {
         Path p = new Path("https://localhost/apples", null);
         Path o = new Path("https://localhost/apples", null);
