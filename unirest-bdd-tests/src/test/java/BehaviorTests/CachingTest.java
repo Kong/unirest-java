@@ -85,6 +85,44 @@ class CachingTest extends BddTest {
     }
 
     @Test
+    void requestsWithDifferentBodiesAreNotCachedTogether() {
+        Unirest.config().cacheResponses(true);
+
+        var r1 = Unirest.post(MockServer.POST).body("{\"user\":\"alice\"}").asObject(RequestCapture.class).getBody();
+        var r2 = Unirest.post(MockServer.POST).body("{\"user\":\"bob\"}").asObject(RequestCapture.class).getBody();
+
+        assertEquals(2,  MockServer.timesCalled);
+        assertNotEquals(r1.requestId, r2.requestId);
+        r2.assertBody("{\"user\":\"bob\"}");
+    }
+
+    @Test
+    void requestsWithDifferentFormFieldsAreNotCachedTogether() {
+        Unirest.config().cacheResponses(true);
+
+        var r1 = Unirest.post(MockServer.POST).field("user", "alice").field("password", "right").asObject(RequestCapture.class).getBody();
+        var r2 = Unirest.post(MockServer.POST).field("user", "alice").field("password", "wrong").asObject(RequestCapture.class).getBody();
+
+        assertEquals(2,  MockServer.timesCalled);
+        assertNotEquals(r1.requestId, r2.requestId);
+        r2.assertParam("password", "wrong");
+    }
+
+    @Test
+    void requestsWithEqualBodiesAreCached() {
+        Unirest.config().cacheResponses(true);
+
+        var r1 = Unirest.post(MockServer.POST).body("{\"user\":\"alice\"}").asObject(RequestCapture.class).getBody();
+        var r2 = Unirest.post(MockServer.POST).body("{\"user\":\"alice\"}").asObject(RequestCapture.class).getBody();
+        var r3 = Unirest.post(MockServer.POST).field("user", "alice").asObject(RequestCapture.class).getBody();
+        var r4 = Unirest.post(MockServer.POST).field("user", "alice").asObject(RequestCapture.class).getBody();
+
+        assertEquals(2,  MockServer.timesCalled);
+        assertEquals(r1.requestId, r2.requestId);
+        assertEquals(r3.requestId, r4.requestId);
+    }
+
+    @Test
     void canCacheResponsesForEqualRequests_async() throws Exception {
         Unirest.config().cacheResponses(true);
 

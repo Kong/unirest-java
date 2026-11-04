@@ -29,12 +29,15 @@ import kong.unirest.core.java.Event;
 
 import java.math.BigInteger;
 import java.net.http.WebSocket;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -234,6 +237,7 @@ class CacheManager {
                             .forEach(sha::update);
                     sha.update(isAsync);
                     sha.update(responseType);
+                    request.getBody().ifPresent(b -> sha.updateBody((Body) b));
                     this.hash = sha.getDigest();
                 } catch (Exception e) {
                     throw new UnirestException(e);
@@ -242,15 +246,53 @@ class CacheManager {
 
             private static class Hash {
                 private final MessageDigest md;
-                private final byte delimiter = '|';
 
                 Hash(MessageDigest md){
                     this.md = md;
                 }
 
                 void update(Object thing) {
-                    md.update(String.valueOf(thing).getBytes(StandardCharsets.UTF_8));
-                    md.update(delimiter);
+                    update(String.valueOf(thing).getBytes(StandardCharsets.UTF_8));
+                }
+
+                // Length-prefixed so a value containing a separator can't be read as two values.
+                void update(byte[] bytes) {
+                    md.update(ByteBuffer.allocate(Integer.BYTES).putInt(bytes.length).array());
+                    md.update(bytes);
+                }
+
+                void updateBody(Body body) {
+                    update(body.isEntityBody());
+                    update(body.isMultiPart());
+                    update(body.getCharset());
+                    if (body.isEntityBody()) {
+                        updatePart(body.uniPart());
+                    } else {
+                        update(body.getMode());
+                        body.multiParts().forEach(this::updatePart);
+                    }
+                }
+
+                private void updatePart(BodyPart part) {
+                    update(part.getName());
+                    update(part.getFileName());
+                    update(part.getContentType());
+                    List<Header> headers = part.getHeaders() == null ? List.of() : part.getHeaders().all();
+                    update(headers.size());
+                    headers.forEach(h -> {
+                        update(h.getName());
+                        update(h.getValue());
+                    });
+                    Object value = part.getValue();
+                    if (value instanceof byte[]) {
+                        update((byte[]) value);
+                    } else if (value instanceof String) {
+                        update(value);
+                    } else {
+                        // Files and streams are only read when the request is sent, so they can't be
+                        // compared here and never share an entry.
+                        update(UUID.randomUUID());
+                    }
                 }
 
                 BigInteger getDigest(){
