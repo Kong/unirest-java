@@ -1,6 +1,10 @@
+## 4.11.3
+* include the body in the cache calculation. Does not include files or streams.
+* reject cookie domains that only share a suffix with the request host
+
 ## 4.11.2
-* pr #591 make the default response cache safe for concurrent requests
-* pr #592 drop credentials when asPaged follows a link to another origin
+* make the default response cache safe for concurrent requests
+* drop credentials when asPaged follows a link to another origin
 
 ## 4.11.1
 For security reasons, a series of very small breaking changes to some of the more obscure parts of Unirest
