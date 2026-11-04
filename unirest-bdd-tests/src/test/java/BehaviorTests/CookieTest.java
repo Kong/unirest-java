@@ -224,6 +224,21 @@ class CookieTest extends BddTest {
     }
 
     @Test
+    void cookiesAreNotStoredForADomainThatOnlySharesASuffix() {
+        Unirest.config().proxy("localhost", MockServer.PORT);
+        var cookie = new io.javalin.http.Cookie("session", "attacker");
+        cookie.setDomain("bank.example");
+        MockServer.expectCookie(cookie);
+        Unirest.get("http://evilbank.example/get").asEmpty();
+
+        MockServer.clearCookies();
+        Unirest.get("http://bank.example/get")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertNoCookie("session");
+    }
+
+    @Test
     void domainMatchPolicyKeepsCookiesForTheRequestHost() {
         Unirest.config().cookiePolicy(new DomainMatchCookiePolicy());
         expectCoookie(42);

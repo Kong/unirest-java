@@ -47,6 +47,29 @@ class DomainMatchCookiePolicyTest {
     }
 
     @Test
+    void doesNotStoreCookiesForADomainThatOnlySharesASuffix() throws Exception {
+        cookies.put(new URI("http://evilbank.example/"), Map.of("Set-Cookie", List.of("session=attacker; Domain=bank.example")));
+
+        assertThat(cookiesSentTo("http://bank.example/")).isEmpty();
+    }
+
+    @Test
+    void doesNotStoreCookiesForPartOfAnIpAddress() throws Exception {
+        cookies.put(new URI("http://10.0.0.1/"), Map.of("Set-Cookie", List.of("session=attacker; Domain=0.0.1")));
+
+        assertThat(cookiesSentTo("http://192.0.0.1/")).isEmpty();
+    }
+
+    @Test
+    void storesCookiesForAnIpAddressHost() throws Exception {
+        cookies.put(new URI("http://10.0.0.1/"), Map.of("Set-Cookie", List.of("ip=1; Domain=10.0.0.1")));
+        cookies.put(new URI("http://[::1]:8080/"), Map.of("Set-Cookie", List.of("ipv6=1")));
+
+        assertThat(cookiesSentTo("http://10.0.0.1/")).containsExactly("ip=1");
+        assertThat(cookiesSentTo("http://[::1]:8080/")).containsExactly("ipv6=1");
+    }
+
+    @Test
     void storesCookiesForTheRequestHost() throws Exception {
         cookies.put(new URI("http://localhost:8080/get"), Map.of("Set-Cookie", List.of("color=blue; Domain=localhost", "JSESSIONID=ABC123")));
 
