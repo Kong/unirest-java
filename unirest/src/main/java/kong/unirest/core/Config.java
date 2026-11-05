@@ -304,9 +304,10 @@ public class Config {
      *
      * @param ssl the SSLContext to use for custom ssl context
      * @return this config object
-     * @throws UnirestConfigException if a keystore was already configured.
+     * @throws UnirestConfigException if a keystore was already configured, or if called after the client has been built
      */
     public Config sslContext(SSLContext ssl) {
+        validateClientsNotRunning();
         verifySecurityConfig(this.keystore);
         this.sslContext = ssl;
         return this;
@@ -316,8 +317,10 @@ public class Config {
      * Set a custom array of ciphers
      * @param values the array of ciphers
      * @return this config object
+     * @throws UnirestConfigException if called after the client has been built
      */
     public Config ciphers(String... values) {
+        validateClientsNotRunning();
         this.ciphers = values;
         return this;
     }
@@ -326,8 +329,10 @@ public class Config {
      * Set a custom array of protocols
      * @param values the array of protocols
      * @return this config object
+     * @throws UnirestConfigException if called after the client has been built
      */
     public Config protocols(String... values) {
+        validateClientsNotRunning();
         this.protocols = values;
         return this;
     }
@@ -344,9 +349,10 @@ public class Config {
      * @param store the keystore to use for a custom ssl context
      * @param password the password for the store
      * @return this config object
-     * @throws UnirestConfigException if a SSLContext was already configured.
+     * @throws UnirestConfigException if a SSLContext was already configured, or if called after the client has been built
      */
     public Config clientCertificateStore(KeyStore store, String password) {
+        validateClientsNotRunning();
         verifySecurityConfig(this.sslContext);
         this.keystore = store;
         this.keystorePassword = () -> password;
@@ -359,9 +365,10 @@ public class Config {
      * @param fileLocation the path keystore to use for a custom ssl context
      * @param password the password for the store
      * @return this config object
-     * @throws UnirestConfigException if a SSLContext was already configured.
+     * @throws UnirestConfigException if a SSLContext was already configured, or if called after the client has been built
      */
     public Config clientCertificateStore(String fileLocation, String password) {
+        validateClientsNotRunning();
         verifySecurityConfig(this.sslContext);
         try (InputStream keyStoreStream = Util.getFileInputStream(fileLocation)) {
             this.keystorePassword = () -> password;
@@ -602,9 +609,11 @@ public class Config {
      *
      * @param value {@code true} to verify SSL certificates (default), {@code false} to skip verification
      * @return this config object for method chaining
+     * @throws UnirestConfigException if called after the client has been built
      * @see #isVerifySsl()
      */
     public Config verifySsl(boolean value) {
+        validateClientsNotRunning();
         this.verifySsl = value;
         return this;
     }
