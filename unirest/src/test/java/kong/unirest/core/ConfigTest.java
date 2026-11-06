@@ -27,6 +27,7 @@ package kong.unirest.core;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -120,6 +121,42 @@ class ConfigTest {
     }
 
     @Test
+    void cannotChangeTlsSettingsOnceTheClientIsBuilt() {
+        KeyStore store = mock(KeyStore.class);
+        SSLContext context = mock(SSLContext.class);
+        config.verifySsl(false);
+        config.getClient();
+
+        assertClientsAlreadyBuilt(() -> config.verifySsl(true));
+        assertClientsAlreadyBuilt(() -> config.sslContext(context));
+        assertClientsAlreadyBuilt(() -> config.clientCertificateStore(store, "foo"));
+        assertClientsAlreadyBuilt(() -> config.clientCertificateStore("/a/path/file.pk12", "foo"));
+        assertClientsAlreadyBuilt(() -> config.protocols("TLSv1.3"));
+        assertClientsAlreadyBuilt(() -> config.ciphers("TLS_AES_256_GCM_SHA384"));
+
+        assertFalse(config.isVerifySsl());
+        assertNull(config.getSslContext());
+        assertNull(config.getKeystore());
+        assertNull(config.getProtocols());
+        assertNull(config.getCiphers());
+    }
+
+    @Test
+    void canChangeTlsSettingsAfterAReset() {
+        config.verifySsl(false);
+        config.getClient();
+        config.reset();
+
+        config.verifySsl(true)
+                .protocols("TLSv1.3")
+                .ciphers("TLS_AES_256_GCM_SHA384");
+
+        assertTrue(config.isVerifySsl());
+        assertArrayEquals(new String[]{"TLSv1.3"}, config.getProtocols());
+        assertArrayEquals(new String[]{"TLS_AES_256_GCM_SHA384"}, config.getCiphers());
+    }
+
+    @Test
     void isRunningIfStandardClientIsRunning() {
         assertFalse(config.isRunning());
         config.getClient();
@@ -149,6 +186,11 @@ class ConfigTest {
         assertEquals("true", System.getProperty(Config.JDK_HTTPCLIENT_DISABLE_HOST_NAME_VERIFICATION));
         config.disableHostNameVerification(false);
         assertEquals("false", System.getProperty(Config.JDK_HTTPCLIENT_DISABLE_HOST_NAME_VERIFICATION));
+    }
+
+    private void assertClientsAlreadyBuilt(Executable change) {
+        UnirestConfigException ex = assertThrows(UnirestConfigException.class, change);
+        assertTrue(ex.getMessage().startsWith("Http Clients are already built"), ex.getMessage());
     }
 
     private void assertProxy(String host, Integer port, String username, String password) {
