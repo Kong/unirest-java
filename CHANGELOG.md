@@ -1,3 +1,6 @@
+## 4.11.4 
+* reject TLS config changes once the client is built
+
 ## 4.11.3
 * include the body in the cache calculation. Does not include files or streams.
 * reject cookie domains that only share a suffix with the request host
