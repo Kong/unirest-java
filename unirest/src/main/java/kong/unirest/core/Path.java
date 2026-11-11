@@ -110,8 +110,11 @@ public class Path {
      * @param value the value
      */
     public void queryString(String name, Object value) {
+        int fragmentIndex = url.indexOf('#');
+        String base = fragmentIndex < 0 ? url : url.substring(0, fragmentIndex);
+        String fragment = fragmentIndex < 0 ? "" : url.substring(fragmentIndex);
         StringBuilder queryString = new StringBuilder();
-        if (url.contains("?")) {
+        if (base.contains("?")) {
             queryString.append("&");
         } else {
             queryString.append("?");
@@ -124,7 +127,7 @@ public class Path {
         } catch (UnsupportedEncodingException e) {
             throw new UnirestException(e);
         }
-        url += queryString.toString();
+        url = base + queryString + fragment;
     }
 
     /**
