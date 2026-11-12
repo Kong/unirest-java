@@ -33,6 +33,43 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PathTest {
     @Test
+    void addsQueryBeforeFragment() {
+        Path path = new Path("https://example.com/search#results");
+
+        path.queryString("page", 2);
+
+        assertEquals("https://example.com/search?page=2#results", path.toString());
+    }
+
+    @Test
+    void appendsToExistingQueryBeforeFragment() {
+        Path path = new Path("https://example.com/search?old=1#results");
+
+        path.queryString("page", 2);
+        path.queryString("filter", "a b");
+
+        assertEquals("https://example.com/search?old=1&page=2&filter=a+b#results", path.toString());
+    }
+
+    @Test
+    void questionMarkInFragmentDoesNotStartQuery() {
+        Path path = new Path("https://example.com/search#results?sort=new");
+
+        path.queryString("page", 2);
+
+        assertEquals("https://example.com/search?page=2#results?sort=new", path.toString());
+    }
+
+    @Test
+    void preservesEmptyFragmentAndEncodedHash() {
+        Path path = new Path("https://example.com/search%23part#");
+
+        path.queryString("flag", (Object) null);
+
+        assertEquals("https://example.com/search%23part?flag#", path.toString());
+    }
+
+    @Test
     void sameOriginIgnoresPathQueryAndCase() {
         Path p = new Path("https://Example.com/a?b=c", null);
 

@@ -35,6 +35,22 @@ import java.util.Arrays;
 class QueryStringTest extends BddTest {
 
     @Test
+    void sendsQueryParametersBeforeFragment() {
+        Unirest.get(MockServer.GET + "#results?sort=new")
+                .queryString("page", 2)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertParam("page", "2");
+
+        Unirest.get(MockServer.GET + "?name=mark#results")
+                .queryString("page", 2)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertParam("name", "mark")
+                .assertParam("page", "2");
+    }
+
+    @Test
     void testGetQueryStrings() {
        Unirest.get(MockServer.GET)
                 .queryString("name", "mark")
