@@ -1,3 +1,6 @@
+## 4.11.5
+* append query parameters before URI fragments- #596
+
 ## 4.11.4 
 * reject TLS config changes once the client is built
 
