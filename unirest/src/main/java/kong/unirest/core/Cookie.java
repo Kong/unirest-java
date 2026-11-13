@@ -134,7 +134,7 @@ public class Cookie {
                     value = "";
                 }
             } else {
-                String[] sub = s.split("=");
+                String[] sub = s.split("=", 2);
                 parseSection(sub);
             }
             pos++;
@@ -192,7 +192,9 @@ public class Cookie {
                 break;
             }
             case "samesite": {
-                sameSite = SameSite.parse(sub[1]);
+                if(sub.length > 1) {
+                    sameSite = SameSite.parse(sub[1]);
+                }
             }
         }
     }
@@ -234,6 +236,9 @@ public class Cookie {
         }
         if(partitioned){
             pairs.add(new Pair("Partitioned", null));
+        }
+        if(sameSite != null){
+            pairs.add(new Pair("SameSite", sameSite.toString()));
         }
         return pairs.stream().map(Pair::toString).collect(Collectors.joining(";"));
     }

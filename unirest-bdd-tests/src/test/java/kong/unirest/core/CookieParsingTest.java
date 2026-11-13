@@ -39,7 +39,7 @@ class CookieParsingTest {
     @Test
     void blankDomains() {
         var cookie = new Cookie("a=b; domain=");
-        assertThat(cookie.getDomain()).isNull();
+        assertThat(cookie.getDomain()).isEmpty();
         assertThat(cookie.getName()).isEqualTo("a");
         assertThat(cookie.getValue()).isEqualTo("b");
     }
@@ -50,6 +50,18 @@ class CookieParsingTest {
         assertThat(cookie.getMaxAge()).isNull();
     }
 
+    @Test
+    void cookiesWithEqualsInValues(){
+        var cookie = new Cookie("a=b=c;");
+
+        assertThat(cookie.getValue()).isEqualTo("b=c");
+    }
+
+    @Test
+    void cookiesWithEqualsInAttributeValues(){
+        var cookie = new Cookie("a=b;Domain=local=host");
+        assertThat(cookie.getDomain()).isEqualTo("local=host");
+    }
 
     @Test
     void parseFull() {
@@ -94,9 +106,15 @@ class CookieParsingTest {
 
     @Test
     void parseBackOutToString() {
-        String v = "color=blue;Path=/get;Domain=localhost;Expires=Sun, 05-Jan-2020 15:00:20 GMT;Max-Age=42;HttpOnly";
+        String v = "color=blue;Path=/get;Domain=localhost;Expires=Sun, 05-Jan-2020 15:00:20 GMT;Max-Age=42;HttpOnly;SameSite=Strict";
         Cookie c = new Cookie(v);
         assertEquals(v, c.toString());
+    }
+
+    @Test
+    void badValuesFOrSameSite(){
+        var cookie = new Cookie("a=b;SameSite");
+        assertThat(cookie.getSameSite()).isNull();
     }
 
     @Test
