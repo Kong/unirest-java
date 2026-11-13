@@ -42,7 +42,7 @@ import java.util.stream.StreamSupport;
 class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
     private final Config config;
     private final SseHandler listener;
-    private EventBuffer databuffer = new EventBuffer();
+    private EventBuffer databuffer = new EventBuffer("");
 
     public SseResponseHandler(Config config, SseHandler listener) {
         this.config = config;
@@ -64,7 +64,7 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
         if(pl.isDispatch()){
             if (databuffer.buffer.length() > 0) {
                 handler.onEvent(databuffer.toEvent());
-                databuffer = new EventBuffer();
+                databuffer = new EventBuffer(databuffer.id);
             } else {
                 databuffer.type = "";
             }
@@ -192,6 +192,10 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
         String id = "";
         String type = "";
         StringBuffer buffer = new StringBuffer();
+
+        public EventBuffer(String id) {
+            this.id = id;
+        }
 
         public Event toEvent() {
             return new Event(id, type, getValue(), config);

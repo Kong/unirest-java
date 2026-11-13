@@ -150,6 +150,20 @@ class SseResponseHandlerTest {
     }
 
     @Test
+    void lastEventIdPersistsAcrossEvents() {
+        //The last event ID buffer is not reset on dispatch. It keeps its value until another id field changes it.
+        handle("data: first",
+                "id: 1",
+                "",
+                "data: second",
+                "");
+
+        listener.assertEventCount(2)
+                .assertEvent("1", "", "first")
+                .assertEvent("1", "", "second");
+    }
+
+    @Test
     void specExample3() {
         //The following stream fires two events:
         //The first block fires events with the data set to the empty string, as would the last block if it was followed by a blank line. The middle block fires an event with the data set to a single newline character.
