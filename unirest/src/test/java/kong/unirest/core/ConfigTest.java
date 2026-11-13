@@ -36,6 +36,7 @@ import java.security.KeyStore;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
@@ -177,6 +178,12 @@ class ConfigTest {
 
         assertThrows(IllegalArgumentException.class, () -> config.requestTimeout(0));
         assertThrows(IllegalArgumentException.class, () -> config.requestTimeout(-5));
+    }
+
+    @Test
+    void nullkeyStorePassword(){
+        assertThat(config.getKeyStorePassword())
+                .isNull();
     }
 
     @Test

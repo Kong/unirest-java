@@ -179,7 +179,7 @@ public class Config {
         requestCompressionOn = true;
         verifySsl = true;
         keystore = null;
-        keystorePassword = null;
+        keystorePassword = () -> null;
         sslContext = null;
         ciphers = null;
         protocols = null;
