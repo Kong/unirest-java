@@ -173,7 +173,11 @@ public class Cookie {
                 break;
             }
             case "max-age": {
-                maxAge = Integer.parseInt(sub[1]);
+                try {
+                    maxAge = Integer.parseInt(sub[1]);
+                } catch (NumberFormatException ignore){
+
+                }
                 break;
             }
             case "httponly": {
@@ -396,7 +400,7 @@ public class Cookie {
      * relative to the time the browser received the cookie.
      * @return Max-Age attribute
      */
-    public int getMaxAge() {
+    public Integer getMaxAge() {
         return maxAge;
     }
 

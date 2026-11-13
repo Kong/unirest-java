@@ -43,6 +43,14 @@ class CookieParsingTest {
         assertThat(cookie.getName()).isEqualTo("a");
         assertThat(cookie.getValue()).isEqualTo("b");
     }
+
+    @Test
+    void badMaxAge(){
+        var cookie = new Cookie("a=b; Max-Age=cheese");
+        assertThat(cookie.getMaxAge()).isNull();
+    }
+
+
     @Test
     void parseFull() {
         Cookie c = new Cookie("color=blue;Path=/get;Domain=localhost;Expires=Sun, 05-Jan-2020 15:00:20 GMT;Max-Age=42;HttpOnly");
