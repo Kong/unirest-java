@@ -30,11 +30,13 @@ import kong.unirest.core.java.Event;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 public class SSEStreamTest extends BddTest {
 
@@ -61,6 +63,19 @@ public class SSEStreamTest extends BddTest {
                         new Event("1", "message", "hi mom"),
                         new Event("2", "message", "i like cheese")
                 );
+    }
+
+    @Test
+    void canReadTheFirstEventWithoutWaitingForTheStreamToClose() {
+        MockServer.Sse.keepAlive(true);
+
+        var first = assertTimeoutPreemptively(Duration.ofSeconds(5),
+                () -> Unirest.sse(MockServer.SSE)
+                        .connect()
+                        .findFirst());
+
+        assertThat(first)
+                .contains(new Event("", "connect", "Welcome to Server Sent Events"));
     }
 
     @Test

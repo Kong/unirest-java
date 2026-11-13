@@ -118,10 +118,14 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
         return StreamSupport.stream(new Spliterators.AbstractSpliterator<>(Long.MAX_VALUE, 0) {
             @Override
             public boolean tryAdvance(java.util.function.Consumer<? super Event> action) {
-                while (it.hasNext()) {
-                    accept(it.next(), action::accept);
+                var emitted = new boolean[1];
+                while (!emitted[0] && it.hasNext()) {
+                    accept(it.next(), e -> {
+                            action.accept(e);
+                            emitted[0] = true;
+                    });
                 }
-                return false;
+                return emitted[0];
             }
         }, false);
     }
