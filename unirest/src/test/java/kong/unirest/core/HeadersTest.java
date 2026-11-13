@@ -142,4 +142,15 @@ class HeadersTest {
         h.putAll((Headers) null);
         assertTrue(true, "no NPE was thrown");
     }
+
+    @Test
+    void headersAreNotCaseSensitive() {
+        var h1 = new Headers();
+        h1.add(null, "boo");
+        h1.add("Accept", "json");
+        h1.add("accept", "xml");
+        assertThat(h1.get("accept"))
+                .containsExactlyInAnyOrder("json", "xml");
+        assertThat(h1.size()).isEqualTo(1);
+    }
 }

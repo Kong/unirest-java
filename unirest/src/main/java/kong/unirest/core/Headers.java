@@ -89,7 +89,11 @@ public class Headers {
      * @return the size of the header keys
      */
     public int size() {
-        return headers.stream().map(Header::getName).collect(toSet()).size();
+        return headers.stream()
+                .map(Header::getName)
+                .map(String::toLowerCase)
+                .collect(toSet())
+                .size();
     }
 
     /**
