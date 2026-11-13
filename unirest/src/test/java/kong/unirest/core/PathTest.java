@@ -25,7 +25,6 @@
 
 package kong.unirest.core;
 
-import kong.unirest.core.Path;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -171,5 +170,17 @@ class PathTest {
 
         assertThat(path.toString())
                 .isEqualTo("http://localhost/../");
+    }
+
+    @Test
+    void queryStringWhenNoneExists() {
+        assertThat(new Path("http://localhost").getQueryString())
+                .isEmpty();
+    }
+
+    @Test
+    void queryStringWhenNullUrl(){
+        assertThat(new Path(null).getQueryString())
+                .isEmpty();
     }
 }

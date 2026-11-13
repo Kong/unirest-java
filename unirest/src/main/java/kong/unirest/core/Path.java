@@ -199,6 +199,9 @@ public class Path {
      * @return just the query string
      */
     public String getQueryString(){
+        if(url == null || !url.contains("?")){
+            return "";
+        }
         return url.substring(url.indexOf("?")+1);
     }
 
