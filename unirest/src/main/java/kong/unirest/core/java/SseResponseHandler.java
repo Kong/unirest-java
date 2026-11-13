@@ -151,7 +151,7 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
         }
 
         public boolean isComment() {
-            return field == null;
+            return field == null && value != null;
         }
 
         public String value() {

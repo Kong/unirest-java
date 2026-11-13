@@ -57,6 +57,12 @@ class SseResponseHandlerTest {
     }
 
     @Test
+    void emptyLineIsNotAComment() {
+        handle("");
+        listener.assertNoComment();
+    }
+
+    @Test
     void dontSendDataWithoutADispatch() {
         handle("data: foo");
         listener.assertEventCount(0);
@@ -239,6 +245,10 @@ class SseResponseHandlerTest {
             assertThat(events)
                     .hasSize(count);
             return this;
+        }
+
+        public void assertNoComment() {
+            assertThat(comments).isEmpty();
         }
     }
 
