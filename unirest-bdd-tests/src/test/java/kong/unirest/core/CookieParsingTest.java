@@ -31,10 +31,18 @@ import org.junit.jupiter.api.Test;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CookieParsingTest {
 
+    @Test
+    void blankDomains() {
+        var cookie = new Cookie("a=b; domain=");
+        assertThat(cookie.getDomain()).isNull();
+        assertThat(cookie.getName()).isEqualTo("a");
+        assertThat(cookie.getValue()).isEqualTo("b");
+    }
     @Test
     void parseFull() {
         Cookie c = new Cookie("color=blue;Path=/get;Domain=localhost;Expires=Sun, 05-Jan-2020 15:00:20 GMT;Max-Age=42;HttpOnly");

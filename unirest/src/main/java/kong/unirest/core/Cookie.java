@@ -163,7 +163,9 @@ public class Cookie {
                 break;
             }
             case "domain": {
-                domain = sub[1];
+                if(sub.length > 1) {
+                    domain = sub[1];
+                }
                 break;
             }
             case "expires": {
