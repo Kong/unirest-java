@@ -1,3 +1,17 @@
+## 4.11.6 (pending)
+* SSE issues:
+  * dont hang when the user terminates the stream and the server is still sending data
+  * ID should be persisted across data
+  * type with no data carries over into the next event
+  * A blank line with no data should not call onComment
+* Cookie parsing issues:
+  * attributes like SameSite should support values that themselves have equals chars
+  * SameSite was not included in .toString
+  * ignore non-numeric Max-Date
+  * handle null and empty domain values
+* Path.getQueryString() should return a empty string when no query params exist
+* keystorepassword's lambda should itself never be null
+ 
 ## 4.11.5
 * append query parameters before URI fragments- #596
 
