@@ -137,6 +137,19 @@ class SseResponseHandlerTest {
     }
 
     @Test
+    void eventTypeWithNoDataCarriesOverIntoTheNextEvent() {
+        //If the data buffer is an empty string when dispatching, set the data buffer and the event type buffer
+        // to the empty string and return. So an event type without data must not leak into the next event.
+        handle("event: ping",
+                "",
+                "data: foo",
+                "");
+
+        listener.assertEventCount(1)
+                .assertEvent("", "", "foo");
+    }
+
+    @Test
     void specExample3() {
         //The following stream fires two events:
         //The first block fires events with the data set to the empty string, as would the last block if it was followed by a blank line. The middle block fires an event with the data set to a single newline character.

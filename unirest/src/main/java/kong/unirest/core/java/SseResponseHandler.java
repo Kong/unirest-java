@@ -61,9 +61,13 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
     private void accept(String line, SseHandler handler) {
         var pl = parse(line);
 
-        if(pl.isDispatch() && databuffer.buffer.length() > 0){
-            handler.onEvent(databuffer.toEvent());
-            databuffer = new EventBuffer();
+        if(pl.isDispatch()){
+            if (databuffer.buffer.length() > 0) {
+                handler.onEvent(databuffer.toEvent());
+                databuffer = new EventBuffer();
+            } else {
+                databuffer.type = "";
+            }
         } else if (pl.isComment()) {
             handler.onComment(pl.value());
         } else if(pl.isData()) {
