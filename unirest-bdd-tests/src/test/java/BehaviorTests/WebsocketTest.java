@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.concurrent.CompletionStage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -66,6 +67,16 @@ public class WebsocketTest extends BddTest {
 
         assertEquals("Sanguine, my Brother.",
                 MockServer.WebSocketHandler.headers.get("Authentication"));
+    }
+
+    @Test
+    void invalidHeaderValueIsNotCopiedIntoTheException() {
+        var ex = assertThrows(IllegalArgumentException.class,
+                () -> Unirest.webSocket(MockServer.WEBSOCKET)
+                        .header("Authorization", "Bearer s3cr3t\n")
+                        .connect(new TheListener()));
+
+        assertEquals("invalid value for header \"Authorization\": illegal character 0x0a at index 13", ex.getMessage());
     }
 
     public class TheListener implements WebSocket.Listener {
