@@ -108,7 +108,7 @@ public class JavaClient implements Client {
     }
 
     private void setHeaders(HttpRequest<?> request, java.net.http.HttpRequest.Builder jreq) {
-        request.getHeaders().all().forEach(h -> jreq.header(h.getName(), h.getValue()));
+        request.getHeaders().all().forEach(h -> jreq.header(h.getName(), validHeaderValue(h)));
         if (request.getBody().isPresent() && !request.getHeaders().containsKey(CONTENT_TYPE)) {
             var value = "text/plain";
             var charset = request.getBody().get().getCharset();
@@ -120,6 +120,20 @@ public class JavaClient implements Client {
         if(!request.getHeaders().containsKey(CONTENT_ENCODING) && config.isRequestCompressionOn()){
             jreq.header(ACCEPT_ENCODING, "gzip");
         }
+    }
+
+    // The JDK rejects the same characters, but its IllegalArgumentException quotes the whole value,
+    // and header values are often credentials (e.g. a token read from a file with its trailing newline).
+    static String validHeaderValue(Header header) {
+        String value = header.getValue();
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            if (c > '\u00ff' || c == '\u007f' || (c < ' ' && c != '\t')) {
+                throw new IllegalArgumentException(String.format("invalid value for header \"%s\": illegal character 0x%02x at index %d",
+                        header.getName(), (int) c, i));
+            }
+        }
+        return value;
     }
 
 
@@ -158,7 +172,7 @@ public class JavaClient implements Client {
     @Override
     public WebSocketResponse websocket(WebSocketRequest request, WebSocket.Listener listener) {
         var b = client.newWebSocketBuilder();
-        request.getHeaders().all().forEach(h -> b.header(h.getName(), h.getValue()));
+        request.getHeaders().all().forEach(h -> b.header(h.getName(), validHeaderValue(h)));
         return new WebSocketResponse(b.buildAsync(URI.create(request.getUrl()), listener), listener);
     }
 

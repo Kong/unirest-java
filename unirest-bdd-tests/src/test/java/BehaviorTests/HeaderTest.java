@@ -441,6 +441,15 @@ class HeaderTest extends BddTest {
                 .assertContentType(ContentType.APPLICATION_JSON);
     }
 
+    @Test
+    void invalidHeaderValueIsNotCopiedIntoTheException() {
+        var ex = assertThrows(UnirestException.class,
+                () -> Unirest.get(MockServer.GET).header("Authorization", "Bearer s3cr3t\n").asEmpty());
+
+        assertEquals("invalid value for header \"Authorization\": illegal character 0x0a at index 13", ex.getCause().getMessage());
+        assertFalse(ex.getMessage().contains("s3cr3t"));
+    }
+
     private void assertContains(Collection<Header> headers, String key, String value) {
         assertTrue(headers.stream().anyMatch(h -> key.equalsIgnoreCase(key) && value.equalsIgnoreCase(value)),
                 "Missing header " + key + " with value " + value);

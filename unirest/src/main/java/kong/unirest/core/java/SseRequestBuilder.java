@@ -40,7 +40,7 @@ public class SseRequestBuilder {
                 .uri(URI.create(request.getUrl()));
 
         request.getHeaders().all().forEach(h -> {
-            accept.header(h.getName(), h.getValue());
+            accept.header(h.getName(), JavaClient.validHeaderValue(h));
         });
 
 
