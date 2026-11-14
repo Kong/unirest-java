@@ -1,3 +1,6 @@
+## 4.11.7
+* keep invalid header values out of exception messages- #597
+
 ## 4.11.6
 * SSE issues:
   * do not hang when the user terminates the stream and the server is still sending data
