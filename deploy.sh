@@ -35,4 +35,5 @@ TAG_NAME=$(git describe --tags --abbrev=0)
 gh release create "${TAG_NAME}" \
   --title "Release ${TAG_NAME}" \
   --notes "Release ${TAG_NAME}" \
-  --verify-tag
+  --verify-tag \
+  --generate-notes
