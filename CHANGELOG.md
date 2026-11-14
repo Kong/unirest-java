@@ -1,6 +1,6 @@
-## 4.11.6 (pending)
+## 4.11.6
 * SSE issues:
-  * dont hang when the user terminates the stream and the server is still sending data
+  * do not hang when the user terminates the stream and the server is still sending data
   * ID should be persisted across data
   * type with no data carries over into the next event
   * A blank line with no data should not call onComment
