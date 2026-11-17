@@ -53,6 +53,19 @@ class CookieTest extends BddTest {
     }
 
     @Test
+    void cookieValueCannotAddOtherCookies(){
+        var request = Unirest.get(MockServer.GET).cookie("lang", "en");
+
+        assertThrows(IllegalArgumentException.class, () -> request.cookie("lang", "en; session=attacker"));
+        assertThrows(IllegalArgumentException.class, () -> request.cookie(new Cookie("session=attacker; lang", "en")));
+
+        request.asObject(RequestCapture.class)
+                .getBody()
+                .assertCookie("lang", "en")
+                .assertNoCookie("session");
+    }
+
+    @Test
     void canSetAsCookie(){
         Unirest.get(MockServer.GET)
                 .cookie(new Cookie("flavor", "snickerdoodle"))

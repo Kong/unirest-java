@@ -50,6 +50,18 @@ class HeadersTest {
     }
 
     @Test
+    void cookieRejectsSemicolonInNameOrValue() {
+        Headers h = new Headers();
+
+        assertThrows(IllegalArgumentException.class, () -> h.cookie(new Cookie("lang", "en; session=attacker")));
+        assertThrows(IllegalArgumentException.class, () -> h.cookie(new Cookie("session=attacker; lang", "en")));
+        assertEquals(0, h.size());
+
+        h.cookie(new Cookie("lang", "\"en, fr\""));
+        assertEquals("lang=\"en, fr\"", h.getFirst("cookie"));
+    }
+
+    @Test
     void dontBombOnNull(){
         Headers h = new Headers();
         h.add(null, "application/json");
