@@ -159,8 +159,13 @@ public class Headers {
     /**
      * Add a Cookie header
      * @param cookie the cookie
+     * @throws IllegalArgumentException if the cookie name or value contains ';', which would split it into more than one cookie
      */
     public void cookie(Cookie cookie) {
+        // ';' separates cookie-pairs in the Cookie header (RFC 6265 4.2.1), so it would let one value add other cookies.
+        if (Util.nullToEmpty(cookie.getName()).indexOf(';') >= 0 || Util.nullToEmpty(cookie.getValue()).indexOf(';') >= 0) {
+            throw new IllegalArgumentException("cookie name and value may not contain ';'");
+        }
         headers.add(new Entry("cookie", cookie.toString()));
     }
 
