@@ -181,6 +181,7 @@ public class JavaClient implements Client {
         var r = SseRequestBuilder.getHttpRequest(request);
 
         return client.sendAsync(r, java.net.http.HttpResponse.BodyHandlers.ofLines())
+                .thenApply(this::checkSseResponse)
                 .thenAccept(new SseResponseHandler(config, handler));
     }
 
@@ -191,10 +192,19 @@ public class JavaClient implements Client {
             var r = SseRequestBuilder.getHttpRequest(request);
             var stream = client.send(r, java.net.http.HttpResponse.BodyHandlers.ofLines());
             var handler = new SseResponseHandler(config, event -> {});
-            return handler.map(stream.body());
+            return handler.map(checkSseResponse(stream).body());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private java.net.http.HttpResponse<Stream<String>> checkSseResponse(
+            java.net.http.HttpResponse<Stream<String>> response) {
+        if (response.statusCode() != 200) {
+            response.body().close();
+            throw new UnirestException("SSE connection failed with HTTP status " + response.statusCode());
+        }
+        return response;
     }
 
     protected <T> HttpResponse<T> transformBody(Function<RawResponse, HttpResponse<T>> transformer, RawResponse rr) {
