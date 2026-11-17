@@ -51,6 +51,18 @@ class SseResponseHandlerTest {
     }
 
     @Test
+    void closingTheEventStreamClosesTheUnderlyingStream() {
+        var closed = new boolean[1];
+        var lines = Stream.of("data: one", "", "data: two", "").onClose(() -> closed[0] = true);
+
+        try (var events = handler.map(lines)) {
+            events.findFirst();
+        }
+
+        assertThat(closed[0]).isTrue();
+    }
+
+    @Test
     void sendComment() {
         handle(": Hello World");
         listener.assertComment("Hello World");

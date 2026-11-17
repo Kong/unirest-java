@@ -115,7 +115,7 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
 
     public Stream<Event> map(Stream<String> stream) {
         var it = stream.iterator();
-        return StreamSupport.stream(new Spliterators.AbstractSpliterator<>(Long.MAX_VALUE, 0) {
+        return StreamSupport.stream(new Spliterators.AbstractSpliterator<Event>(Long.MAX_VALUE, 0) {
             @Override
             public boolean tryAdvance(java.util.function.Consumer<? super Event> action) {
                 var emitted = new boolean[1];
@@ -127,7 +127,7 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
                 }
                 return emitted[0];
             }
-        }, false);
+        }, false).onClose(stream::close);
     }
 
     private class ParsedLine {
