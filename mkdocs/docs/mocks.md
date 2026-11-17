@@ -201,7 +201,64 @@ The mocking framework will use whatever ObjectMapper is configured with Unirest 
     }
 ```
 
+## Mocking Server-Sent Events
+Register SSE expectations with `expectSSE`, supplying the expected URL. You can also match query parameters and headers; the request must match the configured expectation.
 
+### Synchronous Connections
+Use `thenReturn` with one or more `Event` objects for a basic event stream. Call `connect()` without a handler to consume the mocked events synchronously. The returned stream contains the events in the order configured by `thenReturn`.
 
+```java
+    @Test
+    void mockSseSynchronously() {
+        MockClient mock = MockClient.register();
+        var first = new Event("1", "message", "hello");
+        var second = new Event("2", "message", "goodbye");
 
+        mock.expectSSE("http://example.com/events")
+                .thenReturn(first, second);
 
+        var events = Unirest.sse("http://example.com/events").connect();
+        
+        assertThat(events).containsExactly(first, second);
+    }
+```
+
+### Asynchronous Connections
+To include comments or control the order of events and comments, build a `MockEventStream`. When using the handler-based `connect` method, events and comments are delivered to `onEvent` and `onComment` in the configured order. Wait for the returned future to complete before asserting on values collected by the handler.
+
+```java
+    @Test
+    void mockSseEventsAndComments() throws Exception {
+        MockClient mock = MockClient.register();
+        var first = new Event("1", "message", "hello");
+        var second = new Event("2", "message", "goodbye");
+
+        mock.expectSSE("http://example.com/events")
+                .queryString("topic", "news")
+                .thenReturn(MockEventStream.newStream(first)
+                        .comments("heartbeat")
+                        .events(second));
+
+        var received = new ArrayList<Object>();
+        SseHandler handler = new SseHandler() {
+            @Override
+            public void onEvent(Event event) {
+                received.add(event);
+            }
+
+            @Override
+            public void onComment(String comment) {
+                received.add(comment);
+            }
+        };
+
+        Unirest.sse("http://example.com/events")
+                .queryString("topic", "news")
+                .connect(handler)
+                .get();
+
+        assertThat(received).containsExactly(first, "heartbeat", second);
+    }
+```
+
+`MockEventStream` also accepts an event varargs list or a `Stream<Event>` through `events`. Comments are only delivered to handler-based connections; the synchronous `connect()` method returns a `Stream<Event>` and therefore contains events only.
