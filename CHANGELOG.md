@@ -1,3 +1,6 @@
+## Releases
+Release notes are now done in the GitHub [releases page](https://github.com/Kong/unirest-java/releases/).
+
 ## 4.11.7
 * keep invalid header values out of exception messages- #597
 
