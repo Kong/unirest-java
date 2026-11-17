@@ -84,6 +84,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 public class MockClient implements Client {
     private final Supplier<Config> config;
     private List<Routes> routes = new ArrayList<>();
+    private List<SseExpectation> sses = new ArrayList<>();
     private SocketSet remoteSocket;
     private Invocation defaultResponse;
 
@@ -230,7 +231,13 @@ public class MockClient implements Client {
      */
     @Override
     public CompletableFuture<Void> sse(SseRequest request, SseHandler handler) {
-        return null;
+        return CompletableFuture.supplyAsync(() -> {
+            var stream = sses.stream().filter(s -> s.matches(request))
+                    .findFirst()
+                    .orElseThrow(() -> new UnirestException("SSE connection failed no matching expectations"));
+            stream.handle(handler);
+            return null;
+        });
     }
 
     /**
@@ -242,7 +249,10 @@ public class MockClient implements Client {
      */
     @Override
     public Stream<Event> sse(SseRequest request) {
-        return Stream.empty();
+        return sses.stream().filter(s -> s.matches(request))
+                .findFirst()
+                .map(SseExpectation::getEventStream)
+                .orElseThrow(() -> new UnirestException("SSE connection failed no matching expectations"));
     }
 
     /**
@@ -305,6 +315,13 @@ public class MockClient implements Client {
      */
     public Expectation expect(HttpMethod method) {
         return expect(method, null);
+    }
+
+
+    public SseExpectation expectSSE(String url) {
+        var e = new SseExpectation(url);
+        this.sses.add(e);
+        return e;
     }
 
     /**
