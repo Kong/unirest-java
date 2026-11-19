@@ -29,6 +29,7 @@ import kong.unirest.core.*;
 
 import java.io.*;
 import java.net.http.HttpResponse;
+import java.nio.charset.Charset;
 import java.util.zip.GZIPInputStream;
 
 import static kong.unirest.core.HeaderNames.CONTENT_TYPE;
@@ -145,7 +146,7 @@ class JavaResponse extends RawResponseBase {
 
     @Override
     public InputStreamReader getContentReader() {
-        return new InputStreamReader(getContent());
+        return new InputStreamReader(getContent(), Charset.forName(getCharSet()));
     }
 
     @Override
