@@ -193,8 +193,10 @@ public class JavaClient implements Client {
             var stream = client.send(r, java.net.http.HttpResponse.BodyHandlers.ofLines());
             var handler = new SseResponseHandler(config, event -> {});
             return handler.map(checkSseResponse(stream).body());
+        } catch (UnirestException e) {
+            throw e;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new UnirestException(e);
         }
     }
 
