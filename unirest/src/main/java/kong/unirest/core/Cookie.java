@@ -159,7 +159,9 @@ public class Cookie {
     private void parseSection(String[] sub) {
         switch (sub[0].toLowerCase().trim()) {
             case "path": {
-                path = sub[1];
+                if(sub.length > 1) {
+                    path = sub[1];
+                }
                 break;
             }
             case "domain": {

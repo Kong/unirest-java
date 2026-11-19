@@ -45,6 +45,15 @@ class CookieParsingTest {
     }
 
     @Test
+    void malformedPathDoesNotError() {
+        var cookie = new Cookie("x=y; path");
+        assertThat(cookie.getName()).isEqualTo("x");
+        assertThat(cookie.getValue()).isEqualTo("y");
+        assertThat(cookie.getPath()).isNull();
+
+    }
+
+    @Test
     void badMaxAge(){
         var cookie = new Cookie("a=b; Max-Age=cheese");
         assertThat(cookie.getMaxAge()).isNull();
