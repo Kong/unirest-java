@@ -111,6 +111,43 @@ class JavaClientBuilderTest {
     }
 
     @Test
+    void secureCookiesAreNotAcceptedFromAnInsecureResponse() throws Exception {
+        CookieHandler cookies = cookieHandler(getConfig());
+
+        cookies.put(new URI("http://bank.example/"), Map.of("Set-Cookie", List.of("session=attacker; Secure")));
+
+        assertThat(cookiesSentTo(cookies, "https://bank.example/")).isEmpty();
+    }
+
+    @Test
+    void anInsecureResponseCannotReplaceASecureCookie() throws Exception {
+        for (String cookie : List.of(
+                "session=attacker",
+                "session=attacker; Path=/account",
+                "session=attacker; Domain=bank.example",
+                "session=attacker; Domain=www.bank.example")) {
+            CookieHandler cookies = cookieHandler(getConfig());
+            cookies.put(new URI("https://www.bank.example/"), Map.of("Set-Cookie", List.of("session=abc; Domain=bank.example; Secure")));
+
+            cookies.put(new URI("http://www.bank.example/account"), Map.of("Set-Cookie", List.of(cookie)));
+
+            assertThat(cookiesSentTo(cookies, "https://www.bank.example/account")).as(cookie).containsExactly("session=abc");
+        }
+    }
+
+    @Test
+    void secureCookiesStillWorkOverHttps() throws Exception {
+        CookieHandler cookies = cookieHandler(getConfig());
+
+        cookies.put(new URI("https://bank.example/"), Map.of("Set-Cookie", List.of("session=abc; Secure")));
+        cookies.put(new URI("http://bank.example/"), Map.of("Set-Cookie", List.of("lang=en")));
+        cookies.put(new URI("https://bank.example/"), Map.of("Set-Cookie", List.of("session=def; Secure")));
+
+        assertThat(cookiesSentTo(cookies, "https://bank.example/")).containsExactlyInAnyOrder("session=def", "lang=en");
+        assertThat(cookiesSentTo(cookies, "http://bank.example/")).containsExactly("lang=en");
+    }
+
+    @Test
     void proxyCredentialsAnswerProxyChallenges() throws Exception {
         Authenticator auth = proxyAuthenticator();
 
