@@ -45,7 +45,6 @@ import static org.mockito.Mockito.when;
 class JavaResponseTest {
 
     @Test
-    @SuppressWarnings("unchecked")
     void contentReaderHonorsCharsetFromContentType() throws Exception {
         HttpResponse<InputStream> http = mock(HttpResponse.class);
         when(http.headers()).thenReturn(HttpHeaders.of(

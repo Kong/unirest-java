@@ -30,8 +30,10 @@ import kong.unirest.core.HttpResponse;
 import org.junit.jupiter.api.Test;
 import kong.unirest.core.Unirest;
 
+import java.io.BufferedReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -62,6 +64,25 @@ class ObjectFunctionalTest extends BddTest {
                 .getBody();
 
         assertEquals("bar", r.get("foo"));
+    }
+
+    @Test
+    void contentReaderHonorsCharsetOfContentType() {
+        var r = Unirest.get(MockServer.LATIN1)
+                .asObject(i -> new BufferedReader(i.getContentReader()).lines().collect(Collectors.joining()))
+                .getBody();
+
+        assertEquals("caf\u00e9", r);
+    }
+
+    @Test
+    void contentReaderHonorsCharsetOfContentTypeAsync() throws Exception {
+        var r = Unirest.get(MockServer.LATIN1)
+                .asObjectAsync(i -> new BufferedReader(i.getContentReader()).lines().collect(Collectors.joining()))
+                .get()
+                .getBody();
+
+        assertEquals("caf\u00e9", r);
     }
 
     @Test
