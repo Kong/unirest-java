@@ -75,8 +75,8 @@ class SseHttpStatusTest {
                 unirest.sse(url).connect(event -> events.incrementAndGet()).get(10, TimeUnit.SECONDS);
                 assertEquals(1, events.get());
             } else {
-                var syncError = assertThrows(RuntimeException.class, () -> unirest.sse(url).connect());
-                assertTrue(syncError.toString().contains(Integer.toString(status)));
+                var syncError = assertThrows(UnirestException.class, () -> unirest.sse(url).connect());
+                assertTrue(syncError.getMessage().contains(Integer.toString(status)));
                 var future = unirest.sse(url).connect(event -> events.incrementAndGet());
                 var asyncError = assertThrows(ExecutionException.class, () -> future.get(10, TimeUnit.SECONDS));
                 assertTrue(asyncError.getCause().getMessage().contains(Integer.toString(status)));
