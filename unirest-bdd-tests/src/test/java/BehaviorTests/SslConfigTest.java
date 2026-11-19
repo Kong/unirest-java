@@ -51,6 +51,8 @@ class SslConfigTest extends BddTest {
 
     private HttpsServer server;
     private String url;
+    private String setCookie;
+    private String sentCookie;
 
     // The badssl.com client certificate is not issued by a CA the JDK trusts,
     // so serving it gives a local server with an untrusted certificate.
@@ -75,6 +77,10 @@ class SslConfigTest extends BddTest {
             }
         });
         server.createContext("/", exchange -> {
+            sentCookie = exchange.getRequestHeaders().getFirst("Cookie");
+            if (setCookie != null) {
+                exchange.getResponseHeaders().add("Set-Cookie", setCookie);
+            }
             exchange.sendResponseHeaders(200, -1);
             exchange.close();
         });
@@ -113,5 +119,33 @@ class SslConfigTest extends BddTest {
         assertThatThrownBy(() -> Unirest.get(url).asEmpty())
                 .isInstanceOf(UnirestException.class)
                 .hasCauseInstanceOf(SSLHandshakeException.class);
+    }
+
+    @Test
+    void plainHttpCannotSetASecureCookie() {
+        Unirest.config().verifySsl(false);
+        var cookie = new io.javalin.http.Cookie("session", "attacker");
+        cookie.setSecure(true);
+        MockServer.expectCookie(cookie);
+        Unirest.get(MockServer.GET).asEmpty();
+
+        Unirest.get(url).asEmpty();
+
+        assertThat(sentCookie).isNull();
+    }
+
+    @Test
+    void plainHttpCannotReplaceASecureCookie() {
+        Unirest.config().verifySsl(false);
+        setCookie = "session=abc; Secure";
+        Unirest.get(url).asEmpty();
+        setCookie = null;
+
+        MockServer.expectCookie("session", "attacker");
+        Unirest.get(MockServer.GET).asEmpty();
+
+        Unirest.get(url).asEmpty();
+
+        assertThat(sentCookie).isEqualTo("session=abc");
     }
 }

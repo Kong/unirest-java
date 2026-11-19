@@ -30,6 +30,7 @@ import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
@@ -38,7 +39,9 @@ import java.util.stream.Collectors;
  * A domain without a leading dot is the normal case because the JDK uses the request host as
  * the domain of any cookie that does not set one.
  * <p>
- * Everything else is left to the JDK, this only drops matches that do not start on a dot.
+ * Everything else is left to the JDK, this only drops matches that do not start on a dot,
+ * and like browsers (RFC 6265bis section 5.7) it ignores cookies from a non-https response
+ * that are Secure or would replace a Secure cookie.
  * </p>
  */
 public class DomainBoundaryCookieStore implements CookieStore {
@@ -47,6 +50,10 @@ public class DomainBoundaryCookieStore implements CookieStore {
 
     @Override
     public void add(URI uri, HttpCookie cookie) {
+        if (uri != null && !"https".equalsIgnoreCase(uri.getScheme())
+                && (cookie.getSecure() || replacesASecureCookie(cookie))) {
+            return;
+        }
         store.add(uri, cookie);
     }
 
@@ -75,6 +82,35 @@ public class DomainBoundaryCookieStore implements CookieStore {
     @Override
     public boolean removeAll() {
         return store.removeAll();
+    }
+
+    private boolean replacesASecureCookie(HttpCookie cookie) {
+        return store.getCookies().stream()
+                .anyMatch(c -> c.getSecure()
+                        && c.getName().equalsIgnoreCase(cookie.getName())
+                        && domainsOverlap(c.getDomain(), cookie.getDomain())
+                        && pathMatches(cookie.getPath(), c.getPath()));
+    }
+
+    private static boolean domainsOverlap(String a, String b) {
+        if (a == null || b == null) {
+            return a == b;
+        }
+        a = withoutLeadingDot(a).toLowerCase(Locale.ROOT);
+        b = withoutLeadingDot(b).toLowerCase(Locale.ROOT);
+        return a.equals(b) || a.endsWith("." + b) || b.endsWith("." + a);
+    }
+
+    private static String withoutLeadingDot(String domain) {
+        return domain.startsWith(".") ? domain.substring(1) : domain;
+    }
+
+    private static boolean pathMatches(String path, String cookiePath) {
+        if (path == null || cookiePath == null) {
+            return true;
+        }
+        return path.equals(cookiePath)
+                || (path.startsWith(cookiePath) && (cookiePath.endsWith("/") || path.charAt(cookiePath.length()) == '/'));
     }
 
     private static boolean matchesPartOfALabel(String domain, String host) {
