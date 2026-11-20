@@ -117,7 +117,7 @@ public class JavaClient implements Client {
             }
             jreq.header(CONTENT_TYPE, value);
         }
-        if(!request.getHeaders().containsKey(CONTENT_ENCODING) && config.isRequestCompressionOn()){
+        if(!request.getHeaders().containsKey(ACCEPT_ENCODING) && config.isRequestCompressionOn()){
             jreq.header(ACCEPT_ENCODING, "gzip");
         }
     }
