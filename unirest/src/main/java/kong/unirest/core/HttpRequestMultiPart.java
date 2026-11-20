@@ -197,7 +197,9 @@ class HttpRequestMultiPart extends BaseRequest<MultipartBody> implements Multipa
 
     @Override
     public boolean isMultiPart() {
-        return forceMulti || multiParts().stream().anyMatch(BodyPart::isFile);
+        return forceMulti || multiParts().stream().anyMatch(BodyPart::isFile)
+                ||multiParts().stream().anyMatch(e -> e.getContentType() != null
+                && !e.getContentType().startsWith(ContentType.APPLICATION_FORM_URLENCODED.getMimeType()));
     }
 
     @Override
