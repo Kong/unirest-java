@@ -166,7 +166,7 @@ public class Headers {
         if (Util.nullToEmpty(cookie.getName()).indexOf(';') >= 0 || Util.nullToEmpty(cookie.getValue()).indexOf(';') >= 0) {
             throw new IllegalArgumentException("cookie name and value may not contain ';'");
         }
-        headers.add(new Entry("cookie", cookie.toString()));
+        headers.add(new Entry("cookie", cookie.toHeaderValue()));
     }
 
     /**
