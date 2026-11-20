@@ -206,6 +206,17 @@ public class Cookie {
     }
 
     /**
+     * serialize to a header value
+     * which is only the name/value pairs of the cookie
+     * @return
+     */
+    public String toHeaderValue() {
+        List<Pair> pairs = new ArrayList<>();
+        pairs.add(new Pair(name, value));
+        return toPairString(pairs);
+    }
+
+    /**
      * Returns the string representation of this cookie in Set-Cookie header format.
      * <p>
      * The output includes the name-value pair followed by all set attributes,
@@ -242,6 +253,10 @@ public class Cookie {
         if(sameSite != null){
             pairs.add(new Pair("SameSite", sameSite.toString()));
         }
+        return toPairString(pairs);
+    }
+
+    private static String toPairString(List<Pair> pairs) {
         return pairs.stream().map(Pair::toString).collect(Collectors.joining(";"));
     }
 
