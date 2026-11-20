@@ -442,6 +442,18 @@ class HeaderTest extends BddTest {
     }
 
     @Test
+    void setDefaultHeaderShouldNotBeAdditive() {
+        Unirest.config().setDefaultHeader("foo", () -> "bar");
+        Unirest.config().setDefaultHeader("foo", () -> "baz");
+
+        Unirest.get(MockServer.GET)
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("foo", "baz")
+                .assertNoHeader("foo", "bar");
+    }
+
+    @Test
     void invalidHeaderValueIsNotCopiedIntoTheException() {
         var ex = assertThrows(UnirestException.class,
                 () -> Unirest.get(MockServer.GET).header("Authorization", "Bearer s3cr3t\n").asEmpty());
