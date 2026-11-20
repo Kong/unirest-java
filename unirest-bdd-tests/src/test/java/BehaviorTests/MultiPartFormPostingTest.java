@@ -22,7 +22,6 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 package BehaviorTests;
 
 import kong.unirest.core.*;
@@ -447,9 +446,9 @@ class MultiPartFormPostingTest extends BddTest {
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertHeader("Content-Type", h -> {
-                        h.assertMainValue("multipart/form-data");
-                        h.assertHasParam("boundary");
-                        h.assertParam("charset", "UTF-8");
+                    h.assertMainValue("multipart/form-data");
+                    h.assertHasParam("boundary");
+                    h.assertParam("charset", "UTF-8");
                 })
                 .assertBodyPart("content", p -> {
                     p.assertFileName("spiderman");
@@ -467,9 +466,9 @@ class MultiPartFormPostingTest extends BddTest {
     void addBodyPartWithBuilder() {
         Unirest.post(MockServer.POST)
                 .field(MultiPartBuilder.named("metadata")
-                                    .value("{\"foo\": 1}")
-                                    .contentType("application/json")
-                                    .header("foo", "bar"))
+                        .value("{\"foo\": 1}")
+                        .contentType("application/json")
+                        .header("foo", "bar"))
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertBodyPart("metadata", p -> {
@@ -597,13 +596,13 @@ class MultiPartFormPostingTest extends BddTest {
                 .asObject(RequestCapture.class)
                 .getBody()
                 .assertHeader("Content-Type", h -> {
-                   h.assertParam("boundary", boundary);
+                    h.assertParam("boundary", boundary);
                 });
 
     }
 
     @Test
-    void overridingForcingMultiTypeOverridesHeader(){
+    void overridingForcingMultiTypeOverridesHeader() {
         Unirest.config()
                 .setDefaultHeader("Accept", "application/json")
                 .setDefaultHeader("Content-Type", "application/json")
@@ -619,5 +618,22 @@ class MultiPartFormPostingTest extends BddTest {
                 .getBody()
                 .assertHeaderSize("Content-Type", 1)
                 .assertMultiPartContentType();
+    }
+
+    @Test
+    void multipartStringBodiesWithDifferentContent() {
+        Unirest.post(MockServer.POST)
+                .field("json", "{}", "application/json")
+                .field("xml", "<xml>hi</xml>", "application/xml")
+                .field("str", "just a string", "plain/text")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertBodyPart("json", (m) ->
+                        m.assertContentType("application/json").assertBody("{}"))
+                .assertBodyPart("xml", (m) ->
+                        m.assertContentType("application/xml").assertBody("<xml>hi</xml>"))
+                .assertBodyPart("str", (m) ->
+                        m.assertContentType("plain/text").assertBody("just a string"));
+
     }
 }
