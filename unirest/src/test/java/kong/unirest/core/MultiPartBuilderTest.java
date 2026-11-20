@@ -96,6 +96,21 @@ class MultiPartBuilderTest {
     }
 
     @Test
+    void byteArrayPartDefaultToOctetStream() {
+        var value = new byte[]{};
+        var part = MultiPartBuilder.named("jerry")
+                .value(value)
+                .fileName("jazzy.json")
+                .toBodyPart();
+
+        assertInstanceOf(ByteArrayPart.class, part);
+        assertEquals("jerry", part.getName());
+        assertSame(value, part.getValue());
+        assertEquals("application/octet-stream", part.getContentType());
+        assertEquals("jazzy.json", part.getFileName());
+    }
+
+    @Test
     void buildWithObject(){
         Object value = new File("/jazzy.json");
         var part = MultiPartBuilder.named("jerry")
@@ -123,4 +138,6 @@ class MultiPartBuilderTest {
         assertEquals("", part.getValue());
         assertEquals("plain/text", part.getContentType());
     }
+
+
 }

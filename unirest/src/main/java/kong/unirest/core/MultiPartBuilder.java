@@ -197,7 +197,8 @@ public class MultiPartBuilder {
         } else if (fieldValue instanceof File) {
             return new FilePart((File) fieldValue, partName, getMimeType(), headers);
         } else if (fieldValue instanceof byte[]) {
-            return new ByteArrayPart(partName, (byte[]) fieldValue, partContentType, fName, headers);
+            var contentType = partContentType == null ? ContentType.APPLICATION_OCTET_STREAM : partContentType;
+            return new ByteArrayPart(partName, (byte[]) fieldValue, contentType, fName, headers);
         } else {
             return new ParamPart(partName, fieldValue == null ? "" : String.valueOf(fieldValue), getMimeType(), headers);
         }
