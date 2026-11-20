@@ -472,7 +472,7 @@ public class Config {
      * @return this config object
      */
     public Config setDefaultHeader(String name, Supplier<String> value) {
-        headers.add(name, value);
+        headers.replace(name, value);
         return this;
     }
 

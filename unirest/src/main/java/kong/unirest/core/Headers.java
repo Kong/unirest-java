@@ -76,6 +76,21 @@ public class Headers {
         add(name, value);
     }
 
+    public void replace(String name, Supplier<String> valueSupplier) {
+        remove(name);
+        add(name, valueSupplier);
+    }
+
+    /**
+     * Replace all headers from a given map.
+     * @param headerMap the map of headers
+     */
+    public void replace(Map<String, String> headerMap) {
+        if (headerMap != null) {
+            headerMap.forEach(this::replace);
+        }
+    }
+
     /**
      * Remove a header by name
      * @param name the name of the header
@@ -242,16 +257,6 @@ public class Headers {
             for (Map.Entry<String, String> entry : headerMap.entrySet()) {
                 add(entry.getKey(), entry.getValue());
             }
-        }
-    }
-
-    /**
-     * Replace all headers from a given map.
-     * @param headerMap the map of headers
-     */
-    public void replace(Map<String, String> headerMap) {
-        if (headerMap != null) {
-            headerMap.forEach(this::replace);
         }
     }
 
