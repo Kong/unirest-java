@@ -337,6 +337,11 @@ public class RequestCapture {
         return assertHeader("Accept", type.toString());
     }
 
+    public RequestCapture assertNoHeader(String key, String unwantedvalue) {
+        headers.assertNoHeader(key, unwantedvalue);
+        return this;
+    }
+
     public static class MultiPart {
         public ListMultimap<String, String> headers = LinkedListMultimap.create();
         public String content;

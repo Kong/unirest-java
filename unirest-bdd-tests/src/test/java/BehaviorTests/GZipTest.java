@@ -22,10 +22,9 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 package BehaviorTests;
 
-import kong.unirest.core.HttpResponse;
+import kong.unirest.core.HeaderNames;
 import kong.unirest.core.Unirest;
 import org.junit.jupiter.api.Test;
 
@@ -36,40 +35,33 @@ class GZipTest extends BddTest {
 
     @Test
     void emptyGzip() {
-        HttpResponse<String> result = Unirest.post(MockServer.EMPTY_GZIP)
-                .asString();
-        result.getParsingError().ifPresent(e -> {
-            e.printStackTrace();
-        });
+        var result = Unirest.post(MockServer.EMPTY_GZIP).asString();
+
         assertFalse(result.getParsingError().isPresent());
         assertEquals("", result.getBody());
     }
 
     @Test
     void testGzip() {
-        HttpResponse<RequestCapture> resp = Unirest.get(MockServer.GZIP)
+        Unirest.get(MockServer.GZIP)
                 .queryString("zipme", "up")
-                .asObject(RequestCapture.class);
-
-        resp.getBody()
+                .asObject(RequestCapture.class)
+                .getBody()
                 .assertParam("zipme", "up")
-                .assertHeader("Accept-Encoding","gzip");
-
-        assertEquals(0, resp.getHeaders().get("Content-Encoding").size());
+                .assertHeader("Accept-Encoding", "gzip")
+                .assertNoHeader("Content-Encoding");
     }
 
     @Test
     void testGzipAsync() throws Exception {
-        HttpResponse<RequestCapture> resp = Unirest.get(MockServer.GZIP)
+        Unirest.get(MockServer.GZIP)
                 .queryString("zipme", "up")
                 .asObjectAsync(RequestCapture.class)
-                .get();
-
-        resp.getBody()
+                .get()
+                .getBody()
                 .assertParam("zipme", "up")
-                .assertHeader("Accept-Encoding", "gzip");
-
-        assertEquals(0, resp.getHeaders().get("Content-Encoding").size());
+                .assertHeader("Accept-Encoding", "gzip")
+                .assertNoHeader("Content-Encoding");
     }
 
     @Test
@@ -81,5 +73,15 @@ class GZipTest extends BddTest {
                 .get()
                 .getBody()
                 .assertNoHeader("Accept-Encoding");
+    }
+
+    @Test
+    void canOverrideEncoding() {
+        Unirest.get(MockServer.GET)
+                .header(HeaderNames.ACCEPT_ENCODING, "identity")
+                .asObject(RequestCapture.class)
+                .getBody()
+                .assertHeader("Accept-Encoding", "identity")
+                .assertNoHeader("Accept-Encoding", "gzip");
     }
 }

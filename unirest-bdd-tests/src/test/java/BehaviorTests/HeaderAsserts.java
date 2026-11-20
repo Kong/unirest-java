@@ -34,9 +34,7 @@ import org.assertj.core.data.MapEntry;
 
 import java.util.Base64;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -120,6 +118,13 @@ public class HeaderAsserts {
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new AssertionError("Missing any values for header " + name));
+    }
+
+    public HeaderAsserts assertNoHeader(String key, String unwantedvalue) {
+        assertThat(headers.get(key))
+                .extracting(HeaderValue::getValue)
+                .doesNotContain(unwantedvalue);
+        return this;
     }
 
     public static class HeaderValue {
