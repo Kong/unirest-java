@@ -54,9 +54,9 @@ public class QueryParams {
         }
     }
 
-    private void parse(String urlPart) {
+    private void parse(String q) {
         try {
-            String query = urlPart;
+            String query = q;
             for (String param : query.split("&")) {
                 String[] pair = param.split("=");
                 String key = URLDecoder.decode(pair[0], "UTF-8");
@@ -91,6 +91,14 @@ public class QueryParams {
 
         public String getValue() {
             return value;
+        }
+
+        @Override
+        public String toString() {
+            return "NameValuePair{" +
+                    "key='" + key + '\'' +
+                    ", value='" + value + '\'' +
+                    '}';
         }
     }
 }
