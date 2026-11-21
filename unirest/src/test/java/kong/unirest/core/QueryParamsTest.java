@@ -82,6 +82,15 @@ class QueryParamsTest {
                 .containsPair("a","1=h");
     }
 
+    @Test
+    void questionMarkInKeysAndValues(){
+        var q = parse("?a?b=1?2");
+
+        assertThatPairs(q)
+                .hasSize(1)
+                .containsPair("a?b", "1?2");
+    }
+
 
     public static class NameValuePairsAssert
             extends AbstractAssert<NameValuePairsAssert, Collection<QueryParams.NameValuePair>> {
