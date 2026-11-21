@@ -29,6 +29,8 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class QueryParams {
     private final Collection<NameValuePair> pairs;
 
@@ -56,19 +58,39 @@ public class QueryParams {
 
     private void parse(String q) {
         try {
-            String query = q;
-            for (String param : query.split("&")) {
-                String[] pair = param.split("=");
-                String key = URLDecoder.decode(pair[0], "UTF-8");
-                String value = "";
-                if (pair.length > 1) {
-                    value = URLDecoder.decode(pair[1], "UTF-8");
+            StringBuilder key = new StringBuilder();
+            StringBuilder value = null;
+
+            for(char c : q.toCharArray()) {
+                if(value == null){
+                    if(c == '='){
+                        value = new StringBuilder();
+                    } else {
+                        key.append(c);
+                    }
+                } else {
+                    if(c == '&'){
+                        addPair(key, value);
+                        key = new StringBuilder();
+                        value = null;
+                    } else {
+                        value.append(c);
+                    }
                 }
-                pairs.add(new NameValuePair(key, value));
+            }
+            if(key.length() > 0 && value != null){
+                addPair(key, value);
             }
         } catch (Exception e) {
             throw new UnirestException(e);
         }
+    }
+
+    private void addPair(StringBuilder key, StringBuilder value) {
+        pairs.add(new NameValuePair(
+                URLDecoder.decode(key.toString(), UTF_8),
+                URLDecoder.decode(value.toString(), UTF_8))
+        );
     }
 
 
