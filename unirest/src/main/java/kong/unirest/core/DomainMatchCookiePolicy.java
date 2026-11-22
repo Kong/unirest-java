@@ -64,6 +64,11 @@ public class DomainMatchCookiePolicy implements CookiePolicy {
         if (host.equals(domain)) {
             return true;
         }
+        // A domain with no dot is a TLD (com) or an empty value. It can only be valid
+        // when it equals the host itself, which was already accepted above.
+        if (domain.indexOf('.') == -1) {
+            return false;
+        }
         // HttpCookie.domainMatches does not check for a dot before the domain, so it is only used
         // for dotless hosts such as localhost, which the CookieManager gives a host.local domain
         if (host.indexOf('.') == -1) {

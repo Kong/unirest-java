@@ -29,12 +29,15 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.CookieManager;
+import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DomainMatchCookiePolicyTest {
 
@@ -83,6 +86,21 @@ class DomainMatchCookiePolicyTest {
         addCookie("https://api.example.com/", List.of("sub=1; Domain=example.com", "dot=1; Domain=.example.com"));
 
         assertThat(cookiesSentTo("https://www.example.com/")).containsExactlyInAnyOrder("sub=1", "dot=1");
+    }
+
+    @Test
+    void rejectsDotlessDomainsThatAreNotTheHost() {
+        DomainMatchCookiePolicy policy = new DomainMatchCookiePolicy();
+        var cookie = new HttpCookie("sid", "1");
+
+        cookie.setDomain("com");
+        assertFalse(policy.shouldAccept(URI.create("https://evil.com/"), cookie));
+
+        cookie.setDomain("");
+        assertFalse(policy.shouldAccept(URI.create("https://example.com./"), cookie));
+
+        cookie.setDomain("localhost");
+        assertTrue(policy.shouldAccept(URI.create("https://localhost/"), cookie));
     }
 
     private void addCookie(String url, List<String> v1) throws IOException, URISyntaxException {
