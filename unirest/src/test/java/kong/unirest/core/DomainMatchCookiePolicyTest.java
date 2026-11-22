@@ -27,8 +27,10 @@ package kong.unirest.core;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.net.CookieManager;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +42,7 @@ class DomainMatchCookiePolicyTest {
 
     @Test
     void doesNotStoreCookiesSetForAnotherDomain() throws Exception {
-        cookies.put(new URI("http://evil.example/"), Map.of("Set-Cookie", List.of("session=attacker; Domain=bank.example")));
+        addCookie("http://evil.example/", List.of("session=attacker; Domain=bank.example"));
 
         assertThat(cookiesSentTo("http://bank.example/")).isEmpty();
         assertThat(cookiesSentTo("http://evil.example/")).isEmpty();
@@ -48,22 +50,22 @@ class DomainMatchCookiePolicyTest {
 
     @Test
     void doesNotStoreCookiesForADomainThatOnlySharesASuffix() throws Exception {
-        cookies.put(new URI("http://evilbank.example/"), Map.of("Set-Cookie", List.of("session=attacker; Domain=bank.example")));
+        addCookie("http://evilbank.example/", List.of("session=attacker; Domain=bank.example"));
 
         assertThat(cookiesSentTo("http://bank.example/")).isEmpty();
     }
 
     @Test
     void doesNotStoreCookiesForPartOfAnIpAddress() throws Exception {
-        cookies.put(new URI("http://10.0.0.1/"), Map.of("Set-Cookie", List.of("session=attacker; Domain=0.0.1")));
+        addCookie("http://10.0.0.1/", List.of("session=attacker; Domain=0.0.1"));
 
         assertThat(cookiesSentTo("http://192.0.0.1/")).isEmpty();
     }
 
     @Test
     void storesCookiesForAnIpAddressHost() throws Exception {
-        cookies.put(new URI("http://10.0.0.1/"), Map.of("Set-Cookie", List.of("ip=1; Domain=10.0.0.1")));
-        cookies.put(new URI("http://[::1]:8080/"), Map.of("Set-Cookie", List.of("ipv6=1")));
+        addCookie("http://10.0.0.1/", List.of("ip=1; Domain=10.0.0.1"));
+        addCookie("http://[::1]:8080/", List.of("ipv6=1"));
 
         assertThat(cookiesSentTo("http://10.0.0.1/")).containsExactly("ip=1");
         assertThat(cookiesSentTo("http://[::1]:8080/")).containsExactly("ipv6=1");
@@ -71,16 +73,20 @@ class DomainMatchCookiePolicyTest {
 
     @Test
     void storesCookiesForTheRequestHost() throws Exception {
-        cookies.put(new URI("http://localhost:8080/get"), Map.of("Set-Cookie", List.of("color=blue; Domain=localhost", "JSESSIONID=ABC123")));
+        addCookie("http://localhost:8080/get", List.of("color=blue; Domain=localhost", "JSESSIONID=ABC123"));
 
         assertThat(cookiesSentTo("http://localhost:8080/get")).containsExactlyInAnyOrder("color=blue", "JSESSIONID=ABC123");
     }
 
     @Test
     void storesCookiesForAParentDomainOfTheRequestHost() throws Exception {
-        cookies.put(new URI("https://api.example.com/"), Map.of("Set-Cookie", List.of("sub=1; Domain=example.com", "dot=1; Domain=.example.com")));
+        addCookie("https://api.example.com/", List.of("sub=1; Domain=example.com", "dot=1; Domain=.example.com"));
 
         assertThat(cookiesSentTo("https://www.example.com/")).containsExactlyInAnyOrder("sub=1", "dot=1");
+    }
+
+    private void addCookie(String url, List<String> v1) throws IOException, URISyntaxException {
+        cookies.put(new URI(url), Map.of("Set-Cookie", v1));
     }
 
     private List<String> cookiesSentTo(String uri) throws Exception {
