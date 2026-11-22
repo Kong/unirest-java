@@ -64,7 +64,9 @@ public class QueryParams {
                 if (c == '=') {
                     value = new StringBuilder();
                 } else if (c == '&') {
-                    addPair(key, new StringBuilder());
+                    if(key.length() > 0){
+                        addPair(key, new StringBuilder());
+                    }
                     key = new StringBuilder();
                 }
                 else {
