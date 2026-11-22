@@ -28,6 +28,7 @@ package kong.unirest.core;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Locale;
@@ -83,5 +84,12 @@ class UtilTest {
 
         assertThat(Util.encode("foo..bar"))
                 .isEqualTo("foo..bar");
+    }
+
+    @Test
+    void basicAuthValueIsUtf8Encoded() {
+        String expected = "Basic " + java.util.Base64.getEncoder()
+                .encodeToString("us\u00e9r:p\u00e4ss\u20ac".getBytes(StandardCharsets.UTF_8));
+        assertEquals(expected, Util.toBasicAuthValue("us\u00e9r", "p\u00e4ss\u20ac"));
     }
 }
