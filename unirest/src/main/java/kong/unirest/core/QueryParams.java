@@ -39,7 +39,9 @@ public class QueryParams {
 
     public static QueryParams fromBody(String body) {
         var queryParams = new QueryParams();
-        queryParams.parse(body);
+        if (body != null) {
+            queryParams.parse(body);
+        }
         return queryParams;
     }
 
@@ -49,9 +51,11 @@ public class QueryParams {
 
     private QueryParams(String url) {
         this();
-        String[] urlParts = url.split("\\?", 2);
-        if (urlParts.length > 1) {
-            parse(urlParts[1]);
+        if(url != null) {
+            String[] urlParts = url.split("\\?", 2);
+            if (urlParts.length > 1) {
+                parse(urlParts[1]);
+            }
         }
     }
 
@@ -60,9 +64,16 @@ public class QueryParams {
         StringBuilder value = null;
 
         for (char c : q.toCharArray()) {
-            if (value == null) {
+            if (c == '#') {
+                break;
+            } else if (value == null) {
                 if (c == '=') {
                     value = new StringBuilder();
+                } else if (c == '&') {
+                    if (key.length() > 0) {
+                        addPair(key, new StringBuilder());
+                    }
+                    key = new StringBuilder();
                 } else {
                     key.append(c);
                 }
@@ -94,16 +105,16 @@ public class QueryParams {
     }
 
     public static class NameValuePair {
-        private final String key;
+        private final String name;
         private final String value;
 
         public NameValuePair(String name, String value) {
-            this.key = name;
+            this.name = name;
             this.value = value;
         }
 
         public String getName() {
-            return key;
+            return name;
         }
 
         public String getValue() {
@@ -113,7 +124,7 @@ public class QueryParams {
         @Override
         public String toString() {
             return "NameValuePair{" +
-                    "key='" + key + '\'' +
+                    "key='" + name + '\'' +
                     ", value='" + value + '\'' +
                     '}';
         }

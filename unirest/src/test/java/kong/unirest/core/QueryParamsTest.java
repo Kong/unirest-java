@@ -34,14 +34,41 @@ import java.util.stream.Collectors;
 
 import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static kong.unirest.core.QueryParams.fromBody;
 import static kong.unirest.core.QueryParams.fromURI;
 import static kong.unirest.core.QueryParamsTest.NameValuePairsAssert.assertThatPairs;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class QueryParamsTest {
 
     private static Collection<QueryParams.NameValuePair> parse(String query, Object... params) {
         return fromURI("http://l" + String.format(query, params))
                 .getQueryParams();
+    }
+
+    @Test
+    void emptyUrl() {
+        assertThatPairs(parse(""))
+                .hasSize(0);
+    }
+
+    @Test
+    void nullUrl() {
+        assertThatPairs(fromURI(null).getQueryParams())
+                .hasSize(0);
+    }
+
+    @Test
+    void junkUrl() {
+        assertThatPairs(fromURI("fdhj hdfshjh.  jfds83j").getQueryParams())
+                .hasSize(0);
+    }
+
+    @Test
+    void nullBody() {
+        assertThatPairs(fromBody(null).getQueryParams())
+                .hasSize(0);
     }
 
     @Test
@@ -65,25 +92,25 @@ class QueryParamsTest {
     }
 
     @Test
-    void paramKeysAndValuesAreDecoded(){
+    void paramKeysAndValuesAreDecoded() {
         var q = parse("?%s=%s", encode("a t", UTF_8), encode("%", UTF_8));
 
         assertThatPairs(q)
                 .hasSize(1)
-                .containsPair("a t","%");
+                .containsPair("a t", "%");
     }
 
     @Test
-    void equalsInValue(){
+    void equalsInValue() {
         var q = parse("?a=1=h");
 
         assertThatPairs(q)
                 .hasSize(1)
-                .containsPair("a","1=h");
+                .containsPair("a", "1=h");
     }
 
     @Test
-    void questionMarkInKeysAndValues(){
+    void questionMarkInKeysAndValues() {
         var q = parse("?a?b=1?2");
 
         assertThatPairs(q)
@@ -91,6 +118,51 @@ class QueryParamsTest {
                 .containsPair("a?b", "1?2");
     }
 
+    @Test
+    void valuelessParams() {
+        var q = parse("?flag&a=1");
+
+        assertThatPairs(q)
+                .hasSize(2)
+                .containsPair("flag", "")
+                .containsPair("a", "1");
+    }
+
+    @Test
+    void emptyParams() {
+        var q = parse("?a=1&&b=2");
+
+        assertThatPairs(q)
+                .hasSize(2)
+                .containsPair("a", "1")
+                .containsPair("b", "2");
+    }
+
+    @Test
+    void valuelessKeys() {
+        var q = parse("?=v&a=b");
+
+        assertThatPairs(q)
+                .hasSize(2)
+                .containsPair("", "v")
+                .containsPair("a", "b");
+    }
+
+    @Test
+    void removeFragment() {
+        var q = parse("?a=1#top");
+
+        assertThatPairs(q)
+                .hasSize(1)
+                .containsPair("a", "1");
+    }
+
+    @Test
+    void malformedEncodings() {
+        assertThatThrownBy(() -> fromURI("http://l?a=100%").getQueryParams())
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("URLDecoder: Incomplete trailing escape (%) pattern");
+    }
 
     public static class NameValuePairsAssert
             extends AbstractAssert<NameValuePairsAssert, Collection<QueryParams.NameValuePair>> {
@@ -115,7 +187,7 @@ class QueryParamsTest {
         }
 
         public NameValuePairsAssert hasSize(int i) {
-            if(actual.size() != i){
+            if (actual.size() != i) {
                 failWithMessage(
                         "Expected size of %s but was %s",
                         i, actual.size()
