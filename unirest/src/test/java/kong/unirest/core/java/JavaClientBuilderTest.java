@@ -29,12 +29,9 @@ import kong.unirest.core.Config;
 import kong.unirest.core.DomainMatchCookiePolicy;
 import org.junit.jupiter.api.Test;
 
-import java.net.Authenticator;
+import java.io.IOException;
+import java.net.*;
 import java.net.Authenticator.RequestorType;
-import java.net.CookieHandler;
-import java.net.CookiePolicy;
-import java.net.PasswordAuthentication;
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +41,7 @@ class JavaClientBuilderTest {
 
     @Test
     void canAcceptsAllCookies() throws Exception {
-        CookieHandler cookies = cookieHandler(getConfig().cookiePolicy(CookiePolicy.ACCEPT_ALL));
+        var cookies = cookieHandler(getConfig().cookiePolicy(CookiePolicy.ACCEPT_ALL));
 
         plantCrossDomainCookie(cookies);
 
@@ -53,7 +50,7 @@ class JavaClientBuilderTest {
 
     @Test
     void usesTheConfiguredCookiePolicy() throws Exception {
-        CookieHandler cookies = cookieHandler(getConfig().cookiePolicy(new DomainMatchCookiePolicy()));
+        var cookies = cookieHandler(getConfig().cookiePolicy(new DomainMatchCookiePolicy()));
 
         plantCrossDomainCookie(cookies);
 
@@ -62,15 +59,11 @@ class JavaClientBuilderTest {
 
     @Test
     void canUseACustomCookiePolicy() throws Exception {
-        CookieHandler cookies = cookieHandler(getConfig().cookiePolicy(CookiePolicy.ACCEPT_NONE));
+        var cookies = cookieHandler(getConfig().cookiePolicy(CookiePolicy.ACCEPT_NONE));
 
-        cookies.put(new URI("http://bank.example/"), Map.of("Set-Cookie", List.of("session=abc")));
+        setCookies(cookies, "http://bank.example/", "session=abc");
 
         assertThat(cookiesSentTo(cookies, "http://bank.example/")).isEmpty();
-    }
-
-    private static Config getConfig() {
-        return new Config().enableCookieManagement(true);
     }
 
     @Test
@@ -82,7 +75,7 @@ class JavaClientBuilderTest {
                 "session=abc; Domain=bank.example; Max-Age=60")) {
             CookieHandler cookies = cookieHandler(getConfig());
 
-            cookies.put(new URI("http://bank.example/"), Map.of("Set-Cookie", List.of(cookie)));
+            setCookies(cookies, "http://bank.example/", cookie);
 
             assertThat(cookiesSentTo(cookies, "http://notbank.example/")).as(cookie).isEmpty();
         }
@@ -90,9 +83,9 @@ class JavaClientBuilderTest {
 
     @Test
     void cookiesFromAnIpAreNotSentToAnotherIpThatEndsTheSame() throws Exception {
-        CookieHandler cookies = cookieHandler(getConfig());
+        var cookies = cookieHandler(getConfig());
 
-        cookies.put(new URI("http://10.0.0.1/"), Map.of("Set-Cookie", List.of("session=abc")));
+        setCookies(cookies, "http://10.0.0.1/", "session=abc");
 
         assertThat(cookiesSentTo(cookies, "http://110.0.0.1/")).isEmpty();
     }
@@ -100,9 +93,9 @@ class JavaClientBuilderTest {
     @Test
     void cookiesAreStillSentToTheirDomainAndSubdomains() throws Exception {
         for (String cookie : List.of("session=abc; Domain=bank.example", "session=abc; Domain=.bank.example")) {
-            CookieHandler cookies = cookieHandler(getConfig());
+            var cookies = cookieHandler(getConfig());
 
-            cookies.put(new URI("http://bank.example/"), Map.of("Set-Cookie", List.of(cookie)));
+            setCookies(cookies, "http://bank.example/", cookie);
 
             assertThat(cookiesSentTo(cookies, "http://bank.example/")).as(cookie).containsExactly("session=abc");
             assertThat(cookiesSentTo(cookies, "http://BANK.example/")).as(cookie).containsExactly("session=abc");
@@ -112,11 +105,15 @@ class JavaClientBuilderTest {
 
     @Test
     void secureCookiesAreNotAcceptedFromAnInsecureResponse() throws Exception {
-        CookieHandler cookies = cookieHandler(getConfig());
+        var cookies = cookieHandler(getConfig());
 
-        cookies.put(new URI("http://bank.example/"), Map.of("Set-Cookie", List.of("session=attacker; Secure")));
+        setCookies(cookies, "http://bank.example/", "session=attacker; Secure");
 
         assertThat(cookiesSentTo(cookies, "https://bank.example/")).isEmpty();
+    }
+
+    private static void setCookies(CookieHandler cookies, String url, String e1) throws IOException, URISyntaxException {
+        cookies.put(new URI(url), Map.of("Set-Cookie", List.of(e1)));
     }
 
     @Test
@@ -126,10 +123,11 @@ class JavaClientBuilderTest {
                 "session=attacker; Path=/account",
                 "session=attacker; Domain=bank.example",
                 "session=attacker; Domain=www.bank.example")) {
-            CookieHandler cookies = cookieHandler(getConfig());
-            cookies.put(new URI("https://www.bank.example/"), Map.of("Set-Cookie", List.of("session=abc; Domain=bank.example; Secure")));
 
-            cookies.put(new URI("http://www.bank.example/account"), Map.of("Set-Cookie", List.of(cookie)));
+            var cookies = cookieHandler(getConfig());
+
+            setCookies(cookies, "https://www.bank.example/", "session=abc; Domain=bank.example; Secure");
+            setCookies(cookies, "http://www.bank.example/account", cookie);
 
             assertThat(cookiesSentTo(cookies, "https://www.bank.example/account")).as(cookie).containsExactly("session=abc");
         }
@@ -137,11 +135,11 @@ class JavaClientBuilderTest {
 
     @Test
     void secureCookiesStillWorkOverHttps() throws Exception {
-        CookieHandler cookies = cookieHandler(getConfig());
+        var cookies = cookieHandler(getConfig());
 
-        cookies.put(new URI("https://bank.example/"), Map.of("Set-Cookie", List.of("session=abc; Secure")));
-        cookies.put(new URI("http://bank.example/"), Map.of("Set-Cookie", List.of("lang=en")));
-        cookies.put(new URI("https://bank.example/"), Map.of("Set-Cookie", List.of("session=def; Secure")));
+        setCookies(cookies, "https://bank.example/", "session=abc; Secure");
+        setCookies(cookies, "http://bank.example/", "lang=en");
+        setCookies(cookies, "https://bank.example/", "session=def; Secure");
 
         assertThat(cookiesSentTo(cookies, "https://bank.example/")).containsExactlyInAnyOrder("session=def", "lang=en");
         assertThat(cookiesSentTo(cookies, "http://bank.example/")).containsExactly("lang=en");
@@ -149,9 +147,9 @@ class JavaClientBuilderTest {
 
     @Test
     void proxyCredentialsAnswerProxyChallenges() throws Exception {
-        Authenticator auth = proxyAuthenticator();
+        var auth = proxyAuthenticator();
 
-        PasswordAuthentication creds = challenge(auth, "proxy.example", RequestorType.PROXY);
+        var creds = challenge(auth, "proxy.example", RequestorType.PROXY);
 
         assertThat(creds.getUserName()).isEqualTo("proxyuser");
         assertThat(creds.getPassword()).isEqualTo("proxypass".toCharArray());
@@ -159,7 +157,7 @@ class JavaClientBuilderTest {
 
     @Test
     void proxyCredentialsAreNotGivenToServers() throws Exception {
-        Authenticator auth = proxyAuthenticator();
+        var auth = proxyAuthenticator();
 
         assertThat(challenge(auth, "evil.example", RequestorType.SERVER)).isNull();
     }
@@ -174,8 +172,12 @@ class JavaClientBuilderTest {
                 URI.create("http://" + host + "/").toURL(), type);
     }
 
+    private static Config getConfig() {
+        return new Config().enableCookieManagement(true);
+    }
+
     private void plantCrossDomainCookie(CookieHandler cookies) throws Exception {
-        cookies.put(new URI("http://evil.example/"), Map.of("Set-Cookie", List.of("session=attacker; Domain=bank.example")));
+        setCookies(cookies, "http://evil.example/", "session=attacker; Domain=bank.example");
     }
 
     private CookieHandler cookieHandler(Config config) {
