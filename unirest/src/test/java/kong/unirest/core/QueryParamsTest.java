@@ -1,8 +1,8 @@
 /**
  * The MIT License
- * <p>
+ *
  * Copyright for portions of unirest-java are held by Kong Inc (c) 2013.
- * <p>
+ *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -10,10 +10,10 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- * <p>
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * <p>
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -34,14 +34,41 @@ import java.util.stream.Collectors;
 
 import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static kong.unirest.core.QueryParams.fromBody;
 import static kong.unirest.core.QueryParams.fromURI;
 import static kong.unirest.core.QueryParamsTest.NameValuePairsAssert.assertThatPairs;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class QueryParamsTest {
 
     private static Collection<QueryParams.NameValuePair> parse(String query, Object... params) {
         return fromURI("http://l" + String.format(query, params))
                 .getQueryParams();
+    }
+
+    @Test
+    void emptyUrl() {
+        assertThatPairs(parse(""))
+                .hasSize(0);
+    }
+
+    @Test
+    void nullUrl() {
+        assertThatPairs(fromURI(null).getQueryParams())
+                .hasSize(0);
+    }
+
+    @Test
+    void junkUrl() {
+        assertThatPairs(fromURI("fdhj hdfshjh.  jfds83j").getQueryParams())
+                .hasSize(0);
+    }
+
+    @Test
+    void nullBody() {
+        assertThatPairs(fromBody(null).getQueryParams())
+                .hasSize(0);
     }
 
     @Test
@@ -128,6 +155,13 @@ class QueryParamsTest {
         assertThatPairs(q)
                 .hasSize(1)
                 .containsPair("a", "1");
+    }
+
+    @Test
+    void malformedEncodings() {
+        assertThatThrownBy(() -> fromURI("http://l?a=100%").getQueryParams())
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("URLDecoder: Incomplete trailing escape (%) pattern");
     }
 
     public static class NameValuePairsAssert
