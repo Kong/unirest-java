@@ -111,6 +111,15 @@ class QueryParamsTest {
                 .containsPair("b", "2");
     }
 
+    @Test
+    void valuelessKeys() {
+        var q = parse("?=v&a=b");
+
+        assertThatPairs(q)
+                .hasSize(2)
+                .containsPair("", "v")
+                .containsPair("a", "b");
+    }
 
     public static class NameValuePairsAssert
             extends AbstractAssert<NameValuePairsAssert, Collection<QueryParams.NameValuePair>> {
