@@ -121,6 +121,15 @@ class QueryParamsTest {
                 .containsPair("a", "b");
     }
 
+    @Test
+    void removeFragment() {
+        var q = parse("?a=1#top");
+
+        assertThatPairs(q)
+                .hasSize(1)
+                .containsPair("a", "1");
+    }
+
     public static class NameValuePairsAssert
             extends AbstractAssert<NameValuePairsAssert, Collection<QueryParams.NameValuePair>> {
 
