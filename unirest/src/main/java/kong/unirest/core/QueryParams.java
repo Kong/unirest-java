@@ -30,13 +30,30 @@ import java.util.Collection;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * Parses URL-encoded query parameters from a URI or form-encoded body.
+ * Parameters are kept in encounter order, including repeated names.
+ */
 public class QueryParams {
     private final Collection<NameValuePair> pairs;
 
+    /**
+     * Creates query parameters from the query component of a URI string.
+     *
+     * @param uri the URI string; if {@code null} or it has no query component,
+     *            the result contains no parameters
+     * @return the parsed query parameters
+     */
     public static QueryParams fromURI(String uri) {
         return new QueryParams(uri);
     }
 
+    /**
+     * Creates query parameters from a URL-encoded body.
+     *
+     * @param body the encoded body; if {@code null}, the result contains no parameters
+     * @return the parsed query parameters
+     */
     public static QueryParams fromBody(String body) {
         var queryParams = new QueryParams();
         if (body != null) {
@@ -100,23 +117,47 @@ public class QueryParams {
     }
 
 
+    /**
+     * Returns the parsed name-value pairs in encounter order.
+     *
+     * @return a copy of the collection of query parameters
+     */
     public Collection<NameValuePair> getQueryParams() {
         return new ArrayList<>(pairs);
     }
 
+    /**
+     * A query parameter consisting of a name and its decoded value.
+     */
     public static class NameValuePair {
         private final String name;
         private final String value;
 
+        /**
+         * Creates a name-value pair.
+         *
+         * @param name the parameter name
+         * @param value the parameter value
+         */
         public NameValuePair(String name, String value) {
             this.name = name;
             this.value = value;
         }
 
+        /**
+         * Returns the parameter name.
+         *
+         * @return the parameter name
+         */
         public String getName() {
             return name;
         }
 
+        /**
+         * Returns the parameter value.
+         *
+         * @return the parameter value
+         */
         public String getValue() {
             return value;
         }

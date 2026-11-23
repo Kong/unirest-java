@@ -34,6 +34,7 @@ import java.net.http.WebSocket;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -163,9 +164,8 @@ public class JavaClient implements Client {
                 return r;
             } catch (Exception ee){
                 callback.completeExceptionally(e);
+                throw new CompletionException(ee);
             }
-
-            return new FailedResponse(ex);
         });
     }
 

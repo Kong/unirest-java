@@ -30,12 +30,31 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
+import java.net.http.HttpTimeoutException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import static BehaviorTests.MockCallback.json;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CallbackFutureTest extends BddTest {
+
+    @Test @Timeout(10)
+    void requestTimeoutCompletesFutureExceptionally() throws Exception {
+        var future = Unirest.get(MockServer.TIMEOUT)
+                .requestTimeout(100)
+                .asEmptyAsync();
+
+        assertThatThrownBy(() -> future.get(5, TimeUnit.SECONDS))
+                .isInstanceOf(ExecutionException.class)
+                .hasRootCauseInstanceOf(HttpTimeoutException.class);
+
+        assertThat(future.isCompletedExceptionally())
+                .isTrue();
+    }
 
     @Test @Timeout(5)
     void onSuccess() throws Exception {
