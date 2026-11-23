@@ -65,6 +65,12 @@ public class Path {
         }
     }
 
+    Path(Path other) {
+        this.url = other.url;
+        this.rawPath = other.rawPath;
+
+    }
+
     /**
      * replace path params designated with curley braces with a value
      * @param params a map of param names and values
