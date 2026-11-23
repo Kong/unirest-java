@@ -35,6 +35,7 @@ import java.util.Map;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static kong.unirest.core.HttpMethod.GET;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BaseRequestTest {
@@ -131,6 +132,21 @@ class BaseRequestTest {
         TestRequest r3 = new TestRequest();
 
         assertEquals(50L, ChronoUnit.MINUTES.between(r1.getCreationTime(), r3.getCreationTime()));
+    }
+
+    @Test
+    void requestsDontShareURLsAfterCopy() {
+        var b1 = new TestRequest();
+        b1.queryString("a", "1");
+
+        var b2 = new TestRequest(b1);
+        b2.queryString("b", "2");
+
+        assertThat(b1.getUrl())
+                .isEqualTo("/?a=1");
+
+        assertThat(b2.getUrl())
+                .isEqualTo("/?a=1&b=2");
     }
 
     private class TestRequest extends BaseRequest<TestRequest> {

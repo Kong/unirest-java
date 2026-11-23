@@ -57,7 +57,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     BaseRequest(BaseRequest httpRequest) {
         this.config = httpRequest.config;
         this.method = httpRequest.method;
-        this.url = httpRequest.url;
+        this.url = new Path(httpRequest.url);
         this.headers.putAll(httpRequest.headers);
         this.connectTimeout = httpRequest.connectTimeout;
         this.objectMapper = httpRequest.objectMapper;

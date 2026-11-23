@@ -180,7 +180,7 @@ class PathTest {
 
     @Test
     void queryStringWhenNullUrl(){
-        assertThat(new Path(null).getQueryString())
+        assertThat(new Path((String)null).getQueryString())
                 .isEmpty();
     }
 
