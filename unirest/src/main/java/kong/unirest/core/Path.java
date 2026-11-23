@@ -202,7 +202,11 @@ public class Path {
         if(url == null || !url.contains("?")){
             return "";
         }
-        return url.substring(url.indexOf("?")+1);
+        String q = url.substring(url.indexOf("?") + 1);
+        if(q.contains("#")){
+            q = q.substring(0, q.indexOf("#"));
+        }
+        return q;
     }
 
     @Override

@@ -183,4 +183,10 @@ class PathTest {
         assertThat(new Path(null).getQueryString())
                 .isEmpty();
     }
+
+    @Test
+    void queryStringDoesNotIncludeFragment() {
+        assertThat(new Path("http://localhost?a=1#hashtag").getQueryString())
+        .isEqualTo("a=1");
+    }
 }
