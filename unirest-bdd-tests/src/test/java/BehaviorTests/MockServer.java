@@ -89,11 +89,13 @@ public class MockServer {
     public static final String ALTGET = "http://127.0.0.1:" + PORT + "/get";
     public static final String ECHO_RAW = HOST + "/raw";
     public static final String TIMEOUT = HOST + "/timeout";
+    public static final String STREAMING = HOST + "/streaming";
     public static final String BASICAUTH = HOST + "/basic";
     public static final String PROXYAUTH = HOST + "/proxy-auth";
     private static Javalin app;
     private static int errorCode = 400;
     private static RequestCapture lastRequest;
+    private static volatile CountDownLatch streamingBodyRelease = new CountDownLatch(1);
 
 
     public static void setJsonAsResponse(Object o) {
@@ -101,6 +103,8 @@ public class MockServer {
     }
 
     public static void reset() {
+        streamingBodyRelease.countDown();
+        streamingBodyRelease = new CountDownLatch(1);
         responseBody = null;
         responseHeaders.clear();
         cookies.clear();
@@ -160,6 +164,7 @@ public class MockServer {
             c.routes.get("/error", MockServer::error);
             c.routes.get("/hello", MockServer::helloWOrld);
             c.routes.get("/timeout", MockServer::timeout);
+            c.routes.get("/streaming", MockServer::streaming);
             c.routes.get("/basic", MockServer::basic);
             c.routes.get("/proxy-auth", MockServer::proxyAuth);
             c.routes.error(404, MockServer::notFound);
@@ -191,6 +196,21 @@ public class MockServer {
 
         }
         context.result("Hello World");
+    }
+
+    private static void streaming(Context context) throws Exception {
+        var release = streamingBodyRelease;
+        context.contentType("text/plain");
+        var output = context.res().getOutputStream();
+        output.write('a');
+        output.flush();
+        if (!release.await(10, TimeUnit.SECONDS)) {
+            throw new IllegalStateException("Streaming response was not released");
+        }
+    }
+
+    public static void releaseStreamingBody() {
+        streamingBodyRelease.countDown();
     }
 
 

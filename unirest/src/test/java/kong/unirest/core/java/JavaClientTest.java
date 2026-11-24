@@ -39,13 +39,17 @@ import kong.unirest.core.WebSocketRequestImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpHeaders;
 import java.net.http.WebSocket;
+import java.util.Map;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -60,6 +64,77 @@ class JavaClientTest {
 
     private static final String SECRET = "Bearer s3cr3t\n";
     private static final String MESSAGE = "invalid value for header \"Authorization\": illegal character 0x0a at index 13";
+
+    @Test
+    void cancellationClosesBodyDuringResponseTransformation() throws Exception {
+        var body = mock(InputStream.class);
+        var transport = CompletableFuture.completedFuture(responseWithBody(body));
+        var httpClient = mock(HttpClient.class);
+        when(httpClient.<InputStream>sendAsync(any(), any())).thenReturn(transport);
+        var config = new Config();
+        var client = new JavaClient(config, httpClient);
+        var transforming = new CompletableFuture<Void>();
+        var released = new CompletableFuture<Void>();
+        doAnswer(invocation -> {
+            released.complete(null);
+            return null;
+        }).when(body).close();
+        var request = new UnirestInstance(config).get("http://localhost/");
+        var result = client.request(request, raw -> {
+            transforming.complete(null);
+            released.join();
+            return null;
+        }, new CompletableFuture<HttpResponse<Empty>>(), Empty.class);
+
+        try {
+            transforming.get(5, TimeUnit.SECONDS);
+            assertThat(result.cancel(true)).isTrue();
+            verify(body).close();
+            assertThat(result.isCancelled()).isTrue();
+        } finally {
+            released.complete(null);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void cancellationClosesLateResponseBody(boolean closeFails) throws Exception {
+        var transport = new CompletableFuture<java.net.http.HttpResponse<InputStream>>() {
+            @Override
+            public boolean cancel(boolean mayInterruptIfRunning) {
+                return false;
+            }
+        };
+        var httpClient = mock(HttpClient.class);
+        when(httpClient.<InputStream>sendAsync(any(), any())).thenReturn(transport);
+        var body = mock(InputStream.class);
+        var closeFailure = new IOException("close failed");
+        if (closeFails) {
+            doThrow(closeFailure).when(body).close();
+        }
+        var config = new Config();
+        var client = new JavaClient(config, httpClient);
+        var request = new UnirestInstance(config).get("http://localhost/");
+        var result = client.request(request, raw -> null, new CompletableFuture<HttpResponse<Empty>>(), Empty.class);
+
+        assertThat(result.cancel(true)).isTrue();
+        transport.complete(responseWithBody(body));
+
+        verify(body).close();
+        assertThat(result.isCancelled()).isTrue();
+        if (closeFails) {
+            assertThat(result.handle((response, error) -> error).join())
+                    .isInstanceOf(CancellationException.class)
+                    .hasSuppressedException(closeFailure);
+        }
+    }
+
+    private static java.net.http.HttpResponse<InputStream> responseWithBody(InputStream body) {
+        java.net.http.HttpResponse<InputStream> response = mock(java.net.http.HttpResponse.class);
+        when(response.body()).thenReturn(body);
+        when(response.headers()).thenReturn(HttpHeaders.of(Map.of(), (name, value) -> true));
+        return response;
+    }
 
     @ParameterizedTest
     @MethodSource("metricFailures")

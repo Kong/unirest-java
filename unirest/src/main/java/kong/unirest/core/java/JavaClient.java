@@ -28,6 +28,7 @@ package kong.unirest.core.java;
 import kong.unirest.core.*;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
@@ -150,13 +151,20 @@ public class JavaClient implements Client {
                 java.net.http.HttpResponse.BodyHandlers.ofInputStream());
         callback.whenComplete((response, error) -> {
             if (callback.isCancelled()) {
+                execute.thenAccept(h -> closeCancelledBody(h.body(), error));
                 execute.cancel(true);
             }
         });
         execute.thenAcceptAsync(h -> {
             var t = new JavaResponse(h, config, reqSum);
             metric.complete(t.toSummary(), null);
+            if (callback.isCancelled()) {
+                return;
+            }
             var httpResponse = transformBody(transformer, t);
+            if (callback.isCancelled()) {
+                return;
+            }
             config.getUniInterceptor().onResponse(httpResponse, reqSum, config);
             callback.complete(httpResponse);
         }).exceptionally(e -> handleFailure(e, reqSum, metric, callback))
@@ -166,6 +174,14 @@ public class JavaClient implements Client {
                     }
                 });
         return callback;
+    }
+
+    private void closeCancelledBody(InputStream body, Throwable cancellation) {
+        try {
+            body.close();
+        } catch (IOException failure) {
+            cancellation.addSuppressed(failure);
+        }
     }
 
     private <T> Void handleFailure(Throwable error, HttpRequestSummary request, MetricContext metric, CompletableFuture<HttpResponse<T>> callback) {
