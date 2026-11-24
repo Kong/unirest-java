@@ -214,7 +214,7 @@ public class JavaClient implements Client {
 
         return client.sendAsync(r, java.net.http.HttpResponse.BodyHandlers.ofLines())
                 .thenApply(this::checkSseResponse)
-                .thenAccept(new SseResponseHandler(config, handler));
+                .thenAcceptAsync(new SseResponseHandler(config, handler));
     }
 
     @Override

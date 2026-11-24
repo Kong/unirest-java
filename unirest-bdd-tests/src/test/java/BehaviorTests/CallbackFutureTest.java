@@ -72,7 +72,8 @@ class CallbackFutureTest extends BddTest {
     }
 
     private String readUntilClosed(RawResponse response, CompletableFuture<InputStream> reading, CompletableFuture<Void> stopped) {
-        try (var body = response.getContent()) {
+        var body = response.getContent();
+        try {
             body.read();
             reading.complete(body);
             body.transferTo(OutputStream.nullOutputStream());
@@ -80,19 +81,26 @@ class CallbackFutureTest extends BddTest {
         } catch (IOException e) {
             throw new UnirestException(e);
         } finally {
-            stopped.complete(null);
+            try {
+                body.close();
+            } catch (IOException e) {
+                throw new UnirestException(e);
+            } finally {
+                stopped.complete(null);
+            }
         }
     }
 
     @Test @Timeout(10)
     void throwingMetricCompletesFutureAndNotifiesFailureCallback() throws Exception {
-        try (var unirest = new UnirestInstance(new Config())) {
+        var originalMetric = Unirest.config().getMetric();
+        try {
             var metricFailure = new IllegalStateException("metric failed");
-            unirest.config().instrumentWith(request -> (response, failure) -> {
+            Unirest.config().instrumentWith(request -> (response, failure) -> {
                 throw metricFailure;
             });
             var callbackFailure = new CompletableFuture<UnirestException>();
-            var future = unirest.get(MockServer.TIMEOUT)
+            var future = Unirest.get(MockServer.TIMEOUT)
                     .requestTimeout(100)
                     .asEmptyAsync(new NoopCallback<Empty>() {
                         @Override
@@ -107,6 +115,8 @@ class CallbackFutureTest extends BddTest {
             assertThat(callbackFailure.get(1, TimeUnit.SECONDS))
                     .hasRootCauseInstanceOf(IllegalStateException.class)
                     .hasRootCauseMessage("metric failed");
+        } finally {
+            Unirest.config().instrumentWith(originalMetric);
         }
     }
 

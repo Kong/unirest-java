@@ -203,9 +203,9 @@ public class MockServer {
 
     private static void streaming(Context context) throws Exception {
         var release = streamingBodyRelease;
-        context.contentType("text/plain");
+        context.contentType("text/event-stream");
         var output = context.res().getOutputStream();
-        output.write('a');
+        output.write("data: a\n\n".getBytes(StandardCharsets.UTF_8));
         output.flush();
         if (!release.await(10, TimeUnit.SECONDS)) {
             throw new IllegalStateException("Streaming response was not released");
