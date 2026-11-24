@@ -31,18 +31,25 @@ import kong.unirest.core.Empty;
 import kong.unirest.core.Headers;
 import kong.unirest.core.HttpResponse;
 import kong.unirest.core.Interceptor;
+import kong.unirest.core.MetricContext;
 import kong.unirest.core.SseRequestImpl;
 import kong.unirest.core.UnirestException;
 import kong.unirest.core.UnirestInstance;
 import kong.unirest.core.WebSocketRequestImpl;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.WebSocket;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -53,6 +60,32 @@ class JavaClientTest {
 
     private static final String SECRET = "Bearer s3cr3t\n";
     private static final String MESSAGE = "invalid value for header \"Authorization\": illegal character 0x0a at index 13";
+
+    @ParameterizedTest
+    @MethodSource("metricFailures")
+    void throwingMetricCompletesRequestExceptionally(Throwable failure) {
+        var transport = new CompletableFuture<java.net.http.HttpResponse<InputStream>>();
+        var httpClient = mock(HttpClient.class);
+        when(httpClient.<InputStream>sendAsync(any(), any())).thenReturn(transport);
+        var metric = mock(MetricContext.class);
+        doThrow(failure).when(metric).complete(any(), any());
+        var config = new Config().instrumentWith(request -> metric);
+        var request = new UnirestInstance(config).get("http://localhost/");
+        var callback = new CompletableFuture<HttpResponse<Empty>>();
+        var client = new JavaClient(config, httpClient);
+        var result = client.request(request, raw -> null, callback, Empty.class);
+
+        transport.completeExceptionally(new IOException("network failed"));
+
+        assertThatThrownBy(() -> result.get(1, TimeUnit.SECONDS))
+                .isInstanceOf(ExecutionException.class)
+                .hasCause(failure);
+        assertThat(callback.isCompletedExceptionally()).isTrue();
+    }
+
+    private static Stream<Throwable> metricFailures() {
+        return Stream.of(new IllegalStateException("metric failed"), new AssertionError("metric failed"));
+    }
 
     @Test
     void cancellationReachesTransportWithoutInvokingFailureInterceptor() {
