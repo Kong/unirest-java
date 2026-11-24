@@ -44,6 +44,32 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CallbackFutureTest extends BddTest {
 
+    @Test @Timeout(10)
+    void throwingMetricCompletesFutureAndNotifiesFailureCallback() throws Exception {
+        try (var unirest = new UnirestInstance(new Config())) {
+            var metricFailure = new IllegalStateException("metric failed");
+            unirest.config().instrumentWith(request -> (response, failure) -> {
+                throw metricFailure;
+            });
+            var callbackFailure = new CompletableFuture<UnirestException>();
+            var future = unirest.get(MockServer.TIMEOUT)
+                    .requestTimeout(100)
+                    .asEmptyAsync(new NoopCallback<Empty>() {
+                        @Override
+                        public void failed(UnirestException e) {
+                            callbackFailure.complete(e);
+                        }
+                    });
+
+            assertThatThrownBy(() -> future.get(5, TimeUnit.SECONDS))
+                    .isInstanceOf(ExecutionException.class)
+                    .hasCause(metricFailure);
+            assertThat(callbackFailure.get(1, TimeUnit.SECONDS))
+                    .hasRootCauseInstanceOf(IllegalStateException.class)
+                    .hasRootCauseMessage("metric failed");
+        }
+    }
+
     @ParameterizedTest @ValueSource(booleans = {false, true}) @Timeout(10)
     void cancellingRequestInvokesCancelledCallback(boolean retryEnabled) throws Exception {
         Unirest.config().retryAfter(retryEnabled);

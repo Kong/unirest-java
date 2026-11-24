@@ -159,7 +159,12 @@ public class JavaClient implements Client {
             var httpResponse = transformBody(transformer, t);
             config.getUniInterceptor().onResponse(httpResponse, reqSum, config);
             callback.complete(httpResponse);
-        }).exceptionally(e -> handleFailure(e, reqSum, metric, callback));
+        }).exceptionally(e -> handleFailure(e, reqSum, metric, callback))
+                .whenComplete((ignored, failure) -> {
+                    if (failure != null) {
+                        callback.completeExceptionally(failure);
+                    }
+                });
         return callback;
     }
 
