@@ -65,6 +65,30 @@ class JavaClientTest {
     private static final String SECRET = "Bearer s3cr3t\n";
     private static final String MESSAGE = "invalid value for header \"Authorization\": illegal character 0x0a at index 13";
 
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void sseConsumesStreamOffCallingThread(boolean headersAlreadyAvailable) throws Exception {
+        var callingThread = Thread.currentThread();
+        var callbackThread = new CompletableFuture<Thread>();
+        var response = responseWithBody(Stream.of("data: hello", ""));
+        when(response.statusCode()).thenReturn(200);
+        var transport = new CompletableFuture<java.net.http.HttpResponse<Stream<String>>>();
+        if (headersAlreadyAvailable) {
+            transport.complete(response);
+        }
+        var httpClient = mock(HttpClient.class);
+        when(httpClient.<Stream<String>>sendAsync(any(), any())).thenReturn(transport);
+        var config = new Config();
+        var client = new JavaClient(config, httpClient);
+        var request = new SseRequestImpl(config, "http://localhost/");
+
+        var connection = client.sse(request, event -> callbackThread.complete(Thread.currentThread()));
+        transport.complete(response);
+        connection.get(5, TimeUnit.SECONDS);
+
+        assertThat(callbackThread.get(5, TimeUnit.SECONDS)).isNotSameAs(callingThread);
+    }
+
     @Test
     void cancellationClosesBodyDuringResponseTransformation() throws Exception {
         var body = mock(InputStream.class);
@@ -129,8 +153,8 @@ class JavaClientTest {
         }
     }
 
-    private static java.net.http.HttpResponse<InputStream> responseWithBody(InputStream body) {
-        java.net.http.HttpResponse<InputStream> response = mock(java.net.http.HttpResponse.class);
+    private static <T> java.net.http.HttpResponse<T> responseWithBody(T body) {
+        java.net.http.HttpResponse<T> response = mock(java.net.http.HttpResponse.class);
         when(response.body()).thenReturn(body);
         when(response.headers()).thenReturn(HttpHeaders.of(Map.of(), (name, value) -> true));
         return response;

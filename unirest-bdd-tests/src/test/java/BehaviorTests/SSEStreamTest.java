@@ -33,6 +33,8 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,6 +47,21 @@ public class SSEStreamTest extends BddTest {
     public void setUp() {
         super.setUp();
         MockServer.Sse.keepAlive(false);
+    }
+
+    @Test
+    void asyncConnectReturnsBeforeStreamEnds() throws Exception {
+        var firstEvent = new CompletableFuture<Event>();
+        try {
+            var connection = assertTimeoutPreemptively(Duration.ofSeconds(2),
+                    () -> Unirest.sse(MockServer.STREAMING).connect(firstEvent::complete));
+            assertThat(firstEvent.get(5, TimeUnit.SECONDS).data()).isEqualTo("a");
+            assertThat(connection.isDone()).isFalse();
+            MockServer.releaseStreamingBody();
+            connection.get(5, TimeUnit.SECONDS);
+        } finally {
+            MockServer.releaseStreamingBody();
+        }
     }
 
     @Test
