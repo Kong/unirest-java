@@ -39,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -80,6 +81,7 @@ public class MockServer {
     public static final String DELETE = HOST + "/delete";
     public static final String GZIP = HOST + "/gzip";
     public static final String LATIN1 = HOST + "/latin1";
+    public static final String CP1250 = HOST + "/cp1250";
     public static final String EMPTY_GZIP = HOST + "/empty-gzip";
     public static final String PATCH = HOST + "/patch";
     public static final String INVALID_REQUEST = HOST + "/invalid";
@@ -141,6 +143,7 @@ public class MockServer {
             c.routes.query("/query", MockServer::jsonResponse);
             c.routes.get("/gzip", MockServer::gzipResponse);
             c.routes.get("/latin1", MockServer::latin1Response);
+            c.routes.post("/cp1250", MockServer::cp1250Response);
             c.routes.post("/empty-gzip", MockServer::emptyGzipResponse);
             c.routes.get("/redirect", MockServer::redirect);
             c.routes.post("/redirect", MockServer::redirect);
@@ -284,6 +287,11 @@ public class MockServer {
     private static void latin1Response(Context context) {
         context.contentType("text/plain; charset=ISO-8859-1");
         context.result("caf\u00e9".getBytes(StandardCharsets.ISO_8859_1));
+    }
+
+    private static void cp1250Response(Context context) {
+        context.contentType("text/plain");
+        context.result("\u0161\u017e\u00fd\u00e1\u00ed\u00e9".getBytes(Charset.forName("windows-1250")));
     }
 
     private static void gzipResponse(Context context) {
