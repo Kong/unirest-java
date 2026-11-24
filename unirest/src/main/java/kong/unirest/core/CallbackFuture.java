@@ -30,22 +30,16 @@ import java.util.concurrent.CompletableFuture;
 class CallbackFuture  {
 
     static <T> CompletableFuture<HttpResponse<T>> wrap(Callback<T> source){
-        return new CompletableFuture<HttpResponse<T>>(){
-            @Override
-            public boolean complete(HttpResponse<T> value) {
-                source.completed(value);
-                return super.complete(value);
-            }
-            @Override
-            public boolean completeExceptionally(Throwable ex) {
-                source.failed(new UnirestException(ex));
-                return super.completeExceptionally(ex);
-            }
-            @Override
-            public boolean cancel(boolean mayInterruptIfRunning) {
+        var result = new CompletableFuture<HttpResponse<T>>();
+        result.whenComplete((response, error) -> {
+            if (result.isCancelled()) {
                 source.cancelled();
-                return super.cancel(mayInterruptIfRunning);
+            } else if (error != null) {
+                source.failed(new UnirestException(error));
+            } else {
+                source.completed(response);
             }
-        };
+        });
+        return result;
     }
 }

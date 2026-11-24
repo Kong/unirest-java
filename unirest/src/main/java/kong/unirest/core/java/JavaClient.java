@@ -33,6 +33,7 @@ import java.net.http.HttpClient;
 import java.net.http.WebSocket;
 import java.time.Duration;
 import java.util.Objects;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.Function;
@@ -147,26 +148,36 @@ public class JavaClient implements Client {
 
         var execute = client.sendAsync(requestObj,
                 java.net.http.HttpResponse.BodyHandlers.ofInputStream());
-
-        return execute.thenApplyAsync(h -> {
+        callback.whenComplete((response, error) -> {
+            if (callback.isCancelled()) {
+                execute.cancel(true);
+            }
+        });
+        execute.thenAcceptAsync(h -> {
             var t = new JavaResponse(h, config, reqSum);
             metric.complete(t.toSummary(), null);
             var httpResponse = transformBody(transformer, t);
             config.getUniInterceptor().onResponse(httpResponse, reqSum, config);
             callback.complete(httpResponse);
-            return httpResponse;
-        }).exceptionally(e -> {
-            var ex = new UnirestException(e);
-            metric.complete(null, ex);
-            try {
-                HttpResponse r = config.getUniInterceptor().onFail(ex, reqSum, config);
-                callback.complete(r);
-                return r;
-            } catch (Exception ee){
-                callback.completeExceptionally(e);
-                throw new CompletionException(ee);
-            }
-        });
+        }).exceptionally(e -> handleFailure(e, reqSum, metric, callback));
+        return callback;
+    }
+
+    private <T> Void handleFailure(Throwable error, HttpRequestSummary request, MetricContext metric, CompletableFuture<HttpResponse<T>> callback) {
+        var cause = error instanceof CompletionException ? error.getCause() : error;
+        var ex = new UnirestException(error);
+        metric.complete(null, ex);
+        if (callback.isCancelled() || cause instanceof CancellationException) {
+            callback.cancel(false);
+            return null;
+        }
+        try {
+            HttpResponse<T> response = (HttpResponse<T>) config.getUniInterceptor().onFail(ex, request, config);
+            callback.complete(response);
+        } catch (Exception failure) {
+            callback.completeExceptionally(failure);
+        }
+        return null;
     }
 
     @Override
