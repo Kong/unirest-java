@@ -67,6 +67,132 @@ class JavaClientTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
+    void sseClosesStreamWhenProcessingEnds(boolean handlerFails) throws Exception {
+        var closed = new CompletableFuture<Void>();
+        var failure = new IllegalStateException("handler failed");
+        var lines = Stream.of("data: hello", "").onClose(() -> closed.complete(null));
+        var response = responseWithBody(lines);
+        when(response.statusCode()).thenReturn(200);
+        var config = new Config();
+        var client = sseClient(config, CompletableFuture.completedFuture(response));
+        var connection = client.sse(new SseRequestImpl(config, "http://localhost/"), event -> {
+            if (handlerFails) {
+                throw failure;
+            }
+        });
+
+        if (handlerFails) {
+            assertThatThrownBy(() -> connection.get(5, TimeUnit.SECONDS))
+                    .isInstanceOf(ExecutionException.class)
+                    .hasCause(failure);
+        } else {
+            connection.get(5, TimeUnit.SECONDS);
+        }
+        closed.get(1, TimeUnit.SECONDS);
+    }
+
+    @Test
+    void sseCancellationReachesPendingTransport() {
+        var transport = new CompletableFuture<java.net.http.HttpResponse<Stream<String>>>();
+        var config = new Config();
+        var client = sseClient(config, transport);
+        var connection = client.sse(new SseRequestImpl(config, "http://localhost/"), event -> {});
+
+        assertThat(connection.cancel(true)).isTrue();
+        assertThat(transport.isCancelled()).isTrue();
+    }
+
+    @Test
+    void sseCancellationClosesActiveStream() throws Exception {
+        var closed = new CompletableFuture<Void>();
+        var received = new CompletableFuture<Void>();
+        var lines = Stream.of("data: hello", "").onClose(() -> closed.complete(null));
+        var response = responseWithBody(lines);
+        when(response.statusCode()).thenReturn(200);
+        var config = new Config();
+        var client = sseClient(config, CompletableFuture.completedFuture(response));
+        var connection = client.sse(new SseRequestImpl(config, "http://localhost/"), event -> {
+            received.complete(null);
+            closed.join();
+        });
+
+        try {
+            received.get(5, TimeUnit.SECONDS);
+            assertThat(connection.cancel(true)).isTrue();
+            closed.get(1, TimeUnit.SECONDS);
+        } finally {
+            lines.close();
+            connection.cancel(true);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void sseCloseFailurePreservesProcessingFailure(boolean handlerFails) {
+        var handlerFailure = new IllegalStateException("handler failed");
+        var closeFailure = new IllegalStateException("close failed");
+        var lines = Stream.of("data: hello", "").onClose(() -> {
+            throw closeFailure;
+        });
+        var response = responseWithBody(lines);
+        when(response.statusCode()).thenReturn(200);
+        var config = new Config();
+        var client = sseClient(config, CompletableFuture.completedFuture(response));
+        var connection = client.sse(new SseRequestImpl(config, "http://localhost/"), event -> {
+            if (handlerFails) {
+                throw handlerFailure;
+            }
+        });
+
+        assertThatThrownBy(() -> connection.get(5, TimeUnit.SECONDS))
+                .isInstanceOf(ExecutionException.class)
+                .hasCause(handlerFails ? handlerFailure : closeFailure);
+        if (handlerFails) {
+            assertThat(handlerFailure).hasSuppressedException(closeFailure);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void sseCancellationClosesLateStream(boolean closeFails) throws Exception {
+        var transport = new CompletableFuture<java.net.http.HttpResponse<Stream<String>>>() {
+            @Override
+            public boolean cancel(boolean mayInterruptIfRunning) {
+                return false;
+            }
+        };
+        var closed = new CompletableFuture<Void>();
+        var closeFailure = new IllegalStateException("close failed");
+        var lines = Stream.of("data: hello", "").onClose(() -> {
+            closed.complete(null);
+            if (closeFails) {
+                throw closeFailure;
+            }
+        });
+        var response = responseWithBody(lines);
+        when(response.statusCode()).thenReturn(200);
+        var config = new Config();
+        var client = sseClient(config, transport);
+        var connection = client.sse(new SseRequestImpl(config, "http://localhost/"), event -> {});
+
+        assertThat(connection.cancel(true)).isTrue();
+        transport.complete(response);
+        closed.get(1, TimeUnit.SECONDS);
+
+        assertThat(connection.isCancelled()).isTrue();
+        if (closeFails) {
+            assertThat(connection.handle((value, error) -> error).join()).hasSuppressedException(closeFailure);
+        }
+    }
+
+    private static JavaClient sseClient(Config config, CompletableFuture<java.net.http.HttpResponse<Stream<String>>> transport) {
+        var httpClient = mock(HttpClient.class);
+        when(httpClient.<Stream<String>>sendAsync(any(), any())).thenReturn(transport);
+        return new JavaClient(config, httpClient);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
     void sseConsumesStreamOffCallingThread(boolean headersAlreadyAvailable) throws Exception {
         var callingThread = Thread.currentThread();
         var callbackThread = new CompletableFuture<Thread>();
