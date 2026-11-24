@@ -32,11 +32,16 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static kong.unirest.core.HttpMethod.GET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 class BaseRequestTest {
 
@@ -61,6 +66,38 @@ class BaseRequestTest {
         assertEquals(42, request.getRequestTimeout());
         request.requestTimeout(111);
         assertEquals(111, request.getRequestTimeout());
+    }
+
+    @Test
+    void cancellingDuringRetryCancelsTheActiveAttempt() throws Exception {
+        var attempts = new LinkedBlockingQueue<CompletableFuture<HttpResponse<Empty>>>();
+        var client = mock(Client.class);
+        when(client.request(any(), any(), any(), eq(Empty.class))).thenAnswer(invocation -> {
+            CompletableFuture<HttpResponse<Empty>> attempt = invocation.getArgument(2);
+            attempts.add(attempt);
+            return attempt;
+        });
+        testConfig.httpClient(client).retryAfter(true);
+        Callback<Empty> callback = mock(Callback.class);
+        var result = new TestRequest().asEmptyAsync(callback);
+        var retryResponse = new BasicResponse<Empty>(new TestRawResponse(testConfig) {
+            @Override
+            public int getStatus() {
+                return 429;
+            }
+        }, null);
+        retryResponse.getHeaders().add("Retry-After", "0.001");
+        var firstAttempt = attempts.poll(5, TimeUnit.SECONDS);
+        assertThat(firstAttempt).isNotNull();
+        firstAttempt.complete(retryResponse);
+
+        var secondAttempt = attempts.poll(5, TimeUnit.SECONDS);
+        assertThat(secondAttempt).isNotNull();
+        result.cancel(true);
+
+        assertThat(secondAttempt.isCancelled()).isTrue();
+        verify(callback).cancelled();
+        verifyNoMoreInteractions(callback);
     }
 
     @Test

@@ -29,6 +29,8 @@ import kong.unirest.core.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.net.http.HttpTimeoutException;
 import java.util.concurrent.CompletableFuture;
@@ -41,6 +43,36 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CallbackFutureTest extends BddTest {
+
+    @ParameterizedTest @ValueSource(booleans = {false, true}) @Timeout(10)
+    void cancellingRequestInvokesCancelledCallback(boolean retryEnabled) throws Exception {
+        Unirest.config().retryAfter(retryEnabled);
+        var callbackResult = new CompletableFuture<String>();
+        var future = Unirest.get(MockServer.TIMEOUT)
+                .requestTimeout(5000)
+                .asEmptyAsync(new Callback<Empty>() {
+                    @Override
+                    public void completed(HttpResponse<Empty> response) {
+                        callbackResult.complete("completed");
+                    }
+
+                    @Override
+                    public void failed(UnirestException e) {
+                        callbackResult.complete("failed");
+                    }
+
+                    @Override
+                    public void cancelled() {
+                        callbackResult.complete("cancelled");
+                    }
+                });
+
+        assertThat(future.cancel(true)).isTrue();
+        assertThat(future.isCancelled()).isTrue();
+        assertThat(callbackResult.completeOnTimeout("no callback", 5, TimeUnit.SECONDS)
+                .get(6, TimeUnit.SECONDS))
+                .isEqualTo("cancelled");
+    }
 
     @Test @Timeout(10)
     void requestTimeoutCompletesFutureExceptionally() throws Exception {

@@ -379,26 +379,45 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
                                                            Function<RawResponse, HttpResponse<T>> transformer,
                                                            CompletableFuture<HttpResponse<T>> callback,
                                                            Class<?> resultType){
-        var asyncR = config.getClient().request(request, transformer, callback, resultType);
-        if(config.isAutomaticRetryAfter()){
-            return asyncR.thenApplyAsync(response -> {
-                callCount++;
-                var retryAfter = config.getRetryStrategy();
-                if(retryAfter.isRetryable(response) && callCount < config.maxRetries()) {
-                    long waitTime = retryAfter.getWaitTime(response);
-                    if (waitTime > 0) {
-                        retryAfter.waitFor(waitTime);
-                        try {
-                            return requestAsync(this, transformer, callback, resultType).get();
-                        } catch (Exception e) {
-                            throw new UnirestException(e);
-                        }
-                    }
-                }
-                return response;
-            });
+        if (!config.isAutomaticRetryAfter()) {
+            return config.getClient().request(request, transformer, callback, resultType);
         }
-        return asyncR;
+        var attempt = config.getClient().request(request, transformer, new CompletableFuture<>(), resultType);
+        callback.whenComplete((response, error) -> {
+            if (callback.isCancelled()) {
+                attempt.cancel(true);
+            }
+        });
+        attempt.thenAcceptAsync(response -> retryOrComplete(response, transformer, callback, resultType))
+                .exceptionally(error -> {
+                    if (attempt.isCancelled()) {
+                        callback.cancel(false);
+                    } else {
+                        callback.completeExceptionally(error);
+                    }
+                    return null;
+                });
+        return callback;
+    }
+
+    private <T> void retryOrComplete(HttpResponse<T> response, Function<RawResponse, HttpResponse<T>> transformer,
+                                     CompletableFuture<HttpResponse<T>> callback, Class<?> resultType) {
+        if (callback.isDone()) {
+            return;
+        }
+        callCount++;
+        var retryAfter = config.getRetryStrategy();
+        if (retryAfter.isRetryable(response) && callCount < config.maxRetries()) {
+            long waitTime = retryAfter.getWaitTime(response);
+            if (waitTime > 0) {
+                retryAfter.waitFor(waitTime);
+                if (!callback.isDone()) {
+                    requestAsync(this, transformer, callback, resultType);
+                }
+                return;
+            }
+        }
+        callback.complete(response);
     }
 
 
