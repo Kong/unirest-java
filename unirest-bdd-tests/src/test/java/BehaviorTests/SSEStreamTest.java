@@ -34,10 +34,13 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 public class SSEStreamTest extends BddTest {
@@ -59,6 +62,36 @@ public class SSEStreamTest extends BddTest {
             assertThat(connection.isDone()).isFalse();
             MockServer.releaseStreamingBody();
             connection.get(5, TimeUnit.SECONDS);
+        } finally {
+            MockServer.releaseStreamingBody();
+        }
+    }
+
+    @Test
+    void asyncConnectionCanBeCancelledAfterReceivingAnEvent() throws Exception {
+        var firstEvent = new CompletableFuture<Event>();
+        try {
+            var connection = Unirest.sse(MockServer.STREAMING).connect(firstEvent::complete);
+            firstEvent.get(5, TimeUnit.SECONDS);
+
+            assertThat(connection.cancel(true)).isTrue();
+            assertThatThrownBy(connection::join).isInstanceOf(CancellationException.class);
+        } finally {
+            MockServer.releaseStreamingBody();
+        }
+    }
+
+    @Test
+    void asyncHandlerFailureCompletesConnectionExceptionally() {
+        var failure = new IllegalStateException("handler failed");
+        try {
+            var connection = Unirest.sse(MockServer.STREAMING).connect(event -> {
+                throw failure;
+            });
+
+            assertThatThrownBy(() -> connection.get(5, TimeUnit.SECONDS))
+                    .isInstanceOf(ExecutionException.class)
+                    .hasCause(failure);
         } finally {
             MockServer.releaseStreamingBody();
         }
