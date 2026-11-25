@@ -196,7 +196,20 @@ public class MockClient implements Client {
                                                           Function<RawResponse, HttpResponse<T>> transformer,
                                                           CompletableFuture<HttpResponse<T>> callback,
                                                           Class<?> resultTypes) {
-        return CompletableFuture.supplyAsync(() -> request(request, transformer, resultTypes));
+        var execute = CompletableFuture.supplyAsync(() -> request(request, transformer, resultTypes));
+        callback.whenComplete((response, error) -> {
+            if (callback.isCancelled()) {
+                execute.cancel(true);
+            }
+        });
+        execute.whenComplete((response, error) -> {
+            if (error == null) {
+                callback.complete(response);
+            } else {
+                callback.completeExceptionally(error);
+            }
+        });
+        return callback;
     }
 
     /**

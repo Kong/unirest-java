@@ -26,9 +26,20 @@
 package kong.tests;
 
 import kong.unirest.core.HttpMethod;
+import kong.unirest.core.Callback;
+import kong.unirest.core.HttpResponse;
 import kong.unirest.core.Unirest;
+import kong.unirest.core.UnirestException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AsyncTest extends Base {
@@ -42,5 +53,86 @@ class AsyncTest extends Base {
         assertEquals("Hey Ma", body);
 
         client.verifyAll();
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void invokesCompletedCallback(boolean retriesEnabled) throws Exception {
+        Unirest.config().retryAfter(retriesEnabled);
+        client.expect(HttpMethod.GET, path).thenReturn("Hey Ma");
+
+        var received = new CompletableFuture<HttpResponse<String>>();
+        var response = Unirest.get(path).asStringAsync(received::complete).get(5, TimeUnit.SECONDS);
+
+        assertThat(received.get(5, TimeUnit.SECONDS)).isSameAs(response);
+        assertThat(response.getBody()).isEqualTo("Hey Ma");
+}
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void invokesFailedCallback(boolean retriesEnabled) throws Exception {
+        Unirest.config().retryAfter(retriesEnabled);
+
+        var failure = new IllegalStateException("mock response failed");
+        client.expect(HttpMethod.GET, path).thenReturn().thenReturn(() -> {
+            throw failure;
+        });
+        var received = new CompletableFuture<UnirestException>();
+        var callback = new Callback<String>() {
+            @Override
+            public void completed(HttpResponse<String> response) {
+                received.completeExceptionally(new AssertionError("Unexpected completed callback"));
+            }
+
+            @Override
+            public void failed(UnirestException error) {
+                received.complete(error);
+            }
+        };
+
+        var response = Unirest.get(path).asStringAsync(callback);
+
+        assertThatThrownBy(() -> response.get(5, TimeUnit.SECONDS))
+                .isInstanceOf(ExecutionException.class).hasCause(failure);
+        assertThat(received.get(5, TimeUnit.SECONDS)).hasRootCause(failure);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void invokesCancelledCallback(boolean retriesEnabled) throws Exception {
+        Unirest.config().retryAfter(retriesEnabled);
+        var started = new CompletableFuture<Void>();
+        var release = new CompletableFuture<String>();
+        client.expect(HttpMethod.GET, path).thenReturn().thenReturn(() -> {
+            started.complete(null);
+            return release.join();
+        });
+        var received = new CompletableFuture<String>();
+        var callback = new Callback<String>() {
+            @Override
+            public void completed(HttpResponse<String> response) {
+                received.complete("completed");
+            }
+
+            @Override
+            public void failed(UnirestException error) {
+                received.complete("failed");
+            }
+
+            @Override
+            public void cancelled() {
+                received.complete("cancelled");
+            }
+        };
+
+        try {
+            var response = Unirest.get(path).asStringAsync(callback);
+            started.get(5, TimeUnit.SECONDS);
+
+            assertThat(response.cancel(true)).isTrue();
+            assertThat(received.get(5, TimeUnit.SECONDS)).isEqualTo("cancelled");
+        } finally {
+            release.complete("Hey Ma");
+        }
     }
 }

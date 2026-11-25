@@ -42,6 +42,7 @@ public class Base {
 
     @BeforeEach
     public void setUp() {
+        Unirest.config().reset();
         client = MockClient.register();
         Unirest.config().setObjectMapper(new GsonObjectMapper());
     }
