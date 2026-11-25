@@ -32,6 +32,9 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.http.HttpTimeoutException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -43,6 +46,43 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CallbackFutureTest extends BddTest {
+
+    @ParameterizedTest @ValueSource(booleans = {false, true}) @Timeout(15)
+    void cancellationStopsReadingAfterHeadersArrive(boolean retryEnabled) throws Exception {
+        Unirest.config().retryAfter(retryEnabled);
+        var reading = new CompletableFuture<InputStream>();
+        var stopped = new CompletableFuture<Void>();
+        var future = Unirest.get(MockServer.STREAMING)
+                .asObjectAsync(response -> readUntilClosed(response, reading, stopped));
+
+        try {
+            reading.get(5, TimeUnit.SECONDS);
+            assertThat(future.cancel(true)).isTrue();
+            stopped.get(5, TimeUnit.SECONDS);
+            assertThat(future.isCancelled()).isTrue();
+        } finally {
+            future.cancel(true);
+            MockServer.releaseStreamingBody();
+            var body = reading.getNow(null);
+            if (body != null) {
+                body.close();
+                stopped.get(5, TimeUnit.SECONDS);
+            }
+        }
+    }
+
+    private String readUntilClosed(RawResponse response, CompletableFuture<InputStream> reading, CompletableFuture<Void> stopped) {
+        try (var body = response.getContent()) {
+            body.read();
+            reading.complete(body);
+            body.transferTo(OutputStream.nullOutputStream());
+            return "";
+        } catch (IOException e) {
+            throw new UnirestException(e);
+        } finally {
+            stopped.complete(null);
+        }
+    }
 
     @Test @Timeout(10)
     void throwingMetricCompletesFutureAndNotifiesFailureCallback() throws Exception {
