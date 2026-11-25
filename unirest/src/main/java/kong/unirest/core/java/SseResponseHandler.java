@@ -54,7 +54,7 @@ class SseResponseHandler implements Consumer<HttpResponse<Stream<String>>> {
             response.body().forEach(this::accept);
     }
 
-    private void accept(String line) {
+    void accept(String line) {
         accept(line, listener);
     }
 

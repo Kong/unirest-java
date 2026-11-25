@@ -211,10 +211,41 @@ public class JavaClient implements Client {
     @Override
     public CompletableFuture<Void> sse(SseRequest request, SseHandler handler) {
         var r = SseRequestBuilder.getHttpRequest(request);
+        var connection = new CompletableFuture<Void>();
+        var execute = client.sendAsync(r, java.net.http.HttpResponse.BodyHandlers.ofLines());
+        connection.whenComplete((ignored, error) -> {
+            if (connection.isCancelled()) {
+                execute.thenAccept(response -> closeCancelledBody(response.body(), error));
+                execute.cancel(true);
+            }
+        });
+        execute.thenAcceptAsync(response -> consumeSse(response, handler, connection))
+                .whenComplete((ignored, error) -> {
+                    if (error == null) {
+                        connection.complete(null);
+                    } else {
+                        connection.completeExceptionally(error);
+                    }
+                });
+        return connection;
+    }
 
-        return client.sendAsync(r, java.net.http.HttpResponse.BodyHandlers.ofLines())
-                .thenApply(this::checkSseResponse)
-                .thenAccept(new SseResponseHandler(config, handler));
+    private void consumeSse(java.net.http.HttpResponse<Stream<String>> response, SseHandler handler, CompletableFuture<Void> connection) {
+        try (var lines = response.body()) {
+            if (!connection.isCancelled()) {
+                checkSseResponse(response);
+                var parser = new SseResponseHandler(config, handler);
+                lines.takeWhile(line -> !connection.isCancelled()).forEach(parser::accept);
+            }
+        }
+    }
+
+    private void closeCancelledBody(Stream<?> body, Throwable cancellation) {
+        try {
+            body.close();
+        } catch (RuntimeException | Error failure) {
+            cancellation.addSuppressed(failure);
+        }
     }
 
     @Override
