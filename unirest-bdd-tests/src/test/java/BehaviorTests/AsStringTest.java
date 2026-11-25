@@ -131,6 +131,28 @@ class AsStringTest extends BddTest {
         assertAsync();
     }
 
+    @Test
+    void responseCharsetIsKeptWhenABodyIsAdded() {
+        var response = Unirest.post(MockServer.CP1250)
+                .responseEncoding("windows-1250")
+                .body("hello")
+                .asString();
+
+        assertEquals(200, response.getStatus());
+        assertEquals("šžýáíé", response.getBody());
+    }
+
+    @Test
+    void responseCharsetIsKeptWhenAFieldIsAdded() {
+        var response = Unirest.post(MockServer.CP1250)
+                .responseEncoding("windows-1250")
+                .field("foo", "bar")
+                .asString();
+
+        assertEquals(200, response.getStatus());
+        assertEquals("šžýáíé", response.getBody());
+    }
+
     @Test @Disabled
     void canSetExpectedCharsetOfResponse() {
         var response = Unirest.get(MockServer.WINDOWS_LATIN_1_FILE)

@@ -63,6 +63,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
         this.objectMapper = httpRequest.objectMapper;
         this.version = httpRequest.version;
         this.downloadMonitor = httpRequest.downloadMonitor;
+        this.responseEncoding = httpRequest.responseEncoding;
     }
 
     BaseRequest(Config config, HttpMethod method, String url) {
