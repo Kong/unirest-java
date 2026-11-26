@@ -29,6 +29,8 @@ import com.google.gson.JsonNull;
 import kong.unirest.core.json.JsonEngine;
 
 public class GsonNull extends GsonElement<JsonNull> implements JsonEngine.Primitive {
+    public static final Object INSTANCE = new GsonNull();
+
     GsonNull() {
         super(JsonNull.INSTANCE);
     }
