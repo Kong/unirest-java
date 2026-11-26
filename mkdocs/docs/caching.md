@@ -14,6 +14,8 @@ It is recommended that in high load systems consumers back the cache with a dedi
 ```
 Requests are matched on their method, URL, headers, body and response type. Requests that upload a File or InputStream are never answered from the cache because their content is only read when the request is sent.
 
+Server-Sent Events (SSE) are never cached. SSE requests are always sent to the server, even when caching is enabled.
+
 #### Advanced Options:
 You can use a builder to customize eviction rules:
 
