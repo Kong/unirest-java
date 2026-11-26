@@ -40,14 +40,14 @@ import java.util.TimeZone;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class JsonObjectMapperTest {
+class GsonObjectMapperTimeTest {
 
-    GsonObjectMapper om = new GsonObjectMapper();
+    GsonObjectMapper om;
 
     @BeforeEach
     void before() {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-
+        om = new GsonObjectMapper();
     }
 
     @Test
