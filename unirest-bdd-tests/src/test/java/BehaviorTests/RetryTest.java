@@ -185,6 +185,19 @@ public class RetryTest extends BddTest {
         } catch (Exception ignored) { }
     }
 
+    @Test
+    void retryLimitAppliesToEachExecutionOfTheSameRequest() {
+        Unirest.config().retryAfter(true, 3);
+        var request = Unirest.get(MockServer.GET);
+
+        MockServer.retryTimes(2, 429, 0.01);
+        assertEquals(200, request.asEmpty().getStatus());
+
+        MockServer.retryTimes(2, 429, 0.01);
+        assertEquals(200, request.asEmpty().getStatus());
+        MockServer.assertRequestCount(6);
+    }
+
     private void assertDidNotRetry() {
         Unirest.config().retryAfter(true);
         assertEquals(429, Unirest.get(MockServer.GET).asEmpty().getStatus());

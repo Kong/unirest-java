@@ -43,7 +43,6 @@ import static kong.unirest.core.CallbackFuture.wrap;
 abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
     private Instant creation = Util.now();
-    private int callCount = 0;
     private Optional<ObjectMapper> objectMapper = Optional.empty();
     private String responseEncoding;
     protected Headers headers = new Headers();
@@ -360,16 +359,19 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
 
 
     private <E> HttpResponse<E> request(Function<RawResponse, HttpResponse<E>> transformer, Class<?> resultType){
+        return request(transformer, resultType, 1);
+    }
+
+    private <E> HttpResponse<E> request(Function<RawResponse, HttpResponse<E>> transformer, Class<?> resultType, int attemptNumber){
         HttpResponse<E> response = config.getClient().request(this, transformer, resultType);
 
         if(config.isAutomaticRetryAfter()) {
-            callCount++;
             var retryAfter = config.getRetryStrategy();
-            if(retryAfter.isRetryable(response) && callCount < config.maxRetries()) {
+            if(retryAfter.isRetryable(response) && attemptNumber < config.maxRetries()) {
                 long waitTime = retryAfter.getWaitTime(response);
                 if (waitTime > 0) {
                     retryAfter.waitFor(waitTime);
-                    return request(transformer, resultType);
+                    return request(transformer, resultType, attemptNumber + 1);
                 }
             }
         }
@@ -380,6 +382,14 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
                                                            Function<RawResponse, HttpResponse<T>> transformer,
                                                            CompletableFuture<HttpResponse<T>> callback,
                                                            Class<?> resultType){
+        return requestAsync(request, transformer, callback, resultType, 1);
+    }
+
+    private <T> CompletableFuture<HttpResponse<T>> requestAsync(HttpRequest request,
+                                                           Function<RawResponse, HttpResponse<T>> transformer,
+                                                           CompletableFuture<HttpResponse<T>> callback,
+                                                           Class<?> resultType,
+                                                           int attemptNumber){
         if (!config.isAutomaticRetryAfter()) {
             return config.getClient().request(request, transformer, callback, resultType);
         }
@@ -389,7 +399,7 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
                 attempt.cancel(true);
             }
         });
-        attempt.thenAcceptAsync(response -> retryOrComplete(response, transformer, callback, resultType))
+        attempt.thenAcceptAsync(response -> retryOrComplete(response, transformer, callback, resultType, attemptNumber))
                 .exceptionally(error -> {
                     if (attempt.isCancelled()) {
                         callback.cancel(false);
@@ -402,18 +412,18 @@ abstract class BaseRequest<R extends HttpRequest> implements HttpRequest<R> {
     }
 
     private <T> void retryOrComplete(HttpResponse<T> response, Function<RawResponse, HttpResponse<T>> transformer,
-                                     CompletableFuture<HttpResponse<T>> callback, Class<?> resultType) {
+                                     CompletableFuture<HttpResponse<T>> callback, Class<?> resultType,
+                                     int attemptNumber) {
         if (callback.isDone()) {
             return;
         }
-        callCount++;
         var retryAfter = config.getRetryStrategy();
-        if (retryAfter.isRetryable(response) && callCount < config.maxRetries()) {
+        if (retryAfter.isRetryable(response) && attemptNumber < config.maxRetries()) {
             long waitTime = retryAfter.getWaitTime(response);
             if (waitTime > 0) {
                 retryAfter.waitFor(waitTime);
                 if (!callback.isDone()) {
-                    requestAsync(this, transformer, callback, resultType);
+                    requestAsync(this, transformer, callback, resultType, attemptNumber + 1);
                 }
                 return;
             }
