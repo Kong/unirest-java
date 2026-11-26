@@ -25,6 +25,7 @@
 
 package kong.unirest.modules.gson;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -78,7 +79,8 @@ public class GsonObject extends GsonElement<JsonObject> implements JsonEngine.Ob
 
     @Override
     public void addProperty(String key, JsonEngine.Element value) {
-//        element.addProperty(key, value.getEngineElement());
+        JsonElement engineElement = value.getEngineElement();
+        element.add(key, engineElement);
     }
 
     @Override
