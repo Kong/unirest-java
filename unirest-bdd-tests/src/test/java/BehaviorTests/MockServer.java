@@ -123,7 +123,7 @@ public class MockServer {
         app = Javalin.create(c -> {
             c.staticFiles.add("public/");
             c.routes.before(ctx -> {
-                timesCalled++;
+                countCall();
                 lastRequest = new RequestCapture(ctx);
             });
             c.routes.before("/basic", ctx -> {
@@ -344,11 +344,10 @@ public class MockServer {
 
 
     private static void jsonResponse(Context c, Boolean compress) {
-        if(retryTimes > 0){
+        if(takeRetry()){
             if(retrySeconds != null) {
                 c.header("Retry-After", retrySeconds);
             }
-            retryTimes--;
             c.status(retryStatus);
             return;
         }
@@ -447,6 +446,19 @@ public class MockServer {
                 c.send(onOpenMessage);
             });
         }
+    }
+
+    // synchronized: concurrent requests reach the server on different threads
+    private static synchronized void countCall() {
+        timesCalled++;
+    }
+
+    private static synchronized boolean takeRetry() {
+        if (retryTimes > 0) {
+            retryTimes--;
+            return true;
+        }
+        return false;
     }
 
     public static void retryTimes(int numberOfTimeToFail, int status, Double seconds){
