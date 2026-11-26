@@ -224,6 +224,13 @@ class GsonObjectMapperTimeTest {
     }
 
     @Test
+    void deserializeZonedDateTimeWithZone_iso_with_offset() {
+        var back = getTestDate("zonedDateTime", "1985-07-03T18:30:00.042-06:00[America/Chicago]");
+
+        assertEquals(ZonedDateTime.parse("1985-07-03T19:30:00.042-05:00[America/Chicago]"), back.getZonedDateTime());
+    }
+
+    @Test
     void deserializeOffset_iso_with_offset() {
         var back = getTestDate("offsetDateTime", "1985-07-03T18:30:00.042+02:00");
 

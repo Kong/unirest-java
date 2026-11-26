@@ -111,7 +111,8 @@ public class GsonObjectMapper implements ObjectMapper {
         static final List<DateTimeFormatter> FORMATS = Arrays.asList(
                 DateTimeFormatter.ISO_OFFSET_DATE_TIME,
                 DateTimeFormatter.ISO_DATE,
-                DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                DateTimeFormatter.ISO_LOCAL_DATE_TIME,
+                DateTimeFormatter.ISO_ZONED_DATE_TIME
         );
 
         abstract T from(Long millies);
