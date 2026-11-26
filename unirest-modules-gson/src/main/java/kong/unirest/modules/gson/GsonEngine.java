@@ -22,7 +22,6 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 package kong.unirest.modules.gson;
 
 import com.google.gson.*;
@@ -35,6 +34,7 @@ import kong.unirest.core.json.*;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -44,7 +44,6 @@ public class GsonEngine implements JsonEngine {
     private static final TypeAdapter<java.lang.Object> ADAPTER = new JavaTypeAdapter();
     private Gson gson;
     private Gson pretty;
-
 
 
     public GsonEngine() {
@@ -58,7 +57,7 @@ public class GsonEngine implements JsonEngine {
     }
 
     static Element toElement(JsonElement jsonElement) {
-        if (jsonElement instanceof JsonObject){
+        if (jsonElement instanceof JsonObject) {
             return new GsonObject((JsonObject) jsonElement);
         } else if (jsonElement instanceof JsonArray) {
             return new GsonArray((JsonArray) jsonElement);
@@ -80,8 +79,8 @@ public class GsonEngine implements JsonEngine {
 
     @Override
     public String toPrettyJson(Element obj) {
-        if(obj instanceof Element){
-            return pretty.toJson(((Element)obj).getEngineElement());
+        if (obj instanceof Element) {
+            return pretty.toJson(((Element) obj).getEngineElement());
         }
         return pretty.toJson(obj);
     }
@@ -89,8 +88,8 @@ public class GsonEngine implements JsonEngine {
 
     @Override
     public String toJson(Element obj) {
-        if(obj instanceof Element){
-            return gson.toJson(((Element)obj).getEngineElement());
+        if (obj instanceof Element) {
+            return gson.toJson(((Element) obj).getEngineElement());
         }
         return gson.toJson(obj);
     }
@@ -111,7 +110,7 @@ public class GsonEngine implements JsonEngine {
         try {
             JsonObject element = gson.fromJson(string, JsonObject.class);
             return new GsonObject(element);
-        }catch (JsonSyntaxException e){
+        } catch (JsonSyntaxException e) {
             throw new JSONException("Invalid JSON");
         }
     }
@@ -130,7 +129,7 @@ public class GsonEngine implements JsonEngine {
     public Array newJsonArray(String jsonString) {
         try {
             return new GsonArray(gson.fromJson(jsonString, JsonArray.class));
-        }catch (JsonSyntaxException e){
+        } catch (JsonSyntaxException e) {
             throw new JSONException("Invalid JSON");
         }
     }
@@ -138,22 +137,22 @@ public class GsonEngine implements JsonEngine {
     @Override
     public Array newJsonArray(Collection<?> collection) {
         GsonArray a = new GsonArray();
-        for(java.lang.Object o : collection){
+        for (java.lang.Object o : collection) {
             add(a, o);
         }
         return a;
     }
 
     private void add(GsonArray a, java.lang.Object o) {
-        if(o instanceof Number){
+        if (o instanceof Number) {
             a.add((Number) o);
         } else if (o instanceof String) {
             a.add((String) o);
-        }else if (o instanceof Boolean) {
+        } else if (o instanceof Boolean) {
             a.add((Boolean) o);
-        }else if(o instanceof JSONElement) {
+        } else if (o instanceof JSONElement) {
             a.add(((JSONElement) o).getElement());
-        } else if(o instanceof Element) {
+        } else if (o instanceof Element) {
             a.add((Element) o);
         } else {
             JsonElement tree = gson.toJsonTree(o);
@@ -163,7 +162,7 @@ public class GsonEngine implements JsonEngine {
 
     @Override
     public <T extends Enum> Primitive newJsonPrimitive(T enumValue) {
-        if(enumValue == null){
+        if (enumValue == null) {
             return new GsonNull();
         } else {
             return new GsonPrimitive(new JsonPrimitive(enumValue.name()));
@@ -172,7 +171,7 @@ public class GsonEngine implements JsonEngine {
 
     @Override
     public Primitive newJsonPrimitive(String string) {
-        if(string == null){
+        if (string == null) {
             return new GsonNull();
         } else {
             return new GsonPrimitive(new JsonPrimitive(string));
@@ -181,7 +180,7 @@ public class GsonEngine implements JsonEngine {
 
     @Override
     public Primitive newJsonPrimitive(Number number) {
-        if(number == null){
+        if (number == null) {
             return new GsonNull();
         } else {
             return new GsonPrimitive(new JsonPrimitive(number));
@@ -190,7 +189,7 @@ public class GsonEngine implements JsonEngine {
 
     @Override
     public Primitive newJsonPrimitive(Boolean bool) {
-        if(bool == null){
+        if (bool == null) {
             return new GsonNull();
         } else {
             return new GsonPrimitive(new JsonPrimitive(bool));
@@ -242,16 +241,20 @@ public class GsonEngine implements JsonEngine {
                     return in.nextString();
 
                 case NUMBER:
+
                     String n = in.nextString();
                     if (n.indexOf('.') != -1) {
                         return Double.parseDouble(n);
                     }
-                    long l = Long.parseLong(n);
-                    if(l < Integer.MAX_VALUE){
-                        return (int)l;
+                    try {
+                        long l = Long.parseLong(n);
+                        if (l > Integer.MIN_VALUE && l < Integer.MAX_VALUE) {
+                            return (int) l;
+                        }
+                        return l;
+                    } catch (NumberFormatException nfe) {
+                        return new BigDecimal(n).toBigIntegerExact();
                     }
-                    return l;
-
                 case BOOLEAN:
                     return in.nextBoolean();
 
