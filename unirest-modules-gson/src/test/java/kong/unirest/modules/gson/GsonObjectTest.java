@@ -25,6 +25,7 @@
 package kong.unirest.modules.gson;
 
 import com.google.gson.JsonPrimitive;
+import kong.unirest.core.json.JsonEngine;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,5 +42,14 @@ class GsonObjectTest {
 
         assertThat(o.get("foo"))
                 .isEqualTo(value);
+    }
+
+
+    @Test
+    void nullValues(){
+        var o = new GsonObject();
+        o.add("foo", (JsonEngine.Element)null);
+        assertThat(o.get("foo"))
+                .isEqualTo(GsonNull.INSTANCE);
     }
 }

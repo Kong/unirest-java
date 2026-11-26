@@ -59,7 +59,7 @@ public class GsonObject extends GsonElement<JsonObject> implements JsonEngine.Ob
 
     @Override
     public void add(String key, JsonEngine.Element value) {
-        element.add(key, value.getEngineElement());
+        element.add(key, value == null ? JsonNull.INSTANCE : value.getEngineElement());
     }
 
     @Override
