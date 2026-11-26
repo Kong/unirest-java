@@ -34,7 +34,7 @@ import java.util.Set;
 
 public class GsonObject extends GsonElement<JsonObject> implements JsonEngine.Object {
     GsonObject(JsonObject element) {
-        super(element);
+        super(element == null ? new JsonObject() : element);
     }
 
     public GsonObject() {

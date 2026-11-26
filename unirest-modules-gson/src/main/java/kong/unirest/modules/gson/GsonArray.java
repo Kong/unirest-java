@@ -36,7 +36,7 @@ import java.util.stream.StreamSupport;
 
 class GsonArray extends GsonElement<JsonArray> implements JsonEngine.Array {
     GsonArray(JsonArray jsonElement) {
-        super(jsonElement);
+        super(jsonElement == null ? new JsonArray() : jsonElement);
     }
 
     GsonArray() {
