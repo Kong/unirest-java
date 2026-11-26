@@ -30,9 +30,7 @@ import kong.unirest.core.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -40,14 +38,14 @@ import java.util.TimeZone;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class JsonObjectMapperTest {
+class GsonObjectMapperTimeTest {
 
-    GsonObjectMapper om = new GsonObjectMapper();
+    GsonObjectMapper om;
 
     @BeforeEach
     void before() {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-
+        om = new GsonObjectMapper();
     }
 
     @Test
@@ -188,6 +186,30 @@ class JsonObjectMapperTest {
     }
 
     @Test
+    void canSerializeZonedDateTimesWithZones() {
+        var zonedDt = ZonedDateTime.parse("1985-07-03T18:00:00.042Z");
+        var test = new TestDates();
+        test.setZonedDateTime(zonedDt);
+
+        String actual = om.writeValue(test);
+        assertEquals("{\"zonedDateTime\":\"1985-07-03T18:00:00.042Z\"}", actual);
+    }
+
+    @Test
+    void deserializeDate_honorsUtcDesignator() {
+        Date date = om.readValue("\"2026-01-15T12:00:00Z\"", Date.class);
+
+        assertEquals(Instant.parse("2026-01-15T12:00:00Z"), date.toInstant());
+    }
+
+    @Test
+    void deserializeDate_honorsExplicitOffset() {
+        Date date = om.readValue("\"2026-01-15T12:00:00+02:00\"", Date.class);
+
+        assertEquals(Instant.parse("2026-01-15T10:00:00Z"), date.toInstant());
+    }
+
+    @Test
     void deserializeZonedDateTime_iso_datetime() {
         var back = getTestDate("zonedDateTime", "1985-07-03T18:30:00.042Z");
 
@@ -199,6 +221,20 @@ class JsonObjectMapperTest {
         var back = getTestDate("zonedDateTime", "1985-07-03T18:30:00.042+02:00");
 
         assertEquals(ZonedDateTime.parse("1985-07-03T18:30:00.042+02:00"), back.getZonedDateTime());
+    }
+
+    @Test
+    void deserializeZonedDateTimeWithZone_iso_with_offset() {
+        var back = getTestDate("zonedDateTime", "1985-07-03T18:30:00.042-06:00[America/Chicago]");
+
+        assertEquals(ZonedDateTime.parse("1985-07-03T19:30:00.042-05:00[America/Chicago]"), back.getZonedDateTime());
+    }
+
+    @Test
+    void deserializeOffset_iso_with_offset() {
+        var back = getTestDate("offsetDateTime", "1985-07-03T18:30:00.042+02:00");
+
+        assertEquals(OffsetDateTime.parse("1985-07-03T18:30:00.042+02:00"), back.getOffsetDateTime());
     }
 
     @Test
@@ -304,6 +340,7 @@ class JsonObjectMapperTest {
         private ZonedDateTime zonedDateTime;
         private LocalDateTime localDateTime;
         private LocalDate localDate;
+        private OffsetDateTime offsetDateTime;
 
         public Date getDate() {
             return date;
@@ -343,6 +380,10 @@ class JsonObjectMapperTest {
 
         public void setLocalDate(LocalDate localDate) {
             this.localDate = localDate;
+        }
+
+        public OffsetDateTime getOffsetDateTime() {
+            return offsetDateTime;
         }
     }
 }

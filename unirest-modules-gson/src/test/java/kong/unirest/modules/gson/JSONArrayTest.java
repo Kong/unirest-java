@@ -41,9 +41,16 @@ import java.util.Collections;
 import static com.google.common.collect.ImmutableMap.of;
 import static java.util.Arrays.asList;
 import static kong.unirest.modules.gson.JSONObjectTest.assertEqualJson;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JSONArrayTest {
+
+    @Test
+    void emptyJsonObject() {
+        var array = new JSONArray("");
+        assertThat(array.isEmpty()).isTrue();
+    }
 
     @Test
     void nullForSoManyReasonsWhenZipping() {

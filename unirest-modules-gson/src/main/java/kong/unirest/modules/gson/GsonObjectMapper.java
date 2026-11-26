@@ -96,6 +96,7 @@ public class GsonObjectMapper implements ObjectMapper {
                     .disableHtmlEscaping()
                     .registerTypeHierarchyAdapter(Calendar.class, new CalendarSerializer())
                     .registerTypeHierarchyAdapter(ZonedDateTime.class, new ZonedDateAdapter())
+                    .registerTypeHierarchyAdapter(OffsetDateTime.class, new OffsetDateTimeAdapter())
                     .registerTypeAdapter(Date.class, new DateAdapter())
                     .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                     .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
@@ -110,7 +111,8 @@ public class GsonObjectMapper implements ObjectMapper {
         static final List<DateTimeFormatter> FORMATS = Arrays.asList(
                 DateTimeFormatter.ISO_OFFSET_DATE_TIME,
                 DateTimeFormatter.ISO_DATE,
-                DateTimeFormatter.ISO_LOCAL_DATE_TIME
+                DateTimeFormatter.ISO_LOCAL_DATE_TIME,
+                DateTimeFormatter.ISO_ZONED_DATE_TIME
         );
 
         abstract T from(Long millies);
@@ -184,7 +186,9 @@ public class GsonObjectMapper implements ObjectMapper {
         }
 
         private Instant toInstant(TemporalAccessor dt){
-            if(dt.isSupported(ChronoField.HOUR_OF_DAY)){
+            if (dt.isSupported(ChronoField.INSTANT_SECONDS)) {
+                return Instant.from(dt);
+            }else if(dt.isSupported(ChronoField.HOUR_OF_DAY)){
                 return LocalDateTime.from(dt).atZone(ZoneId.systemDefault()).toInstant();
             } else {
                 return LocalDate.from(dt).atStartOfDay(ZoneId.systemDefault()).toInstant();
@@ -196,6 +200,18 @@ public class GsonObjectMapper implements ObjectMapper {
             return new JsonPrimitive(FORMATTER.format(ZonedDateTime.from(date.toInstant().atZone(ZoneId.systemDefault()))));
         }
 
+    }
+
+    private static class OffsetDateTimeAdapter extends DateTimeAdapter<OffsetDateTime> {
+        @Override
+        OffsetDateTime from(Long millies) {
+            return OffsetDateTime.ofInstant(Instant.ofEpochMilli(millies), ZoneId.systemDefault());
+        }
+
+        @Override
+        OffsetDateTime from(TemporalAccessor dt) {
+            return OffsetDateTime.from(dt);
+        }
     }
 
     private static class ZonedDateAdapter extends DateTimeAdapter<ZonedDateTime> {

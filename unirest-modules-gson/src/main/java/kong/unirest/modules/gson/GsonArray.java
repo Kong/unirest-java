@@ -36,7 +36,7 @@ import java.util.stream.StreamSupport;
 
 class GsonArray extends GsonElement<JsonArray> implements JsonEngine.Array {
     GsonArray(JsonArray jsonElement) {
-        super(jsonElement);
+        super(jsonElement == null ? new JsonArray() : jsonElement);
     }
 
     GsonArray() {
@@ -91,19 +91,19 @@ class GsonArray extends GsonElement<JsonArray> implements JsonEngine.Array {
 
     @Override
     public JsonEngine.Array put(int index, Number number) {
-        element.set(index, new JsonPrimitive(number));
+        element.set(index, number == null ? JsonNull.INSTANCE : new JsonPrimitive(number));
         return this;
     }
 
     @Override
     public JsonEngine.Element put(int index, String str) {
-        element.set(index, new JsonPrimitive(str));
+        element.set(index, str == null ? JsonNull.INSTANCE : new JsonPrimitive(str));
         return this;
     }
 
     @Override
-    public JsonEngine.Element put(int index, Boolean number) {
-        element.set(index, new JsonPrimitive(number));
+    public JsonEngine.Element put(int index, Boolean boolValue) {
+        element.set(index, boolValue == null ? JsonNull.INSTANCE : new JsonPrimitive(boolValue));
         return this;
     }
 
@@ -112,7 +112,4 @@ class GsonArray extends GsonElement<JsonArray> implements JsonEngine.Array {
     public JsonEngine.Element remove(int index) {
         return GsonEngine.toElement(element.remove(index));
     }
-
-
-
 }

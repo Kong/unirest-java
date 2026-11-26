@@ -42,9 +42,16 @@ import static com.google.common.collect.ImmutableMap.of;
 import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Arrays.asList;
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JSONObjectTest {
+
+    @Test
+    void emptyJsonObject() {
+        var actual = new JSONObject("");
+        assertThat(actual.isEmpty()).isTrue();
+    }
 
     @Test
     void canSimpleSerializeAnObject() {
