@@ -96,6 +96,7 @@ public class GsonObjectMapper implements ObjectMapper {
                     .disableHtmlEscaping()
                     .registerTypeHierarchyAdapter(Calendar.class, new CalendarSerializer())
                     .registerTypeHierarchyAdapter(ZonedDateTime.class, new ZonedDateAdapter())
+                    .registerTypeHierarchyAdapter(OffsetDateTime.class, new OffsetDateTimeAdapter())
                     .registerTypeAdapter(Date.class, new DateAdapter())
                     .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                     .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
@@ -196,6 +197,18 @@ public class GsonObjectMapper implements ObjectMapper {
             return new JsonPrimitive(FORMATTER.format(ZonedDateTime.from(date.toInstant().atZone(ZoneId.systemDefault()))));
         }
 
+    }
+
+    private static class OffsetDateTimeAdapter extends DateTimeAdapter<OffsetDateTime> {
+        @Override
+        OffsetDateTime from(Long millies) {
+            return OffsetDateTime.ofInstant(Instant.ofEpochMilli(millies), ZoneId.systemDefault());
+        }
+
+        @Override
+        OffsetDateTime from(TemporalAccessor dt) {
+            return OffsetDateTime.from(dt);
+        }
     }
 
     private static class ZonedDateAdapter extends DateTimeAdapter<ZonedDateTime> {

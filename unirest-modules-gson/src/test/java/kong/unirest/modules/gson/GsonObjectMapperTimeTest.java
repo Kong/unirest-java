@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -202,6 +203,13 @@ class GsonObjectMapperTimeTest {
     }
 
     @Test
+    void deserializeOffset_iso_with_offset() {
+        var back = getTestDate("offsetDateTime", "1985-07-03T18:30:00.042+02:00");
+
+        assertEquals(OffsetDateTime.parse("1985-07-03T18:30:00.042+02:00"), back.getOffsetDateTime());
+    }
+
+    @Test
     void canSerializeLocalDateTimes() {
         var zonedDt = LocalDateTime.parse("1985-07-03T18:00:00.042");
         var test = new TestDates();
@@ -304,6 +312,7 @@ class GsonObjectMapperTimeTest {
         private ZonedDateTime zonedDateTime;
         private LocalDateTime localDateTime;
         private LocalDate localDate;
+        private OffsetDateTime offsetDateTime;
 
         public Date getDate() {
             return date;
@@ -343,6 +352,10 @@ class GsonObjectMapperTimeTest {
 
         public void setLocalDate(LocalDate localDate) {
             this.localDate = localDate;
+        }
+
+        public OffsetDateTime getOffsetDateTime() {
+            return offsetDateTime;
         }
     }
 }
