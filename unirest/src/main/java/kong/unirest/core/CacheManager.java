@@ -110,7 +110,7 @@ class CacheManager {
 
         @Override
         public Stream<Event> sse(SseRequest request) {
-            return Stream.empty();
+            return originalClient.sse(request);
         }
     }
 

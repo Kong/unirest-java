@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.google.common.collect.ImmutableMap.of;
@@ -59,6 +60,20 @@ class CachingTest extends BddTest {
 
         assertEquals(1,  MockServer.timesCalled);
         assertEquals(r1, r2);
+    }
+
+    @Test
+    void cachingDoesNotDropSseStreams() {
+        Unirest.config().cacheResponses(true);
+        MockServer.Sse.keepAlive(false);
+        MockServer.Sse.queueEvent("1", "message", "hi mom");
+
+        var events = Unirest.sse(MockServer.SSE)
+                .connect()
+                .collect(Collectors.toList());
+
+        assertEquals(2, events.size());
+        assertEquals("hi mom", events.get(1).data());
     }
 
     @Test
