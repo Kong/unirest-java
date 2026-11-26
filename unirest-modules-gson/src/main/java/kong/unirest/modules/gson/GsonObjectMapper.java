@@ -185,7 +185,9 @@ public class GsonObjectMapper implements ObjectMapper {
         }
 
         private Instant toInstant(TemporalAccessor dt){
-            if(dt.isSupported(ChronoField.HOUR_OF_DAY)){
+            if (dt.isSupported(ChronoField.INSTANT_SECONDS)) {
+                return Instant.from(dt);
+            }else if(dt.isSupported(ChronoField.HOUR_OF_DAY)){
                 return LocalDateTime.from(dt).atZone(ZoneId.systemDefault()).toInstant();
             } else {
                 return LocalDate.from(dt).atStartOfDay(ZoneId.systemDefault()).toInstant();

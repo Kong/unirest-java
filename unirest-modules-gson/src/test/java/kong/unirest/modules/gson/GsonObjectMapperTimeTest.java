@@ -30,10 +30,7 @@ import kong.unirest.core.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -186,6 +183,30 @@ class GsonObjectMapperTimeTest {
 
         String actual = om.writeValue(test);
         assertEquals("{\"zonedDateTime\":\"1985-07-03T18:00:00.042Z\"}", actual);
+    }
+
+    @Test
+    void canSerializeZonedDateTimesWithZones() {
+        var zonedDt = ZonedDateTime.parse("1985-07-03T18:00:00.042Z");
+        var test = new TestDates();
+        test.setZonedDateTime(zonedDt);
+
+        String actual = om.writeValue(test);
+        assertEquals("{\"zonedDateTime\":\"1985-07-03T18:00:00.042Z\"}", actual);
+    }
+
+    @Test
+    void deserializeDate_honorsUtcDesignator() {
+        Date date = om.readValue("\"2026-01-15T12:00:00Z\"", Date.class);
+
+        assertEquals(Instant.parse("2026-01-15T12:00:00Z"), date.toInstant());
+    }
+
+    @Test
+    void deserializeDate_honorsExplicitOffset() {
+        Date date = om.readValue("\"2026-01-15T12:00:00+02:00\"", Date.class);
+
+        assertEquals(Instant.parse("2026-01-15T10:00:00Z"), date.toInstant());
     }
 
     @Test
