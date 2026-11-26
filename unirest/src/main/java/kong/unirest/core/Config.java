@@ -675,6 +675,7 @@ public class Config {
      * Enables or disables response caching with default options.
      * <p>
      * When enabled, HTTP responses will be cached.
+     * Server-Sent Events (SSE) are not cached.
      * </p>
      *
      * @param value {@code true} to enable caching, {@code false} to disable
@@ -691,6 +692,9 @@ public class Config {
 
     /**
      * Enables response caching with custom cache configuration.
+     * <p>
+     * Server-Sent Events (SSE) are not cached.
+     * </p>
      *
      * @param value the cache builder with custom configuration
      * @return this config object for method chaining
