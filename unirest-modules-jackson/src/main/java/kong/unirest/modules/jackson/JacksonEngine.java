@@ -22,7 +22,6 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
 package kong.unirest.modules.jackson;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -38,6 +37,7 @@ import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.node.*;
 
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 
@@ -45,7 +45,7 @@ public class JacksonEngine implements JsonEngine {
     private tools.jackson.databind.ObjectMapper om;
     private ObjectMapper objm;
 
-    public JacksonEngine(){
+    public JacksonEngine() {
         objm = new JacksonObjectMapper();
         om = JsonMapper.builderWithJackson2Defaults()
                 .enable(JsonReadFeature.ALLOW_UNQUOTED_PROPERTY_NAMES)
@@ -121,23 +121,23 @@ public class JacksonEngine implements JsonEngine {
 
     @Override
     public Array newJsonArray(Collection<?> collection) {
-            JacksonArray a = new JacksonArray(om.createArrayNode());
-            for(java.lang.Object o : collection){
-                add(a, o);
-            }
-            return a;
+        JacksonArray a = new JacksonArray(om.createArrayNode());
+        for (java.lang.Object o : collection) {
+            add(a, o);
+        }
+        return a;
     }
 
     private void add(JacksonArray a, java.lang.Object o) {
-        if(o instanceof Number){
+        if (o instanceof Number) {
             a.add((Number) o);
         } else if (o instanceof String) {
             a.add((String) o);
-        }else if (o instanceof Boolean) {
+        } else if (o instanceof Boolean) {
             a.add((Boolean) o);
-        }else if(o instanceof JSONElement) {
+        } else if (o instanceof JSONElement) {
             a.add(((JSONElement) o).getElement());
-        } else if(o instanceof Element) {
+        } else if (o instanceof Element) {
             a.add((Element) o);
         } else {
             JsonNode tree = om.convertValue(o, JsonNode.class);
@@ -157,10 +157,10 @@ public class JacksonEngine implements JsonEngine {
 
     @Override
     public <T extends Enum> Primitive newJsonPrimitive(T enumValue) {
-            if (enumValue == null){
-                return new JacksonPrimitive(NullNode.getInstance());
-            }
-            return newJsonPrimitive(enumValue.name());
+        if (enumValue == null) {
+            return new JacksonPrimitive(NullNode.getInstance());
+        }
+        return newJsonPrimitive(enumValue.name());
     }
 
     @Override
@@ -170,16 +170,18 @@ public class JacksonEngine implements JsonEngine {
 
     @Override
     public Primitive newJsonPrimitive(Number number) {
-        if(number instanceof Integer) {
+        if (number instanceof Integer) {
             return convert((Integer) number, IntNode::new);
-        }else if (number instanceof Long){
-            return convert((Long)number, LongNode::new);
-        } else if (number instanceof Double){
-            return convert((Double)number, DoubleNode::new);
+        } else if (number instanceof Long) {
+            return convert((Long) number, LongNode::new);
+        } else if (number instanceof Double) {
+            return convert((Double) number, DoubleNode::new);
         } else if (number instanceof BigInteger) {
-            return convert((BigInteger)number, BigIntegerNode::new);
-        } else if (number instanceof Float){
-            return convert((Float)number, FloatNode::new);
+            return convert((BigInteger) number, BigIntegerNode::new);
+        } else if (number instanceof BigDecimal) {
+            return convert((BigDecimal) number, DecimalNode::new);
+        } else if (number instanceof Float) {
+            return convert((Float) number, FloatNode::new);
         }
         return new JacksonPrimitive(NullNode.getInstance());
     }
@@ -208,9 +210,9 @@ public class JacksonEngine implements JsonEngine {
         ValueNode getIt(V value);
     }
 
-    private <T> Primitive convert(T value, ValueSupplier<T> supplier){
+    private <T> Primitive convert(T value, ValueSupplier<T> supplier) {
         try {
-            if (value == null){
+            if (value == null) {
                 return new JacksonPrimitive(NullNode.getInstance());
             }
             return new JacksonPrimitive(supplier.getIt(value));

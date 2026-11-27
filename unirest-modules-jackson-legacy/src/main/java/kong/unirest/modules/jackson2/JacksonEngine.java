@@ -36,6 +36,7 @@ import kong.unirest.core.json.*;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 
@@ -169,12 +170,14 @@ public class JacksonEngine implements JsonEngine {
     public Primitive newJsonPrimitive(Number number) {
         if(number instanceof Integer) {
             return convert((Integer) number, IntNode::new);
-        }else if (number instanceof Long){
+        } else if (number instanceof Long){
             return convert((Long)number, LongNode::new);
         } else if (number instanceof Double){
             return convert((Double)number, DoubleNode::new);
         } else if (number instanceof BigInteger) {
-            return convert((BigInteger)number, BigIntegerNode::new);
+            return convert((BigInteger) number, BigIntegerNode::new);
+        } else if (number instanceof BigDecimal) {
+            return convert((BigDecimal) number, DecimalNode::new);
         } else if (number instanceof Float){
             return convert((Float)number, FloatNode::new);
         }
