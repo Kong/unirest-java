@@ -148,6 +148,16 @@ class JSONObjectTest {
     }
 
     @Test
+    void nonStrictFloats() {
+        var obj = new JSONObject();
+        obj.put("int", 33);
+        obj.put("dbl", 44.7d);
+
+        assertEquals(33, obj.getFloat("int"), 4);
+        assertEquals(44.7f, obj.getFloat("dbl"), 4);
+    }
+
+    @Test
     void longs() {
         JSONObject obj = new JSONObject();
         obj.put("key", Long.MAX_VALUE);
