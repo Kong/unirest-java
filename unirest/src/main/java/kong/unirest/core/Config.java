@@ -945,6 +945,7 @@ public class Config {
         if(cache == null){
             return client.get();
         } else {
+            cache.setRetryStrategy(retry);
             return cache.wrap(client.get());
         }
     }

@@ -63,6 +63,13 @@ class CacheManager {
         backingCache = backing;
     }
 
+    // Responses the retry strategy would retry must not be replayed from the cache
+    void setRetryStrategy(RetryStrategy strategy) {
+        if (backingCache instanceof CacheMap) {
+            ((CacheMap) backingCache).retryStrategy = strategy;
+        }
+    }
+
     Client wrap(Client client) {
         this.originalClient = client;
         return wrapper;
@@ -170,6 +177,7 @@ class CacheManager {
         private final int maxSize;
         private long ttl;
         private KeyGenerator keyGen = HashKey::new;
+        private volatile RetryStrategy retryStrategy;
 
         CacheMap(int maxSize, long ttl) {
             this.maxSize = maxSize;
@@ -196,7 +204,10 @@ class CacheManager {
                 clearOld();
                 Object cached = super.get(key);
                 if (cached != null) {
-                    return cached;
+                    if (!isRetryable(cached)) {
+                        return cached;
+                    }
+                    super.remove(key);
                 }
             }
             Object fetched = fetcher.get();
@@ -207,6 +218,22 @@ class CacheManager {
                 Object cached = super.putIfAbsent(key, fetched);
                 return cached == null ? fetched : cached;
             }
+        }
+
+        // A request still in flight stays shared; it is checked once it has a response.
+        private boolean isRetryable(Object cached) {
+            RetryStrategy strategy = retryStrategy;
+            if (strategy == null) {
+                return false;
+            }
+            if (cached instanceof CompletableFuture) {
+                var future = (CompletableFuture<?>) cached;
+                if (!future.isDone() || future.isCompletedExceptionally()) {
+                    return false;
+                }
+                cached = future.join();
+            }
+            return strategy.isRetryable((HttpResponse<?>) cached);
         }
 
         private void clearOld() {
