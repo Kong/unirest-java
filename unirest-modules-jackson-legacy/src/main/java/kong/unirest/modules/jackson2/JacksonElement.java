@@ -85,7 +85,7 @@ class JacksonElement<T extends JsonNode> implements JsonEngine.Element {
 
     @Override
     public float getAsFloat() {
-        if(!element.isFloat()){
+        if(!element.isNumber()){
             throw new NumberFormatException("not a float");
         }
         return element.floatValue();

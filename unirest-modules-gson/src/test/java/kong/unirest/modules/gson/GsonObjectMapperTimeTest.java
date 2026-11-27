@@ -130,7 +130,6 @@ class GsonObjectMapperTimeTest {
     }
 
     @Test
-    @SuppressWarnings("MagicConstant")
     void canSerializeCalendar_no_time() {
         var cal = GregorianCalendar.getInstance();
         cal.set(1985, 6, 3, 0, 0, 0);
@@ -304,14 +303,13 @@ class GsonObjectMapperTimeTest {
     }
 
     private String getJson(String key, Object value){
-        JSONObject object = new JSONObject();
+        var object = new JSONObject();
         object.put(key, value);
         return object.toString();
     }
 
-    @SuppressWarnings("SameParameterValue")
     private TestDates getDate(String date) {
-        Date from = Date.from(ZonedDateTime.parse(date).withFixedOffsetZone().toInstant());
+        var from = Date.from(ZonedDateTime.parse(date).withFixedOffsetZone().toInstant());
         return getDate(from);
     }
 
@@ -321,9 +319,8 @@ class GsonObjectMapperTimeTest {
         return test;
     }
 
-    @SuppressWarnings("SameParameterValue")
     private TestDates getCalendar(String date) {
-        Calendar from = GregorianCalendar.from(ZonedDateTime.parse(date));
+        var from = GregorianCalendar.from(ZonedDateTime.parse(date));
         return getCalendar(from);
     }
 
