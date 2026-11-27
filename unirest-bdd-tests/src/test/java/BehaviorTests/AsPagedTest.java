@@ -87,6 +87,22 @@ class AsPagedTest extends BddTest {
     }
 
     @Test
+    void pagingDoesNotChangeTheUrlOfTheOriginalRequest() {
+        var request = Unirest.get(MockServer.PAGED);
+        MockServer.expectedPages(3);
+        request.asPaged(r -> r.asString(), r -> r.getHeaders().getFirst("nextPage"));
+
+        assertThat(request.getUrl()).isEqualTo(MockServer.PAGED);
+
+        // the mock server keeps counting pages, so this asks for two more after the first one
+        MockServer.expectedPages(5);
+        var second = request.asPaged(r -> r.asString(), r -> r.getHeaders().getFirst("nextPage"));
+
+        assertThat(second).hasSize(3);
+        assertThat(second.get(0).getRequestSummary().getUrl()).isEqualTo(MockServer.PAGED);
+    }
+
+    @Test
     void credentialsAreNotSentToADifferentOrigin() {
         var links = new ArrayDeque<>(List.of("http://127.0.0.1:4567/paged"));
 
