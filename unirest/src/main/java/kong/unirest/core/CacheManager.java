@@ -94,8 +94,19 @@ class CacheManager {
                                                               Function<RawResponse, HttpResponse<T>> transformer,
                                                               CompletableFuture<HttpResponse<T>> callback,
                                                               Class<?> responseType) {
-            return backingCache.getAsync(request, responseType,
+            CompletableFuture<HttpResponse<T>> response = backingCache.getAsync(request, responseType,
                     () -> originalClient.request(request, transformer, callback, responseType));
+            // A cached future belongs to an earlier request, so this callback still needs its result
+            if (callback != null && response != callback) {
+                response.whenComplete((value, error) -> {
+                    if (error != null) {
+                        callback.completeExceptionally(error);
+                    } else {
+                        callback.complete(value);
+                    }
+                });
+            }
+            return response;
         }
 
         @Override //
@@ -185,7 +196,20 @@ class CacheManager {
         @Override
         public <T> CompletableFuture getAsync(HttpRequest request, Class<?> responseType, Supplier<CompletableFuture<HttpResponse<T>>> fetcher) {
             var key = keyGen.apply(request, true, responseType);
-            return (CompletableFuture) getOrFetch(key, fetcher);
+            var future = (CompletableFuture<?>) getOrFetch(key, fetcher);
+            if (future != null) {
+                future.whenComplete((response, error) -> {
+                    if (error != null) {
+                        evict(key, future);
+                    }
+                });
+            }
+            return future;
+        }
+
+        // Like a sync request that throws, a failed async request must not stay in the cache
+        private synchronized void evict(Key key, Object value) {
+            super.remove(key, value);
         }
 
         // The fetcher runs the request, so it must not run while holding the lock or inside

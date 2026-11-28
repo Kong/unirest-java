@@ -75,6 +75,33 @@ class CacheManagerTest {
 
 
     @Test
+    void callbackIsCompletedOnAsyncCacheHit() {
+        var response = new CompletableFuture<HttpResponse<Object>>();
+        client.asyncResponse = response;
+        var second = new CompletableFuture<HttpResponse<Object>>();
+
+        cache.wrapAsync(client).request(new HttpRequestNoBody(config, GET, "/"), null, new CompletableFuture<>(), Object.class);
+        cache.wrapAsync(client).request(new HttpRequestNoBody(config, GET, "/"), null, second, Object.class);
+        var expected = new MockResponse();
+        response.complete(expected);
+
+        assertSame(expected, second.getNow(null));
+        assertEquals(1, client.invokes);
+    }
+
+    @Test
+    void failedAsyncRequestsAreNotCached() {
+        var response = new CompletableFuture<HttpResponse<Object>>();
+        client.asyncResponse = response;
+
+        cache.wrapAsync(client).request(new HttpRequestNoBody(config, GET, "/"), null, new CompletableFuture<>(), Object.class);
+        response.completeExceptionally(new UnirestException("boom"));
+        cache.wrapAsync(client).request(new HttpRequestNoBody(config, GET, "/"), null, new CompletableFuture<>(), Object.class);
+
+        assertEquals(2, client.invokes);
+    }
+
+    @Test
     void asyncAndSyncrequestsAreDifferent() {
         assertNotSame(
                 cache.wrap(client).request(new HttpRequestNoBody(config, GET, "/"), null, Object.class),
@@ -159,10 +186,11 @@ class CacheManagerTest {
 
     private static class MockClient implements Client {
         public int invokes = 0;
+        private CompletableFuture asyncResponse;
         @Override
         public <T> CompletableFuture<HttpResponse<T>> request(HttpRequest request, Function<RawResponse, HttpResponse<T>> transformer, CompletableFuture<HttpResponse<T>> callback, Class<?> resultType) {
             invokes++;
-            return new CompletableFuture<>();
+            return asyncResponse == null ? new CompletableFuture<>() : asyncResponse;
         }
 
         @Override
