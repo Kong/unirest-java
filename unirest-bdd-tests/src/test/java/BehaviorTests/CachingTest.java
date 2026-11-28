@@ -247,4 +247,24 @@ class CachingTest extends BddTest {
         );
         assertEquals(1,  MockServer.timesCalled);
     }
+
+    @Test
+    void retryAfterDoesNotReplayACachedRetryableResponse() {
+        Unirest.config().cacheResponses(true).retryAfter(true, 3);
+        MockServer.retryTimes(1, 429, 0.01);
+
+        assertEquals(200, Unirest.get(MockServer.GET).asEmpty().getStatus());
+        assertEquals(200, Unirest.get(MockServer.GET).asEmpty().getStatus());
+        MockServer.assertRequestCount(2);
+    }
+
+    @Test
+    void retryAfterDoesNotReplayACachedRetryableResponseAsync() throws Exception {
+        Unirest.config().cacheResponses(true).retryAfter(true, 3);
+        MockServer.retryTimes(1, 429, 0.01);
+
+        assertEquals(200, Unirest.get(MockServer.GET).asEmptyAsync().get().getStatus());
+        assertEquals(200, Unirest.get(MockServer.GET).asEmptyAsync().get().getStatus());
+        MockServer.assertRequestCount(2);
+    }
 }
