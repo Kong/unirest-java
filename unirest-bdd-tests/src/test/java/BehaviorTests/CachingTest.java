@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -146,6 +147,18 @@ class CachingTest extends BddTest {
 
         assertEquals(1,  MockServer.timesCalled);
         assertEquals(r1, r2);
+    }
+
+    @Test
+    void callbacksAreCalledForCachedAsyncResponses() throws Exception {
+        Unirest.config().cacheResponses(true);
+        var called = new CountDownLatch(1);
+
+        Unirest.get(MockServer.GET).asStringAsync().get();
+        Unirest.get(MockServer.GET).asStringAsync(r -> called.countDown());
+
+        assertTrue(called.await(5, TimeUnit.SECONDS));
+        assertEquals(1,  MockServer.timesCalled);
     }
 
     @Test
